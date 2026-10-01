@@ -57,3 +57,10 @@
 - [x] Phase 4: Executive Admin & Analytics Portal with HVAC Profit Margin & Unit Economics Simulator, Technician Performance Leaderboard, Service Demand Breakdown, and Fleet CSV Export (`public/js/admin.js`, `public/admin.html`).
 - [x] Phase 5: Customer Booking & Quote Integration with Auto-Prefill from Estimator to Booking Form, Real-Time AMC Delight Auto-Lookup, and 1-Click GPS Status Tracking (`public/js/service.js`, `public/service.html`, `public/status.html`).
 - [x] Phase 6: Code Quality, Verification, Deployment Sync, and Presentation Readiness.
+- [x] Phase 7: Restrained, Polished Scroll-Animation System (`public/css/style.css`, `public/js/animations.js`, `public/js/costEstimator.js`, `public/index.html`):
+  - Subtle fade & upward reveal (`translateY(18px)`, `cubic-bezier(0.22, 1, 0.36, 1)`) with 50ms stagger on related cards; single-trigger via unobserving `IntersectionObserver`.
+  - Non-hijacking scroll-linked vertical progress line through the "3 Simple Steps" process section on both mobile and desktop with active node illumination.
+  - Smooth 240ms numerical count & crossfade for Instant HVAC Cost Estimator selections with tabular figures (`tabular-nums`) to prevent layout shifts.
+  - Sticky navbar scroll-spy with active section highlighting across homepage sections and smooth anchor scrolling.
+  - Full `@media (prefers-reduced-motion: reduce)` accessibility coverage across CSS and JS.
+
