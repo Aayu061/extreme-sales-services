@@ -20,7 +20,7 @@ app.get(['/auth/login.html', '/auth/login'], (req, res) => {
 });
 
 // Health check endpoint (for Render zero-downtime deploys & uptime monitoring)
-app.get(['/health', '/api/health'], (req, res) => {
+app.get(['/health', '/api/health', '/healthz'], (req, res) => {
     res.status(200).json({
         status: 'ok',
         service: 'extreme-sales-services-api',
