@@ -10,7 +10,9 @@
     "seed:amc": "node scripts/seedAmcPlans.js",
     "update:admin": "node scripts/updateAdmin.js",
     "migrate:products": "node scripts/migrateProducts.js",
-    "export:products": "node scripts/exportProducts.js"
+    "export:products": "node scripts/exportProducts.js",
+    "export:all": "node scripts/exportAllData.js",
+    "import:all": "node scripts/importAllData.js"
   },
   "keywords": [],
   "author": "",

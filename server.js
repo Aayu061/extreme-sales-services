@@ -19,6 +19,17 @@ app.get(['/auth/login.html', '/auth/login'], (req, res) => {
     res.redirect(301, '/login.html');
 });
 
+// Health check endpoint (for Render zero-downtime deploys & uptime monitoring)
+app.get(['/health', '/api/health'], (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        service: 'extreme-sales-services-api',
+        uptime: Math.floor(process.uptime()),
+        mode: isFirebaseMode ? 'production_firebase' : 'local_mock',
+        timestamp: new Date().toISOString()
+    });
+});
+
 
 // ═══════════════════════════════════════════════════════════
 // 1. FIREBASE INITIALIZATION WITH LOCAL FALLBACK
