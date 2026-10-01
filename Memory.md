@@ -52,8 +52,8 @@
 
 ## 4. Current Workstream & Implementation Status
 - [x] Phase 1: AI Engineering Markdown System (`PRD.md`, `Architecture.md`, `Rules.md`, `Phases.md`, `Design.md`, `Memory.md`).
-- [x] Phase 2: 3D Interactive AC Simulator (`public/js/acSimulator.js`) & Dynamic Cost Estimator (`public/js/costEstimator.js`) on `index.html`.
+- [x] Phase 2: Instant HVAC Service Cost & Quote Estimator (`public/js/costEstimator.js`) on `index.html`.
 - [x] Phase 3: Field Technician Console Upgrades with Live Spare Parts Billing, HTML5 Digital Signature Pad, and Tax Invoice Receipt Modal (`public/js/technician.js`, `public/technician.html`).
 - [x] Phase 4: Executive Admin & Analytics Portal with HVAC Profit Margin & Unit Economics Simulator, Technician Performance Leaderboard, Service Demand Breakdown, and Fleet CSV Export (`public/js/admin.js`, `public/admin.html`).
-- [x] Phase 5: Customer Booking & 3D Quote Integration with Auto-Prefill from Estimator to Booking Form, Real-Time AMC Delight Auto-Lookup, and 1-Click GPS Status Tracking (`public/js/service.js`, `public/service.html`, `public/status.html`).
+- [x] Phase 5: Customer Booking & Quote Integration with Auto-Prefill from Estimator to Booking Form, Real-Time AMC Delight Auto-Lookup, and 1-Click GPS Status Tracking (`public/js/service.js`, `public/service.html`, `public/status.html`).
 - [x] Phase 6: Code Quality, Verification, Deployment Sync, and Presentation Readiness.

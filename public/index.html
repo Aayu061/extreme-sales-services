@@ -9,7 +9,6 @@
       content="Professional AC sales, installation, repair &amp; annual maintenance contracts. Fast, certified, and available 24/7."
     >
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
   </head>
@@ -317,136 +316,6 @@
         <span class="sr-only">Scroll down to services</span>
         <div class="mouse-scroll"></div>
       </a>
-    </section>
-
-    <!-- 3D INTERACTIVE AC SIMULATOR & AIRFLOW LAB -->
-    <section id="simulator" class="py-24 bg-slate-950 text-white relative overflow-hidden border-y border-slate-800">
-      <!-- Ambient Glow Behind 3D Canvas -->
-      <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <!-- Section Header -->
-        <div class="text-center mb-16">
-          <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-400/30 text-blue-400 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            3D Precision Airflow Laboratory
-          </div>
-          <h2 class="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-            Interactive 3D Inverter AC Simulator
-          </h2>
-          <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base font-medium">
-            Drag to rotate the 3D unit. Adjust the temperature dial to witness real-time cooling particle physics, inverter energy savings, and airflow dynamics.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <!-- 3D Canvas Viewport Column (7 Cols) -->
-          <div class="lg:col-span-7 bg-slate-900/80 rounded-3xl p-4 sm:p-6 border border-slate-800 shadow-2xl relative">
-            <div class="flex justify-between items-center mb-2 px-2">
-              <span class="text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <span>🔄</span> Drag &amp; Touch to Inspect in 360°
-              </span>
-              <span class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full font-mono">
-                Three.js WebGL Engine
-              </span>
-            </div>
-
-            <!-- Viewport Container -->
-            <div id="acSimulatorContainer" class="w-full h-[360px] sm:h-[420px] rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 cursor-grab active:cursor-grabbing border border-slate-800/80 flex items-center justify-center">
-              <canvas id="acSimulatorCanvas" class="w-full h-full block"></canvas>
-              
-              <!-- Subtle HUD Overlay -->
-              <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none">
-                <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 px-3 py-1.5 rounded-xl text-[10px] text-slate-300 font-mono">
-                  Louver Angle: 35° Downward Flow
-                </div>
-                <div class="bg-cyan-950/80 backdrop-blur-md border border-cyan-500/40 text-cyan-300 px-3 py-1.5 rounded-xl text-[10px] font-mono font-bold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                  Active Cooling Particles
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Controls & Telemetry Column (5 Cols) -->
-          <div class="lg:col-span-5 space-y-6">
-            <div class="bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
-              
-              <!-- Temperature Control Header -->
-              <div class="flex justify-between items-center pb-4 border-b border-slate-800">
-                <div>
-                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">Thermostat Setting</span>
-                  <h3 class="text-lg font-black text-white">Target Temperature</h3>
-                </div>
-                <div class="flex items-center gap-3">
-                  <button type="button" onclick="changeSimulatorTemp(-1)" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-lg flex items-center justify-center transition border border-slate-700 active:scale-95">−</button>
-                  <span id="simTempDisplay" class="text-3xl font-black text-cyan-400 font-mono min-w-[70px] text-center">18°C</span>
-                  <button type="button" onclick="changeSimulatorTemp(1)" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-lg flex items-center justify-center transition border border-slate-700 active:scale-95">+</button>
-                </div>
-              </div>
-
-              <!-- Interactive Slider -->
-              <div>
-                <div class="flex justify-between text-[11px] font-bold text-slate-400 mb-2">
-                  <span>16°C (Maximum Chill)</span>
-                  <span>24°C (Eco Comfort)</span>
-                  <span>28°C (Eco)</span>
-                </div>
-                <input
-                  type="range"
-                  id="simTempSlider"
-                  min="16"
-                  max="28"
-                  value="18"
-                  step="1"
-                  oninput="setSimulatorTemp(this.value)"
-                  class="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 focus:outline-none"
-                >
-              </div>
-
-              <!-- Mode Selection Pills -->
-              <div>
-                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5">Inverter Operating Mode</label>
-                <div class="grid grid-cols-3 gap-2">
-                  <button type="button" onclick="setSimulatorMode('turbo', this)" class="sim-mode-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-blue-500 bg-blue-600/30 text-blue-300 shadow-lg shadow-blue-500/20">
-                    <span>❄️</span> Turbo
-                  </button>
-                  <button type="button" onclick="setSimulatorMode('eco', this)" class="sim-mode-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">
-                    <span>🍃</span> Eco 5★
-                  </button>
-                  <button type="button" onclick="setSimulatorMode('silent', this)" class="sim-mode-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">
-                    <span>🌙</span> Silent
-                  </button>
-                </div>
-              </div>
-
-              <!-- Live Telemetry Readout Grid -->
-              <div class="pt-4 border-t border-slate-800 grid grid-cols-3 gap-3">
-                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 text-center">
-                  <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">Est. Power</span>
-                  <span id="simMetricPower" class="text-sm font-black text-cyan-400 font-mono mt-1 block">1.35 kW/h</span>
-                </div>
-                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 text-center">
-                  <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">Air Velocity</span>
-                  <span id="simMetricAirflow" class="text-sm font-black text-blue-400 font-mono mt-1 block">920 CFM</span>
-                </div>
-                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 text-center">
-                  <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">Noise Level</span>
-                  <span id="simMetricSound" class="text-sm font-black text-emerald-400 font-mono mt-1 block">44 dB</span>
-                </div>
-              </div>
-
-              <!-- Quick CTA -->
-              <a href="service.html" class="btn-glow w-full py-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2">
-                <span>Book Precision Servicing For Your Unit</span>
-                <span>→</span>
-              </a>
-
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <!-- INSTANT HVAC COST ESTIMATOR & QUOTE CALCULATOR -->
@@ -1367,7 +1236,6 @@
     <!-- SHARED JS -->
     <script src="js/config.js"></script>
     <script src="js/animations.js"></script>
-    <script src="js/acSimulator.js"></script>
     <script src="js/costEstimator.js"></script>
     <script>
       // Page-specific Typewriter
