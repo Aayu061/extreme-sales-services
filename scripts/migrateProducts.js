@@ -50,7 +50,8 @@ async function migrateFirestore() {
       specs: item.specs,
       in_stock: item.inStock,
       images: item.images,
-      image_url: item.images[0] || ''
+      image_url: item.images[0] || '',
+      created_at: new Date().toISOString()
     };
 
     if (item.price === 0) {
