@@ -40,11 +40,18 @@
             </a>
           </div>
 
-          <div class="hidden md:flex space-x-8 items-center">
+          <div class="hidden md:flex space-x-7 items-center">
             <a
               href="index.html"
+              data-section="hero"
               class="nav-link active text-gray-800 font-bold text-sm"
               >Home</a
+            >
+            <a
+              href="#services"
+              data-section="services"
+              class="nav-link text-gray-600 hover:text-blue-600 font-bold text-sm transition"
+              >Services</a
             >
             <a
               href="products.html"
@@ -130,7 +137,8 @@
         class="hidden absolute top-20 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100 p-6 md:hidden"
       >
         <div class="flex flex-col space-y-4 text-center">
-          <a href="index.html" class="text-blue-600 font-bold py-2">Home</a>
+          <a href="index.html" data-section="hero" class="nav-link text-blue-600 font-bold py-2">Home</a>
+          <a href="#services" data-section="services" class="nav-link text-gray-600 hover:text-blue-600 font-bold py-2">Services</a>
           <a
             href="products.html"
             class="text-gray-600 hover:text-blue-600 font-bold py-2"
@@ -156,6 +164,7 @@
 
     <!-- HERO SECTION -->
     <section
+      id="hero"
       class="min-h-screen hero-bg relative overflow-hidden flex items-center pt-20"
     >
       <div id="particleContainer"></div>
@@ -322,7 +331,7 @@
     <section id="estimator" class="py-24 bg-white relative border-b border-gray-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 reveal">
           <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
             <span>⚡</span> Upfront Transparent Pricing
           </div>
@@ -334,7 +343,7 @@
           </p>
         </div>
 
-        <div class="max-w-4xl mx-auto bg-slate-50 border border-slate-200 rounded-[2.5rem] shadow-xl p-6 sm:p-10">
+        <div class="max-w-4xl mx-auto bg-slate-50 border border-slate-200 rounded-[2.5rem] shadow-xl p-6 sm:p-10 reveal">
           <div class="space-y-8">
             
             <!-- Step 1: AC Type -->
@@ -602,9 +611,9 @@
     </section>
 
     <!-- 1. INTERACTIVE AC DIAGNOSTIC & FIX FINDER -->
-    <section class="py-24 bg-slate-900 text-white relative overflow-hidden">
+    <section id="diagnosis" class="py-24 bg-slate-900 text-white relative overflow-hidden">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
           <span class="bg-blue-500/20 text-blue-300 font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-blue-400/30 inline-block mb-3">
             ⚡ Interactive Diagnostic Tool
           </span>
@@ -617,7 +626,7 @@
         </div>
 
         <!-- Symptom Selector Chips -->
-        <div class="flex flex-wrap justify-center gap-3 mb-10" id="diagnosticSymptomChips">
+        <div class="flex flex-wrap justify-center gap-3 mb-10 reveal" id="diagnosticSymptomChips">
           <button type="button" class="symptom-chip active" data-symptom="no-cooling">
             <span>❄️</span> <span>No Cooling / Warm Air</span>
           </button>
@@ -639,7 +648,7 @@
         </div>
 
         <!-- Dynamic Diagnosis Card -->
-        <div id="diagnosticResultCard" class="bg-slate-800/90 border border-slate-700 p-8 md:p-10 rounded-3xl max-w-4xl mx-auto shadow-2xl backdrop-blur-md">
+        <div id="diagnosticResultCard" class="bg-slate-800/90 border border-slate-700 p-8 md:p-10 rounded-3xl max-w-4xl mx-auto shadow-2xl backdrop-blur-md reveal">
           <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             <div class="md:col-span-8 space-y-4">
               <div class="flex items-center gap-3">
@@ -679,9 +688,9 @@
     </section>
 
     <!-- 2. INTERACTIVE AC TONNAGE & ENERGY SAVINGS CALCULATOR -->
-    <section class="py-24 bg-slate-50 relative overflow-hidden">
+    <section id="calculator" class="py-24 bg-slate-50 relative overflow-hidden">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
           <span class="bg-blue-100 text-blue-700 font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3">
             🧮 Smart Buying Assistant
           </span>
@@ -693,7 +702,7 @@
           </p>
         </div>
 
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-8 md:p-12 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-8 md:p-12 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 reveal">
 
           <!-- Inputs Column -->
           <div class="lg:col-span-7 space-y-6">
@@ -774,9 +783,9 @@
     </section>
 
     <!-- 3. TRUST & QUALITY COMPARISON MATRIX -->
-    <section class="py-24 bg-white relative">
+    <section id="comparison" class="py-24 bg-white relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 reveal">
           <span class="bg-blue-50 text-blue-700 font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3">
             🛡️ Peace of Mind Guaranteed
           </span>
@@ -788,7 +797,7 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto reveal-stagger">
 
           <!-- Extreme S&S Card -->
           <div class="comparison-card pro-card p-8 md:p-10 space-y-6">
@@ -871,8 +880,8 @@
     </section>
 
     <!-- 4. LIVE SERVICE AREA PINCODE CHECKER -->
-    <section class="py-16 bg-slate-900 text-white relative">
-      <div class="max-w-4xl mx-auto px-4 text-center">
+    <section id="coverage" class="py-16 bg-slate-900 text-white relative">
+      <div class="max-w-4xl mx-auto px-4 text-center reveal">
         <h3 class="text-2xl md:text-3xl font-black mb-2">Check Live Technician Availability in Your Area</h3>
         <p class="text-xs text-slate-400 mb-2">Enter your 6-digit Mumbai / Navi Mumbai / Thane pincode (e.g. 400013, 400703)</p>
 
@@ -916,7 +925,7 @@
 
     <!-- HOW IT WORKS -->
 
-    <section class="py-32 bg-white relative overflow-hidden">
+    <section id="process" class="py-32 bg-white relative overflow-hidden">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center gap-20">
           <div class="lg:w-1/2 reveal">
@@ -942,19 +951,19 @@
             >
           </div>
 
-          <div class="lg:w-1/2 space-y-12 reveal-stagger">
+          <div class="relative lg:w-1/2 space-y-12 reveal-stagger" id="processStepsList">
+            <!-- Continuous scroll-driven progress line -->
+            <div class="process-line-track">
+              <div class="process-line-fill"></div>
+            </div>
+
             <!-- Step 1 -->
-            <div class="flex gap-8 group">
-              <div class="relative">
+            <div class="flex gap-8 group process-step-item" data-step="1">
+              <div class="relative flex-shrink-0 flex flex-col items-center">
                 <div
-                  class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 step-badge z-10 relative"
+                  class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 step-badge process-step-node z-10 relative"
                 >
                   1
-                </div>
-                <div
-                  class="absolute top-16 left-1/2 -translate-x-1/2 h-full w-1.5 bg-blue-100 rounded-full hidden lg:block overflow-hidden"
-                >
-                  <div class="step-connector h-full"></div>
                 </div>
               </div>
               <div class="pt-2">
@@ -971,17 +980,12 @@
             </div>
 
             <!-- Step 2 -->
-            <div class="flex gap-8 group">
-              <div class="relative">
+            <div class="flex gap-8 group process-step-item" data-step="2">
+              <div class="relative flex-shrink-0 flex flex-col items-center">
                 <div
-                  class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 step-badge z-10 relative"
+                  class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 step-badge process-step-node z-10 relative"
                 >
                   2
-                </div>
-                <div
-                  class="absolute top-16 left-1/2 -translate-x-1/2 h-full w-1.5 bg-blue-100 rounded-full hidden lg:block overflow-hidden"
-                >
-                  <div class="step-connector h-full"></div>
                 </div>
               </div>
               <div class="pt-2">
@@ -998,10 +1002,10 @@
             </div>
 
             <!-- Step 3 -->
-            <div class="flex gap-8 group">
-              <div class="relative">
+            <div class="flex gap-8 group process-step-item" data-step="3">
+              <div class="relative flex-shrink-0 flex flex-col items-center">
                 <div
-                  class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 step-badge z-10 relative"
+                  class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 step-badge process-step-node z-10 relative"
                 >
                   3
                 </div>
@@ -1024,15 +1028,15 @@
     </section>
 
     <!-- 5. FAQ ACCORDION -->
-    <section class="py-24 bg-slate-50">
+    <section id="faq" class="py-24 bg-slate-50">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
           <span class="bg-blue-50 text-blue-700 font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3">❓ Common Questions</span>
           <h2 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-3">Frequently Asked <span class="text-blue-600">Questions</span></h2>
           <p class="text-slate-500 text-sm max-w-xl mx-auto font-medium">Everything you need to know before booking your service with us.</p>
         </div>
 
-        <div class="space-y-3" id="faqAccordion">
+        <div class="space-y-3 reveal-stagger" id="faqAccordion">
 
           <div class="faq-item">
             <button type="button" class="faq-trigger" onclick="toggleFaq(this)">

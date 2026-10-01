@@ -9,27 +9,136 @@
 (function () {
   'use strict';
 
-  /* ─── 1. Scroll Reveal ────────────────────────────────── */
-  const revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
+  /* ─── 1. Scroll Reveal (Restrained, Polished & Accessible) ─── */
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealElements = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-left, .reveal-right');
+
+  if (prefersReducedMotion) {
+    revealElements.forEach((el) => el.classList.add('visible'));
+    document.querySelectorAll('.step-connector').forEach((el) => el.classList.add('visible'));
+  } else {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.08,
+        rootMargin: '0px 0px -40px 0px'
+      }
+    );
+
+    revealElements.forEach((el) => revealObserver.observe(el));
+    document.querySelectorAll('.step-connector').forEach((el) => revealObserver.observe(el));
+  }
+
+  /* ─── 2. 3-Step Service Process Scroll Progress (No Scroll Hijacking) ─── */
+  const initProcessProgress = () => {
+    const processSection = document.getElementById('process');
+    const stepsContainer = document.getElementById('processStepsList') || (processSection ? processSection.querySelector('.space-y-12') : null);
+
+    if (!processSection || !stepsContainer) return;
+
+    const stepBadges = stepsContainer.querySelectorAll('.step-badge, .process-step-node');
+    if (stepBadges.length < 2) return;
+
+    // Ensure continuous track and fill line exists
+    let track = stepsContainer.querySelector('.process-line-track');
+    let fill = stepsContainer.querySelector('.process-line-fill');
+
+    if (!track) {
+      track = document.createElement('div');
+      track.className = 'process-line-track';
+      fill = document.createElement('div');
+      fill.className = 'process-line-fill';
+      track.appendChild(fill);
+      stepsContainer.insertBefore(track, stepsContainer.firstChild);
+    } else if (!fill) {
+      fill = track.querySelector('.process-line-fill');
+    }
+
+    const updateGeometry = () => {
+      const bFirst = stepBadges[0].getBoundingClientRect();
+      const bLast = stepBadges[stepBadges.length - 1].getBoundingClientRect();
+      const containerRect = stepsContainer.getBoundingClientRect();
+
+      const topOffset = (bFirst.top + bFirst.height / 2) - containerRect.top;
+      const totalHeight = (bLast.top + bLast.height / 2) - (bFirst.top + bFirst.height / 2);
+      const leftOffset = (bFirst.left + bFirst.width / 2) - containerRect.left;
+
+      track.style.top = `${topOffset}px`;
+      track.style.left = `${leftOffset}px`;
+      track.style.height = `${Math.max(0, totalHeight)}px`;
+    };
+
+    const updateProgress = () => {
+      if (prefersReducedMotion) {
+        if (fill) fill.style.height = '100%';
+        stepBadges.forEach((b) => b.classList.add('step-active'));
+        return;
+      }
+
+      const bFirst = stepBadges[0].getBoundingClientRect();
+      const bLast = stepBadges[stepBadges.length - 1].getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      // Start line animation when step 1 badge reaches ~70% of viewport
+      // Complete line animation when step 3 badge reaches ~45% of viewport
+      const startThreshold = vh * 0.70;
+      const endThreshold = vh * 0.45;
+
+      const totalDistance = (bLast.top - bFirst.top) + (startThreshold - endThreshold);
+      const scrolled = startThreshold - bFirst.top;
+      const progress = Math.max(0, Math.min(1, scrolled / totalDistance));
+
+      if (fill) {
+        fill.style.height = `${(progress * 100).toFixed(1)}%`;
+      }
+
+      // Progressively illuminate step badges as the line passes through them
+      stepBadges.forEach((badge, idx) => {
+        const threshold = idx === 0 ? 0.04 : (idx / (stepBadges.length - 1)) * 0.95;
+        if (progress >= threshold) {
+          badge.classList.add('step-active');
+        } else {
+          badge.classList.remove('step-active');
         }
       });
-    },
-    { threshold: 0.1 }
-  );
+    };
 
-  document
-    .querySelectorAll('.reveal, .reveal-stagger, .reveal-left, .reveal-right')
-    .forEach((el) => revealObserver.observe(el));
+    let isTicking = false;
+    const onScroll = () => {
+      if (!isTicking) {
+        requestAnimationFrame(() => {
+          updateProgress();
+          isTicking = false;
+        });
+        isTicking = true;
+      }
+    };
 
-  /* ─── 2. Step connector lines ─────────────────────────── */
-  document.querySelectorAll('.step-connector').forEach((el) => {
-    revealObserver.observe(el);
-  });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => {
+      updateGeometry();
+      updateProgress();
+    }, { passive: true });
+
+    // Initial positioning after layout calculation
+    setTimeout(() => {
+      updateGeometry();
+      updateProgress();
+    }, 80);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProcessProgress);
+  } else {
+    initProcessProgress();
+  }
 
   /* ─── 3. Number Counter ───────────────────────────────── */
   function animateCounter(el) {
@@ -169,16 +278,99 @@
     );
   }
 
-  /* ─── 9. Dynamic Navigation Link Highlighting ───────── */
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.nav-link').forEach((link) => {
-    const linkPath = link.getAttribute('href');
-    if (linkPath === currentPath) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
-  });
+  /* ─── 9. Dynamic Navigation & Scroll-Spy Highlighting ── */
+  const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  if (isHomePage) {
+    const trackedSectionIds = ['hero', 'estimator', 'services', 'diagnosis', 'calculator', 'comparison', 'coverage', 'process', 'faq'];
+    const sections = trackedSectionIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean)
+      .sort((a, b) => a.offsetTop - b.offsetTop);
+
+    const updateActiveSection = () => {
+      const scrollPos = window.scrollY + 140; // Sticky nav buffer
+      let currentSectionId = '';
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const sect = sections[i];
+        if (sect && sect.offsetTop <= scrollPos) {
+          currentSectionId = sect.id;
+          break;
+        }
+      }
+
+      if (!currentSectionId || window.scrollY < 180) {
+        currentSectionId = 'hero';
+      }
+
+      navLinks.forEach((link) => {
+        const href = link.getAttribute('href') || '';
+        const dataSec = link.getAttribute('data-section');
+        const matchesAnchor = href === `#${currentSectionId}` || href.endsWith(`#${currentSectionId}`);
+        const matchesDataSec = dataSec === currentSectionId;
+        const matchesHome = (currentSectionId === 'hero' && (href === 'index.html' || href === '#' || href === '#hero' || dataSec === 'hero'));
+
+        if (matchesAnchor || matchesDataSec || matchesHome) {
+          link.classList.add('active');
+        } else if (href.startsWith('#') || dataSec) {
+          link.classList.remove('active');
+        } else if (href === 'index.html' && currentSectionId !== 'hero') {
+          const hasMatchingAnchor = Array.from(navLinks).some(l => {
+            const h = l.getAttribute('href') || '';
+            return h === `#${currentSectionId}` || l.getAttribute('data-section') === currentSectionId;
+          });
+          if (hasMatchingAnchor) {
+            link.classList.remove('active');
+          }
+        }
+      });
+    };
+
+    let isNavTicking = false;
+    window.addEventListener('scroll', () => {
+      if (!isNavTicking) {
+        requestAnimationFrame(() => {
+          updateActiveSection();
+          isNavTicking = false;
+        });
+        isNavTicking = true;
+      }
+    }, { passive: true });
+    updateActiveSection();
+
+    // Smooth scroll for in-page anchors with sticky navbar offset
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        const targetId = anchor.getAttribute('href').slice(1);
+        if (!targetId) return;
+        const target = document.getElementById(targetId);
+        if (target) {
+          e.preventDefault();
+          const targetOffset = target.getBoundingClientRect().top + window.scrollY - 75;
+          window.scrollTo({
+            top: targetOffset,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+          });
+          if (history.pushState) {
+            history.pushState(null, null, `#${targetId}`);
+          }
+        }
+      });
+    });
+  } else {
+    // For standalone subpages
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    navLinks.forEach((link) => {
+      const linkPath = link.getAttribute('href');
+      if (linkPath === currentPath) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
 
   /* ─── 10. Theme Management (Dark/Light mode) ────────── */
   const initTheme = () => {

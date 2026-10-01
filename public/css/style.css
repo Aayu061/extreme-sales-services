@@ -359,38 +359,64 @@ body > .page-content {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SCROLL REVEAL
+   SCROLL REVEAL (Restrained, GPU-accelerated & polished)
 ═══════════════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(18px);
   transition:
-    opacity 0.65s cubic-bezier(0.16,1,0.3,1),
-    transform 0.65s cubic-bezier(0.16,1,0.3,1);
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-.reveal-left  { opacity:0; transform: translateX(-36px); transition: opacity 0.65s ease, transform 0.65s ease; }
-.reveal-right { opacity:0; transform: translateX(36px);  transition: opacity 0.65s ease, transform 0.65s ease; }
-.reveal-left.visible, .reveal-right.visible { opacity:1; transform: none; }
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(20px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-left.visible,
+.reveal-right.visible {
+  opacity: 1;
+  transform: none;
+}
 
-/* Staggered group */
+/* Staggered group for related cards */
 .reveal-stagger > * {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(16px);
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
-.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.04s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.12s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.20s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.28s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.36s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.44s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(7) { transition-delay: 0.52s; opacity:1; transform:none; }
-.reveal-stagger.visible > *:nth-child(8) { transition-delay: 0.60s; opacity:1; transform:none; }
+.reveal-stagger.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.04s; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.09s; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.14s; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.19s; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.24s; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.29s; }
+.reveal-stagger.visible > *:nth-child(7) { transition-delay: 0.34s; }
+.reveal-stagger.visible > *:nth-child(8) { transition-delay: 0.39s; }
 
 /* ═══════════════════════════════════════════════════════════
    KEYFRAME ANIMATIONS
@@ -512,7 +538,7 @@ body > .page-content {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   HOW-IT-WORKS CONNECTOR
+   HOW-IT-WORKS STEP PROGRESS LINE (Mobile & Desktop)
 ═══════════════════════════════════════════════════════════ */
 .step-connector {
   height: 2px;
@@ -521,10 +547,63 @@ body > .page-content {
   border-radius: 2px;
   transform-origin: left;
   width: 0;
-  transition: width 1s cubic-bezier(0.16,1,0.3,1);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .step-connector.visible {
   width: 100%;
+}
+
+/* Continuous Vertical Progress Line for 3 Simple Steps */
+.process-line-track {
+  position: absolute;
+  width: 4px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+html.dark .process-line-track {
+  background: #334155;
+}
+
+.process-line-fill {
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(180deg, #2563eb 0%, #06b6d4 100%);
+  border-radius: 9999px;
+  transform-origin: top;
+  will-change: height;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.35);
+  transition: height 0.12s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-step-node {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+}
+.process-step-node.step-active {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25), 0 12px 28px rgba(37, 99, 235, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRICE & ESTIMATE SMOOTH TRANSITION (Tabular numbers & no layout shift)
+═══════════════════════════════════════════════════════════ */
+.price-val {
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, color 0.2s ease;
+}
+.price-val.is-updating {
+  opacity: 0.72;
+  transform: scale(0.98);
+  color: var(--clr-primary);
+}
+.estimate-text-crossfade {
+  transition: opacity 0.2s ease;
+}
+.estimate-text-crossfade.is-updating {
+  opacity: 0.4;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1986,4 +2065,40 @@ html.dark nav#mainNav.bg-white\/95 .theme-toggle-btn:hover {
   height: 100%;
   border-radius: 999px;
   transition: width 1s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESSIBILITY: PREFERS-REDUCED-MOTION
+═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-stagger > *,
+  .timeline-step,
+  .step-connector,
+  .process-line-fill,
+  .process-step-node,
+  .price-val,
+  .fade-up,
+  .fade-in-slow,
+  .card-animate {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .process-line-fill {
+    height: 100% !important;
+  }
 }
