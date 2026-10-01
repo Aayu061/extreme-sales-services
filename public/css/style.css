@@ -725,10 +725,12 @@ html.dark .bg-white {
 }
 html.dark .bg-gray-50,
 html.dark .bg-slate-50 {
-  background-color: #0f172a !important; /* slate-900 */
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
 }
 html.dark .bg-slate-100 {
-  background-color: #1e293b !important; /* slate-800 */
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
 }
 
 /* Dark Mode Navigation & Sticky Navbar */
@@ -1607,9 +1609,26 @@ html.dark #calculator {
   background-color: #0f172a !important;
 }
 
+/* Calculator selects — explicit dark styling */
+html.dark select {
+  background-color: #1e293b !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+}
+
 html.dark select option {
   background-color: #1e293b;
   color: #f8fafc;
+}
+
+/* Calculator section labels */
+html.dark #calculator label {
+  color: #94a3b8 !important;
 }
 
 /* Comparison table dark */
@@ -1685,6 +1704,45 @@ html.dark .symptom-option.selected {
   border-color: #3b82f6 !important;
   background: rgba(59,130,246,0.15) !important;
   color: #f8fafc !important;
+}
+
+/* Estimator pill buttons (unselected state) */
+html.dark .estimator-pill:not(.active):not(.bg-blue-600) {
+  background: #1e293b !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .estimator-pill:not(.active):not(.bg-blue-600):hover {
+  border-color: rgba(59,130,246,0.4) !important;
+  background: rgba(30,41,59,0.9) !important;
+}
+
+/* Fix text-slate-700 on dark bg-white cards */
+html.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+/* Fix subdued text-slate-500 on dark panels */
+html.dark .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Quote result box dark */
+html.dark .rounded-3xl.bg-white,
+html.dark .bg-white.rounded-3xl {
+  background: #1e293b !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Slider range input track dark */
+html.dark input[type="range"] {
+  accent-color: #3b82f6;
+}
+
+/* Stats ticker text in dark mode (hero bottom bar) */
+html.dark .stats-ticker-item {
+  color: #cbd5e1;
 }
 
 /* ═══════════════════════════════════════════════════════════
