@@ -8,6 +8,9 @@ node_modules/
 firebase-credentials.json
 *.pem
 
+# Backups & Data Dumps
+backups/
+
 # Python virtual environment & caches
 .venv/
 __pycache__/

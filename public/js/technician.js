@@ -17,20 +17,21 @@ if (!token || (role !== 'technician' && role !== 'admin')) {
     }
 }
 
-// User Profile
+let currentTechId = 'tech-1';
 try {
     const rawUser = localStorage.getItem('ess_user');
     if (rawUser) {
         const u = JSON.parse(rawUser);
         const badge = document.getElementById('techNameBadge');
         if (badge) badge.innerText = u.name || 'Suresh Kumar';
+        if (u.id) currentTechId = u.id;
     }
 } catch(e) {}
 
 const authHeaders = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem('ess_token')}`,
-    'x-technician-id': 'tech-1'
+    'x-technician-id': currentTechId
 };
 
 // Global State

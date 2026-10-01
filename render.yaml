@@ -5,18 +5,19 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /healthz
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: JWT_SECRET
         generateValue: true
       - key: BUSINESS_NAME
-        value: "Extreme Sales & Services"
+        value: "Extreme AC Sales & Services"
       - key: BUSINESS_EMAIL
-        sync: false
+        value: "extremess0121@gmail.com"
+      - key: APP_URL
+        value: "https://extreme-sales-services.vercel.app"
       - key: SENDGRID_API_KEY
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT
-        sync: false
-      - key: APP_URL
         sync: false

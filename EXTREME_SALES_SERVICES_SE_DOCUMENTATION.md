@@ -10,9 +10,11 @@
 | **System Name** | Extreme Sales & Services Enterprise Suite |
 | **Version** | 2.0.0 (Production Release) |
 | **Target Industry** | Heating, Ventilation & Air Conditioning (HVAC) Sales, Maintenance & Field Services |
-| **Core Technology Stack** | Node.js (Express 5.x), Vanilla HTML5/CSS3/ES6, Chart.js, Server-Sent Events (SSE) |
-| **Persistence Layer** | Dual-Mode: Google Cloud Firebase Firestore (Production) & Synchronized In-Memory Store (Dev) |
+| **Frontend Deployment** | **Vercel** Global Edge CDN ([https://extreme-sales-services.vercel.app](https://extreme-sales-services.vercel.app)) |
+| **Backend API Service** | **Render** Node.js Container ([https://extreme-sales-services-gh7s.onrender.com](https://extreme-sales-services-gh7s.onrender.com)) |
+| **Persistence Layer** | **Google Cloud Firebase Firestore** (Project ID: `extreme-sales-services-8a2b1`) with Local In-Memory Fallback |
 | **External Integrations** | SendGrid Transactional Email API (REST v3) |
+| **Source Control** | **GitHub** ([https://github.com/Aayu061/extreme-sales-services](https://github.com/Aayu061/extreme-sales-services)) |
 | **Document Standard** | IEEE-830 Recommended Practice for SRS & ISO/IEC 12207 Software Life Cycle |
 | **Document Prepared By** | Engineering Lead & Development Team (Mr. Aayush) |
 | **Status** | Verified & Approved for Academic / Enterprise Evaluation |
@@ -598,23 +600,42 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph Device Layer
-        ClientNode["<<Client Device>><br>Smartphone / Desktop Browser<br>Chrome / Safari / Firefox"]
+    subgraph Client Device Layer
+        Browser["<<Client Browser>><br>Desktop & Mobile Web Clients<br>Chrome, Safari, Firefox, Edge"]
     end
 
-    subgraph Application Server Host
-        AppNode["<<Node.js Application Server>><br>Ubuntu / Alpine Linux Container<br>Node.js Runtime v20+ / Express 5.x<br>Port: 5000 (HTTPS: 443)"]
+    subgraph Edge Delivery Tier (Vercel)
+        VercelCDN["<<Vercel Global Edge Network>><br>https://extreme-sales-services.vercel.app<br>Static Assets (HTML5/CSS3/ES6)<br>Reverse Proxy Rewrite (/api/*)"]
     end
 
-    subgraph Cloud Infrastructure
-        FirebaseNode["<<Google Cloud Platform>><br>Firebase Cloud Firestore<br>Multi-Region NoSQL Clustered Database"]
-        SendGridNode["<<Twilio Cloud SaaS>><br>SendGrid Transactional Email API<br>SMTP / REST Gateway"]
+    subgraph Application Service Tier (Render Cloud)
+        RenderApp["<<Render Web Service>><br>https://extreme-sales-services-gh7s.onrender.com<br>Node.js v20 LTS / Express 5.x Container<br>Health Check: /healthz"]
     end
 
-    ClientNode -->|TLS / HTTPS (Port 443)| AppNode
-    AppNode -->|gRPC / Google Cloud SDK| FirebaseNode
-    AppNode -->|TLS / REST API Key| SendGridNode
+    subgraph Managed Cloud Infrastructure
+        FirebaseNode["<<Google Cloud Platform>><br>Firebase Firestore Native Mode<br>Project: extreme-sales-services-8a2b1<br>nam5 Multi-Region NoSQL DB"]
+        SendGridNode["<<Twilio Cloud SaaS>><br>SendGrid Transactional Email API<br>REST v3 Gateway"]
+        GitHubRepo["<<GitHub VCS & CI/CD>><br>https://github.com/Aayu061/extreme-sales-services<br>main branch auto-deploy"]
+    end
+
+    Browser -->|HTTPS / TLS 1.3 (Port 443)| VercelCDN
+    VercelCDN -->|Zero-CORS Edge Proxy Rewrite| RenderApp
+    Browser -.->|Direct API Call / CORS Enabled| RenderApp
+    RenderApp -->|Google Cloud Admin SDK / gRPC| FirebaseNode
+    RenderApp -->|HTTPS Bearer API Key| SendGridNode
+    GitHubRepo -.->|Deploy Hook Webhooks| RenderApp
+    GitHubRepo -.->|Git Integration Deploy| VercelCDN
 ```
+
+### Production Deployment Topology
+| Tier | Host Platform | Production URL / Identifier | Role & Functionality |
+| :--- | :--- | :--- | :--- |
+| **Frontend CDN** | **Vercel** | [https://extreme-sales-services.vercel.app](https://extreme-sales-services.vercel.app) | Global edge caching of static assets, dynamic client logic, and reverse proxy API routing (`/api/:match*`). |
+| **Backend API** | **Render** | [https://extreme-sales-services-gh7s.onrender.com](https://extreme-sales-services-gh7s.onrender.com) | Express 5.x microservice, JWT authentication, ticket management, and transactional event streams. |
+| **Database** | **Google Cloud Firebase** | `extreme-sales-services-8a2b1` | Managed NoSQL Firestore in native mode (`nam5` multi-region). |
+| **Email Gateway** | **SendGrid** | Cloud REST API v3 | High-deliverability transactional emails for customer confirmations and dispatch notices. |
+| **Version Control** | **GitHub** | [https://github.com/Aayu061/extreme-sales-services](https://github.com/Aayu061/extreme-sales-services) | Centralized Git repository with automated production build triggers. |
+
 
 ## 7.3 Dual-Mode Hybrid Persistence Architecture
 Extreme Sales & Services includes a resilient fallback architecture. Upon startup, `server.js` verifies the presence of Google Cloud service account credentials:

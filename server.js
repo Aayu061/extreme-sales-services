@@ -604,8 +604,14 @@ app.get('/api/technician/jobs', async (req, res) => {
 
     if (isFirebaseMode) {
         try {
-            const snap = await db.collection('service_requests').where('technician_id', '==', techId).get();
-            const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            let snap = await db.collection('service_requests').where('technician_id', '==', techId).get();
+            let requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (requests.length === 0) {
+                const openSnap = await db.collection('service_requests')
+                    .where('status', 'in', ['Assigned', 'In Progress'])
+                    .get();
+                requests = openSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            }
             return res.json({ success: true, requests });
         } catch(e) {
             return res.status(500).json({ success: false, message: "Error loading jobs" });
