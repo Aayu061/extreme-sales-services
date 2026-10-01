@@ -1010,3 +1010,4 @@ function exportDispatchCSV() {
 window.runProfitSimulator = runProfitSimulator;
 window.initAnalyticsTab = initAnalyticsTab;
 window.exportDispatchCSV = exportDispatchCSV;
+window.exportDataCsv = exportDispatchCSV;
