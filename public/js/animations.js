@@ -243,10 +243,18 @@
       nav.classList.toggle('shadow-md',   scrolled);
       nav.classList.toggle('bg-transparent', !scrolled);
 
-      nav.querySelectorAll('a:not(.btn-glow):not(.btn-shimmer)').forEach((a) => {
-        a.classList.add('text-gray-900');
-        a.classList.remove('text-blue-100', 'text-white');
-      });
+      // Only apply Tailwind text classes when NOT in dark mode
+      // Dark mode link colors are handled entirely by CSS (html.dark nav#mainNav a)
+      if (!document.documentElement.classList.contains('dark')) {
+        nav.querySelectorAll('a:not(.btn-glow):not(.btn-shimmer)').forEach((a) => {
+          if (scrolled) {
+            a.classList.add('text-gray-900');
+            a.classList.remove('text-blue-100', 'text-white');
+          } else {
+            a.classList.remove('text-gray-900');
+          }
+        });
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -373,44 +381,88 @@
   }
 
   /* ─── 10. Theme Management (Dark/Light mode) ────────── */
-  const initTheme = () => {
-    const theme = localStorage.getItem('theme') || 'light';
+
+  // Sync UI icons + aria-label for ALL toggle buttons
+  const updateThemeToggleUI = () => {
+    const activeDark = document.documentElement.classList.contains('dark');
+    document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+      const moonIcon = btn.querySelector('.theme-icon-moon');
+      const sunIcon  = btn.querySelector('.theme-icon-sun');
+      // Use the CSS class approach — .theme-icon-hidden sets display:none
+      // (works with or without Tailwind's 'hidden' class)
+      if (activeDark) {
+        if (moonIcon) { moonIcon.classList.add('hidden'); moonIcon.setAttribute('aria-hidden', 'true'); }
+        if (sunIcon)  { sunIcon.classList.remove('hidden'); sunIcon.setAttribute('aria-hidden', 'false'); }
+      } else {
+        if (moonIcon) { moonIcon.classList.remove('hidden'); moonIcon.setAttribute('aria-hidden', 'false'); }
+        if (sunIcon)  { sunIcon.classList.add('hidden'); sunIcon.setAttribute('aria-hidden', 'true'); }
+      }
+      btn.setAttribute('aria-label', activeDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+      btn.setAttribute('title', activeDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+    });
+  };
+
+  // Apply theme to <html> and persist to localStorage
+  const applyTheme = (theme) => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
+    localStorage.setItem('theme', theme);
     updateThemeToggleUI();
+    // Re-run nav scroll handler so link colors are corrected after theme change
+    window.dispatchEvent(new Event('scroll'));
   };
 
-  const toggleTheme = () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    updateThemeToggleUI();
+  // On first visit: respect OS preference if no saved preference
+  const initTheme = () => {
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      applyTheme(saved);
+    } else {
+      // Respect system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
   };
 
-  const updateThemeToggleUI = () => {
-    const isDark = document.documentElement.contains(document.querySelector('.dark')); // check html node
-    const activeDark = document.documentElement.classList.contains('dark');
-    document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
-      const moonIcon = btn.querySelector('.theme-icon-moon');
-      const sunIcon = btn.querySelector('.theme-icon-sun');
-      if (activeDark) {
-        if (moonIcon) moonIcon.classList.add('hidden');
-        if (sunIcon) sunIcon.classList.remove('hidden');
-      } else {
-        if (moonIcon) moonIcon.classList.remove('hidden');
-        if (sunIcon) sunIcon.classList.add('hidden');
-      }
-    });
+  // Toggle between dark and light
+  const toggleTheme = (triggerBtn) => {
+    const willBeDark = !document.documentElement.classList.contains('dark');
+
+    // Brief spin animation on the clicked button
+    if (triggerBtn && !prefersReducedMotion) {
+      triggerBtn.classList.add('theme-toggle-spin');
+      setTimeout(() => triggerBtn.classList.remove('theme-toggle-spin'), 500);
+    }
+
+    applyTheme(willBeDark ? 'dark' : 'light');
+
+    // Friendly toast confirmation
+    if (window.showToast) {
+      window.showToast(
+        willBeDark ? '🌙 Dark mode on' : '☀️ Light mode on',
+        'info',
+        1800
+      );
+    }
   };
 
-  // Add click listener for all theme toggles
+  // Delegated click listener for all toggle buttons
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.theme-toggle-btn');
     if (btn) {
       e.preventDefault();
-      toggleTheme();
+      toggleTheme(btn);
+    }
+  });
+
+  // Listen for OS-level dark mode changes (e.g. user switches system theme)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    // Only follow OS if the user hasn't set an explicit preference
+    if (!localStorage.getItem('theme')) {
+      applyTheme(e.matches ? 'dark' : 'light');
     }
   });
 
