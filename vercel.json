@@ -1,19 +1,12 @@
 {
   "version": 2,
+  "outputDirectory": "public",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
     {
       "source": "/api/:match*",
       "destination": "https://extreme-sales-services.onrender.com/api/:match*"
-    },
-    {
-      "source": "/",
-      "destination": "/public/index.html"
-    },
-    {
-      "source": "/:path((?!public/|api/).*)",
-      "destination": "/public/:path"
     }
   ],
   "headers": [
