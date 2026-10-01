@@ -805,7 +805,7 @@ html.dark .mesh-bg {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
 }
 
-/* Theme Toggle Button Styling */
+/* Theme Toggle Button Styling — Upgraded */
 .theme-toggle-btn {
   background: rgba(255, 255, 255, 0.15) !important;
   border: 1px solid rgba(255, 255, 255, 0.25) !important;
@@ -815,54 +815,123 @@ html.dark .mesh-bg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition-base), color var(--transition-base), transform var(--transition-base) !important;
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  position: relative;
+  overflow: visible;
+  transition:
+    background  var(--transition-base),
+    box-shadow  var(--transition-base),
+    transform   var(--transition-base),
+    border-color var(--transition-base) !important;
+}
+
+.theme-toggle-btn::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  pointer-events: none;
 }
 
 .theme-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.28) !important;
   color: #ffffff !important;
-  transform: scale(1.08);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.12), 0 6px 20px rgba(15,23,42,0.2);
 }
 
-/* Adjust colors when nav scrolled and becomes white */
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Spin animation triggered by JS on toggle */
+@keyframes themeToggleSpin {
+  0%   { transform: rotate(0deg) scale(1.05); }
+  40%  { transform: rotate(200deg) scale(1.12); }
+  70%  { transform: rotate(340deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.theme-toggle-spin {
+  animation: themeToggleSpin 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+/* Scrolled white navbar state */
 #mainNav.bg-white\/95 .theme-toggle-btn {
-  background: rgba(15, 23, 42, 0.05) !important;
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
   color: #1e293b !important;
+  box-shadow: 0 2px 8px rgba(15,23,42,0.06);
 }
 
 #mainNav.bg-white\/95 .theme-toggle-btn:hover {
-  background: rgba(15, 23, 42, 0.1) !important;
+  background: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.1), 0 4px 12px rgba(15,23,42,0.1);
 }
 
-/* Adjust colors in dark mode scrolled nav */
+/* Dark mode — top of page (hero visible) */
+html.dark .theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #f8fafc !important;
+}
+
+html.dark .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Dark mode — scrolled (white/dark nav) */
 html.dark nav#mainNav.bg-white\/95 .theme-toggle-btn {
   background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #f8fafc !important;
 }
 
 html.dark nav#mainNav.bg-white\/95 .theme-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.3);
 }
 
-/* Purple color overrides for the moon toggle icon */
+/* Icon colors */
 .theme-icon-moon {
-  color: #a78bfa !important; /* Light purple for dark hero background */
-  transition: color var(--transition-base);
+  color: #a78bfa !important;
+  transition: color var(--transition-base), transform var(--transition-base);
+  display: block;
 }
 
 .theme-toggle-btn:hover .theme-icon-moon {
-  color: #c084fc !important; /* Lighter purple on hover */
+  color: #c084fc !important;
+  transform: rotate(-12deg);
 }
 
-/* Scrolled white navbar state overrides */
 #mainNav.bg-white\/95 .theme-icon-moon {
-  color: #7c3aed !important; /* Dark violet for light scrolled header */
+  color: #7c3aed !important;
 }
 
 #mainNav.bg-white\/95 .theme-toggle-btn:hover .theme-icon-moon {
-  color: #6d28d9 !important; /* Deep violet on hover in scrolled header */
+  color: #6d28d9 !important;
+}
+
+.theme-icon-sun {
+  color: #fbbf24 !important;
+  transition: color var(--transition-base), transform var(--transition-base);
+  display: block;
+}
+
+.theme-toggle-btn:hover .theme-icon-sun {
+  color: #f59e0b !important;
+  transform: rotate(30deg) scale(1.1);
+}
+
+/* Tailwind-compatible hidden override — always wins */
+.theme-icon-moon.hidden,
+.theme-icon-sun.hidden {
+  display: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1518,6 +1587,104 @@ html.dark nav#mainNav.bg-white\/95 .theme-toggle-btn:hover {
 .dark .emi-panel {
   background: linear-gradient(135deg, #1e3a5f 0%, #0c2340 100%);
   border-color: #1e4080;
+}
+
+/* Service cards dark */
+html.dark .border-blue-100,
+html.dark .border-slate-100,
+html.dark .border-gray-100 {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-gray-200 {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Estimator / calculator panel dark */
+html.dark #estimator,
+html.dark #calculator {
+  background-color: #0f172a !important;
+}
+
+html.dark select option {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+/* Comparison table dark */
+html.dark table {
+  background: #1e293b !important;
+}
+
+html.dark thead tr {
+  background: #0f172a !important;
+}
+
+html.dark tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+html.dark tbody tr:hover {
+  background: rgba(59,130,246,0.08) !important;
+}
+
+html.dark td, html.dark th {
+  border-color: rgba(255,255,255,0.06) !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark th {
+  color: #94a3b8 !important;
+}
+
+/* Filter pills dark */
+html.dark .filter-pill {
+  background: #1e293b !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .filter-pill:hover {
+  border-color: #3b82f6 !important;
+  color: #60a5fa !important;
+  background: rgba(59,130,246,0.1) !important;
+}
+
+html.dark .filter-pill.active {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #fff !important;
+}
+
+/* Pincode checker & coverage section dark */
+html.dark #coverage {
+  background: #0f172a !important;
+}
+
+html.dark #pincodeInput {
+  background: #1e293b !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  color: #f8fafc !important;
+}
+
+html.dark #pincodeInput:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+}
+
+/* Diagnosis cards dark */
+html.dark .symptom-option {
+  background: #1e293b !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .symptom-option:hover,
+html.dark .symptom-option.selected {
+  border-color: #3b82f6 !important;
+  background: rgba(59,130,246,0.15) !important;
+  color: #f8fafc !important;
 }
 
 /* ═══════════════════════════════════════════════════════════

@@ -7,7 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
-  </head>
+    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <script>
+      (function(){
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e){}
+      })();
+    </script>  </head>
   <body class="bg-slate-100 text-slate-900 min-h-screen font-sans antialiased pb-12">
 
     <!-- TOP HEADER -->

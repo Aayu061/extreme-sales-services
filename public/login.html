@@ -28,7 +28,18 @@
             box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
     </style>
-</head>
+    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <script>
+      (function(){
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e){}
+      })();
+    </script></head>
 <body class="role-admin flex items-center justify-center min-h-screen p-4 sm:p-6 text-gray-900 font-sans antialiased relative overflow-hidden">
 
     <!-- Ambient Glowing Orbs -->
