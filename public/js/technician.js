@@ -228,24 +228,194 @@ async function startJob(requestId) {
     }
 }
 
+// ═══════════════════════════════════════════════════════════
+// SPARE PARTS BILLING & DIGITAL SIGNATURE LOGIC
+// ═══════════════════════════════════════════════════════════
+
+let sigCanvas = null;
+let sigCtx = null;
+let isDrawing = false;
+let hasSignature = false;
+
+function initSignaturePad() {
+    sigCanvas = document.getElementById('signatureCanvas');
+    if (!sigCanvas) return;
+    sigCtx = sigCanvas.getContext('2d');
+
+    const getPos = (e) => {
+        const rect = sigCanvas.getBoundingClientRect();
+        const scaleX = sigCanvas.width / rect.width;
+        const scaleY = sigCanvas.height / rect.height;
+        return {
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
+        };
+    };
+
+    sigCanvas.addEventListener('pointerdown', (e) => {
+        isDrawing = true;
+        hasSignature = true;
+        const placeholder = document.getElementById('sigPlaceholder');
+        if (placeholder) placeholder.classList.add('hidden');
+
+        sigCtx.beginPath();
+        const { x, y } = getPos(e);
+        sigCtx.moveTo(x, y);
+        sigCtx.lineWidth = 2.5;
+        sigCtx.lineCap = 'round';
+        sigCtx.lineJoin = 'round';
+        sigCtx.strokeStyle = '#0f172a';
+    });
+
+    sigCanvas.addEventListener('pointermove', (e) => {
+        if (!isDrawing) return;
+        const { x, y } = getPos(e);
+        sigCtx.lineTo(x, y);
+        sigCtx.stroke();
+    });
+
+    const stopDrawing = () => {
+        if (isDrawing) {
+            isDrawing = false;
+            sigCtx.closePath();
+        }
+    };
+
+    sigCanvas.addEventListener('pointerup', stopDrawing);
+    sigCanvas.addEventListener('pointercancel', stopDrawing);
+    sigCanvas.addEventListener('pointerleave', stopDrawing);
+}
+
+function clearSignatureCanvas() {
+    if (!sigCtx || !sigCanvas) {
+        sigCanvas = document.getElementById('signatureCanvas');
+        if (sigCanvas) sigCtx = sigCanvas.getContext('2d');
+    }
+    if (sigCtx && sigCanvas) {
+        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    }
+    hasSignature = false;
+    const placeholder = document.getElementById('sigPlaceholder');
+    if (placeholder) placeholder.classList.remove('hidden');
+}
+
+function calculateTechBill() {
+    const baseLabor = 499;
+    let partsTotal = 0;
+    const partsList = [];
+    const checkboxes = document.querySelectorAll('.part-item-cb:checked');
+    checkboxes.forEach(cb => {
+        const price = parseFloat(cb.dataset.price || 0);
+        partsTotal += price;
+        partsList.push({ name: cb.dataset.name, price });
+    });
+
+    const subtotal = baseLabor + partsTotal;
+    const gst = Math.round(subtotal * 0.18 * 100) / 100;
+    const total = Math.round((subtotal + gst) * 100) / 100;
+
+    const totalEl = document.getElementById('techBillTotal');
+    if (totalEl) totalEl.innerText = `₹${Math.round(total).toLocaleString('en-IN')}`;
+
+    return { baseLabor, partsTotal, gst, total, parts: partsList };
+}
+
 function openCompletionModal(requestId, customerName) {
     document.getElementById('modalTargetRequestId').value = requestId;
     document.getElementById('modalReqId').innerText = `Request #${requestId} — ${decodeURIComponent(customerName)}`;
     document.getElementById('completionNotes').value = '';
-    document.getElementById('partsUsed').value = '';
+    
+    // Reset checkboxes
+    document.querySelectorAll('.part-item-cb').forEach(cb => cb.checked = false);
+    calculateTechBill();
+    clearSignatureCanvas();
+
     document.getElementById('completionModal').classList.remove('hidden');
+
+    if (!sigCanvas) {
+        initSignaturePad();
+    }
 }
 
 function closeCompletionModal() {
     document.getElementById('completionModal').classList.add('hidden');
 }
 
+function showReceipt(job, bill, notes) {
+    const modal = document.getElementById('receiptModal');
+    if (!modal) return;
+
+    document.getElementById('receiptDate').innerText = new Date().toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    document.getElementById('receiptReqId').innerText = job.request_id || document.getElementById('modalTargetRequestId').value;
+    
+    let techName = 'Suresh Kumar';
+    try {
+        const u = JSON.parse(localStorage.getItem('ess_user') || '{}');
+        if (u.name) techName = u.name;
+    } catch(e) {}
+    document.getElementById('receiptTechName').innerText = techName;
+    document.getElementById('receiptCustName').innerText = job.name || 'Valued Customer';
+    document.getElementById('receiptServiceType').innerText = (job.service_type || 'AC Repair & Service').replace('[✅ AMC Covered]', '');
+    document.getElementById('receiptNotes').innerText = notes || 'All diagnostic checks completed. Cooling unit operating at peak thermal efficiency.';
+
+    const partsContainer = document.getElementById('receiptPartsList');
+    if (partsContainer) {
+        partsContainer.innerHTML = '';
+        if (bill.parts.length === 0) {
+            partsContainer.innerHTML = `<div class="text-[11px] text-slate-400 italic">No replacement hardware required (Standard Inspection)</div>`;
+        } else {
+            bill.parts.forEach(p => {
+                partsContainer.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>+ ${p.name}</span>
+                        <span class="font-mono">₹${p.price.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    document.getElementById('receiptGst').innerText = `₹${bill.gst.toFixed(2)}`;
+    document.getElementById('receiptTotalAmount').innerText = `₹${Math.round(bill.total).toLocaleString('en-IN')}`;
+
+    // Signature image
+    const sigImg = document.getElementById('receiptSignatureImg');
+    const sourceCanvas = document.getElementById('signatureCanvas');
+    if (sigImg && sourceCanvas) {
+        sigImg.src = sourceCanvas.toDataURL('image/png');
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeReceiptModal() {
+    const modal = document.getElementById('receiptModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// Make functions globally accessible for inline HTML onclick handlers
+window.calculateTechBill = calculateTechBill;
+window.clearSignatureCanvas = clearSignatureCanvas;
+window.openCompletionModal = openCompletionModal;
+window.closeCompletionModal = closeCompletionModal;
+window.closeReceiptModal = closeReceiptModal;
+
 document.getElementById('completionForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const requestId = document.getElementById('modalTargetRequestId').value;
     const notes = document.getElementById('completionNotes').value;
-    const parts = document.getElementById('partsUsed').value;
-    const fullNotes = notes + (parts ? ` [Parts: ${parts}]` : '');
+    const bill = calculateTechBill();
+    const partsSummary = bill.parts.map(p => p.name).join(', ');
+    const fullNotes = (notes || 'Service verified and complete.') + 
+        (partsSummary ? ` [Parts: ${partsSummary} | Total: ₹${Math.round(bill.total)}]` : ` [Total: ₹${Math.round(bill.total)}]`);
+
+    const currentJob = myJobs.find(j => j.request_id === requestId) || {
+        request_id: requestId,
+        name: document.getElementById('modalReqId').innerText.split('—')[1]?.trim() || 'Customer',
+        service_type: 'AC Repair'
+    };
 
     try {
         const res = await fetch(`${API_BASE}/api/admin/update-status`, {
@@ -260,8 +430,11 @@ document.getElementById('completionForm')?.addEventListener('submit', async (e) 
 
         if (res.ok) {
             closeCompletionModal();
-            if (window.showToast) window.showToast(`Job ${requestId} signed off as Completed! Great work.`, 'success');
+            showReceipt(currentJob, bill, notes);
+            if (window.showToast) window.showToast(`Job ${requestId} signed off as Completed! Invoice generated.`, 'success');
             fetchJobs(true);
+        } else {
+            if (window.showToast) window.showToast("Server rejected sign off", "error");
         }
     } catch(err) {
         if (window.showToast) window.showToast("Sign off failed", "error");
@@ -278,6 +451,7 @@ document.getElementById('refreshBtn')?.addEventListener('click', () => {
 });
 
 // Boot
+initSignaturePad();
 fetchJobs(true);
 
 // Auto-sync polling every 12 seconds
