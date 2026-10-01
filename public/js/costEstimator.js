@@ -31,6 +31,31 @@
   let selectedTonnage = '1.5';
   let selectedService = 'jet_wash';
 
+  let lastBase = null;
+  let lastGst = null;
+  let lastTotal = null;
+
+  function animateNumber(el, fromVal, toVal, prefix = '₹', suffix = '', duration = 240) {
+    if (!el) return;
+    const startTime = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Fast, snappy ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(fromVal + (toVal - fromVal) * eased);
+      el.textContent = `${prefix}${current.toLocaleString('en-IN')}${suffix}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        el.textContent = `${prefix}${toVal.toLocaleString('en-IN')}${suffix}`;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
   window.selectEstimatorOption = function (category, value, element) {
     if (category === 'type') selectedType = value;
     if (category === 'tonnage') selectedTonnage = value;
@@ -47,10 +72,10 @@
       element.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
     }
 
-    calculateQuote();
+    calculateQuote(false);
   };
 
-  function calculateQuote() {
+  function calculateQuote(isInitial = false) {
     const serviceMeta = PRICING_RULES.services[selectedService];
     const typeMeta = PRICING_RULES.types[selectedType];
     const tonMeta = PRICING_RULES.tonnage[selectedTonnage];
@@ -70,11 +95,52 @@
     const quoteSavingsEl = document.getElementById('estAmcSavings');
     const bookBtn = document.getElementById('estBookBtn');
 
-    if (quoteBaseEl) quoteBaseEl.innerText = `₹${baseCost.toLocaleString('en-IN')}`;
-    if (quoteGstEl) quoteGstEl.innerText = `₹${gstCost.toLocaleString('en-IN')}`;
-    if (quoteTotalEl) quoteTotalEl.innerText = `₹${totalCost.toLocaleString('en-IN')}`;
-    if (quoteDurationEl) quoteDurationEl.innerText = serviceMeta.duration;
-    if (quoteSavingsEl) quoteSavingsEl.innerText = `Save ₹${amcSavings.toLocaleString('en-IN')}`;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (isInitial || prefersReducedMotion || lastTotal === null) {
+      if (quoteBaseEl) quoteBaseEl.textContent = `₹${baseCost.toLocaleString('en-IN')}`;
+      if (quoteGstEl) quoteGstEl.textContent = `₹${gstCost.toLocaleString('en-IN')}`;
+      if (quoteTotalEl) quoteTotalEl.textContent = `₹${totalCost.toLocaleString('en-IN')}`;
+      if (quoteDurationEl) quoteDurationEl.textContent = serviceMeta.duration;
+      if (quoteSavingsEl) quoteSavingsEl.textContent = `Save ₹${amcSavings.toLocaleString('en-IN')}`;
+    } else {
+      // Smooth numerical and subtle transform transition
+      if (quoteTotalEl) {
+        quoteTotalEl.classList.add('price-val', 'is-updating');
+        animateNumber(quoteTotalEl, lastTotal, totalCost, '₹', '', 240);
+        setTimeout(() => quoteTotalEl.classList.remove('is-updating'), 240);
+      }
+      if (quoteBaseEl) {
+        quoteBaseEl.classList.add('price-val', 'is-updating');
+        animateNumber(quoteBaseEl, lastBase, baseCost, '₹', '', 240);
+        setTimeout(() => quoteBaseEl.classList.remove('is-updating'), 240);
+      }
+      if (quoteGstEl) {
+        quoteGstEl.classList.add('price-val', 'is-updating');
+        animateNumber(quoteGstEl, lastGst, gstCost, '₹', '', 240);
+        setTimeout(() => quoteGstEl.classList.remove('is-updating'), 240);
+      }
+
+      // Smooth duration crossfade
+      if (quoteDurationEl && quoteDurationEl.textContent !== serviceMeta.duration) {
+        quoteDurationEl.classList.add('estimate-text-crossfade', 'is-updating');
+        setTimeout(() => {
+          quoteDurationEl.textContent = serviceMeta.duration;
+          quoteDurationEl.classList.remove('is-updating');
+        }, 120);
+      }
+
+      // AMC savings
+      if (quoteSavingsEl) {
+        quoteSavingsEl.classList.add('estimate-text-crossfade', 'is-updating');
+        animateNumber(quoteSavingsEl, lastTotal, amcSavings, 'Save ₹', '', 240);
+        setTimeout(() => quoteSavingsEl.classList.remove('is-updating'), 240);
+      }
+    }
+
+    lastBase = baseCost;
+    lastGst = gstCost;
+    lastTotal = totalCost;
 
     if (bookBtn) {
       const serviceParam = encodeURIComponent(`${serviceMeta.name} (${typeMeta.label} - ${tonMeta.label})`);
@@ -84,6 +150,6 @@
 
   // Initial Calculation on Page Ready
   document.addEventListener('DOMContentLoaded', () => {
-    calculateQuote();
+    calculateQuote(true);
   });
 })();
