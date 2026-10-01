@@ -8,6 +8,43 @@ const modal = document.getElementById('successModal');
 const trackingIdDisplay = document.getElementById('trackingIdDisplay');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
+// Auto-fill from 3D Estimator URL parameters
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const serviceParam = params.get('service');
+        const acTypeParam = params.get('acType');
+        const tonsParam = params.get('tons');
+        const estParam = params.get('est');
+
+        if (serviceParam) {
+            const selectEl = document.getElementById('serviceType');
+            if (selectEl) {
+                for (let opt of selectEl.options) {
+                    if (opt.value === serviceParam || opt.text.toLowerCase().includes(serviceParam.toLowerCase())) {
+                        selectEl.value = opt.value;
+                        selectEl.classList.add('valid-input');
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (acTypeParam || tonsParam || estParam) {
+            const msgEl = document.getElementById('message');
+            if (msgEl && !msgEl.value) {
+                const parts = [];
+                if (acTypeParam) parts.push(`Unit: ${acTypeParam}`);
+                if (tonsParam) parts.push(`Capacity: ${tonsParam}`);
+                if (estParam) parts.push(`Est. Quote: ₹${estParam}`);
+                msgEl.value = `[3D Simulator Quote] ${parts.join(' | ')}`;
+            }
+        }
+    } catch(err) {
+        console.warn('URL param parse note:', err);
+    }
+});
+
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 

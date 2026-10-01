@@ -125,40 +125,162 @@
 
         <form id="completionForm" class="space-y-4">
           <input type="hidden" id="modalTargetRequestId">
+          <input type="hidden" id="modalCustomerName">
+          <input type="hidden" id="modalServiceType">
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Work Done &amp; Technician Notes</label>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Work Done &amp; Diagnostics Notes</label>
             <textarea
               id="completionNotes"
               required
-              rows="3"
+              rows="2"
               placeholder="e.g. Capacitor 45uF replaced, copper coil cleaned with jet spray, cooling restored to 16°C."
               class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
             ></textarea>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Spare Parts Used (Optional)</label>
-            <input
-              type="text"
-              id="partsUsed"
-              placeholder="e.g. 45uF Capacitor, R32 Refrigerant (0.5kg)"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
-            >
+          <!-- Interactive Spare Parts & Billing Calculator -->
+          <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2.5">
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <span>🔩</span> Spare Parts &amp; Labor Breakdown
+              </span>
+              <span class="text-[10px] text-slate-400 font-mono">GST Registered (18%)</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
+                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="45uF Motor Capacitor" data-price="650" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-slate-800">Capacitor (₹650)</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
+                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="R32/R410A Gas Top-Up" data-price="1800" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-slate-800">Gas Top-Up (₹1,800)</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
+                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="Copper Flare Brazing" data-price="850" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-slate-800">Copper Brazing (₹850)</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
+                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="Chemical Jet Foam Clean" data-price="799" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-slate-800">Foam Clean (₹799)</span>
+              </label>
+            </div>
+
+            <!-- Live Bill Total Display -->
+            <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-xs font-bold text-slate-800">
+              <span class="text-slate-500 font-medium">Labor (₹499) + Parts + 18% GST:</span>
+              <span id="techBillTotal" class="text-emerald-700 font-mono text-sm">₹589</span>
+            </div>
           </div>
 
-          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+          <!-- Customer Digital Signature Pad -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-bold text-slate-700 uppercase">Customer Sign-off Signature</label>
+              <button type="button" onclick="clearSignatureCanvas()" class="text-[11px] text-blue-600 hover:text-blue-800 font-bold">Clear Signature</button>
+            </div>
+            <div class="border border-slate-300 rounded-xl overflow-hidden bg-slate-50 relative">
+              <canvas id="signatureCanvas" width="460" height="120" class="w-full h-28 block touch-none cursor-crosshair bg-white"></canvas>
+              <div id="sigPlaceholder" class="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-300 text-xs font-medium">
+                Customer signs with finger or stylus here
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-[11px] flex items-center gap-2">
             <span>✅</span>
-            <span>Customer live tracking will instantly reflect <strong>"Service Completed"</strong> with your sign-off notes.</span>
+            <span>Generates an official digital invoice receipt and updates customer live GPS tracker instantly.</span>
           </div>
 
           <div class="flex justify-end gap-2 pt-2">
             <button type="button" onclick="closeCompletionModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Cancel</button>
             <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/30 transition flex items-center gap-1.5">
-              <span>✓ Confirm &amp; Sign Off</span>
+              <span>✓ Sign Off &amp; Generate Invoice</span>
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- DIGITAL INVOICE RECEIPT MODAL -->
+    <div id="receiptModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 print:m-0 print:p-0 print:border-none">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-start pb-4 border-b border-slate-200 mb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xs">E</div>
+              <span class="font-black text-base text-slate-900">Extreme Sales &amp; Services</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1 font-mono">Tax Invoice • GSTIN: 27AABCE1234F1Z5</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">PAID / RESOLVED</span>
+            <p id="receiptDate" class="text-[10px] text-slate-400 mt-1 font-mono"></p>
+          </div>
+        </div>
+
+        <!-- Job Details -->
+        <div class="grid grid-cols-2 gap-3 text-xs mb-4 p-3 bg-slate-50 rounded-xl">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Job Request ID</span>
+            <span id="receiptReqId" class="font-mono font-bold text-slate-900">AC-XXXX</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Field Engineer</span>
+            <span id="receiptTechName" class="font-bold text-slate-900">Suresh Kumar</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Customer</span>
+            <span id="receiptCustName" class="font-bold text-slate-900">Rahul Sharma</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Service Type</span>
+            <span id="receiptServiceType" class="font-bold text-blue-600">AC Repair</span>
+          </div>
+        </div>
+
+        <!-- Notes & Parts -->
+        <div class="mb-4">
+          <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Technician Notes &amp; Action</span>
+          <p id="receiptNotes" class="text-xs text-slate-700 bg-white border border-slate-200 p-2.5 rounded-xl leading-relaxed font-medium"></p>
+        </div>
+
+        <!-- Itemized Breakdown -->
+        <div class="space-y-1.5 text-xs border-t border-slate-200 pt-3 mb-4">
+          <div class="flex justify-between text-slate-600">
+            <span>Standard Field Service &amp; Diagnostics</span>
+            <span class="font-mono">₹499.00</span>
+          </div>
+          <div id="receiptPartsList" class="space-y-1 text-slate-600"></div>
+          <div class="flex justify-between text-slate-600">
+            <span>GST (18%)</span>
+            <span id="receiptGst" class="font-mono">₹89.82</span>
+          </div>
+          <div class="flex justify-between text-slate-900 font-extrabold text-sm pt-2 border-t border-slate-200">
+            <span>Net Total Paid</span>
+            <span id="receiptTotalAmount" class="font-mono text-emerald-700 text-base">₹588.82</span>
+          </div>
+        </div>
+
+        <!-- Customer Signature Proof -->
+        <div class="border-t border-slate-200 pt-3 mb-6">
+          <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Customer Authorization Signature</span>
+          <div class="h-16 w-48 border border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
+            <img id="receiptSignatureImg" class="h-full object-contain" alt="Customer Signature">
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2.5 print:hidden">
+          <button type="button" onclick="closeReceiptModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Close</button>
+          <button type="button" onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+            <span>🖨️</span> Print / Save Receipt
+          </button>
+        </div>
+
       </div>
     </div>
 

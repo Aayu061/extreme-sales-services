@@ -255,6 +255,10 @@
             <span>💬</span>
             <span>Customer Enquiries</span>
           </button>
+          <button onclick="switchTab('tab-analytics', this)" class="tab-btn text-slate-600 hover:text-slate-900 font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-100 transition flex items-center gap-2 whitespace-nowrap">
+            <span>📊</span>
+            <span>Analytics &amp; Profit</span>
+          </button>
         </div>
 
         <!-- 1. SERVICE DISPATCH TAB -->
@@ -270,14 +274,20 @@
               <button onclick="filterStatus('Completed', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">Completed</button>
             </div>
 
-            <div class="relative w-full sm:w-72">
-              <input
-                type="text"
-                id="searchRequestInput"
-                oninput="handleSearch(this.value)"
-                placeholder="Search customer, phone, ID..."
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
-              />
+            <div class="flex items-center gap-2.5 w-full sm:w-auto">
+              <div class="relative flex-1 sm:w-72">
+                <input
+                  type="text"
+                  id="searchRequestInput"
+                  oninput="handleSearch(this.value)"
+                  placeholder="Search customer, phone, ID..."
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
+                />
+              </div>
+              <button onclick="exportDispatchCSV()" title="Export all service dispatches to CSV spreadsheet" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                <span>📥</span>
+                <span>Export CSV</span>
+              </button>
             </div>
           </div>
 
@@ -440,6 +450,104 @@
               <tbody id="enquiryTableBody" class="divide-y divide-slate-100 bg-white font-medium"></tbody>
             </table>
           </div>
+        </div>
+
+        <!-- 6. ANALYTICS & PROFIT SIMULATOR TAB -->
+        <div id="tab-analytics" class="tab-content p-6 hidden space-y-8">
+          
+          <!-- Profit Margin & Unit Economics Calculator -->
+          <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-slate-800">
+              <div>
+                <span class="text-blue-400 text-[10px] font-black uppercase tracking-widest block">Executive Finance &amp; Operations</span>
+                <h3 class="text-xl font-black text-white mt-1">HVAC Profit Margin &amp; Revenue Simulator</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Real-time unit economics calculated against your live dispatch volume</p>
+              </div>
+              <div class="flex items-center gap-2 bg-slate-800/80 px-3.5 py-2 rounded-xl border border-slate-700/60">
+                <span class="text-xs text-slate-300 font-medium">Completed Jobs:</span>
+                <span id="calcCompletedCount" class="font-mono font-black text-emerald-400 text-sm">--</span>
+              </div>
+            </div>
+
+            <!-- Simulator Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div class="bg-slate-800/50 p-3.5 rounded-xl border border-slate-700/60">
+                <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Avg Ticket Price (₹)</label>
+                <input type="number" id="simTicketPrice" value="1850" oninput="runProfitSimulator()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-blue-400 outline-none">
+                <span class="text-[10px] text-slate-500 mt-1 block">Labor + parts billed</span>
+              </div>
+              <div class="bg-slate-800/50 p-3.5 rounded-xl border border-slate-700/60">
+                <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Parts COGS / Job (₹)</label>
+                <input type="number" id="simPartsCogs" value="580" oninput="runProfitSimulator()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-blue-400 outline-none">
+                <span class="text-[10px] text-slate-500 mt-1 block">Gas, capacitor, copper</span>
+              </div>
+              <div class="bg-slate-800/50 p-3.5 rounded-xl border border-slate-700/60">
+                <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tech Incentive / Job (₹)</label>
+                <input type="number" id="simTechPayout" value="350" oninput="runProfitSimulator()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-blue-400 outline-none">
+                <span class="text-[10px] text-slate-500 mt-1 block">Per-job completion bonus</span>
+              </div>
+              <div class="bg-slate-800/50 p-3.5 rounded-xl border border-slate-700/60">
+                <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Monthly Overhead (₹)</label>
+                <input type="number" id="simOverhead" value="15000" oninput="runProfitSimulator()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-blue-400 outline-none">
+                <span class="text-[10px] text-slate-500 mt-1 block">Shop rent &amp; utilities</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Simulator Output Metric Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-blue-950/40 border border-blue-800/40 p-4 rounded-2xl">
+                <span class="text-[10px] font-black text-blue-300 uppercase tracking-widest block">Gross Revenue</span>
+                <span id="simGrossRev" class="text-2xl font-black text-white font-mono block mt-1">₹0</span>
+                <span class="text-[10px] text-blue-300/70 mt-1 block">Excl. taxes</span>
+              </div>
+              <div class="bg-amber-950/40 border border-amber-800/40 p-4 rounded-2xl">
+                <span class="text-[10px] font-black text-amber-300 uppercase tracking-widest block">Total Direct COGS</span>
+                <span id="simTotalCogs" class="text-2xl font-black text-amber-200 font-mono block mt-1">₹0</span>
+                <span class="text-[10px] text-amber-300/70 mt-1 block">Materials + tech pay</span>
+              </div>
+              <div class="bg-emerald-950/40 border border-emerald-800/40 p-4 rounded-2xl">
+                <span class="text-[10px] font-black text-emerald-300 uppercase tracking-widest block">Net Operating Profit</span>
+                <span id="simNetProfit" class="text-2xl font-black text-emerald-400 font-mono block mt-1">₹0</span>
+                <span class="text-[10px] text-emerald-300/70 mt-1 block">After monthly overhead</span>
+              </div>
+              <div class="bg-purple-950/40 border border-purple-800/40 p-4 rounded-2xl">
+                <span class="text-[10px] font-black text-purple-300 uppercase tracking-widest block">Gross Profit Margin</span>
+                <span id="simMarginPct" class="text-2xl font-black text-purple-300 font-mono block mt-1">0%</span>
+                <span class="text-[10px] text-purple-300/70 mt-1 block">Target: &gt; 45%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Field Technician Performance Leaderboard -->
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <h4 class="text-base font-extrabold text-slate-900">Field Engineer Performance Leaderboard</h4>
+                <p class="text-xs text-slate-500">Ranked by verified on-site job completions, customer ratings &amp; SLA compliance</p>
+              </div>
+              <span class="bg-amber-100 text-amber-900 text-xs font-black px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1.5">
+                <span>🏆</span>
+                <span>Active Leaderboard</span>
+              </span>
+            </div>
+
+            <div id="techLeaderboardGrid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Service Distribution Breakdown -->
+          <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-2xs">
+            <h4 class="text-sm font-extrabold text-slate-900 mb-1">Service Demand &amp; Category Share</h4>
+            <p class="text-xs text-slate-500 mb-5">Proportion of incoming tickets across service categories</p>
+            
+            <div id="serviceDemandBreakdown" class="space-y-4">
+              <!-- Dynamically populated progress bars -->
+            </div>
+          </div>
+
         </div>
 
       </div>
