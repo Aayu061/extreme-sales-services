@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://extreme-sales-services.onrender.com/api/:match*"
+      "destination": "https://extreme-sales-services-gh7s.onrender.com/api/:match*"
     }
   ],
   "headers": [

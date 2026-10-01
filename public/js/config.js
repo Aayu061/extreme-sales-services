@@ -5,5 +5,5 @@
  */
 window.APP_CONFIG = {
     // Replace with your new Render Web Service URL after deploying the backend:
-    BACKEND_URL: 'https://extreme-sales-services.onrender.com'
+    BACKEND_URL: 'https://extreme-sales-services-gh7s.onrender.com'
 };

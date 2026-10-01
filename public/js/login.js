@@ -2,9 +2,7 @@
 
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
     ? 'http://localhost:5000'
-    : (window.location.hostname.endsWith('github.io')
-        ? 'https://extreme-sales-services.onrender.com'
-        : window.location.origin);
+    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
 
 const roleMeta = {
     admin: {
