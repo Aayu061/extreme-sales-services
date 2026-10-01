@@ -12,7 +12,7 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 window.addEventListener('DOMContentLoaded', () => {
     try {
         const params = new URLSearchParams(window.location.search);
-        const serviceParam = params.get('service');
+        const serviceParam = params.get('serviceType') || params.get('service');
         const acTypeParam = params.get('acType');
         const tonsParam = params.get('tons');
         const estParam = params.get('est');
@@ -20,24 +20,22 @@ window.addEventListener('DOMContentLoaded', () => {
         if (serviceParam) {
             const selectEl = document.getElementById('serviceType');
             if (selectEl) {
-                for (let opt of selectEl.options) {
-                    if (opt.value === serviceParam || opt.text.toLowerCase().includes(serviceParam.toLowerCase())) {
-                        selectEl.value = opt.value;
-                        selectEl.classList.add('valid-input');
-                        break;
-                    }
+                const lower = serviceParam.toLowerCase();
+                let matchedVal = '';
+                if (lower.includes('gas') || lower.includes('refrigerant')) matchedVal = 'gas';
+                else if (lower.includes('install')) matchedVal = 'installation';
+                else if (lower.includes('jet') || lower.includes('wash') || lower.includes('clean') || lower.includes('service')) matchedVal = 'service';
+                else if (lower.includes('repair') || lower.includes('cooling') || lower.includes('leak')) matchedVal = 'repair';
+
+                if (matchedVal) {
+                    selectEl.value = matchedVal;
+                    selectEl.classList.add('valid-input');
                 }
             }
-        }
 
-        if (acTypeParam || tonsParam || estParam) {
             const msgEl = document.getElementById('message');
             if (msgEl && !msgEl.value) {
-                const parts = [];
-                if (acTypeParam) parts.push(`Unit: ${acTypeParam}`);
-                if (tonsParam) parts.push(`Capacity: ${tonsParam}`);
-                if (estParam) parts.push(`Est. Quote: ₹${estParam}`);
-                msgEl.value = `[3D Simulator Quote] ${parts.join(' | ')}`;
+                msgEl.value = `[3D Estimator Quote] ${decodeURIComponent(serviceParam)}`;
             }
         }
     } catch(err) {
