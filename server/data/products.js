@@ -1,0 +1,503 @@
+/**
+ * Extreme Sales & Services - Consolidated Products Data Source
+ * 
+ * Schema:
+ * {
+ *   id: string,
+ *   category: "new" | "refurbished" | "parts",
+ *   type: "split" | "window" | "vrf" | "part",
+ *   brand: string,
+ *   model: string,
+ *   name: string,
+ *   starRating: number | null,
+ *   capacityTon: number | null,
+ *   price: number,
+ *   inStock: boolean,
+ *   images: string[],
+ *   features: string[],
+ *   specs: {
+ *     warranty: string,
+ *     refrigerant: string,
+ *     noiseLevel: string
+ *   }
+ * }
+ */
+
+const products = [
+  {
+    id: "nlbvy46fALr4txUIZfqr",
+    category: "new",
+    type: "split",
+    brand: "Daikin",
+    model: "FTKL35TV",
+    name: "Daikin 1.0 Ton 3-Star Inverter Split AC (FTKL Series)",
+    starRating: 3,
+    capacityTon: 1.0,
+    price: 33990,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Coanda Airflow for draft-free comfort",
+      "Econo Mode for reduced power usage",
+      "PM 2.5 Air Purification Filter",
+      "Self-Diagnosis Error Code System"
+    ],
+    specs: {
+      warranty: "1 Year Product + 5 Years PCB + 10 Years Compressor",
+      refrigerant: "R32 Green Refrigerant",
+      noiseLevel: "26 dB"
+    }
+  },
+  {
+    id: "eHerqnAtAO41WGbFQvYX",
+    category: "new",
+    type: "split",
+    brand: "Mitsubishi Electric",
+    model: "MSY-GR18VF",
+    name: "Mitsubishi Electric 1.5 Ton 5-Star Inverter Split AC (MSY-GR Series)",
+    starRating: 5,
+    capacityTon: 1.5,
+    price: 48990,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Fast Cooling with Dual Barrier Coating",
+      "Micro Particle Catching Filter (PM 2.5)",
+      "Long Airflow Throw up to 12 Meters",
+      "100% Grooved Copper Condenser & Tubes"
+    ],
+    specs: {
+      warranty: "1 Year Comprehensive + 5 Years PCB + 10 Years Compressor",
+      refrigerant: "R32 Eco Green Gas",
+      noiseLevel: "19 dB"
+    }
+  },
+  {
+    id: "IDqLgM9KhzYZATyksQBH",
+    category: "new",
+    type: "split",
+    brand: "Voltas",
+    model: "243V Vectra Prism",
+    name: "Voltas 2.0 Ton 3-Star Heavy Duty Inverter Split AC",
+    starRating: 3,
+    capacityTon: 2.0,
+    price: 51990,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "High Ambient Cooling up to 52°C",
+      "Turbo Cool Technology for rapid drop",
+      "Superdry Mode for humid monsoon seasons",
+      "Anti-Dust & Anti-Microbial Filters"
+    ],
+    specs: {
+      warranty: "1 Year Comprehensive + 10 Years Compressor",
+      refrigerant: "R32 Eco Gas",
+      noiseLevel: "32 dB"
+    }
+  },
+  {
+    id: "CbGQjrQkG6M0D4zx9553",
+    category: "new",
+    type: "window",
+    brand: "Voltas",
+    model: "183 WZA Window",
+    name: "Voltas 1.5 Ton 3-Star Window AC (Copper Condenser)",
+    starRating: 3,
+    capacityTon: 1.5,
+    price: 28990,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Easy Slide-in Cleanable Chassis",
+      "Self Diagnosis & Glow Remote",
+      "Turbo Cooling High-Static Blower",
+      "Hydrophilic Blue Fin Condenser"
+    ],
+    specs: {
+      warranty: "1 Year Unit + 5 Years Compressor",
+      refrigerant: "R32 Refrigerant",
+      noiseLevel: "52 dB"
+    }
+  },
+  {
+    id: "mshFR9nCPOXd40thBJyD",
+    category: "new",
+    type: "split",
+    brand: "O-General",
+    model: "AOHG18LAC2 Multi",
+    name: "O-General 1.5 Ton Multi-Split Dual Indoor System",
+    starRating: 5,
+    capacityTon: 1.5,
+    price: 74990,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1614633833026-062045db109a?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Saves Balcony / Exterior Wall Space",
+      "Independent Temperature Control per Room",
+      "Hyper Tropical Rotary Compressor",
+      "Long Piping Capability up to 30 Meters"
+    ],
+    specs: {
+      warranty: "1 Year Full + 5 Years Compressor Warranty",
+      refrigerant: "R410A / R32 High Pressure",
+      noiseLevel: "21 dB"
+    }
+  },
+  {
+    id: "3uIYWD7NjAoXK1Zwd3Ri",
+    category: "new",
+    type: "split",
+    brand: "Mitsubishi Electric",
+    model: "PLY-SP24VE (Mr. Slim)",
+    name: "Mitsubishi Electric 2.0 TR 4-Way Ceiling Cassette Inverter AC",
+    starRating: 4,
+    capacityTon: 2.0,
+    price: 68500,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "360° Circular Airflow Pattern (Zero Dead Spots)",
+      "Built-in High Lift Drain Pump (850mm Lift)",
+      "Optional 3D i-See Sensor (Detects Occupancy)",
+      "Flush False Ceiling Fit with Sleek Decor Panel"
+    ],
+    specs: {
+      warranty: "1 Year Comprehensive + 5 Years Compressor",
+      refrigerant: "R32 Eco Gas",
+      noiseLevel: "28 dB"
+    }
+  },
+  {
+    id: "pQvUYJuwkoLD1H551bY0",
+    category: "new",
+    type: "split",
+    brand: "Carrier",
+    model: "40QNC030 Ceiling",
+    name: "Carrier 2.5 TR Ceiling Suspended Commercial Unit",
+    starRating: 4,
+    capacityTon: 2.5,
+    price: 76000,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Direct Ceiling Mounting without False Ceiling",
+      "Dual Auto-Swing Wide Angle Louvers",
+      "Long Distance High Static Throw",
+      "Easy Washable High-Density Air Filter"
+    ],
+    specs: {
+      warranty: "1 Year Unit + 5 Years Compressor",
+      refrigerant: "R32 Safe Refrigerant",
+      noiseLevel: "36 dB"
+    }
+  },
+  {
+    id: "jfcbrtE1r0jcoowPIba4",
+    category: "new",
+    type: "split",
+    brand: "Daikin",
+    model: "FDBNQ30MV1",
+    name: "Daikin 3.0 TR Slim Concealed Ductable Inverter AC",
+    starRating: 4,
+    capacityTon: 3.0,
+    price: 88000,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Completely Concealed with Architectural Grilles",
+      "High External Static Pressure (ESP) for Long Ducts",
+      "Wired Touch LCD Controller with Weekly Timer",
+      "Even Air Distribution Across Multiple Rooms"
+    ],
+    specs: {
+      warranty: "1 Year Comprehensive + 5 Years Compressor",
+      refrigerant: "R410A / R32",
+      noiseLevel: "34 dB"
+    }
+  },
+  {
+    id: "TLRbwbHUxbXgBIJ9eCZM",
+    category: "new",
+    type: "split",
+    brand: "Blue Star",
+    model: "FAC481DB Tower",
+    name: "Blue Star 4.0 TR Floor Standing Tower AC",
+    starRating: 4,
+    capacityTon: 4.0,
+    price: 98500,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Extra Long 15-Meter Air Throw Capacity",
+      "Touch Screen Digital Display on Front Fascia",
+      "Auto Horizontal & Vertical Motorized Louvers",
+      "No False Ceiling Required — Quick Installation"
+    ],
+    specs: {
+      warranty: "1 Year Unit + 5 Years Compressor",
+      refrigerant: "R410A Refrigerant",
+      noiseLevel: "44 dB"
+    }
+  },
+  {
+    id: "lG89uta1wBEtQx5kearo",
+    category: "new",
+    type: "vrf",
+    brand: "Mitsubishi Electric",
+    model: "PUHY-P / PURY-P Series",
+    name: "Mitsubishi Electric City Multi VRF / VRV System (10 HP to 50 HP)",
+    starRating: 5,
+    capacityTon: 10.0,
+    price: 0,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Individual Temperature Control in up to 64 Indoor Zones",
+      "Centralized Touch BMS (Building Management System) Integration",
+      "Simultaneous Heating & Cooling Heat Recovery Technology",
+      "Piping Length up to 1,000 Meters Total Run"
+    ],
+    specs: {
+      warranty: "Comprehensive Turnkey Project Warranty & AMC Options",
+      refrigerant: "R410A / R32 Eco VRF",
+      noiseLevel: "Ultra Quiet Low-Vibration Inverter"
+    }
+  },
+  {
+    id: "gtNRa1xNFp2d2LWyHsTk",
+    category: "new",
+    type: "vrf",
+    brand: "Carrier / Blue Star",
+    model: "30RB Modular Scroll",
+    name: "Air-Cooled Modular Scroll Chiller System (20 TR to 100 TR)",
+    starRating: 4,
+    capacityTon: 20.0,
+    price: 0,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Precision Chilled Water Temperature Control (±0.5°C)",
+      "Microchannel Aluminum Heat Exchangers",
+      "Automated Dual Compressor Redundancy Fail-Safe",
+      "SCADA & Modbus Industrial Protocol Compatible"
+    ],
+    specs: {
+      warranty: "Turnkey Project Guarantee + Industrial SLA Support",
+      refrigerant: "R134a / R410A Chiller Safe",
+      noiseLevel: "Industrial Acoustic Enclosure"
+    }
+  },
+  {
+    id: "oI1UpVLd2kug7WqY1ecF",
+    category: "new",
+    type: "vrf",
+    brand: "ESS Engineered",
+    model: "ESS-AHU-10K",
+    name: "Double Skin Air Handling Unit (AHU) 5000 - 15000 CFM",
+    starRating: 4,
+    capacityTon: 10.0,
+    price: 0,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Thermal Break Aluminum Profile with PUF Insulation",
+      "Multi-Stage HEPA & Carbon Air Filtration Options",
+      "Variable Frequency Drive (VFD) Fan Modulation",
+      "100% Condensate Drain Stainless Steel SS304 Tray"
+    ],
+    specs: {
+      warranty: "Industrial 2-Year Mechanical Warranty",
+      refrigerant: "Chilled Water / DX Coil Compatible",
+      noiseLevel: "Acoustically Insulated Double Skin Panels"
+    }
+  },
+  {
+    id: "m4ear95mlrX2SUML4FxP",
+    category: "refurbished",
+    type: "split",
+    brand: "Voltas",
+    model: "Refurb-V183-Inv",
+    name: "Certified Refurbished Voltas 1.5 Ton Inverter Split AC",
+    starRating: 3,
+    capacityTon: 1.5,
+    price: 18500,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "100% Pure Copper Condenser Coil Verified",
+      "48-Hour Nitrogen High-Pressure Leak Tested",
+      "Fully Sanitized, Chemically Jet-Washed & Descaled",
+      "Original Working Remote Included"
+    ],
+    specs: {
+      warranty: "6 Months ESS Comprehensive Warranty + Free Installation Offer",
+      refrigerant: "100% New R32 Gas Refilled",
+      noiseLevel: "28 dB"
+    }
+  },
+  {
+    id: "By9KmmKNl5vuRYuJWeda",
+    category: "refurbished",
+    type: "split",
+    brand: "Daikin",
+    model: "Refurb-DK10-Split",
+    name: "Certified Refurbished Daikin 1.0 Ton Split AC",
+    starRating: 3,
+    capacityTon: 1.0,
+    price: 14500,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Original Japanese Compressor in Top Condition",
+      "Cleaned Air Filters & Evaporator Coil",
+      "Zero Gas Leakage Certified",
+      "Complete Mounting Bracket & Piping Included"
+    ],
+    specs: {
+      warranty: "6 Months Comprehensive ESS Warranty",
+      refrigerant: "Fresh Gas Filled & Vacuum Sealed",
+      noiseLevel: "26 dB"
+    }
+  },
+  {
+    id: "qAz6PSxvdSMysOthSMDR",
+    category: "parts",
+    type: "part",
+    brand: "Floron / Honeywell",
+    model: "GAS-R32-95KG",
+    name: "Floron / Honeywell R32 Refrigerant Gas Cylinder (9.5 KG 100% Virgin)",
+    starRating: 5,
+    capacityTon: null,
+    price: 4200,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Zero Ozone Depletion Potential (ODP)",
+      "Lower Global Warming Potential (GWP 675)",
+      "Tamper-Proof Hologram Seal",
+      "Suitable for All Modern R32 Split & Commercial ACs"
+    ],
+    specs: {
+      warranty: "100% Purity Certified (99.98% Purity Lab Report)",
+      refrigerant: "R32 Pure Gas (Difluoromethane)",
+      noiseLevel: "N/A"
+    }
+  },
+  {
+    id: "7hPraw3QzzGlpEM2kS1y",
+    category: "parts",
+    type: "part",
+    brand: "GMCC / Highly / Mitsubishi",
+    model: "COMP-15-R32",
+    name: "Genuine Inverter Rotary AC Compressor (1.5 Ton R32 / R410A)",
+    starRating: 5,
+    capacityTon: 1.5,
+    price: 6800,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "100% Brand New Factory Sealed OEM Part",
+      "High Thermal Overload Internal Protector",
+      "Pre-filled with Synthetic POE Oil",
+      "Compatible with Daikin, Voltas, LG, Lloyd, Blue Star"
+    ],
+    specs: {
+      warranty: "1 Year Replacement Guarantee by ESS",
+      refrigerant: "Compatible with R32 & R410A Gases",
+      noiseLevel: "Ultra Low Vibration Hermetic Seal"
+    }
+  },
+  {
+    id: "YnLZ6x00eZDTiP7ZAJry",
+    category: "parts",
+    type: "part",
+    brand: "QD-U08A Pro",
+    model: "PCB-UNIV-INV",
+    name: "Universal Inverter AC PCB Motherboard Control Kit",
+    starRating: 4,
+    capacityTon: null,
+    price: 2400,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "Universal Compatibility with All AC Brands",
+      "Backlit LCD Smart Remote Included",
+      "Dual Temperature Sensors for Room & Coil",
+      "5 Working Modes: Auto, Cool, Dry, Fan, Heat"
+    ],
+    specs: {
+      warranty: "6 Months Replacement Warranty",
+      refrigerant: "N/A",
+      noiseLevel: "Silent Solid-State Relays"
+    }
+  },
+  {
+    id: "eAt3kNPGgcW66fksTpSV",
+    category: "parts",
+    type: "part",
+    brand: "Mandev / Totalline",
+    model: "COP-KIT-1412-10",
+    name: "Pre-Insulated Pure Copper Pipe Kit (1/4\" & 1/2\" with 10ft Foam)",
+    starRating: 5,
+    capacityTon: null,
+    price: 1850,
+    inStock: true,
+    images: [
+      "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80"
+    ],
+    features: [
+      "0.7mm Heavy Gauge Wall Thickness",
+      "Seamless Annealed Easy-Bend Copper",
+      "Class O Fire-Retardant Nitrile Foam Insulation",
+      "Brass Flare Nuts Pre-Fitted on Both Ends"
+    ],
+    specs: {
+      warranty: "Guaranteed Zero Pinhole Leakage",
+      refrigerant: "Universal Compatibility",
+      noiseLevel: "N/A"
+    }
+  }
+];
+
+// Universal export for ES Modules, CommonJS, or Browser window
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = products;
+}
+if (typeof window !== "undefined") {
+  window.products = products;
+}

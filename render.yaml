@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: extreme-sales-services
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BUSINESS_NAME
+        value: "Extreme Sales & Services"
+      - key: BUSINESS_EMAIL
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false
+      - key: APP_URL
+        sync: false

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Field Portal | Extreme Sales &amp; Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body class="bg-slate-100 text-slate-900 min-h-screen font-sans antialiased pb-12">
+
+    <!-- TOP HEADER -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-xl border-b border-slate-800">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-amber-500 text-slate-950 rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-amber-500/30">
+              ⚡
+            </div>
+            <div>
+              <span class="text-base font-black tracking-tight">Extreme S&amp;S <span class="text-amber-400 font-bold text-xs bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-800">Field Tech</span></span>
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
+                <span id="techNameBadge" class="font-bold text-amber-400">Suresh Kumar</span>
+                <span class="text-slate-600">•</span>
+                <span class="text-emerald-400 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            <button type="button" id="refreshBtn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition flex items-center gap-1">
+              <span id="refreshIcon">↻</span>
+              <span class="hidden sm:inline">Refresh</span>
+            </button>
+            <button type="button" onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-lg font-bold text-xs transition">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+      <!-- DAILY PERFORMANCE STRIP -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs text-center">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Assigned</span>
+          <div id="statAssigned" class="text-2xl sm:text-3xl font-black text-purple-600 mt-0.5">--</div>
+          <span class="text-[10px] text-slate-500 font-medium">To visit</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs text-center">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">In Progress</span>
+          <div id="statProgress" class="text-2xl sm:text-3xl font-black text-blue-600 mt-0.5">--</div>
+          <span class="text-[10px] text-slate-500 font-medium">On-site now</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs text-center">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Completed</span>
+          <div id="statCompleted" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-0.5">--</div>
+          <span class="text-[10px] text-slate-500 font-medium">Resolved</span>
+        </div>
+      </div>
+
+      <!-- PROGRESS RING + EARNINGS STRIP -->
+      <div class="flex gap-4">
+        <!-- Progress Ring -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-3 flex-shrink-0">
+          <div class="progress-ring-wrap">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="22" fill="none" stroke="#e2e8f0" stroke-width="5"/>
+              <circle id="progressRing" cx="32" cy="32" r="22" fill="none" stroke="#10b981" stroke-width="5"
+                stroke-linecap="round" style="stroke-dasharray:138; stroke-dashoffset:138; transition:stroke-dashoffset 0.8s ease;"/>
+            </svg>
+            <div id="progressRingVal" class="progress-ring-val">0/0</div>
+          </div>
+          <div>
+            <div class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Jobs Done</div>
+            <div class="text-sm font-black text-slate-900">Today's Progress</div>
+          </div>
+        </div>
+        <!-- Earnings Strip -->
+        <div id="earningsStrip" class="earnings-strip flex-1">
+          <div class="text-emerald-200 text-xs">Loading earnings...</div>
+        </div>
+      </div>
+
+      <!-- SOS BUTTON -->
+      <div class="flex items-center justify-between">
+        <button type="button" onclick="triggerSOS()" class="sos-btn">
+          🆘 Emergency SOS
+        </button>
+        <span class="text-xs text-slate-400 font-medium">Press SOS to alert staff &amp; auto-call support</span>
+      </div>
+
+      <!-- FILTER TABS -->
+      <div class="flex items-center justify-between">
+        <div class="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+          <button type="button" onclick="filterTechJobs('all', this)" class="tech-filter active bg-slate-900 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition">All My Jobs</button>
+          <button type="button" onclick="filterTechJobs('active', this)" class="tech-filter text-slate-600 hover:text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg transition">Active Only</button>
+          <button type="button" onclick="filterTechJobs('completed', this)" class="tech-filter text-slate-600 hover:text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg transition">Completed</button>
+        </div>
+        <span id="jobCountLabel" class="text-xs font-bold text-slate-500">Loading assignments...</span>
+      </div>
+
+      <!-- JOBS LIST CONTAINER -->
+      <div id="jobList" class="space-y-4">
+        <!-- Dynamically Populated Job Cards -->
+      </div>
+
+    </main>
+
+    <!-- JOB COMPLETION MODAL -->
+    <div id="completionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-lg font-black text-slate-900">Sign Off &amp; Complete Service</h3>
+            <p id="modalReqId" class="text-xs text-blue-600 font-mono font-bold mt-0.5">Request #--</p>
+          </div>
+          <button type="button" onclick="closeCompletionModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+        </div>
+
+        <form id="completionForm" class="space-y-4">
+          <input type="hidden" id="modalTargetRequestId">
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Work Done &amp; Technician Notes</label>
+            <textarea
+              id="completionNotes"
+              required
+              rows="3"
+              placeholder="e.g. Capacitor 45uF replaced, copper coil cleaned with jet spray, cooling restored to 16°C."
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Spare Parts Used (Optional)</label>
+            <input
+              type="text"
+              id="partsUsed"
+              placeholder="e.g. 45uF Capacitor, R32 Refrigerant (0.5kg)"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
+            >
+          </div>
+
+          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+            <span>✅</span>
+            <span>Customer live tracking will instantly reflect <strong>"Service Completed"</strong> with your sign-off notes.</span>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeCompletionModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Cancel</button>
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/30 transition flex items-center gap-1.5">
+              <span>✓ Confirm &amp; Sign Off</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/animations.js"></script>
+    <script src="js/technician.js"></script>
+  </body>
+</html>

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Dispatch Operations | Extreme Sales &amp; Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="bg-slate-100 text-slate-900 min-h-screen font-sans antialiased">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-xl border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </div>
+            <div>
+              <span class="text-lg font-black tracking-tight">Extreme S&amp;S <span class="text-emerald-400 font-bold text-xs bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800">Staff Dispatch</span></span>
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Active Coordinator Console</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2.5 items-center">
+            <a href="index.html" target="_blank" class="hidden sm:inline-flex text-slate-400 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-800 transition items-center gap-1">
+              <span>View Site</span>
+              <span class="text-xs">↗</span>
+            </a>
+            <button id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5">
+              <span id="refreshIcon" class="inline-block transition">↻</span>
+              <span>Sync Queue</span>
+            </button>
+            <button onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-lg font-bold text-xs transition">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+      <!-- PAGE TITLE & KPI BAR -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-black text-slate-900 tracking-tight">Dispatch Operations</h1>
+          <p class="text-slate-500 text-sm mt-0.5">Real-time coordinator queue: Assign field technicians &amp; follow up on client enquiries</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Live Auto-Sync Active</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI METRIC CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="kpi-card shadow-sm border-l-4 border-l-amber-500">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Requires Assignment</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="statPending" class="text-3xl font-black text-amber-600">--</span>
+            <span class="text-xs font-bold text-slate-400">Pending Jobs</span>
+          </div>
+        </div>
+
+        <div class="kpi-card shadow-sm border-l-4 border-l-purple-500">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Dispatched / Assigned</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="statAssigned" class="text-3xl font-black text-purple-600">--</span>
+            <span class="text-xs font-bold text-slate-400">Awaiting Service</span>
+          </div>
+        </div>
+
+        <div class="kpi-card shadow-sm border-l-4 border-l-blue-500">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">On-Site Servicing</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="statProgress" class="text-3xl font-black text-blue-600">--</span>
+            <span class="text-xs font-bold text-slate-400">In Progress</span>
+          </div>
+        </div>
+
+        <div class="kpi-card shadow-sm border-l-4 border-l-emerald-500">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Resolved Today</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="statCompleted" class="text-3xl font-black text-emerald-600">--</span>
+            <span class="text-xs font-bold text-slate-400">Completed</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABS CONTAINER -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        
+        <!-- Tab Navigation -->
+        <div class="flex border-b border-slate-200 bg-slate-50/75 px-4 overflow-x-auto gap-2 py-2">
+          <button onclick="switchTab('tab-services', this)" class="tab-btn active bg-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap">
+            <span>🛠️</span>
+            <span>Service Request Queue</span>
+            <span id="badgeServiceCount" class="bg-emerald-800 text-emerald-100 text-[10px] px-1.5 py-0.2 rounded-full font-black">--</span>
+          </button>
+          <button onclick="switchTab('tab-enquiries', this)" class="tab-btn text-slate-600 hover:text-slate-900 font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-100 transition flex items-center gap-2 whitespace-nowrap">
+            <span>💬</span>
+            <span>Customer Sales Enquiries</span>
+          </button>
+        </div>
+
+        <!-- 1. SERVICE QUEUE TAB -->
+        <div id="tab-services" class="tab-content p-6 block">
+          
+          <!-- Filters & Search Toolbar -->
+          <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+              <button onclick="filterStatus('All', this)" class="filter-pill active bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">All</button>
+              <button onclick="filterStatus('Pending', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">⏳ Pending</button>
+              <button onclick="filterStatus('Assigned', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">🧑‍🔧 Assigned</button>
+              <button onclick="filterStatus('In Progress', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">🛠️ In Progress</button>
+              <button onclick="filterStatus('Completed', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">✅ Completed</button>
+            </div>
+
+            <div class="relative w-full sm:w-72">
+              <input
+                type="text"
+                id="searchRequestInput"
+                oninput="handleSearch(this.value)"
+                placeholder="Search name, phone, ID..."
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition"
+              />
+            </div>
+          </div>
+
+          <!-- Queue Table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3.5">Customer &amp; Location</th>
+                  <th class="px-5 py-3.5">Service Details</th>
+                  <th class="px-5 py-3.5">Status</th>
+                  <th class="px-5 py-3.5">Assign Field Tech</th>
+                  <th class="px-5 py-3.5">Status Control</th>
+                  <th class="px-5 py-3.5">Contact Customer</th>
+                </tr>
+              </thead>
+              <tbody id="requestTableBody" class="divide-y divide-slate-100 bg-white font-medium"></tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- 2. ENQUIRIES TAB -->
+        <div id="tab-enquiries" class="tab-content p-6 hidden">
+          <div class="mb-4">
+            <h3 class="text-base font-extrabold text-slate-900">Commercial &amp; Product Enquiries</h3>
+            <p class="text-xs text-slate-500">Direct client questions regarding inventory, installation, and quotes</p>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider">
+                <tr>
+                  <th class="px-5 py-3.5">Received Date</th>
+                  <th class="px-5 py-3.5">Customer Details</th>
+                  <th class="px-5 py-3.5">Item Reference</th>
+                  <th class="px-5 py-3.5">Customer Note</th>
+                  <th class="px-5 py-3.5">Action</th>
+                </tr>
+              </thead>
+              <tbody id="enquiryTableBody" class="divide-y divide-slate-100 bg-white font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="js/animations.js"></script>
+    <script src="js/staff.js"></script>
+  </body>
+</html>
