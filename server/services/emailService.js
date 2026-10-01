@@ -31,7 +31,7 @@ const emailService = {
               <p style="margin: 20px 0; color: #555;"><strong>Next Steps:</strong></p>
               <ul style="margin: 10px 0; color: #555;">
                 <li>A technician will call you within 2-4 hours</li>
-                <li>You can track your request here: <a href="${process.env.APP_URL || 'https://extreme-sales-services.onrender.com'}/status.html" style="color: #2563eb; text-decoration: none;"><strong>Track Status</strong></a></li>
+                <li>You can track your request here: <a href="${process.env.APP_URL || 'https://extreme-sales-services-gh7s.onrender.com'}/status.html" style="color: #2563eb; text-decoration: none;"><strong>Track Status</strong></a></li>
                 <li>Please keep your Request ID handy</li>
               </ul>
 
@@ -100,7 +100,7 @@ const emailService = {
               </div>
 
               <p style="margin: 20px 0; color: #555;">
-                <a href="${process.env.APP_URL || 'https://extreme-sales-services.onrender.com'}/status.html" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                <a href="${process.env.APP_URL || 'https://extreme-sales-services-gh7s.onrender.com'}/status.html" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
                   Track Your Service →
                 </a>
               </p>

@@ -262,6 +262,7 @@
     </div>
 
     <!-- SCRIPTS -->
+    <script src="js/config.js"></script>
     <script src="js/animations.js"></script>
     <script>
         // Star Rating Interactive Selection
@@ -290,13 +291,17 @@
             });
         });
 
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+            ? 'http://localhost:5000'
+            : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+
         // Fetch Recent Reviews
         async function loadFeedbackStream() {
             const grid = document.getElementById('feedbackStreamGrid');
             if (!grid) return;
 
             try {
-                const res = await fetch('/api/feedback');
+                const res = await fetch(`${API_BASE}/api/feedback`);
                 const data = await res.json();
                 if (data.success && data.feedback) {
                     grid.innerHTML = '';
@@ -341,7 +346,7 @@
             };
 
             try {
-                const res = await fetch('/api/feedback', {
+                const res = await fetch(`${API_BASE}/api/feedback`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
