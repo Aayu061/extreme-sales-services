@@ -7,6 +7,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed:admin": "node scripts/seedAdmin.js",
+    "seed:users": "node scripts/seedAllUsers.js",
     "seed:amc": "node scripts/seedAmcPlans.js",
     "update:admin": "node scripts/updateAdmin.js",
     "migrate:products": "node scripts/migrateProducts.js",
