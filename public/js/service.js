@@ -44,6 +44,10 @@ form.addEventListener('submit', async (e) => {
 
         if (data.success) {
             trackingIdDisplay.innerText = data.requestId;
+            const trackBtn = modal.querySelector('a[href^="status.html"]');
+            if (trackBtn) {
+                trackBtn.href = `status.html?id=${encodeURIComponent(data.requestId)}&phone=${encodeURIComponent(formData.phone)}`;
+            }
             modal.classList.remove('hidden');
             modal.style.display = 'flex'; // Force display if hidden class isn't enough
             
