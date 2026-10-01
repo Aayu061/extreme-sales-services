@@ -558,6 +558,49 @@ app.patch('/api/admin/update-status', flexibleAuth(['admin', 'staff', 'technicia
     res.json({ success: true, message: `Status updated to ${newStatus}` });
 });
 
+app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], flexibleAuth(['admin', 'staff', 'technician']), async (req, res) => {
+    const targetId = req.params.id;
+    const newStatus = req.body.status || req.body.newStatus;
+    const notes = req.body.notes || req.body.technician_notes || req.body.completion_notes || "";
+
+    if (isFirebaseMode) {
+        try {
+            let docRef = db.collection('service_requests').doc(targetId);
+            let docSnap = await docRef.get();
+
+            if (!docSnap.exists) {
+                const snap = await db.collection('service_requests').where('request_id', '==', targetId).get();
+                if (!snap.empty) {
+                    docRef = db.collection('service_requests').doc(snap.docs[0].id);
+                    docSnap = snap.docs[0];
+                }
+            }
+
+            if (!docSnap.exists) {
+                return res.status(404).json({ success: false, message: "Request not found" });
+            }
+
+            const updatePayload = { status: newStatus };
+            if (notes) updatePayload.completion_notes = notes;
+            if (newStatus === 'Completed') updatePayload.completed_at = new Date().toISOString();
+
+            await docRef.update(updatePayload);
+            return res.json({ success: true, message: `Status updated to ${newStatus}` });
+        } catch (e) {
+            return res.status(500).json({ success: false, message: "Status update error" });
+        }
+    }
+
+    const reqMatch = serviceRequests.find(r => r.id === targetId || r.request_id === targetId);
+    if (!reqMatch) return res.status(404).json({ success: false, message: "Request not found" });
+
+    reqMatch.status = newStatus;
+    if (notes) reqMatch.completion_notes = notes;
+    if (newStatus === 'Completed' && !reqMatch.completed_at) reqMatch.completed_at = new Date().toISOString();
+
+    res.json({ success: true, message: `Status updated to ${newStatus}` });
+});
+
 // ═══════════════════════════════════════════════════════════
 // 5. TECHNICIAN FLEET
 // ═══════════════════════════════════════════════════════════
@@ -960,24 +1003,80 @@ app.post('/api/amc/purchase', async (req, res) => {
     res.json({ success: true, message: "AMC Purchase request registered", subscription: newSub });
 });
 
-// ═══════════════════════════════════════════════════════════
-// 8. TRACKING (REST & LIVE SSE)
-// ═══════════════════════════════════════════════════════════
-app.get('/api/track', async (req, res) => {
-    const id = (req.query.id || req.query.requestId || '').toUpperCase().trim();
+// Dynamic Smart AMC Customer Verification for Service Booking
+app.get('/api/amc/check', async (req, res) => {
     const phone = (req.query.phone || '').trim();
+    if (!phone) return res.json({ success: true, active: false });
 
     if (isFirebaseMode) {
         try {
-            const snap = await db.collection('service_requests')
-                .where('request_id', '==', id)
+            const snap = await db.collection('customer_amc')
                 .where('phone', '==', phone)
+                .where('status', '==', 'Active')
                 .get();
 
-            if (snap.empty) return res.status(404).json({ success: false, message: "No record found" });
+            if (snap.empty) {
+                return res.json({ success: true, active: false });
+            }
+
+            const docData = snap.docs[0].data();
+            const remaining = Number(docData.remaining_services) || 0;
+            return res.json({
+                success: true,
+                active: remaining > 0,
+                planName: docData.plan_name || "Active AMC Plan",
+                remainingServices: remaining
+            });
+        } catch (e) {
+            return res.status(500).json({ success: false, message: "Error checking AMC" });
+        }
+    }
+
+    const sub = customerAmcSubscriptions.find(s => s.phone === phone && s.status === 'Active');
+    if (sub && sub.remaining_services > 0) {
+        return res.json({
+            success: true,
+            active: true,
+            planName: sub.plan_name,
+            remainingServices: sub.remaining_services
+        });
+    }
+    res.json({ success: true, active: false });
+});
+
+// ═══════════════════════════════════════════════════════════
+// 8. TRACKING (REST & LIVE SSE)
+// ═══════════════════════════════════════════════════════════
+app.get(['/api/track', '/api/track/status'], async (req, res) => {
+    const id = (req.query.id || req.query.requestId || '').toUpperCase().trim();
+    const phone = (req.query.phone || '').trim();
+
+    if (!id && !phone) {
+        return res.status(400).json({ success: false, message: "Please provide a Request ID or Phone Number." });
+    }
+
+    if (isFirebaseMode) {
+        try {
+            let snap;
+            if (id && phone) {
+                snap = await db.collection('service_requests')
+                    .where('request_id', '==', id)
+                    .where('phone', '==', phone)
+                    .get();
+                if (snap.empty) {
+                    snap = await db.collection('service_requests').where('request_id', '==', id).get();
+                }
+            } else if (id) {
+                snap = await db.collection('service_requests').where('request_id', '==', id).get();
+            } else {
+                snap = await db.collection('service_requests').where('phone', '==', phone).get();
+            }
+
+            if (snap.empty) return res.status(404).json({ success: false, message: "No service request found." });
             const data = snap.docs[0].data();
             return res.json({
                 success: true,
+                requestId: data.request_id,
                 status: data.status,
                 name: data.name,
                 technician_name: data.technician_name || "Pending Assignment",
@@ -988,10 +1087,11 @@ app.get('/api/track', async (req, res) => {
         }
     }
 
-    const match = serviceRequests.find(r => r.request_id === id || (phone && r.phone === phone));
+    const match = serviceRequests.find(r => (id && r.request_id === id) || (phone && r.phone === phone));
     if (match) {
         res.json({
             success: true,
+            requestId: match.request_id,
             status: match.status,
             name: match.name,
             technician_name: match.technician_name || "Pending Assignment",
@@ -1145,6 +1245,10 @@ app.get('/api/admin/analytics', async (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(` Extreme Sales & Services Server running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(` Extreme Sales & Services Server running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
