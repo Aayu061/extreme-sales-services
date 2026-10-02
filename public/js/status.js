@@ -71,19 +71,19 @@ async function fetchStatus(id, phone) {
     try {
         const res  = await fetch(`${API_BASE}/api/track?id=${encodeURIComponent(id)}&phone=${encodeURIComponent(phone)}`);
         const data = await res.json();
-        if (data.success) renderAll(data.status, data.technician_name, data.service_type, data.name);
+        if (data.success) renderAll(data.status, data.technician_name, data.service_type, data.name, data.eta, data.zone);
         else if (window.showToast) window.showToast(data.message || 'Request not found', 'error');
     } catch(_) {}
 }
 
 // ─── Master Render ───────────────────────────────────────────────
-function renderAll(status, techName, serviceType, customerName) {
+function renderAll(status, techName, serviceType, customerName, serverEta = null, zone = null) {
     const changed = status !== lastStatus;
     lastStatus    = status;
 
     renderStepper(status);
     renderTimeline(status, techName, serviceType, customerName);
-    renderEtaCard(status, techName);
+    renderEtaCard(status, techName, serverEta, zone);
 
     if (status === 'Completed') {
         if (changed) launchConfetti();
@@ -147,7 +147,7 @@ function renderStepper(currentStatus) {
 }
 
 // ─── ETA Countdown Card ─────────────────────────────────────────
-function renderEtaCard(status, techName) {
+function renderEtaCard(status, techName, serverEta = null, zone = null) {
     if (etaInterval) clearInterval(etaInterval);
     let el = document.getElementById('etaCard');
     if (!el) {
@@ -167,26 +167,36 @@ function renderEtaCard(status, techName) {
         return;
     }
 
-    // ETA logic by status
-    etaMinutes = status === 'Pending' ? 60 : status === 'Assigned' ? 35 : status === 'In Progress' ? 15 : 0;
+    // Dynamic Server ETA or Fallback
+    if (serverEta && serverEta.totalMinutes) {
+        etaMinutes = serverEta.totalMinutes;
+    } else {
+        etaMinutes = status === 'Pending' ? 60 : status === 'Assigned' ? 35 : status === 'In Progress' ? 15 : 0;
+    }
     let secs = etaMinutes * 60;
+
+    const trafficInfo = serverEta ? ` • ${serverEta.trafficFactor}` : '';
+    const zoneInfo = zone ? ` [${zone}]` : '';
 
     const render = () => {
         const m = Math.floor(secs / 60);
         const s = secs % 60;
         const display = m > 0 ? `${m}m ${String(s).padStart(2,'0')}s` : `${s}s`;
         const statusMsg = status === 'Pending'
-            ? 'Coordinating with dispatch team'
+            ? 'Coordinating with dispatch algorithm'
             : status === 'Assigned'
-            ? `Engineer ${techName || ''} en route`
+            ? `Engineer ${techName || ''} dispatched${zoneInfo}${trafficInfo}`
             : 'Engineer is working on-site';
 
         el.innerHTML = `
             <div class="text-2xl">⏱️</div>
             <div class="flex-1">
-                <div class="text-blue-300 text-[10px] font-extrabold uppercase tracking-widest">Estimated Time</div>
+                <div class="text-blue-300 text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5">
+                    <span>Algorithm Dynamic ETA</span>
+                    ${serverEta ? '<span class="bg-blue-400/20 text-blue-200 px-1 rounded text-[9px]">MOW-GDM</span>' : ''}
+                </div>
                 <div class="eta-time-display">${display}</div>
-                <div class="text-blue-400 text-xs font-medium">${statusMsg}</div>
+                <div class="text-blue-300 text-xs font-medium">${statusMsg}</div>
             </div>
             <div class="text-right">
                 <a href="tel:+917977805245" class="text-blue-300 text-xs font-bold underline hover:text-white transition">📞 Call Support</a>
