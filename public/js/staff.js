@@ -242,40 +242,40 @@ function renderTable() {
 
         tr.innerHTML = `
             <td class="px-5 py-4">
-                <div class="font-extrabold text-slate-900">${req.name}</div>
-                <div class="text-slate-500 text-[11px] mt-0.5">📞 ${req.phone}</div>
-                <div class="text-slate-500 text-[11px] truncate max-w-xs mt-0.5">📍 ${req.address}</div>
-                <div class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded w-max mt-1 font-bold">
+                <div class="font-extrabold text-slate-900 dark:text-white">${req.name}</div>
+                <div class="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">📞 ${req.phone}</div>
+                <div class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-xs mt-0.5">📍 ${req.address}</div>
+                <div class="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded w-max mt-1 font-bold border border-emerald-100 dark:border-emerald-800/40">
                     ${req.request_id}
                 </div>
             </td>
             <td class="px-5 py-4">
-                <div class="font-bold text-slate-800">${serviceClean}</div>
-                ${isAmc ? '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full mt-1">★ COVERED BY AMC</span>' : ''}
-                <div class="text-[11px] text-slate-500 italic mt-0.5 max-w-xs truncate">"${req.issue_description || 'General inspection'}"</div>
+                <div class="font-bold text-slate-800 dark:text-slate-200">${serviceClean}</div>
+                ${isAmc ? '<span class="inline-block bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 border border-emerald-200 dark:border-emerald-700/50">★ COVERED BY AMC</span>' : ''}
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 italic mt-0.5 max-w-xs truncate">"${req.issue_description || 'General inspection'}"</div>
             </td>
-            <td class="px-5 py-4">
+            <td class="px-5 py-4 whitespace-nowrap">
                 <span class="badge-status ${stConf.class}">
                     <span class="w-1.5 h-1.5 rounded-full ${stConf.dot}"></span>
                     <span>${req.status}</span>
                 </span>
-                ${req.technician_name ? `<div class="text-[10px] text-slate-500 mt-1 font-medium">🧑‍🔧 ${req.technician_name.split(' ')[0]}</div>` : ''}
+                ${req.technician_name ? `<div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">🧑‍🔧 ${req.technician_name.split(' ')[0]}</div>` : ''}
             </td>
             <td class="px-5 py-4">
-                <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
+                <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full min-w-[145px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
                     ${techOpts}
                 </select>
             </td>
             <td class="px-5 py-4">
-                <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
+                <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full min-w-[130px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
                     <option value="Pending" ${req.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                     <option value="Assigned" ${req.status === 'Assigned' ? 'selected' : ''}>🧑‍🔧 Assigned</option>
                     <option value="In Progress" ${req.status === 'In Progress' ? 'selected' : ''}>🛠️ In Progress</option>
                     <option value="Completed" ${req.status === 'Completed' ? 'selected' : ''}>✅ Completed</option>
                 </select>
             </td>
-            <td class="px-5 py-4">
-                <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20Extreme%20AC%20Service%20coordinator%20here%20regarding%20request%20${req.request_id}." target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 w-max">
+            <td class="px-5 py-4 whitespace-nowrap">
+                <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20Extreme%20AC%20Service%20coordinator%20here%20regarding%20request%20${req.request_id}." target="_blank" class="bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-600 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-700/50 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 w-max">
                     <span>💬</span>
                     <span>WhatsApp</span>
                 </a>

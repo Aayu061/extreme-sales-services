@@ -188,11 +188,11 @@ function renderJobs() {
         const serviceClean = job.service_type.replace('[✅ AMC Covered]', '');
 
         const statusPillClass = {
-            'Pending': 'bg-amber-100 text-amber-800 border-amber-200',
-            'Assigned': 'bg-purple-100 text-purple-800 border-purple-200',
-            'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
-            'Completed': 'bg-emerald-100 text-emerald-800 border-emerald-200'
-        }[job.status] || 'bg-slate-100 text-slate-800';
+            'Pending': 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-600/40',
+            'Assigned': 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-600/40',
+            'In Progress': 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-600/40',
+            'Completed': 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-600/40'
+        }[job.status] || 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200';
 
         // Action Buttons according to state
         let actionSection = '';
@@ -212,11 +212,11 @@ function renderJobs() {
             `;
         } else if (job.status === 'Completed') {
             actionSection = `
-                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 flex-1">
-                    <div class="font-extrabold flex items-center gap-1.5 text-emerald-700">
+                <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700/50 rounded-xl p-3 text-xs text-emerald-900 dark:text-emerald-200 flex-1">
+                    <div class="font-extrabold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
                         <span>✅</span> Service Successfully Completed
                     </div>
-                    <p class="text-[11px] text-slate-600 mt-1 italic">
+                    <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 italic">
                         <strong>Sign-Off:</strong> "${job.completion_notes || 'All checks passed. Cooling restored.'}"
                     </p>
                 </div>
@@ -228,48 +228,48 @@ function renderJobs() {
                 <!-- Top Badge Line -->
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                        <span class="text-xs font-mono font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-800/50">
                             ${job.request_id}
                         </span>
-                        ${isAmc ? '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-200">★ AMC CONTRACT</span>' : ''}
+                        ${isAmc ? '<span class="bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-700/50">★ AMC CONTRACT</span>' : ''}
                     </div>
-                    <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${statusPillClass}">
+                    <span class="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border ${statusPillClass}">
                         ${job.status}
                     </span>
                 </div>
 
                 <!-- Customer Details -->
-                <h3 class="text-lg font-black text-slate-900 tracking-tight">${job.name}</h3>
-                <div class="font-bold text-xs text-blue-700 mt-0.5">${serviceClean}</div>
+                <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">${job.name}</h3>
+                <div class="font-bold text-xs text-blue-700 dark:text-blue-400 mt-0.5">${serviceClean}</div>
 
-                <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2.5 leading-relaxed">
-                    <strong class="text-slate-800">Issue:</strong> ${job.issue_description || 'Routine service inspection'}
+                <p class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mt-2.5 leading-relaxed">
+                    <strong class="text-slate-800 dark:text-slate-100">Issue:</strong> ${job.issue_description || 'Routine service inspection'}
                 </p>
 
-                <div class="mt-3 text-xs text-slate-500 space-y-1">
+                <div class="mt-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
                     <div class="flex items-start gap-1.5">
                         <span>📍</span>
-                        <span class="font-medium text-slate-700">${job.address}</span>
+                        <span class="font-medium text-slate-700 dark:text-slate-200">${job.address}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <span>📞</span>
-                        <span class="font-bold text-slate-800">${job.phone}</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-100">${job.phone}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Bottom Actions -->
-            <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <a href="tel:${job.phone}" class="flex-1 sm:flex-none text-center bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="tel:${job.phone}" class="flex-1 sm:flex-none text-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700">
                         <span>📞</span>
                         <span>Call</span>
                     </a>
-                    <a href="https://wa.me/91${job.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(job.name)},%20this%20is%20Extreme%20AC%20Technician%20Suresh%20regarding%20request%20${job.request_id}." target="_blank" class="flex-1 sm:flex-none text-center bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="https://wa.me/91${job.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(job.name)},%20this%20is%20Extreme%20AC%20Technician%20Suresh%20regarding%20request%20${job.request_id}." target="_blank" class="flex-1 sm:flex-none text-center bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-600 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         <span>💬</span>
                         <span>WhatsApp</span>
                     </a>
-                    <a href="https://maps.google.com/?q=${encodeURIComponent(job.address)}" target="_blank" class="flex-1 sm:flex-none text-center bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="https://maps.google.com/?q=${encodeURIComponent(job.address)}" target="_blank" class="flex-1 sm:flex-none text-center bg-blue-50 hover:bg-blue-600 dark:bg-blue-950/40 dark:hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white border border-blue-200 dark:border-blue-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         <span>📍</span>
                         <span>Map</span>
                     </a>
