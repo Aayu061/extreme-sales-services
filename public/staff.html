@@ -134,14 +134,26 @@
               <button type="button" onclick="filterStatus('Completed', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">✅ Completed</button>
             </div>
 
-            <div class="relative w-full sm:w-72">
-              <input
-                type="text"
-                id="searchRequestInput"
-                oninput="handleSearch(this.value)"
-                placeholder="Search name, phone, ID..."
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition"
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="btnAutoDispatchHeader"
+                onclick="triggerAlgorithmicAutoDispatch()"
+                class="px-4 py-2 bg-gradient-to-r from-amber-500 via-emerald-600 to-teal-600 hover:from-amber-600 hover:to-emerald-700 text-white text-xs font-black rounded-xl shadow-md transition flex items-center gap-2 shrink-0 border border-white/20 active:scale-95 cursor-pointer"
+                title="Run Multi-Objective Weighted Greedy Dispatch Model across MMR grid"
               >
+                <span>⚡</span>
+                <span>Auto-Dispatch (AI Algorithm)</span>
+              </button>
+              <div class="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  id="searchRequestInput"
+                  oninput="handleSearch(this.value)"
+                  placeholder="Search name, phone, ID..."
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition"
+                >
+              </div>
             </div>
           </div>
 
@@ -190,6 +202,115 @@
       </div>
 
     </main>
+
+    <!-- ALGORITHM MODAL: MULTI-OBJECTIVE WEIGHTED GREEDY DISPATCH (MOW-GDM) -->
+    <div id="algoModal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white p-6 border-b border-emerald-900/50 flex justify-between items-start">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+                Real-Time Execution: &lt;1ms
+              </span>
+              <span class="text-xs text-slate-400 font-mono" id="algoTimestamp">2026-10-02</span>
+            </div>
+            <h2 class="text-lg font-black mt-2 text-white flex items-center gap-2">
+              <span>⚡ MOW-GDM Optimization Dispatch</span>
+            </h2>
+            <p class="text-xs text-slate-300 mt-0.5">Multi-Objective Weighted Greedy Dispatch Model (Spatial + Capacity + Skill + Rating)</p>
+          </div>
+          <button onclick="closeAlgoModal()" class="text-slate-400 hover:text-white text-lg p-1 font-bold leading-none cursor-pointer">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+          <!-- Job Details -->
+          <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/60 flex flex-wrap justify-between items-center gap-3">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Assigned Job</span>
+              <div class="text-sm font-black text-slate-900 dark:text-white" id="algoJobId">AC-1003</div>
+              <div class="text-xs text-slate-600 dark:text-slate-300" id="algoCustomer">Customer Name</div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Detected Spatial Zone</span>
+              <div class="text-xs font-black text-emerald-600 dark:text-emerald-400" id="algoZone">Western Suburbs (MMR)</div>
+            </div>
+          </div>
+
+          <!-- Winner Card -->
+          <div class="bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">🏆 Top Recommended Technician</span>
+                <h3 class="text-base font-black text-slate-900 dark:text-white mt-0.5" id="algoTechName">Suresh Kumar</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 italic" id="algoRationale">Optimal match based on proximity and skill</p>
+              </div>
+              <div class="text-right">
+                <span class="text-3xl font-black text-emerald-600 dark:text-emerald-400" id="algoScore">94.2%</span>
+                <div class="text-[10px] font-bold text-slate-400 uppercase">Composite Score</div>
+              </div>
+            </div>
+
+            <!-- Score breakdown grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-4 border-t border-emerald-500/20 text-center">
+              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
+                <div class="text-[10px] text-slate-500 font-bold">📍 Geo-Proximity (35%)</div>
+                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoGeoScore">--</div>
+              </div>
+              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
+                <div class="text-[10px] text-slate-500 font-bold">⚖️ Capacity (30%)</div>
+                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoWorkloadScore">--</div>
+              </div>
+              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
+                <div class="text-[10px] text-slate-500 font-bold">🛠️ Skill Affinity (20%)</div>
+                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoSkillScore">--</div>
+              </div>
+              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
+                <div class="text-[10px] text-slate-500 font-bold">⭐ QA Rating (15%)</div>
+                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoRatingScore">--</div>
+              </div>
+            </div>
+
+            <!-- Dynamic ETA Banner -->
+            <div class="mt-3 flex items-center justify-between bg-emerald-600 text-white rounded-xl px-3.5 py-2 text-xs font-bold shadow-sm">
+              <span class="flex items-center gap-1.5">
+                <span>⏱️ Real-time Dynamic ETA:</span>
+                <span id="algoETA" class="font-extrabold text-amber-200">--</span>
+              </span>
+              <span id="algoTraffic" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold">Moderate Traffic</span>
+            </div>
+          </div>
+
+          <!-- Leaderboard Table -->
+          <div>
+            <h4 class="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2">Fleet Candidate Evaluation Matrix</h4>
+            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+              <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 text-[10px] font-black uppercase">
+                  <tr>
+                    <th class="px-3.5 py-2">Rank</th>
+                    <th class="px-3.5 py-2">Technician</th>
+                    <th class="px-3.5 py-2">Zone</th>
+                    <th class="px-3.5 py-2">Queue</th>
+                    <th class="px-3.5 py-2">ETA</th>
+                    <th class="px-3.5 py-2">Score</th>
+                  </tr>
+                </thead>
+                <tbody id="algoLeaderboardBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+          <button onclick="closeAlgoModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">
+            Close &amp; View Queue
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>

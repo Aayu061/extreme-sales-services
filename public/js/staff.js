@@ -260,11 +260,18 @@ function renderTable() {
                     <span>${req.status}</span>
                 </span>
                 ${req.technician_name ? `<div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">🧑‍🔧 ${req.technician_name.split(' ')[0]}</div>` : ''}
+                ${req.dispatch_score ? `<div class="text-[9px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40 w-max mt-0.5">⚡ ${req.dispatch_score}% Match</div>` : ''}
             </td>
             <td class="px-5 py-4">
                 <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full min-w-[145px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
                     ${techOpts}
                 </select>
+                ${req.status === 'Pending' ? `
+                <button type="button" onclick="triggerAlgorithmicAutoDispatch('${req.request_id}')" class="mt-1.5 w-full bg-gradient-to-r from-amber-500/10 via-emerald-500/15 to-teal-500/10 hover:from-emerald-600 hover:to-teal-600 text-emerald-800 dark:text-emerald-300 hover:text-white border border-emerald-300/80 dark:border-emerald-700/60 font-black py-1 px-2 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Compute optimal technician using MOW-GDM algorithm">
+                    <span>⚡</span>
+                    <span>Auto-Match AI</span>
+                </button>
+                ` : ''}
             </td>
             <td class="px-5 py-4">
                 <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full min-w-[130px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
@@ -448,4 +455,106 @@ window.setJobPriority = async function(requestId, priority) {
 window.getJobPriority = function(requestId) {
     return localStorage.getItem(`ess_priority_${requestId}`) || 'normal';
 };
+
+// ═══════════════════════════════════════════════════════════
+// REAL-TIME AUTO-DISPATCH (MOW-GDM ALGORITHM) MODAL LOGIC
+// ═══════════════════════════════════════════════════════════
+window.triggerAlgorithmicAutoDispatch = async function(specificRequestId = null) {
+    const headerBtn = document.getElementById('btnAutoDispatchHeader');
+    const origHtml = headerBtn ? headerBtn.innerHTML : '';
+    if (headerBtn) {
+        headerBtn.disabled = true;
+        headerBtn.innerHTML = `<span>⏳</span><span>Calculating Optimization...</span>`;
+    }
+
+    try {
+        const payload = specificRequestId ? { requestId: specificRequestId } : {};
+        const response = await fetch(`${API_BASE}/api/admin/auto-dispatch`, {
+            method: 'POST',
+            headers: authHeaders,
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            if (window.showToast) window.showToast(data.message || "No pending jobs available for dispatch", "info", 3000);
+            return;
+        }
+
+        // Open and Populate the MOW-GDM Transparency Modal
+        const modal = document.getElementById('algoModal');
+        if (modal) {
+            document.getElementById('algoJobId').innerText = data.requestId;
+            document.getElementById('algoTimestamp').innerText = `Executed in ${data.executionLatencyMs || '<1'}ms`;
+
+            // Customer details
+            const reqMatch = currentRequests.find(r => r.request_id === data.requestId);
+            if (reqMatch) {
+                document.getElementById('algoCustomer').innerText = `${reqMatch.name} • ${reqMatch.phone}`;
+            }
+
+            // Metric elements
+            document.getElementById('algoZone').innerText = `${data.metrics.customerZone} (${data.metrics.distanceKm} km transit)`;
+            document.getElementById('algoTechName').innerText = data.assignedTechnician.name;
+            document.getElementById('algoRationale').innerText = data.assignedTechnician.rationale || 'Optimal spatial & workload match';
+            document.getElementById('algoScore').innerText = `${data.assignedTechnician.compositeScore}%`;
+
+            // Sub-scores
+            document.getElementById('algoGeoScore').innerText = `${data.scoreBreakdown.geoScore}/100`;
+            document.getElementById('algoWorkloadScore').innerText = `${data.scoreBreakdown.workloadScore}/100`;
+            document.getElementById('algoSkillScore').innerText = `${data.scoreBreakdown.skillScore}/100`;
+            document.getElementById('algoRatingScore').innerText = `${data.scoreBreakdown.ratingScore}/100`;
+
+            // ETA
+            document.getElementById('algoETA').innerText = `${data.metrics.etaMinutes} mins (${data.metrics.estimatedArrival})`;
+            document.getElementById('algoTraffic').innerText = data.metrics.trafficFactor || 'Moderate Traffic';
+
+            // Full Leaderboard Table
+            const tbody = document.getElementById('algoLeaderboardBody');
+            if (tbody && data.rankings) {
+                tbody.innerHTML = '';
+                data.rankings.forEach((rank, idx) => {
+                    const isWinner = idx === 0;
+                    const row = document.createElement('tr');
+                    row.className = isWinner ? 'bg-emerald-500/10 font-bold dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40';
+                    row.innerHTML = `
+                        <td class="px-3.5 py-2">${isWinner ? '🏆 #1' : `#${idx + 1}`}</td>
+                        <td class="px-3.5 py-2">${rank.technicianName}</td>
+                        <td class="px-3.5 py-2">${rank.metrics.techZone}</td>
+                        <td class="px-3.5 py-2">${rank.metrics.activeJobs} jobs</td>
+                        <td class="px-3.5 py-2">${rank.metrics.etaMinutes}m</td>
+                        <td class="px-3.5 py-2 font-black">${rank.compositeScore}%</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        if (window.showToast) {
+            window.showToast(`⚡ Assigned ${data.requestId} to ${data.assignedTechnician.name} (${data.assignedTechnician.compositeScore}%)`, "success", 3500);
+        }
+
+        // Refresh Queue Table
+        await loadTechnicians();
+        await fetchRequests(true);
+
+    } catch (err) {
+        console.error("Auto-dispatch error:", err);
+        if (window.showToast) window.showToast("Auto-dispatch service error", "error");
+    } finally {
+        if (headerBtn) {
+            headerBtn.disabled = false;
+            headerBtn.innerHTML = origHtml;
+        }
+    }
+};
+
+window.closeAlgoModal = function() {
+    const modal = document.getElementById('algoModal');
+    if (modal) modal.classList.add('hidden');
+};
+
 
