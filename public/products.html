@@ -1,16 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AC Marketplace | Extreme Sales &amp; Services</title>
     <meta
       name="description"
       content="Shop New ACs, 2nd Hand units, and genuine spare parts at Extreme Sales &amp; Services. Best prices, fast delivery."
-    />
+    >
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
     <!-- Anti-flicker: apply dark class BEFORE first paint -->
     <script>
       (function(){
@@ -43,7 +43,7 @@
               class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm"
               >ES</span
             >
-            Extreme <span class="text-gray-950">S&S</span>
+            Extreme <span class="text-gray-950">S&amp;S</span>
           </a>
           <div class="hidden md:flex space-x-8 items-center">
             <a
@@ -78,6 +78,7 @@
             >
             <!-- Theme Toggle Button -->
             <button
+              type="button"
               class="theme-toggle-btn text-gray-600 dark:text-gray-300 hover:text-blue-600 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800"
               aria-label="Toggle Theme"
             >
@@ -93,6 +94,7 @@
           <div class="md:hidden flex items-center gap-2">
             <!-- Theme Toggle for Mobile -->
             <button
+              type="button"
               class="theme-toggle-btn text-gray-600 dark:text-gray-300 hover:text-blue-600 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800"
               aria-label="Toggle Theme"
             >
@@ -104,6 +106,7 @@
               </svg>
             </button>
             <button
+              type="button"
               id="mobileMenuBtn"
               aria-label="Toggle mobile menu"
               class="text-gray-600 hover:text-blue-600 transition"
@@ -156,24 +159,28 @@
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div id="categoryFilters" class="flex flex-wrap gap-2">
               <button
+                type="button"
                 onclick="filterCategory('all', this)"
                 class="cat-btn active bg-blue-600 text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest shadow-xl transition-all scale-105"
               >
                 All Items
               </button>
               <button
+                type="button"
                 onclick="filterCategory('new_ac', this)"
                 class="cat-btn bg-white/5 text-white/70 hover:bg-white/10 px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest transition-all"
               >
                 New ACs
               </button>
               <button
+                type="button"
                 onclick="filterCategory('used_ac', this)"
                 class="cat-btn bg-white/5 text-white/70 hover:bg-white/10 px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest transition-all"
               >
                 Refurbished
               </button>
               <button
+                type="button"
                 onclick="filterCategory('spare_part', this)"
                 class="cat-btn bg-white/5 text-white/70 hover:bg-white/10 px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest transition-all"
               >
@@ -188,7 +195,7 @@
                   type="search"
                   placeholder="Search..."
                   class="w-full lg:w-48 px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold focus:bg-white focus:text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all placeholder:text-white/40"
-                />
+                >
               </div>
               <select
                 id="productSort"
@@ -218,7 +225,7 @@
                 step="500"
                 value="0"
                 class="h-1 w-24 bg-white/10 rounded-full accent-blue-400"
-              />
+              >
             </div>
             <div class="flex items-center gap-3">
               <span
@@ -235,20 +242,21 @@
                 step="500"
                 value="100000"
                 class="h-1 w-24 bg-white/10 rounded-full accent-blue-400"
-              />
+              >
             </div>
             <label class="flex items-center gap-2 cursor-pointer group">
               <input
                 id="inStockOnly"
                 type="checkbox"
                 class="w-4 h-4 rounded bg-white/10 border-white/20 text-blue-600 focus:ring-offset-0 focus:ring-0"
-              />
+              >
               <span class="group-hover:text-white transition"
                 >In-stock only</span
               >
             </label>
             <button
               id="clearFilters"
+              type="button"
               onclick="clearFilters()"
               class="ml-auto text-white/40 hover:text-red-400 transition uppercase tracking-widest"
             >
@@ -265,10 +273,10 @@
         <!-- Sticky Quick Filter Pills + result count -->
         <div class="product-filter-bar mb-6 -mx-4 px-4 flex flex-wrap items-center gap-2 justify-between">
           <div class="flex flex-wrap gap-2">
-            <button onclick="setPillFilter('all',this)" class="filter-pill active">🏠 All Items</button>
-            <button onclick="setPillFilter('new_ac',this)" class="filter-pill">❄️ New ACs</button>
-            <button onclick="setPillFilter('used_ac',this)" class="filter-pill">♻️ Refurbished</button>
-            <button onclick="setPillFilter('spare_part',this)" class="filter-pill">🔧 Spare Parts</button>
+            <button type="button" onclick="setPillFilter('all',this)" class="filter-pill active">🏠 All Items</button>
+            <button type="button" onclick="setPillFilter('new_ac',this)" class="filter-pill">❄️ New ACs</button>
+            <button type="button" onclick="setPillFilter('used_ac',this)" class="filter-pill">♻️ Refurbished</button>
+            <button type="button" onclick="setPillFilter('spare_part',this)" class="filter-pill">🔧 Spare Parts</button>
           </div>
           <span id="resultCount" class="text-xs font-bold text-slate-500">Loading...</span>
         </div>
@@ -316,6 +324,7 @@
           </div>
           <button
             onclick="closeModal()"
+            type="button"
             class="text-white hover:rotate-90 transition-transform duration-300 font-black text-4xl leading-none"
           >
             &times;
@@ -328,10 +337,10 @@
           >
             <img
               id="modalImage"
-              src=""
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
               class="w-20 h-20 object-cover rounded-2xl shadow-xl bg-white border border-white"
               alt=""
-            />
+            >
             <div>
               <p
                 id="modalProductName"
@@ -346,13 +355,13 @@
           </div>
 
           <form id="enquiryForm" class="space-y-6">
-            <input type="hidden" id="modalProductId" />
+            <input type="hidden" id="modalProductId">
             <div class="form-field">
-              <input type="text" id="enqName" required placeholder=" " />
+              <input type="text" id="enqName" required placeholder=" ">
               <label for="enqName">Your Name</label>
             </div>
             <div class="form-field">
-              <input type="tel" id="enqPhone" required placeholder=" " />
+              <input type="tel" id="enqPhone" required placeholder=" ">
               <label for="enqPhone">Phone Number</label>
             </div>
             <div class="form-field">
@@ -383,7 +392,7 @@
       <p
         class="text-gray-500 font-bold text-xs uppercase tracking-widest mb-10"
       >
-        &copy; 2026 Extreme S&S. All Rights Reserved.
+        &copy; 2026 Extreme S&amp;S. All Rights Reserved.
       </p>
       <a
         href="index.html"
