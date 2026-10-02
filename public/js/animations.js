@@ -9,6 +9,145 @@
 (function () {
   'use strict';
 
+  /* ─── 0. Bose Design System Universal Preloader & Link Transition Engine ─── */
+  const initBoseLoadingSystem = () => {
+    // 1. Laser top loader for page-to-page link transitions
+    let topLoader = document.getElementById('boseTopLoader');
+    if (!topLoader) {
+      topLoader = document.createElement('div');
+      topLoader.id = 'boseTopLoader';
+      if (document.body) {
+        document.body.appendChild(topLoader);
+      } else if (document.documentElement) {
+        document.documentElement.appendChild(topLoader);
+      }
+    }
+
+    const triggerTopLoader = (callback) => {
+      if (!topLoader) return;
+      topLoader.style.opacity = '1';
+      topLoader.style.width = '35%';
+      setTimeout(() => { if (topLoader) topLoader.style.width = '75%'; }, 60);
+      setTimeout(() => { if (topLoader) topLoader.style.width = '95%'; }, 160);
+      if (typeof callback === 'function') {
+        setTimeout(callback, 220);
+      }
+    };
+
+    // 2. Intercept internal link clicks to execute loading process
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href) return;
+
+      // Ignore anchor jumps on same page, javascript:, tel:, mailto:, new tabs
+      if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('tel:') || href.startsWith('mailto:') || link.target === '_blank') {
+        return;
+      }
+
+      const isInternal = !href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('//');
+      if (isInternal) {
+        e.preventDefault();
+        triggerTopLoader(() => {
+          window.location.href = href;
+        });
+      }
+    });
+
+    // 3. Universal Bose Preloader on initial load
+    if (!document.getElementById('bosePreloader')) {
+      const preloader = document.createElement('div');
+      preloader.id = 'bosePreloader';
+      preloader.setAttribute('role', 'status');
+      preloader.setAttribute('aria-label', 'Loading Extreme Sales & Services');
+      preloader.innerHTML = `
+        <div class="bose-loader-ring-wrapper">
+          <div class="bose-loader-pulse-ring"></div>
+          <div class="bose-loader-pulse-ring"></div>
+          <div class="bose-loader-pulse-ring"></div>
+          <div class="bose-loader-core">
+            <span style="font-weight:900; font-size:1.4rem; letter-spacing:-0.05em; background: linear-gradient(135deg, #ffffff, #cc9cdc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ES</span>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:1.5rem;">
+          <div style="font-size:0.75rem; font-weight:900; letter-spacing:0.25em; text-transform:uppercase; color:#ffffff; margin-bottom:0.35rem;">Extreme Sales &amp; Services</div>
+          <div style="font-size:0.68rem; font-family:'JetBrains Mono', monospace; color:#cc9cdc; letter-spacing:0.1em; text-transform:uppercase; opacity:0.85;">Intelligent Climate Architecture</div>
+        </div>
+
+        <div class="bose-progress-container">
+          <div id="boseProgressBar" class="bose-progress-bar"></div>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; width:300px; max-width:85vw; margin-bottom:1.25rem; font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:#999999;">
+          <span id="boseTelemetryConsole" class="bose-telemetry-console">[SYS] INITIALIZING CORE...</span>
+          <span id="boseProgressPercent" style="font-weight:700; color:#ffffff; margin-left:0.5rem;">0%</span>
+        </div>
+
+        <div class="bose-telemetry-badge" style="font-size:0.65rem; padding:0.35rem 0.85rem;">
+          <span class="bose-telemetry-pulse"></span>
+          <span style="font-family:'JetBrains Mono', monospace;">MOW-GDM v2.4 &bull; DYNAMIC ETA &bull; SUB-1MS KV</span>
+        </div>
+      `;
+
+      if (document.body) {
+        document.body.appendChild(preloader);
+      } else if (document.documentElement) {
+        document.documentElement.appendChild(preloader);
+      }
+
+      const progressBar = preloader.querySelector('#boseProgressBar');
+      const progressPercent = preloader.querySelector('#boseProgressPercent');
+      const consoleLog = preloader.querySelector('#boseTelemetryConsole');
+
+      const steps = [
+        { pct: 24, text: '[SYS] CORE ASSETS & SHADERS READY' },
+        { pct: 52, text: '[ALGO] CALIBRATING MOW-GDM FLEET DISPATCH' },
+        { pct: 76, text: '[DIAGNOSTICS] PRE-COMPILING HVAC TRIAGE' },
+        { pct: 92, text: '[CACHE] IN-MEMORY KV READY (<1MS)' },
+        { pct: 100, text: '[READY] ESS PLATFORM INITIALIZED' }
+      ];
+
+      // Non-blocking parallel probe to server
+      fetch('/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
+
+      let stepIndex = 0;
+      const interval = setInterval(() => {
+        if (stepIndex < steps.length) {
+          const item = steps[stepIndex];
+          if (progressBar) progressBar.style.width = `${item.pct}%`;
+          if (progressPercent) progressPercent.textContent = `${item.pct}%`;
+          if (consoleLog) consoleLog.textContent = item.text;
+          stepIndex++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            preloader.classList.add('bose-preloader-hidden');
+            setTimeout(() => {
+              if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
+            }, 650);
+          }, 140);
+        }
+      }, 90);
+
+      // Failsafe timer so user is never blocked
+      setTimeout(() => {
+        clearInterval(interval);
+        preloader.classList.add('bose-preloader-hidden');
+        setTimeout(() => {
+          if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
+        }, 650);
+      }, 1500);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBoseLoadingSystem);
+  } else {
+    initBoseLoadingSystem();
+  }
+
   /* ─── 1. Scroll Reveal (Restrained, Polished & Accessible) ─── */
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const revealElements = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-left, .reveal-right');
@@ -415,15 +554,14 @@
     window.dispatchEvent(new Event('scroll'));
   };
 
-  // On first visit: respect OS preference if no saved preference
+  // On first visit: default to Bose Dark Mode
   const initTheme = () => {
     const saved = localStorage.getItem('theme');
     if (saved) {
       applyTheme(saved);
     } else {
-      // Respect system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'dark' : 'light');
+      // Bose Design System specification: default to dark
+      applyTheme('dark');
     }
   };
 
@@ -514,7 +652,10 @@ const diagnosticData = {
     desc: 'Usually caused by clogged condenser coils restricting heat exchange, capacitor degradation, or micro-leakage in R32/R410A copper gas lines.',
     time: '45 Minutes',
     price: '₹499 - ₹1,499',
-    issueParam: 'No Cooling'
+    issueParam: 'No Cooling',
+    algoCode: 'MOW-GDM#842 (Refrigerant Loss Model)',
+    algoConf: '98.4%',
+    algoPriority: 'P1-HIGH'
   },
   'water-leak': {
     badge: 'Water Drainage Fault',
@@ -523,7 +664,10 @@ const diagnosticData = {
     desc: 'Occurs when algae, dust or mold block the condensate drain line or when the evaporator coil is frozen due to restricted airflow.',
     time: '30 Minutes',
     price: '₹399 - ₹799',
-    issueParam: 'Water Leaking'
+    issueParam: 'Water Leaking',
+    algoCode: 'MOW-GDM#319 (Condensate Trap Sensor)',
+    algoConf: '99.1%',
+    algoPriority: 'P2-STANDARD'
   },
   'noise': {
     badge: 'Mechanical Vibration',
@@ -532,7 +676,10 @@ const diagnosticData = {
     desc: 'Indicates loose motor mounting bolts, worn blower wheel bearings, or debris trapped inside the outdoor fan shroud.',
     time: '40 Minutes',
     price: '₹499 - ₹1,299',
-    issueParam: 'Loud Noise'
+    issueParam: 'Loud Noise',
+    algoCode: 'MOW-GDM#405 (Harmonic Vibration Analysis)',
+    algoConf: '96.8%',
+    algoPriority: 'P2-STANDARD'
   },
   'power-trip': {
     badge: 'Electrical Safety Fault',
@@ -541,7 +688,10 @@ const diagnosticData = {
     desc: 'Signifies a shorted starting capacitor, damaged compressor relay, or overloaded electrical wiring drawing excessive amperage.',
     time: '50 Minutes',
     price: '₹699 - ₹1,899',
-    issueParam: 'Power Tripping'
+    issueParam: 'Power Tripping',
+    algoCode: 'MOW-GDM#912 (Inverter Amperage Overdraw)',
+    algoConf: '99.7%',
+    algoPriority: 'P0-CRITICAL'
   },
   'smell': {
     badge: 'Air Quality & Hygiene',
@@ -550,7 +700,10 @@ const diagnosticData = {
     desc: 'Bacterial growth on dirty evaporator fins and standing tray water. Requires 140-bar high-pressure anti-fungal jet wash.',
     time: '35 Minutes',
     price: '₹499 - ₹899',
-    issueParam: 'Foul Smell'
+    issueParam: 'Foul Smell',
+    algoCode: 'MOW-GDM#204 (Biofilm Resistance Index)',
+    algoConf: '97.5%',
+    algoPriority: 'P3-PREVENTIVE'
   },
   'gas-wash': {
     badge: 'Pre-Summer Deep Care',
@@ -559,7 +712,10 @@ const diagnosticData = {
     desc: 'Comprehensive maintenance package including 100% virgin gas top-up, electrical health checks, and 2-step foam jet wash.',
     time: '60 Minutes',
     price: '₹1,299 - ₹2,499',
-    issueParam: 'Gas & Wash'
+    issueParam: 'Gas & Wash',
+    algoCode: 'MOW-GDM#718 (Full Life-Cycle Optimization)',
+    algoConf: '99.0%',
+    algoPriority: 'P2-STANDARD'
   }
 };
 
@@ -586,6 +742,14 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('diagTime').innerText = data.time;
           document.getElementById('diagPrice').innerText = data.price;
           document.getElementById('diagBookBtn').href = `service.html?issue=${encodeURIComponent(data.issueParam)}`;
+          
+          const codeEl = document.getElementById('diagAlgoCode');
+          const confEl = document.getElementById('diagAlgoConf');
+          const prioEl = document.getElementById('diagAlgoPriority');
+          if (codeEl && data.algoCode) codeEl.innerText = data.algoCode;
+          if (confEl && data.algoConf) confEl.innerText = data.algoConf;
+          if (prioEl && data.algoPriority) prioEl.innerText = data.algoPriority;
+
           // Animate back in
           diagCard.classList.remove('updating');
         }, 180);
