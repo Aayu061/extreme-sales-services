@@ -6,9 +6,20 @@ const resultsCard   = document.getElementById('trackingResultsCard');
 const displayId     = document.getElementById('displayId');
 const timelineContent = document.getElementById('timelineContent');
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+    ? window.APP_CONFIG.BACKEND_URL
+    : (isLocal ? 'http://localhost:5000' : '');
+
+const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || function(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 
 let trackingSource = null;
 let pollInterval   = null;
@@ -182,10 +193,11 @@ function renderEtaCard(status, techName, serverEta = null, zone = null) {
         const m = Math.floor(secs / 60);
         const s = secs % 60;
         const display = m > 0 ? `${m}m ${String(s).padStart(2,'0')}s` : `${s}s`;
+        const safeTechName = escapeHtml(techName || '');
         const statusMsg = status === 'Pending'
             ? 'Coordinating with dispatch algorithm'
             : status === 'Assigned'
-            ? `Engineer ${techName || ''} dispatched${zoneInfo}${trafficInfo}`
+            ? `Engineer ${safeTechName} dispatched${zoneInfo}${trafficInfo}`
             : 'Engineer is working on-site';
 
         el.innerHTML = `
@@ -237,9 +249,13 @@ window.copyTrackLink = (url) => {
 
 // ─── Timeline Render (vertical, unchanged but enhanced) ──────────
 function renderTimeline(currentStatus, techName, serviceType, customerName) {
+    const safeTech = escapeHtml(techName || '');
+    const safeService = escapeHtml(serviceType || 'AC Diagnostics & Service');
+    const safeCustomer = escapeHtml(customerName || '');
+
     const stages = [
         { key: 'Pending',     title: 'Request Received & In Queue',    desc: 'Your request has been logged and is being reviewed by our dispatch team for assignment.' },
-        { key: 'Assigned',    title: 'Field Engineer Assigned',         desc: techName && techName !== 'Pending Assignment' ? `Assigned to certified engineer: <strong>${techName}</strong>. Service toolkit prepared.` : 'Technician dispatched to schedule on-site visit.' },
+        { key: 'Assigned',    title: 'Field Engineer Assigned',         desc: techName && techName !== 'Pending Assignment' ? `Assigned to certified engineer: <strong>${safeTech}</strong>. Service toolkit prepared.` : 'Technician dispatched to schedule on-site visit.' },
         { key: 'In Progress', title: 'Engineer On-Site & Servicing',    desc: 'Technician has arrived at your location. Diagnostics and repairs are underway.' },
         { key: 'Completed',   title: 'Service Completed & Tested',      desc: 'All electrical, pressure, and cooling temperature tests verified. Warranty and invoice issued.' }
     ];
@@ -250,12 +266,12 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
         <div class="mb-6 p-4 bg-blue-50/80 rounded-2xl border border-blue-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">Active Service Details</span>
-                <div class="text-sm font-black text-slate-900">${serviceType || 'AC Diagnostics & Service'}</div>
-                ${customerName ? `<div class="text-xs text-slate-500">Customer: <strong>${customerName}</strong></div>` : ''}
+                <div class="text-sm font-black text-slate-900">${safeService}</div>
+                ${customerName ? `<div class="text-xs text-slate-500">Customer: <strong>${safeCustomer}</strong></div>` : ''}
             </div>
             ${techName && techName !== 'Pending Assignment' ? `
                 <div class="bg-white px-3 py-1.5 rounded-xl border border-blue-200 text-xs font-bold text-blue-900 flex items-center gap-1.5 shadow-sm">
-                    <span>🧑‍🔧</span><span>${techName}</span>
+                    <span>🧑‍🔧</span><span>${safeTech}</span>
                 </div>` : ''}
         </div>`;
 

@@ -109,9 +109,12 @@ Extreme-Sales-Services/
 │
 └── server/                          # Modular Backend Services & Middleware
     ├── middleware/
-    │   └── authMiddleware.js        # Express JWT bearer validation & role-based access control
+    │   ├── authMiddleware.js        # Strict JWT verification, fail-closed production check, RBAC
+    │   └── security.js              # Rate limiters, validators, collision-resistant IDs, state machine
     └── services/
-        └── emailService.js          # SendGrid transactional email generator with HTML templates
+        ├── diagnosticsEngine.js     # Rule-based HVAC fault tree triage with performance.now() latency
+        ├── dispatchEngine.js        # Heuristic multi-objective greedy dispatch with performance.now()
+        └── emailService.js          # SendGrid transactional email generator with non-blocking error handling
 ```
 
 ---
@@ -123,19 +126,29 @@ Extreme-Sales-Services/
 2. **Dynamic Check**: `service.js` fires asynchronous `GET /api/amc/check?phone=<phone>`.
 3. **Firestore Inspection**: Backend queries `customer_amc` where `phone == <phone>` and `status == 'Active'`.
 4. **Client Render**: If active and `remaining_services > 0`, UI presents green delight banner indicating 100% free AMC coverage.
-5. **Atomic Transaction**: On booking submit (`POST /api/services`), backend decrements `remaining_services` by 1 in `customer_amc`, tags the request as `[✅ AMC Covered]`, creates the document in `service_requests`, and sends a SendGrid confirmation email.
+5. **Atomic Firestore Transaction**: On booking submit (`POST /api/services`), backend executes an atomic `db.runTransaction()`:
+   - Reads current active AMC contract.
+   - Decrements `remaining_services` by 1.
+   - Creates new ticket in `service_requests` with collision-resistant ID (`AC-YYYYMMDD-XXXX`).
+   - If anything fails, all mutations roll back.
+   - Initiates asynchronous non-blocking SendGrid confirmation email.
 
-### 3.2 Real-Time Dispatch & Field Technician Telemetry Flow
+### 3.2 Dispatch & Field Technician Flow
 1. **Ticket Creation**: Ticket is tagged as `status: 'Pending'`.
-2. **Dispatcher Assignment**: Coordinator on `staff.html` or `admin.html` assigns technician via `PATCH /api/admin/assign-technician`.
+2. **Heuristic Dispatcher Assignment**: Coordinator on `staff.html` or `admin.html` assigns technician directly or via the Heuristic Dispatch Engine (`PATCH /api/admin/assign-technician`).
 3. **Status Progression**: Status changes to `'Assigned'`.
-4. **Field On-Site Action**: Technician on `technician.html` updates status to `'In Progress'`, logs replacement parts, captures customer signature on canvas, and marks `'Completed'`.
-5. **Customer Real-Time Stream**: Customer's active `status.html` receives SSE updates on `/api/track/live` without page refresh.
+4. **Field On-Site Action**: Technician on `technician.html` authenticates via JWT and accesses strictly their assigned jobs (`GET /api/technician/jobs`), updates status to `'In Progress'`, logs replacement parts, captures customer signature on high-contrast canvas, and marks `'Completed'`.
+5. **Customer Real-Time Stream**: Customer's active `status.html` receives SSE updates on `/api/track/live` without exposing sensitive customer PII.
 
 ---
 
 ## 4. Security & Authentication Architecture
-- **Password Protection**: Passwords hashed with `bcryptjs` using a salt work factor of 10.
-- **JWT Authorization**: Signed JSON Web Tokens with a 24-hour expiration containing claims `{ id, role, name }`.
-- **Role-Based Access Control (RBAC)**: Enforced via `flexibleAuth(['admin', 'staff', 'technician'])`.
+- **Least-Privilege Firestore Rules**: Direct client reads and writes are blocked for sensitive collections (`users`, `service_requests`, `customer_amc`, `enquiries`). Only read-only catalog data is public.
+- **Fail-Closed JWT Authentication**: Production rejects missing `JWT_SECRET` with an immediate server error; zero hardcoded fallback secrets.
+- **Role-Based Access Control (RBAC)**: Authoritative middleware (`requireAuth`, `requireRole('admin')`, `requireRole('staff')`, `requireRole('technician')`).
+- **Zero IDOR Vulnerabilities**: Technician endpoints derive user identity strictly from `req.user.id`; client-provided identity headers are discarded.
+- **State Machine Integrity**: Ticket status changes must follow legal transitions (`Pending` -> `Assigned` -> `In Progress` -> `Completed`).
+- **Input Sanitization & Validation**: Validation of phone, email, text length, and numeric inputs; global HTML entity escaping (`escapeHtml()`) prevents stored and DOM-based XSS.
+- **Sliding-Window Rate Limiting**: Production protections on auth, bookings, enquiries, feedback, and diagnostics.
 - **Zero Secrets in Version Control**: `.env` and `firebase-credentials.json` are strictly excluded via `.gitignore`.
+

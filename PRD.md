@@ -17,11 +17,11 @@ In the residential and commercial HVAC (Heating, Ventilation, and Air Conditioni
 
 ### 1.2 The Solution: Extreme Sales & Services
 Extreme Sales & Services is a unified, cloud-native enterprise HVAC management system delivering:
-1. An immersive, modern, 3D interactive public portal for consumers to browse products, calculate servicing costs, purchase AMC tiers, and book certified technicians.
-2. A real-time GPS-style customer tracking interface with live progress steppers and Server-Sent Events (SSE).
+1. A modern, Bose-inspired interactive public portal for consumers to browse products, calculate servicing costs, purchase AMC tiers, and book certified technicians.
+2. A transparent milestone customer tracking interface with 4-stage progress steppers and Server-Sent Events (SSE).
 3. A mobile-first field technician console with digital signature capture, spare parts logging, and instant on-site bill calculation.
-4. A centralized dispatcher control desk for triage, live workload balancing, and technician assignment.
-5. An executive BI analytics dashboard with revenue trends, technician performance leaderboards, and automated Firestore synchronization.
+4. A centralized dispatcher control desk for triage, live workload balancing, and heuristic algorithmic technician assignment.
+5. An executive BI analytics dashboard with real 7-day chronological Firestore trends, technician performance leaderboards, and automated synchronization.
 
 ---
 
@@ -38,24 +38,26 @@ Extreme Sales & Services is a unified, cloud-native enterprise HVAC management s
 
 ## 3. Core Feature Matrix & Requirements
 
-### 3.1 3D Interactive Presentation Homepage (`index.html`)
-- **Interactive 3D AC Unit Simulator**: Interactive 3D AC visualizer (built with Three.js / Canvas) allowing users to rotate the unit, toggle airflow particle streams, adjust target cooling temperature, and switch between modes (Eco, Turbo, Silent).
-- **Interactive Cost Estimator**: Dynamic HVAC Service Cost Estimator allowing customers to select AC Type (Split / Window / Inverter / Cassette), Tonnage (1.0T, 1.5T, 2.0T), and Problem Type to see instant estimated quotes and AMC savings.
-- **Pincode Serviceability Check**: Real-time coverage checker validating coverage across Mumbai, Navi Mumbai, and Thane metropolitan areas.
-- **Emergency Breakdown Hotline & Floating Booking Bar**: Quick-action booking triggers.
+### 3.1 Presentation Homepage & Instant Tools (`index.html`)
+- **Interactive 3D AC Unit Simulator [Planned Specification]**: Interactive 3D AC visualizer (designed for Three.js / Canvas) planned for future 3D model integration. The current system provides comprehensive technical specs and cost estimation.
+- **Interactive Cost Estimator [Implemented]**: Dynamic HVAC Service Cost Estimator allowing customers to select AC Type (Split / Window / Inverter / Cassette), Tonnage (1.0T, 1.5T, 2.0T), and Problem Type to see instant estimated quotes and AMC savings.
+- **Pincode Serviceability Check [Implemented]**: Coverage checker validating service across Mumbai, Navi Mumbai, and Thane metropolitan areas.
+- **Emergency Breakdown Hotline & Floating Booking Bar [Implemented]**: Quick-action booking triggers.
 
 ### 3.2 Customer Booking Engine & Smart AMC Verification (`service.html`)
-- **Direct Service Booking**: Comprehensive form capturing Customer Name, Phone, Address, Email, AC Type, Preferred Slot, and Issue Notes.
+- **Direct Service Booking**: Comprehensive form capturing Customer Name, Phone, Address, Email, AC Type, Preferred Slot, and Issue Notes with backend validation and rate limiting.
 - **Real-Time AMC Auto-Lookup (`GET /api/amc/check`)**: As the customer inputs their 10-digit phone number, client dynamically checks active subscriptions in Firestore:
-  - If active: Renders green delight banner showing plan tier, remaining free visits, and tags ticket as `[✅ AMC Covered]`, decrementing remaining services quota atomically.
+  - If active: Renders green delight banner showing plan tier, remaining free visits, and tags ticket as `[✅ AMC Covered]`.
+  - Quota is decremented atomically inside a Firestore `db.runTransaction()` during `POST /api/services`.
   - If inactive: Renders standard transparent pricing.
-- **Success Modal with Direct Live Tracker Link**: Generates unique tracking code (`AC-XXXX`) and direct navigation button into `status.html?id=AC-XXXX&phone=...`.
-- **SendGrid Email Confirmation**: Automatic dispatch of branded confirmation email with direct tracking link.
+- **Success Modal with Direct Live Tracker Link**: Generates unique, collision-resistant tracking code (`AC-YYYYMMDD-XXXX`) and direct navigation button into `status.html?id=AC-YYYYMMDD-XXXX&phone=...`.
+- **SendGrid Email Confirmation**: Asynchronous dispatch of branded confirmation email with direct tracking link (non-blocking).
 
-### 3.3 Live GPS & Service Stepper Tracker (`status.html`)
-- **Unified Ticket Query**: Lookup via Request ID (`AC-XXXX`), Phone Number, or both.
+### 3.3 Milestone Service Stepper Tracker (`status.html`)
+- **Unified Ticket Query**: Lookup via Request ID (`AC-YYYYMMDD-XXXX` or legacy `AC-XXXX`), Phone Number, or both.
 - **4-Stage Visual Stepper**: Pending (Received) -> Assigned (Tech Dispatched) -> In Progress (On-Site Diagnostics) -> Completed (Done).
 - **Live SSE EventStream (`/api/track/live`)**: Dynamic browser updates without manual page refresh.
+- **Customer Privacy Protection**: Masks customer contact details and residential address from unauthenticated queries.
 - **Confetti & Customer Review Widget**: Triggers celebratory animation upon completion and invites verified rating submission directly into `/api/feedback`.
 
 ### 3.4 Products Marketplace & Enquiry Engine (`products.html`)
@@ -79,25 +81,27 @@ Extreme Sales & Services is a unified, cloud-native enterprise HVAC management s
 - **Printable Service Receipt Modal**: Immediate digital job sheet view.
 
 ### 3.7 Staff Dispatcher Workspace (`staff.html`)
-- **Ticket Triage Desk**: Real-time listing of all incoming service requests.
+- **Ticket Triage Desk**: Real-time listing of all incoming service requests with search and status filtering.
+- **Heuristic Algorithmic Dispatch Engine**: Evaluates available technicians using a multi-objective greedy algorithm (35% zone proximity, 30% workload, 20% skill, 15% rating) with real measured execution latency (`performance.now()`).
 - **Live Technician Fleet Balancing**: Technician selector displaying active workloads and availability status.
 - **Enquiry Manager**: Customer price quotation and consultation tracker.
 
 ### 3.8 Executive BI Dashboard (`admin.html`)
-- **High-Impact Chart.js Visualizations**:
-  - 7-Day Booking vs Completion Trends.
+- **Real Chronological Chart.js Visualizations**:
+  - 7-Day Booking vs Completion Trends (aggregated directly from actual Firestore ticket timestamps).
   - Live Status Breakdown Doughnut Chart.
   - Technician Workload & Performance Bar Chart.
   - Service Type Distribution Pie Chart.
 - **Inventory & Catalog Manager**: Add, edit, update stock, and delete marketplace products.
 - **AMC Contract Activator**: One-click approval activating customer contracts for 365 days.
-- **Fleet Technician User Management**: Register new technicians and staff members with hashed credentials.
+- **Fleet Technician User Management**: Register new technicians and staff members with hashed credentials (minimum 8 characters; default passwords rejected).
 - **CSV Data Export**: One-click download of all fleet tickets and revenue metrics.
 
 ---
 
 ## 4. Real-World Business Rules & Logic
-1. **AMC Quota Decrement Rule**: When an active subscriber books a service, `remaining_services` is decremented by 1 in Firestore, and the billable service charge is set to ₹0.
+1. **Atomic AMC Quota Decrement**: When an active subscriber books a service, `remaining_services` is decremented by 1 within a Firestore transaction, guaranteeing no race conditions or lost quota, and the billable service charge is set to ₹0.
 2. **Technician Workload Cap**: A technician with 4 or more active jobs (`Assigned` or `In Progress`) displays a yellow high-load indicator to prevent dispatcher overburdening.
-3. **Graceful Authentication Fallback**: Local mock credentials are provided for rapid classroom / offline evaluation, while production enforces JWT verification against Firestore bcrypt hashes.
-4. **Zero-CORS Edge Routing**: Static assets on Vercel proxy `/api/*` seamlessly to Render, eliminating browser cross-origin policy complications.
+3. **Fail-Closed Authentication & JWT RBAC**: Production enforces JWT verification against Firestore bcrypt hashes; missing `JWT_SECRET` in production causes a fail-closed crash rather than falling back to an insecure default secret.
+4. **Technician Isolation (Zero IDOR)**: Technicians strictly access only their own assigned tickets as determined by their verified JWT claims.
+5. **Zero-CORS Edge Routing**: Static assets on Vercel proxy `/api/*` seamlessly to Render, eliminating browser cross-origin policy complications.

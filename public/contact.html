@@ -23,44 +23,68 @@
 <body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
 
     <!-- NAVBAR -->
-    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-500 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 py-3">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <a href="index.html" class="text-xl md:text-2xl font-black tracking-tighter text-blue-500 hover:opacity-80 transition flex items-center gap-2">
-                    <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm">ES</span>
-                    Extreme <span class="text-white">S&amp;S</span>
-                </a>
+    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 py-3">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl px-6 py-2.5 flex justify-between items-center border border-slate-200/80 dark:border-slate-800 shadow-sm">
+          <div class="flex-shrink-0 flex items-center">
+            <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition flex items-center gap-2.5">
+              <span class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-sm">ES</span>
+              <span>Extreme <span class="text-blue-600 font-normal">S&amp;S</span></span>
+            </a>
+          </div>
+          <div class="hidden md:flex space-x-7 items-center">
+            <a href="index.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Home</a>
+            <a href="products.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Products</a>
+            <a href="status.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Track Service</a>
+            <a href="amc.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">AMC Plans</a>
+            <a href="contact.html" class="nav-link active font-bold text-sm">Contact Us</a>
+            <a href="service.html" class="btn-accent text-xs px-5 py-2.5 font-bold">Book Service</a>
+            
+            <!-- Theme Toggle Button -->
+            <button
+              type="button"
+              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              aria-label="Toggle Theme"
+            >
+              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </button>
+          </div>
 
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="index.html" class="text-slate-300 hover:text-white font-bold text-sm transition">Home</a>
-                    <a href="products.html" class="text-slate-300 hover:text-white font-bold text-sm transition">Products</a>
-                    <a href="status.html" class="text-slate-300 hover:text-white font-bold text-sm transition">Track Status</a>
-                    <a href="amc.html" class="text-slate-300 hover:text-white font-bold text-sm transition">AMC Plans</a>
-                    <a href="contact.html" class="text-blue-400 font-extrabold text-sm transition border-b-2 border-blue-500 pb-0.5">Contact Us</a>
-                    <a href="service.html" class="btn-glow px-6 py-2.5 rounded-full text-sm">Book Service</a>
-                </div>
-
-                <div class="md:hidden flex items-center gap-2">
-                    <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-slate-300 hover:text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+          <div class="md:hidden flex items-center gap-2">
+            <!-- Theme Toggle for Mobile -->
+            <button
+              type="button"
+              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              aria-label="Toggle Theme"
+            >
+              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </button>
+            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 transition p-2">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+            </button>
+          </div>
         </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden absolute top-16 left-4 right-4 bg-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800 p-6 md:hidden">
-            <div class="flex flex-col space-y-4 text-center">
-                <a href="index.html" class="text-slate-300 hover:text-white font-bold py-2">Home</a>
-                <a href="products.html" class="text-slate-300 hover:text-white font-bold py-2">Products</a>
-                <a href="status.html" class="text-slate-300 hover:text-white font-bold py-2">Track Status</a>
-                <a href="amc.html" class="text-slate-300 hover:text-white font-bold py-2">AMC Plans</a>
-                <a href="contact.html" class="text-blue-400 font-bold py-2">Contact Us</a>
-                <a href="service.html" class="btn-glow py-3 rounded-2xl">Book Service</a>
-            </div>
-        </div>
+      </div>
+      <div id="mobileMenu" class="hidden absolute top-20 left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold">
+        <a href="index.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Home</a>
+        <a href="products.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Products</a>
+        <a href="status.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Track Service</a>
+        <a href="amc.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">AMC Plans</a>
+        <a href="contact.html" class="text-blue-600 py-2">Contact Us</a>
+        <a href="service.html" class="btn-accent py-3 rounded-xl text-white">Book Service</a>
+      </div>
     </nav>
 
     <!-- HERO / HEADER -->
@@ -302,9 +326,20 @@
             });
         });
 
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-            ? 'http://localhost:5000'
-            : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+            ? window.APP_CONFIG.BACKEND_URL
+            : (isLocal ? 'http://localhost:5000' : '');
+
+        const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || function(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
 
         // Fetch Recent Reviews
         async function loadFeedbackStream() {
@@ -320,18 +355,22 @@
                         const card = document.createElement('div');
                         card.className = "bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-3";
                         
-                        const starStr = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
-                        const formattedDate = new Date(item.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                        const safeRating = Math.max(1, Math.min(5, Number(item.rating) || 5));
+                        const starStr = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+                        const formattedDate = new Date(item.created_at || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                        const safeName = escapeHtml(item.name || 'Verified Customer');
+                        const safeCat = escapeHtml(item.category || 'AC Service');
+                        const safeMsg = escapeHtml(item.message || '');
 
                         card.innerHTML = `
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-extrabold text-slate-900 text-sm">${item.name}</h4>
-                                    <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">${item.category || 'AC Service'}</span>
+                                    <h4 class="font-extrabold text-slate-900 text-sm">${safeName}</h4>
+                                    <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">${safeCat}</span>
                                 </div>
                                 <div class="text-amber-500 text-sm tracking-wider font-bold">${starStr}</div>
                             </div>
-                            <p class="text-xs text-slate-600 leading-relaxed font-medium">"${item.message}"</p>
+                            <p class="text-xs text-slate-600 leading-relaxed font-medium">"${safeMsg}"</p>
                             <div class="flex justify-between items-center text-[10px] text-slate-400 border-t border-slate-100 pt-2">
                                 <span>${item.recommended ? '✅ Recommends Extreme S&S' : 'Verified Customer'}</span>
                                 <span>${formattedDate}</span>

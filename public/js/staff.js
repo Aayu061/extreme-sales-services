@@ -2,7 +2,17 @@
 
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
     ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined) ? window.APP_CONFIG.BACKEND_URL : '');
+
+const escapeHtml = window.escapeHtml || function(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 
 const authHeaders = {
     'Content-Type': 'application/json',
@@ -193,25 +203,25 @@ function renderTable() {
 
         tr.innerHTML = `
             <td class="px-5 py-4">
-                <div class="font-extrabold text-slate-900 dark:text-white">${req.name}</div>
-                <div class="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">📞 ${req.phone}</div>
-                <div class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-xs mt-0.5">📍 ${req.address}</div>
+                <div class="font-extrabold text-slate-900 dark:text-white">${escapeHtml(req.name)}</div>
+                <div class="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">📞 ${escapeHtml(req.phone)}</div>
+                <div class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-xs mt-0.5">📍 ${escapeHtml(req.address)}</div>
                 <div class="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded w-max mt-1 font-bold border border-emerald-100 dark:border-emerald-800/40">
-                    ${req.request_id}
+                    ${escapeHtml(req.request_id)}
                 </div>
             </td>
             <td class="px-5 py-4">
-                <div class="font-bold text-slate-800 dark:text-slate-200">${serviceClean}</div>
+                <div class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(serviceClean)}</div>
                 ${isAmc ? '<span class="inline-block bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 border border-emerald-200 dark:border-emerald-700/50">★ COVERED BY AMC</span>' : ''}
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 italic mt-0.5 max-w-xs truncate">"${req.issue_description || 'General inspection'}"</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 italic mt-0.5 max-w-xs truncate">"${escapeHtml(req.issue_description || 'General inspection')}"</div>
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
                 <span class="badge-status ${stConf.class}">
                     <span class="w-1.5 h-1.5 rounded-full ${stConf.dot}"></span>
-                    <span>${req.status}</span>
+                    <span>${escapeHtml(req.status)}</span>
                 </span>
-                ${req.technician_name ? `<div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">🧑‍🔧 ${req.technician_name.split(' ')[0]}</div>` : ''}
-                ${req.dispatch_score ? `<div class="text-[9px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40 w-max mt-0.5">⚡ ${req.dispatch_score}% Match</div>` : ''}
+                ${req.technician_name ? `<div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">🧑‍🔧 ${escapeHtml(req.technician_name.split(' ')[0])}</div>` : ''}
+                ${req.dispatch_score ? `<div class="text-[9px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40 w-max mt-0.5">⚡ ${escapeHtml(req.dispatch_score)}% Match</div>` : ''}
             </td>
             <td class="px-5 py-4">
                 <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full min-w-[145px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
@@ -290,11 +300,11 @@ async function fetchEnquiries() {
                 tr.innerHTML = `
                     <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(enq.created_at).toLocaleDateString()}</td>
                     <td class="px-5 py-3.5">
-                        <div class="font-extrabold text-slate-900">${enq.name}</div>
-                        <div class="text-xs text-slate-500">📞 ${enq.phone}</div>
+                        <div class="font-extrabold text-slate-900">${escapeHtml(enq.name)}</div>
+                        <div class="text-xs text-slate-500">📞 ${escapeHtml(enq.phone)}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-bold text-emerald-700">${enq.product_name}</td>
-                    <td class="px-5 py-3.5 text-xs text-slate-600 italic">"${enq.message}"</td>
+                    <td class="px-5 py-3.5 font-bold text-emerald-700">${escapeHtml(enq.product_name)}</td>
+                    <td class="px-5 py-3.5 text-xs text-slate-600 italic">"${escapeHtml(enq.message)}"</td>
                     <td class="px-5 py-3.5">
                         <a href="https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20regarding%20your%20enquiry%20with%20Extreme%20Sales%20%26%20Services" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-3 py-1 rounded-lg text-xs font-bold transition">
                             💬 Follow Up

@@ -1,8 +1,19 @@
 // frontend/js/products.js
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+    ? window.APP_CONFIG.BACKEND_URL
+    : (isLocal ? 'http://localhost:5000' : '');
+
+const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || function(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 const API_URL = `${API_BASE}/api/products`;
 const ENQUIRY_URL = `${API_BASE}/api/enquiries`;
 
@@ -99,11 +110,11 @@ function showCompareFull() {
             <div class="grid grid-cols-2 gap-6">
                 ${[a, b].map(p => `
                 <div class="text-center border border-slate-100 rounded-2xl p-5">
-                    <img src="${p.image_url}" class="h-28 object-contain mx-auto mb-3" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=200'">
-                    <h3 class="font-black text-slate-900 text-sm mb-1">${p.name}</h3>
-                    <p class="text-blue-600 font-black text-xl mb-1">₹${Number(p.price).toLocaleString('en-IN')}</p>
-                    <p class="text-indigo-500 text-xs font-semibold">EMI from ₹${Math.round(p.price/12).toLocaleString('en-IN')}/mo</p>
-                    <p class="text-slate-500 text-xs mt-2 leading-relaxed">${p.description || ''}</p>
+                    <img src="${escapeHtml(p.image_url || '')}" class="h-28 object-contain mx-auto mb-3" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=200'">
+                    <h3 class="font-black text-slate-900 text-sm mb-1">${escapeHtml(p.name || '')}</h3>
+                    <p class="text-blue-600 font-black text-xl mb-1">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
+                    <p class="text-indigo-500 text-xs font-semibold">EMI from ₹${Math.round((Number(p.price) || 0)/12).toLocaleString('en-IN')}/mo</p>
+                    <p class="text-slate-500 text-xs mt-2 leading-relaxed">${escapeHtml(p.description || '')}</p>
                     <button onclick="openModal('${encodeURIComponent(JSON.stringify(p))}')" class="mt-4 bg-blue-600 text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-blue-500 transition">Enquire Now</button>
                 </div>`).join('')}
             </div>
@@ -138,34 +149,44 @@ function renderProducts(productsArray) {
         const card = document.createElement('div');
         card.className = 'bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 relative flex flex-col group';
 
-        const catMap = { new_ac: ['Brand New','bg-emerald-500'], used_ac: ['Certified 2nd Hand','bg-purple-500'], spare_part: ['Genuine Spare','bg-orange-500'] };
-        const [badgeLabel, badgeClass] = catMap[p.category] || ['Item','bg-gray-400'];
+        const catMap = { new_ac: ['Brand New','bg-emerald-600'], used_ac: ['Certified 2nd Hand','bg-blue-600'], spare_part: ['Genuine Spare','bg-orange-500'] };
+        const [badgeLabel, badgeClass] = catMap[p.category] || ['Item','bg-slate-500'];
 
         const stockVal  = p.stock ?? p.quantity ?? 10;
         const isLowStock = Number(stockVal) <= 3;
         const encodedData = encodeURIComponent(JSON.stringify(p));
-        const emi12 = Math.round(p.price / 12);
+        const emi12 = Math.round((Number(p.price) || 0) / 12);
+        const safeImg = escapeHtml(p.image_url || '');
+        const safeName = escapeHtml(p.name || '');
+        const safeDesc = escapeHtml(p.description || (p.category || '').replace('_',' '));
 
         card.innerHTML = `
-            <div class="product-img-wrap h-48 bg-gray-50 flex items-center justify-center p-4">
-                <img src="${p.image_url}" alt="${p.name}"
+            <div class="product-img-wrap h-48 bg-slate-50 flex items-center justify-center p-4 relative cursor-pointer" onclick="viewProductDetails('${encodedData}')">
+                <img src="${safeImg}" alt="${safeName}"
                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80';"
-                    class="h-full object-contain transition-transform duration-500">
-                <span class="absolute top-3 left-3 ${badgeClass} text-white text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full tracking-wide shadow">${badgeLabel}</span>
-                ${isLowStock ? `<span class="stock-low-badge">⚠ Only ${stockVal} left!</span>` : ''}
+                    class="h-full object-contain transition-transform duration-300 hover:scale-105">
+                <span class="absolute top-3 left-3 ${badgeClass} text-white text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full tracking-wide shadow-sm">${badgeLabel}</span>
+                ${isLowStock ? `<span class="stock-low-badge">⚠ Only ${Number(stockVal)} left!</span>` : ''}
             </div>
-            <div class="p-5 flex flex-col flex-1 border-t border-gray-50">
-                <h3 class="font-bold text-gray-800 text-base leading-tight mb-1">${p.name}</h3>
-                <p class="text-xs text-gray-500 mb-2 line-clamp-2 flex-1">${p.description || p.category.replace('_',' ')}</p>
+            <div class="p-5 flex flex-col flex-1 border-t border-slate-100">
+                <div class="flex items-center gap-1 text-amber-400 text-xs mb-1">
+                    <span>★★★★☆</span>
+                    <span class="text-[10px] text-slate-400 font-bold ml-1">(4.8)</span>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base leading-tight mb-1 cursor-pointer hover:text-blue-600 transition" onclick="viewProductDetails('${encodedData}')">${safeName}</h3>
+                <p class="text-xs text-slate-500 mb-3 line-clamp-2 flex-1">${safeDesc}</p>
                 <div class="mb-3">
-                    <p class="text-xl font-black text-blue-600">₹${Number(p.price).toLocaleString('en-IN')}</p>
-                    <span class="emi-label">EMI from ₹${emi12.toLocaleString('en-IN')}/mo</span>
+                    <p class="text-xl font-black text-slate-900 font-mono">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
+                    <span class="text-[11px] text-blue-600 font-semibold">No-Cost EMI from ₹${emi12.toLocaleString('en-IN')}/mo</span>
                 </div>
                 <div class="flex items-center gap-2 mt-auto flex-wrap">
-                    <button onclick="openModal('${encodedData}')" class="flex-1 bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-xl font-bold transition text-xs">
+                    <button onclick="openModal('${encodedData}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl font-bold transition text-xs shadow-sm">
                         Enquire Now
                     </button>
-                    <button id="cmp-${p.id}" onclick="toggleCompare('${p.id}', '${encodedData}')" class="compare-btn">
+                    <button onclick="viewProductDetails('${encodedData}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl font-bold transition text-xs">
+                        Specs
+                    </button>
+                    <button id="cmp-${escapeHtml(p.id)}" onclick="toggleCompare('${escapeHtml(p.id)}', '${encodedData}')" class="compare-btn">
                         ⚖ Compare
                     </button>
                 </div>
@@ -440,4 +461,118 @@ function updatePriceRange(productsArray) {
     applyFilters();
 }
 
-// ------ FILTER, SEARCH, SORT ------ //
+// ─── Premium Product Details Modal (Prompt Section 9) ─────────
+window.viewProductDetails = function(encodedData) {
+    try {
+        const p = JSON.parse(decodeURIComponent(encodedData));
+        const safeImg = escapeHtml(p.image_url || 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80');
+        const safeName = escapeHtml(p.name || 'Commercial AC Unit');
+        const safeDesc = escapeHtml(p.description || 'Premium climate care unit engineered for high efficiency and quiet operation.');
+        const priceFormatted = Number(p.price || 0).toLocaleString('en-IN');
+        const emi12 = Math.round((Number(p.price) || 0) / 12).toLocaleString('en-IN');
+        const stockVal = p.stock ?? p.quantity ?? 10;
+        const inStock = Number(stockVal) > 0;
+        const categoryMap = { new_ac: 'Brand New Inverter AC', used_ac: 'Certified Refurbished Unit', spare_part: 'Genuine OEM Spare Part' };
+        const catTitle = categoryMap[p.category] || 'HVAC Component';
+
+        const existingModal = document.getElementById('productDetailModal');
+        if (existingModal) existingModal.remove();
+
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'productDetailModal';
+        modalDiv.className = 'fixed inset-0 bg-slate-900/75 backdrop-blur-md z-[120] flex items-center justify-center p-4 transition-opacity duration-300';
+        modalDiv.innerHTML = `
+            <div class="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 overflow-y-auto max-h-[92vh] relative">
+                <button type="button" onclick="document.getElementById('productDetailModal').remove()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 font-black text-2xl w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-100 transition">✕</button>
+
+                <!-- Top Two-Column Grid: LEFT Image / RIGHT Info -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-8">
+                    <!-- LEFT: Image Preview -->
+                    <div class="md:col-span-6 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col items-center justify-center relative">
+                        <img src="${safeImg}" alt="${safeName}" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80'" class="max-h-72 object-contain rounded-xl">
+                        <div class="flex items-center gap-2 mt-4 text-xs font-semibold text-slate-500">
+                            <span class="text-emerald-600 font-bold">✓ 100% Genuine</span>
+                            <span>•</span>
+                            <span>Hologram Verified</span>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Details & Pricing -->
+                    <div class="md:col-span-6 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-extrabold uppercase tracking-widest text-blue-600 mb-1 block">${catTitle}</span>
+                            <h2 class="text-2xl font-black text-slate-900 leading-snug mb-2">${safeName}</h2>
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="text-amber-400 text-sm">★★★★★</span>
+                                <span class="text-xs font-bold text-slate-500">4.9 / 5.0 (Verified Customers)</span>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-4">
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-3xl font-black text-slate-900 font-mono">₹${priceFormatted}</span>
+                                    <span class="text-xs text-slate-500 line-through">₹${(Number(p.price || 0) * 1.25).toFixed(0)}</span>
+                                    <span class="text-xs font-black text-emerald-600">Save 20%</span>
+                                </div>
+                                <p class="text-xs text-blue-600 font-bold mt-1">Or pay ₹${emi12}/mo with 0% No-Cost EMI</p>
+                            </div>
+
+                            <div class="space-y-2 text-xs font-medium text-slate-600 mb-6">
+                                <div class="flex justify-between border-b border-slate-100 py-1.5">
+                                    <span class="text-slate-400">Availability:</span>
+                                    <span class="font-bold ${inStock ? 'text-emerald-600' : 'text-rose-600'}">${inStock ? 'In Stock (Ready for Dispatch)' : 'Out of Stock'}</span>
+                                </div>
+                                <div class="flex justify-between border-b border-slate-100 py-1.5">
+                                    <span class="text-slate-400">Installation Support:</span>
+                                    <span class="font-bold text-slate-800">Doorstep Standard Fitting Available</span>
+                                </div>
+                                <div class="flex justify-between border-b border-slate-100 py-1.5">
+                                    <span class="text-slate-400">Warranty Coverage:</span>
+                                    <span class="font-bold text-slate-800">1 Year Comprehensive Warranty</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-3">
+                            <button onclick="document.getElementById('productDetailModal').remove(); openModal('${encodedData}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl text-xs shadow-md transition text-center flex items-center justify-center gap-2">
+                                <span>Enquire / Book Delivery</span>
+                                <span>&rarr;</span>
+                            </button>
+                            <a href="tel:+917977805245" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-5 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                                <span>📞</span>
+                                <span>Call Expert</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Tabs & Specifications -->
+                <div class="border-t border-slate-100 pt-6">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Product Description &amp; Technical Highlights</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">${safeDesc}</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="font-bold text-slate-900 block mb-1">⚡ Inverter Technology</span>
+                            <span class="text-slate-500">Optimizes power draw dynamically for lower power bills.</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="font-bold text-slate-900 block mb-1">🛡️ Anti-Corrosive Coating</span>
+                            <span class="text-slate-500">Blue-fin condenser protects against coastal humidity.</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="font-bold text-slate-900 block mb-1">🛠️ AMC Protection Eligible</span>
+                            <span class="text-slate-500">Save 40% on future servicing with our AMC plans.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        modalDiv.addEventListener('click', (e) => {
+            if (e.target === modalDiv) modalDiv.remove();
+        });
+    } catch(err) {
+        console.error('viewProductDetails error', err);
+    }
+};

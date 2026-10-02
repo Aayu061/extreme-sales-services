@@ -4,6 +4,7 @@
   "description": "Enterprise AC Sales, Servicing, AMC & Dispatch Management System",
   "main": "server.js",
   "scripts": {
+    "test": "node --test test/security_verification.test.js",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed:admin": "node scripts/seedAdmin.js",
