@@ -25,31 +25,7 @@ const authMiddleware = (roles = []) => {
             return res.status(401).json({ success: false, message: 'Access Denied: No Token Provided' });
         }
 
-        // 2. Graceful support for Demo / Mock / Evaluation tokens
-        if (
-            token === 'demo-token' ||
-            token.startsWith('demo-') ||
-            token.startsWith('mock-') ||
-            token.startsWith('jwt-token-')
-        ) {
-            let demoRole = 'admin';
-            if (token.includes('staff')) demoRole = 'staff';
-            else if (token.includes('tech')) demoRole = 'technician';
-            else if (req.headers['x-role'] && DEMO_USERS[req.headers['x-role']]) demoRole = req.headers['x-role'];
-            else if (roles.length && !roles.includes('admin')) {
-                if (roles.includes('staff')) demoRole = 'staff';
-                else if (roles.includes('technician')) demoRole = 'technician';
-            }
-
-            if (roles.length && !roles.includes(demoRole)) {
-                return res.status(403).json({ success: false, message: 'Forbidden: You do not have the required role' });
-            }
-
-            req.user = DEMO_USERS[demoRole] || { id: `usr-${demoRole}`, role: demoRole, name: `Demo ${demoRole}` };
-            return next();
-        }
-
-        // 3. Verify real JWT token
+        // Verify real JWT token
         try {
             let decoded = null;
             try {
