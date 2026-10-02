@@ -8,9 +8,10 @@ let chartServiceDistInstance = null;
 // Helper to configure global Chart.js defaults
 function configureChartDefaults() {
     if (typeof Chart === 'undefined') return;
+    const isDark = document.documentElement.classList.contains('dark');
     Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
     Chart.defaults.font.size = 12;
-    Chart.defaults.color = '#64748b';
+    Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
     Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)';
     Chart.defaults.plugins.tooltip.titleFont = { size: 13, weight: 'bold' };
     Chart.defaults.plugins.tooltip.padding = 12;
@@ -25,6 +26,7 @@ function initStatusChart(canvasId, statusCounts) {
 
     if (chartStatusInstance) chartStatusInstance.destroy();
 
+    const isDark = document.documentElement.classList.contains('dark');
     const labels = ['Pending', 'Assigned', 'In Progress', 'Completed'];
     const dataValues = [
         statusCounts.Pending || 0,
@@ -43,7 +45,7 @@ function initStatusChart(canvasId, statusCounts) {
                 data: dataValues,
                 backgroundColor: bgColors,
                 borderWidth: 3,
-                borderColor: '#ffffff',
+                borderColor: isDark ? '#1e293b' : '#ffffff',
                 hoverOffset: 6
             }]
         },
@@ -54,7 +56,12 @@ function initStatusChart(canvasId, statusCounts) {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { boxWidth: 12, padding: 14, font: { weight: 600 } }
+                    labels: {
+                        boxWidth: 12,
+                        padding: 14,
+                        font: { weight: 600 },
+                        color: isDark ? '#cbd5e1' : '#64748b'
+                    }
                 }
             }
         }
@@ -68,6 +75,7 @@ function initTrendChart(canvasId, trendData) {
 
     if (chartTrendInstance) chartTrendInstance.destroy();
 
+    const isDark = document.documentElement.classList.contains('dark');
     const chartCtx = ctx.getContext('2d');
     const gradientBlue = chartCtx.createLinearGradient(0, 0, 0, 240);
     gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
@@ -76,6 +84,8 @@ function initTrendChart(canvasId, trendData) {
     const gradientGreen = chartCtx.createLinearGradient(0, 0, 0, 240);
     gradientGreen.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
     gradientGreen.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : '#f1f5f9';
 
     chartTrendInstance = new Chart(ctx, {
         type: 'line',
@@ -115,17 +125,23 @@ function initTrendChart(canvasId, trendData) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#f1f5f9' },
-                    ticks: { stepSize: 2 }
+                    grid: { color: gridColor },
+                    ticks: { stepSize: 2, color: isDark ? '#94a3b8' : '#64748b' }
                 },
                 x: {
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { color: isDark ? '#94a3b8' : '#64748b' }
                 }
             },
             plugins: {
                 legend: {
                     position: 'top',
-                    labels: { boxWidth: 12, padding: 12, font: { weight: 600 } }
+                    labels: {
+                        boxWidth: 12,
+                        padding: 12,
+                        font: { weight: 600 },
+                        color: isDark ? '#cbd5e1' : '#64748b'
+                    }
                 }
             }
         }
@@ -138,6 +154,9 @@ function initWorkloadChart(canvasId, workloadData) {
     if (!ctx) return;
 
     if (chartWorkloadInstance) chartWorkloadInstance.destroy();
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : '#f1f5f9';
 
     chartWorkloadInstance = new Chart(ctx, {
         type: 'bar',
@@ -166,17 +185,23 @@ function initWorkloadChart(canvasId, workloadData) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#f1f5f9' },
-                    ticks: { stepSize: 1 }
+                    grid: { color: gridColor },
+                    ticks: { stepSize: 1, color: isDark ? '#94a3b8' : '#64748b' }
                 },
                 x: {
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { color: isDark ? '#94a3b8' : '#64748b' }
                 }
             },
             plugins: {
                 legend: {
                     position: 'top',
-                    labels: { boxWidth: 12, padding: 10, font: { weight: 600 } }
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10,
+                        font: { weight: 600 },
+                        color: isDark ? '#cbd5e1' : '#64748b'
+                    }
                 }
             }
         }
@@ -189,6 +214,9 @@ function initServiceDistChart(canvasId, distData) {
     if (!ctx) return;
 
     if (chartServiceDistInstance) chartServiceDistInstance.destroy();
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : '#f1f5f9';
 
     chartServiceDistInstance = new Chart(ctx, {
         type: 'bar',
@@ -215,10 +243,12 @@ function initServiceDistChart(canvasId, distData) {
             scales: {
                 x: {
                     beginAtZero: true,
-                    grid: { color: '#f1f5f9' }
+                    grid: { color: gridColor },
+                    ticks: { color: isDark ? '#94a3b8' : '#64748b' }
                 },
                 y: {
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { color: isDark ? '#94a3b8' : '#64748b' }
                 }
             },
             plugins: {
