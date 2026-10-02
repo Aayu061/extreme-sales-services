@@ -1,26 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 /* ═══════════════════════════════════════════════════════════
-   DESIGN TOKENS
+   BOSE DESIGN SYSTEM TOKENS & THEMING (bose.com reference)
 ═══════════════════════════════════════════════════════════ */
 :root {
-  --clr-primary:       #2563eb;
-  --clr-primary-light: #3b82f6;
-  --clr-primary-dark:  #1d4ed8;
-  --clr-cyan:          #06b6d4;
+  /* Bose Brand Heuristic Palette */
+  --bose-black:        #131317;
+  --bose-obsidian:     #0b0b0e;
+  --bose-charcoal:     #191920;
+  --bose-surface:      rgba(19, 19, 23, 0.85);
+  --bose-violet:       #9e42bc;
+  --bose-plum:         #542364;
+  --bose-plum-dark:    #2b1035;
+  --bose-lavender:     #cc9cdc;
+  --bose-gray-light:   #999999;
+  --bose-gray-med:     #747474;
+  --bose-gray-dark:    #333333;
+  --bose-green:        #00e100;
+  --bose-border:       rgba(158, 66, 188, 0.25);
+  --bose-glow-violet:  rgba(158, 66, 188, 0.45);
+  --bose-glow-lavender:rgba(204, 156, 220, 0.5);
+
+  /* Core System Tokens */
+  --clr-primary:       #9e42bc;
+  --clr-primary-light: #cc9cdc;
+  --clr-primary-dark:  #542364;
+  --clr-cyan:          #00a1e0;
   --clr-surface:       rgba(255,255,255,0.85);
   --clr-border:        rgba(255,255,255,0.4);
   --clr-shadow:        rgba(15,23,42,0.08);
 
-  --radius-sm:  0.5rem;
-  --radius-md:  0.75rem;
+  --radius-sm:  0.25rem;
+  --radius-md:  0.5rem;
   --radius-lg:  1rem;
   --radius-xl:  1.25rem;
   --radius-2xl: 1.5rem;
+  --radius-pill:9999px;
 
-  --shadow-card:     0 4px 24px rgba(15,23,42,0.07), 0 1px 4px rgba(15,23,42,0.06);
-  --shadow-card-hover: 0 16px 40px rgba(37,99,235,0.13), 0 2px 8px rgba(15,23,42,0.08);
-  --shadow-glow:     0 0 0 4px rgba(59,130,246,0.25), 0 8px 24px rgba(37,99,235,0.3);
+  --shadow-card:       0 4px 24px rgba(15,23,42,0.07), 0 1px 4px rgba(15,23,42,0.06);
+  --shadow-card-hover: 0 16px 40px rgba(158,66,188,0.22), 0 2px 8px rgba(15,23,42,0.08);
+  --shadow-glow:       0 0 0 4px rgba(158,66,188,0.25), 0 8px 24px rgba(158,66,188,0.35);
 
   --transition-fast:   150ms cubic-bezier(0.16,1,0.3,1);
   --transition-base:   250ms cubic-bezier(0.16,1,0.3,1);
@@ -28,7 +47,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   BASE
+   BASE & DARK THEME DEFAULTS
 ═══════════════════════════════════════════════════════════ */
 html {
   scroll-behavior: smooth;
@@ -38,6 +57,15 @@ html, body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark mode Bose defaults */
+html.dark {
+  color-scheme: dark;
+}
+html.dark body {
+  background-color: var(--bose-obsidian);
+  color: #f1f1f5;
 }
 
 /* Sticky footer */
@@ -51,30 +79,31 @@ body > .page-content {
 /* ═══════════════════════════════════════════════════════════
    SCROLLBAR
 ═══════════════════════════════════════════════════════════ */
-::-webkit-scrollbar       { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--clr-primary); }
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0b0b0e; }
+::-webkit-scrollbar-thumb { background: #333338; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bose-violet); }
 
 /* ═══════════════════════════════════════════════════════════
-   HERO — AURORA GRADIENT
+   HERO — BOSE MARQUEE HERO & SUBTLE PURPLE LIGHTING
 ═══════════════════════════════════════════════════════════ */
-.hero-bg {
+.hero-bg,
+.bose-marquee-hero {
   position: relative;
   overflow: hidden;
   color: white;
   background:
-    radial-gradient(ellipse 80% 60% at 20% -10%, rgba(59,130,246,0.55) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80%  0%,  rgba(6,182,212,0.40)  0%, transparent 55%),
-    radial-gradient(ellipse 50% 70% at 50% 110%, rgba(99,102,241,0.25) 0%, transparent 60%),
-    linear-gradient(160deg, #0f172a 0%, #1e3a8a 50%, #0c1a3a 100%);
-  background-size: 200% 200%;
-  animation: auroraShift 12s ease-in-out infinite alternate;
+    radial-gradient(ellipse 90% 65% at 50% -12%, rgba(158,66,188,0.45) 0%, rgba(84,35,100,0.32) 42%, transparent 75%),
+    radial-gradient(ellipse 65% 55% at 85% 15%, rgba(204,156,220,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 65% at 15% 30%, rgba(84,35,100,0.26) 0%, transparent 55%),
+    linear-gradient(180deg, #0b0b0e 0%, #131317 60%, #0b0b0e 100%);
+  background-size: 150% 150%;
+  animation: boseAuroraShift 16s ease-in-out infinite alternate;
 }
 
-@keyframes auroraShift {
-  0%   { background-position: 0% 0%; }
-  100% { background-position: 100% 100%; }
+@keyframes boseAuroraShift {
+  0%   { background-position: 50% 0%; }
+  100% { background-position: 50% 60%; }
 }
 
 /* Animated floating grid overlay inside hero */
@@ -111,10 +140,20 @@ body > .page-content {
   box-shadow: var(--shadow-card);
 }
 
+html.dark .glass-panel {
+  background: rgba(19, 19, 23, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(158, 66, 188, 0.22);
+  color: #f1f1f5;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(84, 35, 100, 0.15);
+}
+
 .hero-bg .glass-panel {
-  background: rgba(15,23,42,0.18);
-  border-color: rgba(255,255,255,0.16);
+  background: rgba(19, 19, 23, 0.72);
+  border-color: rgba(158, 66, 188, 0.32);
   color: #f8fafc;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(84, 35, 100, 0.2);
 }
 .hero-bg .glass-panel input,
 .hero-bg .glass-panel select,
@@ -135,7 +174,7 @@ body > .page-content {
 }
 .hero-bg .glass-panel .border-white\/20,
 .hero-bg .glass-panel .border-white\/10 {
-  border-color: rgba(255,255,255,0.16);
+  border-color: rgba(158, 66, 188, 0.28);
 }
 
 .glass-card {
@@ -144,6 +183,46 @@ body > .page-content {
   box-shadow: 0 12px 40px rgba(15,23,42,0.3);
   backdrop-filter: blur(12px);
   border-radius: var(--radius-xl);
+}
+html.dark .glass-card {
+  background: rgba(19, 19, 23, 0.75);
+  border: 1px solid rgba(158, 66, 188, 0.24);
+  box-shadow: 0 16px 45px rgba(0,0,0,0.6), 0 0 25px rgba(84,35,100,0.15);
+}
+
+/* Bose Dark Mode System Overrides */
+html.dark .bg-white {
+  background-color: var(--bose-black) !important;
+}
+html.dark .bg-gray-50, html.dark .bg-slate-50 {
+  background-color: var(--bose-obsidian) !important;
+}
+html.dark .bg-gray-100, html.dark .bg-slate-100 {
+  background-color: var(--bose-charcoal) !important;
+}
+html.dark .text-gray-900, html.dark .text-slate-900 {
+  color: #ffffff !important;
+}
+html.dark .text-gray-800, html.dark .text-slate-800 {
+  color: #e5e5ec !important;
+}
+html.dark .text-gray-700, html.dark .text-slate-700 {
+  color: #c7c7d2 !important;
+}
+html.dark .text-gray-600, html.dark .text-slate-600 {
+  color: #9e9ea8 !important;
+}
+html.dark .border-gray-100, html.dark .border-slate-100, html.dark .border-gray-200, html.dark .border-slate-200 {
+  border-color: rgba(158, 66, 188, 0.16) !important;
+}
+html.dark input, html.dark select, html.dark textarea {
+  background-color: #16161b;
+  color: #ffffff;
+  border-color: rgba(158, 66, 188, 0.3);
+}
+html.dark input:focus, html.dark select:focus, html.dark textarea:focus {
+  border-color: var(--bose-violet);
+  box-shadow: 0 0 15px rgba(158, 66, 188, 0.35);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -202,9 +281,286 @@ body > .page-content {
 }
 .btn-outline-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56,189,248,0.4);
-  border-color: rgba(56,189,248,0.9);
+  box-shadow: 0 6px 20px rgba(158,66,188,0.4);
+  border-color: rgba(204,156,220,0.8);
 }
+
+/* ═══════════════════════════════════════════════════════════
+   BOSE DESIGN SYSTEM COMPONENTS & BUTTONS
+═══════════════════════════════════════════════════════════ */
+
+/* Bose Pill Primary Button */
+.btn-bose-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bose-violet) 0%, #702687 100%);
+  color: #ffffff !important;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  padding: 0.85rem 2.25rem;
+  border: 1px solid rgba(204, 156, 220, 0.45);
+  box-shadow: 0 4px 20px rgba(158, 66, 188, 0.4), 0 0 35px rgba(84, 35, 100, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-bose-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(158, 66, 188, 0.6), 0 0 50px rgba(204, 156, 220, 0.4);
+  border-color: rgba(204, 156, 220, 0.85);
+  color: #ffffff !important;
+}
+.btn-bose-primary:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Bose Pill Secondary Button */
+.btn-bose-secondary {
+  position: relative;
+  background: rgba(19, 19, 23, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #f1f1f5 !important;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  padding: 0.85rem 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-bose-secondary:hover {
+  background: rgba(84, 35, 100, 0.35);
+  border-color: rgba(158, 66, 188, 0.55);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(158, 66, 188, 0.3);
+}
+
+/* Bose Headline Text Gradient */
+.text-bose-gradient {
+  background: linear-gradient(135deg, #ffffff 35%, var(--bose-lavender) 75%, var(--bose-violet) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Bose Live Telemetry Badge */
+.bose-telemetry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(19, 19, 23, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(158, 66, 188, 0.35);
+  box-shadow: 0 4px 24px rgba(84, 35, 100, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 0.45rem 1.15rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #e5e5ec;
+}
+
+.bose-telemetry-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--bose-green);
+  box-shadow: 0 0 10px var(--bose-green);
+  animation: bosePulse 1.8s infinite;
+  flex-shrink: 0;
+}
+@keyframes bosePulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px var(--bose-green); }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+/* Bose Soundwave / Airflow Dynamics */
+.bose-soundwave {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+.bose-soundwave span {
+  display: block;
+  width: 3px;
+  background: linear-gradient(180deg, var(--bose-lavender), var(--bose-violet));
+  border-radius: var(--radius-pill);
+  animation: boseWave 1.2s ease-in-out infinite alternate;
+}
+.bose-soundwave span:nth-child(1) { height: 8px; animation-delay: 0.05s; }
+.bose-soundwave span:nth-child(2) { height: 16px; animation-delay: 0.25s; }
+.bose-soundwave span:nth-child(3) { height: 11px; animation-delay: 0.15s; }
+.bose-soundwave span:nth-child(4) { height: 19px; animation-delay: 0.4s; }
+.bose-soundwave span:nth-child(5) { height: 9px; animation-delay: 0.2s; }
+.bose-soundwave span:nth-child(6) { height: 14px; animation-delay: 0.35s; }
+
+@keyframes boseWave {
+  0% { transform: scaleY(0.4); opacity: 0.5; }
+  100% { transform: scaleY(1.2); opacity: 1; }
+}
+
+/* Bose Monochrome Logo Cloud */
+.bose-logo-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem 3.5rem;
+  padding: 1.5rem 0;
+}
+.bose-logo-item {
+  color: var(--bose-gray-med);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  opacity: 0.75;
+  filter: grayscale(1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.bose-logo-item:hover {
+  color: #ffffff;
+  opacity: 1;
+  filter: grayscale(0);
+  transform: translateY(-2px);
+  text-shadow: 0 0 15px rgba(204, 156, 220, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRELOADER & TRANSITION LOADER (BOSE SYSTEM)
+═══════════════════════════════════════════════════════════ */
+#bosePreloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  background-color: #0b0b0e;
+  background-image: 
+    radial-gradient(circle 480px at 50% 45%, rgba(158, 66, 188, 0.28) 0%, rgba(84, 35, 100, 0.15) 50%, transparent 80%),
+    linear-gradient(180deg, #0b0b0e 0%, #131317 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+#bosePreloader.bose-preloader-hidden {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.99);
+  pointer-events: none;
+}
+
+/* Bose Loader Waveform Ring Pulse */
+.bose-loader-ring-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.25rem;
+}
+.bose-loader-pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(158, 66, 188, 0.45);
+  animation: boseRingPulse 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.bose-loader-pulse-ring:nth-child(2) {
+  inset: -14px;
+  border-color: rgba(204, 156, 220, 0.3);
+  animation-delay: 0.6s;
+}
+.bose-loader-pulse-ring:nth-child(3) {
+  inset: -28px;
+  border-color: rgba(84, 35, 100, 0.18);
+  animation-delay: 1.2s;
+}
+
+@keyframes boseRingPulse {
+  0%   { transform: scale(0.85); opacity: 0; }
+  50%  { opacity: 0.85; }
+  100% { transform: scale(1.28); opacity: 0; }
+}
+
+.bose-loader-core {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #131317 0%, #2b1035 100%);
+  border: 1.5px solid rgba(204, 156, 220, 0.55);
+  box-shadow: 0 0 35px rgba(158, 66, 188, 0.6), inset 0 0 15px rgba(158, 66, 188, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Progress bar */
+.bose-progress-container {
+  width: 300px;
+  max-width: 85vw;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.15rem;
+}
+.bose-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #542364 0%, #9e42bc 50%, #cc9cdc 100%);
+  box-shadow: 0 0 16px rgba(204, 156, 220, 0.8);
+  border-radius: var(--radius-pill);
+  transition: width 0.1s linear;
+}
+
+/* Monospace telemetry readout */
+.bose-telemetry-console {
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: #cc9cdc;
+  min-height: 1.4rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Laser Top Loader for link navigation */
+#boseTopLoader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #9e42bc, #cc9cdc, #ffffff);
+  box-shadow: 0 0 14px rgba(158, 66, 188, 0.95), 0 0 22px rgba(204, 156, 220, 0.7);
+  z-index: 99999999;
+  transition: width 0.25s ease-out, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
 
 /* ═══════════════════════════════════════════════════════════
    CARDS — 3D TILT & HOVER LIFT
@@ -1381,6 +1737,23 @@ html.dark nav#mainNav.bg-white\/95 .theme-toggle-btn:hover {
   color: #ffffff;
   border-color: #2563eb;
   box-shadow: 0 10px 25px rgba(37,99,235,0.3);
+}
+
+html.dark .symptom-chip {
+  background: #191920;
+  border-color: rgba(158, 66, 188, 0.25);
+  color: #e5e5ec;
+}
+html.dark .symptom-chip:hover {
+  background: rgba(84, 35, 100, 0.3);
+  border-color: rgba(204, 156, 220, 0.5);
+  color: #ffffff;
+}
+html.dark .symptom-chip.active {
+  background: linear-gradient(135deg, var(--bose-violet) 0%, #702687 100%) !important;
+  color: #ffffff !important;
+  border-color: rgba(204, 156, 220, 0.7) !important;
+  box-shadow: 0 8px 25px rgba(158, 66, 188, 0.45) !important;
 }
 
 /* Comparison Matrix Styling */
