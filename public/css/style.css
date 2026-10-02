@@ -870,8 +870,11 @@ html.dark nav#mainNav.bg-white\/95 {
   background-color: rgba(15, 23, 42, 0.95) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-html.dark nav#mainNav a:not(.btn-glow):not(.btn-shimmer) {
+html.dark nav#mainNav a:not(.btn-glow):not(.btn-shimmer):not([href="index.html"]) {
   color: #cbd5e1 !important;
+}
+html.dark nav#mainNav a[href="index.html"] {
+  color: #60a5fa !important;
 }
 html.dark nav#mainNav a:not(.btn-glow):not(.btn-shimmer):hover,
 html.dark nav#mainNav a.active:not(.btn-glow) {
@@ -889,23 +892,33 @@ html.dark .glass-panel {
   box-shadow: var(--shadow-card) !important;
 }
 
-/* Input Fields & Forms */
+/* Universal Input Fields & Forms */
 html.dark .form-field input,
 html.dark .form-field textarea,
-html.dark .form-field select {
+html.dark .form-field select,
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="range"]),
+html.dark textarea,
+html.dark select {
   background-color: #0f172a !important;
-  border-color: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
   color: #f8fafc !important;
 }
 html.dark .form-field input:focus,
 html.dark .form-field textarea:focus,
-html.dark .form-field select:focus {
-  border-color: var(--clr-primary-light) !important;
+html.dark .form-field select:focus,
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="range"]):focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: #3b82f6 !important;
   background-color: #1e293b !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
 }
-html.dark .form-field label {
+html.dark input::placeholder,
+html.dark textarea::placeholder {
   color: #64748b !important;
+}
+html.dark .form-field label {
+  color: #94a3b8 !important;
 }
 html.dark .form-field input:focus ~ label,
 html.dark .form-field input:not(:placeholder-shown) ~ label,
@@ -1878,6 +1891,62 @@ html.dark #searchRequestInput {
   color: #f8fafc !important;
 }
 
+/* Dashboard Management Tabs Container */
+html.dark [class*="bg-slate-50\/75"],
+html.dark .bg-slate-50\/75,
+html.dark div:has(> .tab-btn) {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .tab-btn:not(.active) {
+  color: #94a3b8 !important;
+  background-color: transparent !important;
+}
+
+html.dark .tab-btn:not(.active):hover {
+  color: #f8fafc !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark .tech-filter.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html.dark .tech-filter:not(.active) {
+  color: #94a3b8 !important;
+  background-color: transparent !important;
+}
+
+html.dark .tech-filter:not(.active):hover {
+  color: #f8fafc !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Homepage Comparison Section & Cards Dark */
+html.dark #process,
+html.dark #comparison {
+  background-color: #0b1120 !important;
+}
+
+html.dark .comparison-card:not(.pro-card) {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .comparison-card:not(.pro-card) h3 {
+  color: #f8fafc !important;
+}
+
+html.dark .comparison-card:not(.pro-card) ul li span {
+  color: #cbd5e1 !important;
+}
+
+html.dark .amc-toggle-track:not(.on) {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
 /* Quote result box dark */
 html.dark .rounded-3xl.bg-white,
 html.dark .bg-white.rounded-3xl {
@@ -1893,6 +1962,156 @@ html.dark input[type="range"] {
 /* Stats ticker text in dark mode (hero bottom bar) */
 html.dark .stats-ticker-item {
   color: #cbd5e1;
+}
+
+/* Full-width section dark background normalization */
+html.dark section.bg-white,
+html.dark section.bg-slate-50,
+html.dark section.bg-gray-50 {
+  background-color: #0b1120 !important;
+}
+
+/* Universal Soft Badges & Notice Boxes in Dark Mode */
+html.dark [class*="bg-blue-50"],
+html.dark .bg-blue-50 {
+  background-color: rgba(37, 99, 235, 0.15) !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  color: #93c5fd !important;
+}
+
+html.dark [class*="bg-emerald-50"],
+html.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+  color: #6ee7b7 !important;
+}
+
+html.dark [class*="bg-amber-50"],
+html.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+  color: #fde68a !important;
+}
+
+html.dark [class*="bg-purple-50"],
+html.dark .bg-purple-50 {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  color: #d8b4fe !important;
+}
+
+html.dark [class*="bg-green-50"],
+html.dark .bg-green-50 {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.25) !important;
+  color: #86efac !important;
+}
+
+/* Specific text color contrast fixes */
+html.dark .text-blue-900 {
+  color: #93c5fd !important;
+}
+
+html.dark .text-green-900,
+html.dark .text-green-800,
+html.dark .text-green-700 {
+  color: #4ade80 !important;
+}
+
+/* AMC Plan Unit Selector Buttons */
+html.dark .ac-count-btn:not(.bg-blue-600) {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark .ac-count-btn:not(.bg-blue-600):hover {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+/* Product Comparison & EMI / Stock Badges */
+html.dark .compare-btn {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  color: #a5b4fc !important;
+}
+
+html.dark .compare-btn:hover,
+html.dark .compare-btn.selected {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: #6366f1 !important;
+}
+
+html.dark .emi-label {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  color: #a5b4fc !important;
+}
+
+html.dark .stock-low-badge {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+/* Staff Job Age Badges */
+html.dark .job-age-fresh {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+html.dark .job-age-old {
+  background: rgba(234, 179, 8, 0.15) !important;
+  color: #facc15 !important;
+  border-color: rgba(234, 179, 8, 0.3) !important;
+}
+
+html.dark .job-age-urgent {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Activity Feed & Checklist in Dark Mode */
+html.dark .activity-feed-item {
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .checklist-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark .progress-ring-val {
+  color: #f8fafc !important;
+}
+
+html.dark .stat-fill-bar {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Star rating inactive state */
+html.dark .star-rating-picker .star-icon:not(.active) {
+  color: #475569 !important;
+}
+
+/* Table Hover & Row Dividers in Dark Mode */
+html.dark [class*="hover:bg-slate-50"]:hover,
+html.dark [class*="hover:bg-gray-50"]:hover,
+html.dark [class*="hover:bg-slate-100"]:hover,
+html.dark [class*="hover:bg-gray-100"]:hover,
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-gray-50:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-gray-100:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark [class*="divide-slate"] > :not([hidden]) ~ :not([hidden]),
+html.dark [class*="divide-gray"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1988,6 +2207,29 @@ html.dark .stats-ticker-item {
 .stepper-step.active .stepper-label {
   color: #2563eb;
   font-weight: 800;
+}
+
+/* Progress Stepper Dark Mode */
+html.dark .stepper-step::before {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark .stepper-dot {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .stepper-step.done .stepper-label {
+  color: #f1f5f9 !important;
+}
+
+html.dark .stepper-step.active .stepper-label {
+  color: #60a5fa !important;
+}
+
+html.dark .stepper-step:not(.done):not(.active) .stepper-label {
+  color: #94a3b8 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
