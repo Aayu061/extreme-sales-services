@@ -945,23 +945,34 @@ function renderSavedPincodeChip(code) {
   banner.style.paddingBottom = '0.55rem';
   // Push nav down to account for banner height
   const nav = document.getElementById('mainNav');
-  if (nav) nav.style.top = banner.offsetHeight + 'px';
+  const h = banner.offsetHeight || 35;
+  if (nav) nav.style.top = h + 'px';
+  // Auto-hide banner after 10 seconds
+  setTimeout(() => {
+    if (typeof window.dismissBanner === 'function') {
+      window.dismissBanner();
+    }
+  }, 10000);
 })();
 
 window.dismissBanner = function() {
   const banner = document.getElementById('seasonalBanner');
   if (banner) {
     banner.style.maxHeight = banner.offsetHeight + 'px';
-    banner.style.transition = 'max-height 0.4s ease, opacity 0.3s ease';
+    banner.style.transition = 'max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease';
     requestAnimationFrame(() => {
       banner.style.maxHeight = '0';
       banner.style.opacity = '0';
     });
-    setTimeout(() => { banner.style.display = 'none'; }, 450);
+    setTimeout(() => { banner.style.display = 'none'; }, 550);
   }
   localStorage.setItem('ess_banner_dismissed', Date.now());
   const nav = document.getElementById('mainNav');
-  if (nav) nav.style.top = '0';
+  if (nav) {
+    nav.style.transition = 'top 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+    nav.style.top = '0';
+  }
+  document.documentElement.style.setProperty('--banner-height', '0px');
 };
 
 /* ─── 14. FAQ Accordion ──────────────────────────────────── */
