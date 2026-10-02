@@ -173,48 +173,53 @@
     <!-- HERO SECTION -->
     <section
       id="hero"
-      class="min-h-[92vh] hero-bg relative overflow-hidden flex flex-col justify-center items-center pt-32 pb-20"
+      class="hero-bg relative overflow-hidden flex flex-col justify-between items-center px-4"
     >
       <div id="particleContainer"></div>
+
+      <!-- Symmetrical Top Spacer matching Bottom Dock height for precise vertical centering -->
+      <div class="w-full shrink-0 h-28 pointer-events-none"></div>
+
+      <!-- Hero Content (Precise Center of Screen) -->
       <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center fade-up"
+        class="w-full max-w-6xl mx-auto px-4 sm:px-6 relative z-10 text-center fade-up my-auto flex flex-col justify-center items-center py-1"
       >
         <!-- Time-based greeting -->
-        <div id="heroGreeting" class="text-xs font-mono text-blue-300 mb-4 tracking-widest uppercase"></div>
+        <div id="heroGreeting" class="text-[11px] sm:text-xs font-mono text-blue-300 mb-1 tracking-widest uppercase"></div>
 
         <!-- Real-Time Telemetry Badge -->
-        <div class="inline-flex items-center gap-2.5 bose-telemetry-badge mb-8">
+        <div class="inline-flex items-center gap-2 bose-telemetry-badge mb-2 !py-1 !px-3">
           <span class="bose-telemetry-pulse"></span>
-          <span class="font-mono text-xs text-white">CERTIFIED HVAC FLEET ACTIVE</span>
+          <span class="font-mono text-[11px] sm:text-xs text-white">CERTIFIED HVAC FLEET ACTIVE</span>
           <span class="text-slate-500 text-xs hidden sm:inline">|</span>
-          <span class="text-xs text-blue-300 hidden sm:inline">DOORSTEP DISPATCH READY</span>
-          <span class="px-2 py-0.5 text-[10px] font-mono rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">24/7 SUPPORT</span>
+          <span class="text-[11px] sm:text-xs text-blue-300 hidden sm:inline">DOORSTEP DISPATCH READY</span>
+          <span class="px-2 py-0.5 text-[9px] sm:text-[10px] font-mono rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">24/7 SUPPORT</span>
         </div>
 
         <!-- Core Commercial Headline -->
         <h1
-          class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.02] mb-6 tracking-tight"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-[2.85rem] xl:text-[3.15rem] font-black text-white leading-[1.08] mb-2 tracking-tight"
         >
           Reliable Cooling.<br>
           <span class="text-bose-gradient">Professional Service.</span><br>
-          <span class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-blue-200">One Simple Platform.</span>
+          <span class="text-xl sm:text-2xl md:text-3xl lg:text-[1.8rem] font-extrabold text-blue-200 block mt-0.5">One Simple Platform.</span>
         </h1>
 
         <p
-          class="text-base sm:text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto font-normal leading-relaxed"
+          class="text-xs sm:text-sm md:text-base text-slate-300 mb-2.5 max-w-xl mx-auto font-normal leading-relaxed"
         >
           Complete HVAC sales, emergency repairs, and certified maintenance contracts for modern homes and businesses. Powered by <span id="typewriter" class="text-blue-400 font-bold border-b border-blue-400">Cool Living</span>.
         </p>
 
         <!-- CTA Buttons -->
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16">
+        <div class="flex flex-wrap justify-center items-center gap-3 mb-2.5">
           <a
             href="service.html"
-            class="btn-accent text-base"
+            class="btn-accent !py-2 !px-4 !text-xs sm:!text-sm flex items-center gap-2"
           >
             <span>Book a Service</span>
             <svg
-              class="w-5 h-5"
+              class="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -229,11 +234,11 @@
           </a>
           <a
             href="products.html"
-            class="btn-bose-secondary text-base"
+            class="btn-bose-secondary !py-2 !px-4 !text-xs sm:!text-sm flex items-center gap-2"
           >
             <span>Explore Products</span>
             <svg
-              class="w-5 h-5 text-blue-300"
+              class="w-4 h-4 text-blue-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -248,10 +253,10 @@
           </a>
           <a
             href="tel:+917977805245"
-            class="btn-bose-secondary text-base"
+            class="btn-bose-secondary !py-2 !px-4 !text-xs sm:!text-sm flex items-center gap-2"
           >
             <svg
-              class="w-5 h-5 text-blue-300"
+              class="w-4 h-4 text-blue-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -268,77 +273,77 @@
         </div>
 
         <!-- TRUST / VALUE STRIP -->
-        <div class="inline-flex flex-wrap items-center justify-center gap-6 sm:gap-10 bg-slate-800/60 backdrop-blur-md px-6 py-3.5 rounded-2xl border border-slate-700/60 mb-12 text-xs font-bold text-slate-300">
-          <span class="flex items-center gap-2">
+        <div class="inline-flex flex-wrap items-center justify-center gap-3 sm:gap-6 bg-slate-800/60 backdrop-blur-md px-4 py-1.5 rounded-xl border border-slate-700/60 mb-2.5 text-[11px] sm:text-xs font-semibold text-slate-300">
+          <span class="flex items-center gap-1.5">
             <span class="text-emerald-400 font-black">✓</span> Certified Service
           </span>
-          <span class="flex items-center gap-2">
+          <span class="flex items-center gap-1.5">
             <span class="text-emerald-400 font-black">✓</span> Fast Doorstep Response
           </span>
-          <span class="flex items-center gap-2">
+          <span class="flex items-center gap-1.5">
             <span class="text-emerald-400 font-black">✓</span> Genuine OEM Products
           </span>
-          <span class="flex items-center gap-2">
+          <span class="flex items-center gap-1.5">
             <span class="text-emerald-400 font-black">✓</span> Professional Technicians
           </span>
         </div>
 
         <!-- Real Stats Header -->
         <div
-          class="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto border-t border-slate-800 pt-10"
+          class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-2xl w-full mx-auto border-t border-slate-800/80 pt-2"
         >
           <div class="text-center">
             <h3
-              class="text-3xl sm:text-4xl font-black text-white counter-val font-mono"
+              class="text-xl sm:text-2xl lg:text-3xl font-black text-white counter-val font-mono"
               data-target="10"
               data-suffix="+"
             >
               10+
             </h3>
             <p
-              class="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1"
+              class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mt-0.5"
             >
               Years Experience
             </p>
           </div>
           <div class="text-center">
             <h3
-              class="text-3xl sm:text-4xl font-black text-white counter-val font-mono"
+              class="text-xl sm:text-2xl lg:text-3xl font-black text-white counter-val font-mono"
               data-target="500"
               data-suffix="+"
             >
               500+
             </h3>
             <p
-              class="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1"
+              class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mt-0.5"
             >
               Happy Clients
             </p>
           </div>
           <div class="text-center">
             <h3
-              class="text-3xl sm:text-4xl font-black text-white counter-val font-mono"
+              class="text-xl sm:text-2xl lg:text-3xl font-black text-white counter-val font-mono"
               data-target="24"
               data-suffix="/7"
             >
               24/7
             </h3>
             <p
-              class="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1"
+              class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mt-0.5"
             >
               Availability
             </p>
           </div>
           <div class="text-center">
             <h3
-              class="text-3xl sm:text-4xl font-black text-white counter-val font-mono"
+              class="text-xl sm:text-2xl lg:text-3xl font-black text-white counter-val font-mono"
               data-target="100"
               data-suffix="%"
             >
               100%
             </h3>
             <p
-              class="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1"
+              class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mt-0.5"
             >
               Satisfaction
             </p>
@@ -346,28 +351,38 @@
         </div>
       </div>
 
-      <!-- MONOCHROME MULTI-BRAND ECOSYSTEM -->
-      <div class="relative z-10 border-t border-slate-800/80 max-w-6xl w-full mx-auto px-4 mt-12 pt-8">
-        <p class="text-[10px] font-mono uppercase tracking-[0.25em] text-slate-400 text-center mb-6">
-          Authorized Multi-Brand Ecosystem &bull; Factory Certified Diagnostics
-        </p>
-        <div class="bose-logo-cloud">
-          <div class="bose-logo-item">Daikin</div>
-          <div class="bose-logo-item">Voltas</div>
-          <div class="bose-logo-item">Mitsubishi Electric</div>
-          <div class="bose-logo-item">Carrier</div>
-          <div class="bose-logo-item">Blue Star</div>
-          <div class="bose-logo-item">Hitachi</div>
-          <div class="bose-logo-item">O General</div>
-          <div class="bose-logo-item">Panasonic</div>
+      <!-- BOTTOM DOCK: Scroll Indicator (Red Circled Area) + Multi-Brand Ecosystem -->
+      <div class="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center pb-2 text-center shrink-0">
+        <!-- Scroll Indicator (Sitting precisely where user circled in Image 1) -->
+        <div class="mb-1.5">
+          <a
+            href="#services"
+            id="scrollDownBtn"
+            class="scroll-indicator group"
+            aria-label="Scroll down to services"
+          >
+            <div class="mouse-scroll"></div>
+            <span class="text-[8px] font-mono uppercase tracking-[0.25em] text-slate-400 group-hover:text-blue-300 transition-colors mt-0.5">Scroll</span>
+          </a>
+        </div>
+
+        <!-- Multi-Brand Partner Cloud -->
+        <div class="w-full border-t border-slate-800/80 pt-2">
+          <p class="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-slate-400 text-center mb-1">
+            Authorized Multi-Brand Ecosystem &bull; Factory Certified Diagnostics
+          </p>
+          <div class="bose-logo-cloud">
+            <div class="bose-logo-item">Daikin</div>
+            <div class="bose-logo-item">Voltas</div>
+            <div class="bose-logo-item">Mitsubishi Electric</div>
+            <div class="bose-logo-item">Carrier</div>
+            <div class="bose-logo-item">Blue Star</div>
+            <div class="bose-logo-item">Hitachi</div>
+            <div class="bose-logo-item">O General</div>
+            <div class="bose-logo-item">Panasonic</div>
+          </div>
         </div>
       </div>
-
-      <!-- Scroll Down Indicator -->
-      <a href="#services" id="scrollDownBtn" class="scroll-indicator reveal" aria-label="Scroll down to services">
-        <span class="sr-only">Scroll down to services</span>
-        <div class="mouse-scroll"></div>
-      </a>
     </section>
 
     <!-- INSTANT HVAC COST ESTIMATOR & QUOTE CALCULATOR -->
