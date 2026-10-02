@@ -130,27 +130,6 @@
                 </span>
             </div>
 
-            <!-- Demo Quick Login Chips -->
-            <div class="mb-5 bg-gray-50 border border-gray-200/80 rounded-xl p-3">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-500 flex items-center gap-1">
-                        <span>⚡</span> 1-Click Quick Demo Login
-                    </span>
-                    <span class="text-[10px] text-gray-400">Pre-fills role</span>
-                </div>
-                <div class="grid grid-cols-3 gap-1.5">
-                    <button type="button" onclick="quickFillLogin('admin')" class="bg-white hover:bg-blue-50 hover:border-blue-300 border border-gray-200 text-blue-700 text-xs font-bold py-1.5 px-2 rounded-lg transition shadow-2xs text-center">
-                        🛡️ Admin
-                    </button>
-                    <button type="button" onclick="quickFillLogin('staff')" class="bg-white hover:bg-emerald-50 hover:border-emerald-300 border border-gray-200 text-emerald-700 text-xs font-bold py-1.5 px-2 rounded-lg transition shadow-2xs text-center">
-                        📋 Staff
-                    </button>
-                    <button type="button" onclick="quickFillLogin('technician')" class="bg-white hover:bg-amber-50 hover:border-amber-300 border border-gray-200 text-amber-700 text-xs font-bold py-1.5 px-2 rounded-lg transition shadow-2xs text-center">
-                        🧑‍🔧 Tech
-                    </button>
-                </div>
-            </div>
-
             <!-- Login Form -->
             <form id="loginForm" class="space-y-4">
                 <input type="hidden" id="selectedRole" value="admin">
@@ -163,8 +142,7 @@
                             id="email"
                             required
                             autocomplete="username"
-                            placeholder="admin@extremess.com"
-                            value="admin@extremess.com"
+                            placeholder="Enter your registered email"
                             class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition"
                         >
                     </div>
@@ -182,7 +160,6 @@
                             required
                             autocomplete="current-password"
                             placeholder="••••••••"
-                            value="admin123"
                             class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition font-mono"
                         >
                     </div>

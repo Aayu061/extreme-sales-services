@@ -14,60 +14,17 @@ const authHeaders = {
     }
 };
 
-// Automatic Admin Session Healing
-let isAuthenticating = false;
-async function autoAuthenticateAdmin() {
-    if (isAuthenticating) return false;
-    isAuthenticating = true;
-    try {
-        const res = await fetch(`${API_BASE}/api/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: 'admin@extremess.com', password: 'admin123' })
-        }, { skipAuthInterceptor: true });
-
-        if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.token) {
-                localStorage.setItem('ess_token', data.token);
-                localStorage.setItem('ess_role', 'admin');
-                if (data.user) localStorage.setItem('ess_user', JSON.stringify(data.user));
-                isAuthenticating = false;
-                return true;
-            }
-        }
-    } catch (e) {
-        console.warn("Admin auto-auth notice:", e.message);
-    }
-    isAuthenticating = false;
-    return false;
-}
-
-// Transparent fetch interceptor to heal 401s automatically
+// Fetch interceptor to handle session expiration (redirects to login)
 const originalFetch = window.fetch;
 window.fetch = async function(url, options = {}, extra = {}) {
     let response = await originalFetch.call(this, url, options);
     const urlStr = typeof url === 'string' ? url : (url && url.url ? url.url : '');
 
-    if (response.status === 401 && urlStr.includes('/api/') && !urlStr.includes('/api/auth/login') && !extra.skipAuthInterceptor) {
-        console.warn(`[ESS Auth] 401 on ${urlStr} — Auto-healing session token...`);
-        const healed = await autoAuthenticateAdmin();
-        if (healed) {
-            const newOpts = { ...options };
-            if (newOpts.headers) {
-                if (newOpts.headers instanceof Headers) {
-                    newOpts.headers.set('Authorization', `Bearer ${localStorage.getItem('ess_token')}`);
-                } else {
-                    newOpts.headers = { ...newOpts.headers, 'Authorization': `Bearer ${localStorage.getItem('ess_token')}` };
-                }
-            }
-            return await originalFetch.call(this, url, newOpts);
-        } else {
-            console.warn('[ESS Auth] Could not heal session. Redirecting to login.');
-            localStorage.removeItem('ess_token');
-            localStorage.removeItem('ess_role');
-            window.location.href = 'login.html?expired=1';
-        }
+    if (response.status === 401 && urlStr.includes('/api/') && !urlStr.includes('/api/auth/login')) {
+        console.warn(`[ESS Auth] 401 Unauthorized on ${urlStr}. Redirecting to login.`);
+        localStorage.removeItem('ess_token');
+        localStorage.removeItem('ess_role');
+        window.location.href = 'login.html?expired=1';
     }
     return response;
 };

@@ -13,9 +13,7 @@ const roleMeta = {
         btnBg: 'bg-blue-600',
         hoverBtnBg: 'hover:bg-blue-700',
         badgeClass: 'bg-blue-100 text-blue-800',
-        redirect: 'admin.html',
-        demoEmail: 'admin@extremess.com',
-        demoPass: 'admin123'
+        redirect: 'admin.html'
     },
     staff: {
         label: 'Staff',
@@ -25,9 +23,7 @@ const roleMeta = {
         btnBg: 'bg-emerald-600',
         hoverBtnBg: 'hover:bg-emerald-700',
         badgeClass: 'bg-emerald-100 text-emerald-800',
-        redirect: 'staff.html',
-        demoEmail: 'staff@extremess.com',
-        demoPass: 'staff123'
+        redirect: 'staff.html'
     },
     technician: {
         label: 'Field Tech',
@@ -37,9 +33,7 @@ const roleMeta = {
         btnBg: 'bg-amber-600',
         hoverBtnBg: 'hover:bg-amber-700',
         badgeClass: 'bg-amber-100 text-amber-800',
-        redirect: 'technician.html',
-        demoEmail: 'tech@extremess.com',
-        demoPass: 'tech123'
+        redirect: 'technician.html'
     }
 };
 
@@ -71,26 +65,6 @@ function setRole(role, btnElement) {
     // Update main submit button color
     const loginBtn = document.getElementById('loginBtn');
     loginBtn.className = `w-full ${meta.btnBg} ${meta.hoverBtnBg} text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-[0.98] flex items-center justify-center gap-2`;
-}
-
-function quickFillLogin(role) {
-    const meta = roleMeta[role];
-    if (!meta) return;
-
-    // Find the button for this role
-    const buttons = document.querySelectorAll('.role-tab');
-    const targetIdx = role === 'admin' ? 0 : (role === 'staff' ? 1 : 2);
-    setRole(role, buttons[targetIdx]);
-
-    document.getElementById('email').value = meta.demoEmail;
-    document.getElementById('password').value = meta.demoPass;
-
-    if (window.showToast) {
-        window.showToast(`Pre-filled ${meta.label} credentials. Signing in...`, 'info', 2000);
-    }
-
-    // Submit form
-    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
 }
 
 function togglePasswordVisibility() {
