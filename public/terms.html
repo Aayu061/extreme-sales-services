@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms &amp; Conditions | Extreme Sales &amp; Services</title>
+    <meta name="description" content="Terms of Service, AMC warranty clauses, parts guarantee, and booking policies for Extreme Sales & Services.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <script>
+      (function(){
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e){}
+      })();
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- NAVBAR -->
+    <header class="py-6 px-4 max-w-7xl mx-auto w-full flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+        <a href="index.html" class="inline-flex items-center gap-2 group">
+            <span class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-md group-hover:scale-105 transition">ES</span>
+            <span class="text-xl font-black tracking-tight">Extreme <span class="text-blue-600">S&amp;S</span></span>
+        </a>
+        <div class="flex items-center gap-3">
+            <button
+              type="button"
+              class="theme-toggle-btn text-gray-600 dark:text-gray-300 hover:text-blue-600 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800"
+              aria-label="Toggle dark mode"
+            >
+              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </button>
+            <a href="service.html" class="btn-glow px-5 py-2 rounded-xl text-xs font-bold">Book Service</a>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="max-w-4xl mx-auto px-4 py-16 flex-grow space-y-10">
+        <div>
+            <span class="text-xs font-black uppercase tracking-widest text-blue-600">Service Standards</span>
+            <h1 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-1">Terms &amp; Conditions</h1>
+            <p class="text-sm text-slate-500 mt-2">Effective: October 2026</p>
+        </div>
+
+        <div class="glass-panel p-8 md:p-12 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-8 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            <section class="space-y-3">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">1. Service Booking &amp; Dispatch</h2>
+                <p>When you book an AC inspection, cleaning, or repair service:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-slate-500 dark:text-slate-400">
+                    <li>A technician is dispatched based on location proximity and priority level.</li>
+                    <li>Estimated Time of Arrival (ETA) is calculated based on current traffic and active technician queue.</li>
+                    <li>The technician conducts an initial inspection and provides an upfront quote before starting chargeable part replacements.</li>
+                </ul>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">2. Annual Maintenance Contracts (AMC)</h2>
+                <p>AMC subscriptions cover routine wet washes, electrical checks, filter cleaning, and priority breakdown attendance as specified in the chosen tier (Basic, Standard, Comprehensive).</p>
+                <p>Compressor replacement or copper piping extension costs apply separately unless explicitly included in the Comprehensive plan agreement.</p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">3. Genuine Spare Parts &amp; Warranty</h2>
+                <p>All replacement spare parts (capacitors, fan motors, PCB boards, thermistors, expansion valves) installed by Extreme Sales &amp; Services carry a 90-day parts warranty.</p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">4. Payment Terms</h2>
+                <p>Payments can be made via UPI, cash, or digital payment upon successful completion of work and testing in the presence of the customer. Invoices are dispatched digitally.</p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">5. Customer Support &amp; Dispute Resolution</h2>
+                <p>If you are not satisfied with cooling performance post-servicing, our escalation team will arrange a free re-visit within 7 days of the completed job.</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-8 text-center text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800">
+        <p>&copy; 2026 Extreme Sales &amp; Services. All Rights Reserved. &bull; <a href="privacy.html" class="hover:underline text-blue-600">Privacy Policy</a></p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>

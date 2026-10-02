@@ -1,0 +1,18 @@
+# robots.txt for Extreme Sales & Services
+User-agent: *
+Allow: /
+Allow: /products.html
+Allow: /service.html
+Allow: /status.html
+Allow: /amc.html
+Allow: /contact.html
+Allow: /privacy.html
+Allow: /terms.html
+
+# Disallow private operational consoles and API routes
+Disallow: /admin.html
+Disallow: /staff.html
+Disallow: /technician.html
+Disallow: /api/
+
+Sitemap: https://extreme-sales-services.vercel.app/sitemap.xml
