@@ -70,6 +70,7 @@ if (!isFirebaseMode) {
 // 2. IN-MEMORY DATA STORE (FOR LOCAL DEVELOPMENT & TESTING)
 // ═══════════════════════════════════════════════════════════
 let systemUsers = [
+    { id: "usr-super-admin", name: "Super Admin", email: "ess0121@gmail.com", role: "admin", phone: "7977805245" },
     { id: "usr-admin", name: "Vikram Malhotra (Admin)", email: "admin@extremess.com", role: "admin", phone: "9820011000" },
     { id: "usr-staff", name: "Neha Sharma (Dispatcher)", email: "staff@extremess.com", role: "staff", phone: "9833001122" },
     { id: "tech-1", name: "Suresh Kumar (Senior Tech)", email: "tech@extremess.com", role: "technician", phone: "9820011223" },

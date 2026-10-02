@@ -32,10 +32,10 @@ const USERS_TO_SEED = [
   {
     docId: 'usr-super-admin',
     name: "Super Admin",
-    email: "extremess0121@gmail.com",
-    phone: "9820011000",
+    email: "ess0121@gmail.com",
+    phone: "7977805245",
     role: "admin",
-    password: "ESS@123"
+    password: "@22062006@"
   },
   {
     docId: 'usr-admin',

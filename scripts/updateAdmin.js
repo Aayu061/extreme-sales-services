@@ -1,10 +1,12 @@
-// backend/updateAdmin.js
-// Run this ONCE to update the admin credentials in Firestore.
-// Usage: node updateAdmin.js
+// scripts/updateAdmin.js
+// Seeds or updates the primary Admin credentials in Firestore.
+// Email: ESS0121@gmail.com (normalized to ess0121@gmail.com)
+// Password: @22062006@
 
 require('dotenv').config();
 const admin = require('firebase-admin');
 const bcrypt = require('bcryptjs');
+
 let serviceAccount;
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
@@ -17,52 +19,78 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = require('../firebase-credentials.json');
   } catch (err) {
-    console.error("Firebase credentials file not found. Place firebase-credentials.json in project root or set FIREBASE_SERVICE_ACCOUNT env var.");
+    console.error("Firebase credentials file not found. Place firebase-credentials.json in project root.");
     process.exit(1);
   }
 }
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+}
 
 const db = admin.firestore();
 
-async function updateAdmin() {
-    const OLD_EMAIL = "admin@example.com";   // old email to find the record
-    const NEW_EMAIL = "extremess0121@gmail.com";
-    const NEW_PASSWORD = "ESS@123";
-
-    // Try to find by old email first
-    let snap = await db.collection('users').where('email', '==', OLD_EMAIL).get();
-
-    // If old email not found, try new email (already updated before)
-    if (snap.empty) {
-        snap = await db.collection('users').where('email', '==', NEW_EMAIL).get();
-        if (snap.empty) {
-            console.log("❌ No admin user found with either email. Run seedAdmin.js instead.");
-            process.exit(1);
-        }
-        console.log("ℹ️  Found existing record with new email. Updating password only...");
-    }
+async function setAdminCredentials() {
+    const TARGET_EMAIL = "ess0121@gmail.com";
+    const TARGET_PASSWORD = "@22062006@";
 
     const salt = await bcrypt.genSalt(10);
-    const password_hash = await bcrypt.hash(NEW_PASSWORD, salt);
+    const password_hash = await bcrypt.hash(TARGET_PASSWORD, salt);
 
-    const docRef = snap.docs[0].ref;
-    await docRef.update({
-        email: NEW_EMAIL,
-        password_hash: password_hash,
-        updated_at: new Date().toISOString()
-    });
+    console.log(`🔍 Checking for existing admin user in Firestore...`);
 
-    console.log("✅ Admin credentials updated successfully!");
-    console.log("   Email    : " + NEW_EMAIL);
-    console.log("   Password : " + NEW_PASSWORD);
+    // Check by target email first
+    let snap = await db.collection('users').where('email', '==', TARGET_EMAIL).get();
+
+    // If not found, check other known past admin emails
+    if (snap.empty) {
+        snap = await db.collection('users').where('email', '==', 'extremess0121@gmail.com').get();
+    }
+    if (snap.empty) {
+        snap = await db.collection('users').where('email', '==', 'admin@extremess.com').get();
+    }
+    if (snap.empty) {
+        snap = await db.collection('users').where('role', '==', 'admin').get();
+    }
+
+    if (!snap.empty) {
+        // Update existing record
+        const docRef = snap.docs[0].ref;
+        await docRef.set({
+            name: "Super Admin",
+            email: TARGET_EMAIL,
+            role: "admin",
+            password_hash: password_hash,
+            updated_at: new Date().toISOString()
+        }, { merge: true });
+
+        console.log(`✅ Existing admin record (${snap.docs[0].id}) successfully updated!`);
+    } else {
+        // Create new record
+        const newDoc = await db.collection('users').add({
+            name: "Super Admin",
+            email: TARGET_EMAIL,
+            phone: "7977805245",
+            role: "admin",
+            password_hash: password_hash,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        });
+
+        console.log(`✅ New admin user created (${newDoc.id})!`);
+    }
+
+    console.log("────────────────────────────────────────────────");
+    console.log(`📧 Admin Email    : ESS0121@gmail.com`);
+    console.log(`🔑 Admin Password : @22062006@`);
+    console.log(`🛡️  Role           : admin`);
+    console.log("────────────────────────────────────────────────");
     process.exit(0);
 }
 
-updateAdmin().catch(err => {
-    console.error("❌ Error:", err.message);
+setAdminCredentials().catch(err => {
+    console.error("❌ Error updating admin:", err);
     process.exit(1);
 });
