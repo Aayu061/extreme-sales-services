@@ -22,6 +22,19 @@ let allProducts = [];
 let activeCategory = 'all';
 let productPriceRange = { min: 0, max: 100000 };
 
+// Reliable fallback asset and known CORB-blocked image patterns
+const RELIABLE_PRODUCT_FALLBACK = 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80';
+const BLOCKED_IMAGE_PATTERNS = [
+    'photo-1581092335397-9583fe92d232',
+    'photo-1614633833026-062045db109a'
+];
+
+function sanitizeProductImage(url) {
+    if (!url || typeof url !== 'string') return RELIABLE_PRODUCT_FALLBACK;
+    const isBlocked = BLOCKED_IMAGE_PATTERNS.some(pattern => url.includes(pattern));
+    return isBlocked ? RELIABLE_PRODUCT_FALLBACK : url;
+}
+
 // ------ FETCH & RENDER ------ //
 
 async function loadProducts() {
@@ -75,7 +88,7 @@ function updateComparePanel() {
     }
     panel.classList.add('visible');
     const items = compareList.map(p => `<div class="flex items-center gap-2">
-        <img src="${p.image_url}" class="w-10 h-10 object-contain rounded-lg border" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=100&q=60'">
+        <img src="${sanitizeProductImage(p.image_url)}" class="w-10 h-10 object-contain rounded-lg border" onerror="this.src='${RELIABLE_PRODUCT_FALLBACK}'">
         <div><div class="text-xs font-bold text-slate-800 max-w-[140px] truncate">${p.name}</div><div class="text-blue-600 font-black text-sm">₹${p.price}</div></div>
     </div>`).join('<div class="text-slate-400 font-black text-xl">vs</div>');
     panel.innerHTML = `<div class="flex items-center gap-4 max-w-6xl mx-auto flex-wrap">
@@ -110,7 +123,7 @@ function showCompareFull() {
             <div class="grid grid-cols-2 gap-6">
                 ${[a, b].map(p => `
                 <div class="text-center border border-slate-100 rounded-2xl p-5">
-                    <img src="${escapeHtml(p.image_url || '')}" class="h-28 object-contain mx-auto mb-3" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=200'">
+                    <img src="${escapeHtml(sanitizeProductImage(p.image_url || ''))}" class="h-28 object-contain mx-auto mb-3" onerror="this.src='${RELIABLE_PRODUCT_FALLBACK}'">
                     <h3 class="font-black text-slate-900 text-sm mb-1">${escapeHtml(p.name || '')}</h3>
                     <p class="text-blue-600 font-black text-xl mb-1">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
                     <p class="text-indigo-500 text-xs font-semibold">EMI from ₹${Math.round((Number(p.price) || 0)/12).toLocaleString('en-IN')}/mo</p>
@@ -156,7 +169,7 @@ function renderProducts(productsArray) {
         const isLowStock = Number(stockVal) <= 3;
         const encodedData = encodeURIComponent(JSON.stringify(p));
         const emi12 = Math.round((Number(p.price) || 0) / 12);
-        const safeImg = escapeHtml(p.image_url || '');
+        const safeImg = escapeHtml(sanitizeProductImage(p.image_url || ''));
         const safeName = escapeHtml(p.name || '');
         const safeDesc = escapeHtml(p.description || (p.category || '').replace('_',' '));
 
@@ -342,9 +355,9 @@ function openModal(encodedData) {
     document.getElementById('modalProductName').innerText = p.name;
     document.getElementById('modalProductPrice').innerText = `₹${p.price}`;
     const modalImg = document.getElementById('modalImage');
-    modalImg.src = p.image_url;
+    modalImg.src = sanitizeProductImage(p.image_url);
     modalImg.onerror = () => {
-        modalImg.src = 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80';
+        modalImg.src = RELIABLE_PRODUCT_FALLBACK;
     };
     document.getElementById('enqSuccessMsg').classList.add('hidden'); // Reset Success label
     
@@ -465,7 +478,7 @@ function updatePriceRange(productsArray) {
 window.viewProductDetails = function(encodedData) {
     try {
         const p = JSON.parse(decodeURIComponent(encodedData));
-        const safeImg = escapeHtml(p.image_url || 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80');
+        const safeImg = escapeHtml(sanitizeProductImage(p.image_url || ''));
         const safeName = escapeHtml(p.name || 'Commercial AC Unit');
         const safeDesc = escapeHtml(p.description || 'Premium climate care unit engineered for high efficiency and quiet operation.');
         const priceFormatted = Number(p.price || 0).toLocaleString('en-IN');

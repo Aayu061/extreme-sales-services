@@ -110,7 +110,7 @@
       ];
 
       // Non-blocking parallel probe to server
-      fetch('/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
+      fetch('/api/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
 
       let stepIndex = 0;
       const interval = setInterval(() => {
