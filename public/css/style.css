@@ -690,6 +690,8 @@ html.dark .process-line-track {
    DARK MODE OVERRIDES
    ═══════════════════════════════════════════════════════════ */
 html.dark {
+  background-color: #0b1120 !important;
+  color-scheme: dark;
   --clr-surface:       rgba(15,23,42,0.72);
   --clr-border:        rgba(255,255,255,0.08);
   --clr-shadow:        rgba(0,0,0,0.3);
@@ -697,9 +699,13 @@ html.dark {
   --shadow-card-hover: 0 16px 40px rgba(37,99,235,0.18), 0 2px 8px rgba(0,0,0,0.4);
 }
 
-html.dark body {
-  background-color: #0f172a !important; /* slate-900 */
-  color: #cbd5e1 !important; /* slate-300 */
+html.dark body,
+html.dark body.bg-slate-100,
+html.dark body.bg-slate-50,
+html.dark body.bg-gray-50,
+html.dark body[class*="bg-"] {
+  background-color: #0b1120 !important; /* deep slate-950 */
+  color: #f1f5f9 !important; /* slate-100 */
 }
 
 /* Dark mode background panels, cards, and consoles */
@@ -718,15 +724,15 @@ html.dark .chart-card:hover {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
 }
 
-html.dark .bg-gray-50,
-html.dark .bg-slate-50 {
+html.dark .bg-gray-50:not(body),
+html.dark .bg-slate-50:not(body) {
   background-color: #0f172a !important; /* slate-900 */
   color: #cbd5e1 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-html.dark .bg-slate-100 {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+html.dark .bg-slate-100:not(body) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
   color: #cbd5e1 !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
