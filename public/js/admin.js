@@ -15,6 +15,17 @@ const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || functi
         .replace(/'/g, '&#39;');
 };
 
+const RELIABLE_PRODUCT_FALLBACK = 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80';
+const BLOCKED_IMAGE_PATTERNS = [
+    'photo-1581092335397-9583fe92d232',
+    'photo-1614633833026-062045db109a'
+];
+function sanitizeProductImage(url) {
+    if (!url || typeof url !== 'string') return RELIABLE_PRODUCT_FALLBACK;
+    const isBlocked = BLOCKED_IMAGE_PATTERNS.some(pattern => url.includes(pattern));
+    return isBlocked ? RELIABLE_PRODUCT_FALLBACK : url;
+}
+
 const authHeaders = {
     'Content-Type': 'application/json',
     get Authorization() {
@@ -396,7 +407,7 @@ async function fetchProducts() {
                 const catLabels = { new_ac: 'Brand New AC', used_ac: 'Certified 2nd Hand', spare_part: 'Genuine Spare' };
                 const catColors = { new_ac: 'bg-blue-600', used_ac: 'bg-slate-700', spare_part: 'bg-amber-600' };
 
-                const safeImg = escapeHtml(p.image_url || '');
+                const safeImg = escapeHtml(sanitizeProductImage(p.image_url || ''));
                 const safeName = escapeHtml(p.name || '');
                 const safeCat = escapeHtml(p.category || '');
                 const safeDesc = escapeHtml(p.description || '');
