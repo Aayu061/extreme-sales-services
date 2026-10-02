@@ -68,6 +68,20 @@ form.addEventListener('submit', async (e) => {
         message: document.getElementById('message')?.value || "" // using ?. in case message is missing
     };
 
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <span class="inline-flex items-center gap-2">
+                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                Confirming Booking...
+            </span>`;
+    }
+
     try {
         const response = await fetch(`${API_BASE}/api/services`, {
             method: 'POST',
@@ -97,11 +111,16 @@ form.addEventListener('submit', async (e) => {
                 }
             }, 50);
         } else {
-            alert("Booking failed: " + data.message);
+            alert("Booking failed: " + (data.message || "Please check the details entered."));
         }
     } catch (error) {
         console.error("Connection Error:", error);
-        alert("Could not connect to the server. Is your backend terminal running?");
+        alert("Connecting to live dispatch server... If this is the first request, the cloud server may be waking up. Please retry in a few seconds.");
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnHtml;
+        }
     }
 });
 
