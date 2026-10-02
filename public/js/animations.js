@@ -525,7 +525,7 @@ window.initDemoSwitcher = function() {
   let html = `<span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-400 pl-1 mr-1">Demo</span>`;
   links.forEach(l => {
     const isActive = currentPath === l.page;
-    html += `<a href="${l.href}" onclick="if('${l.role || ''}') { localStorage.setItem('ess_token', 'demo-token'); localStorage.setItem('ess_role', '${l.role}'); }" class="demo-switcher-pill ${isActive ? 'active' : ''}">${l.label}</a>`;
+    html += `<a href="${l.href}" onclick="if('${l.role || ''}') { localStorage.setItem('ess_token', 'demo-${l.role}-token'); localStorage.setItem('ess_role', '${l.role}'); }" class="demo-switcher-pill ${isActive ? 'active' : ''}">${l.label}</a>`;
   });
 
   switcher.innerHTML = html;
