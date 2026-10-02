@@ -1,8 +1,19 @@
 // frontend/js/amc.js
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+    ? window.APP_CONFIG.BACKEND_URL
+    : (isLocal ? 'http://localhost:5000' : '');
+
+const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || function(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 const AMC_API = `${API_BASE}/api/amc-plans`;
 const PURCHASE_API = `${API_BASE}/api/amc/purchase`;
 
@@ -55,24 +66,27 @@ function renderPlans(plans) {
             ? 'bg-white text-blue-700 hover:bg-blue-50 font-black' 
             : 'bg-blue-600 text-white hover:bg-blue-700 font-black';
 
+        const safePlanName = escapeHtml(plan.name || '');
+        const safePlanDesc = escapeHtml(plan.description || 'Full part inspection & cleaning');
+
         card.innerHTML = `
             ${badge}
             <div class="p-8 text-center border-b ${isPopular ? 'border-white/20' : 'border-gray-100'}">
                 <p class="${textMuted} text-xs font-bold uppercase tracking-widest mb-2">${isPopular ? '⭐ Recommended' : 'AC Protection Plan'}</p>
-                <h3 class="text-2xl font-extrabold ${textMain} mb-4">${plan.name}</h3>
+                <h3 class="text-2xl font-extrabold ${textMain} mb-4">${safePlanName}</h3>
                 <div class="flex items-end justify-center gap-1 mb-4">
                     <span class="text-2xl font-bold ${textMuted}">₹</span>
-                    <span class="text-5xl font-black ${textMain} tracking-tighter">${plan.price}</span>
+                    <span class="text-5xl font-black ${textMain} tracking-tighter">${Number(plan.price) || 0}</span>
                     <span class="text-sm font-bold ${textMuted} mb-1">/year</span>
                 </div>
-                <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${plan.services_per_year} Free Services Included</span>
+                <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${Number(plan.services_per_year) || 3} Free Services Included</span>
             </div>
             
             <div class="p-8 flex flex-col flex-grow">
                 <ul class="space-y-3 mb-8 text-sm flex-grow">
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Priority Emergency Support</li>
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Gas Level Checks Included</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> ${plan.description || 'Full part inspection &amp; cleaning'}</li>
+                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> ${safePlanDesc}</li>
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Automated service tracking</li>
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> 1-Year Contract, Upfront Pricing</li>
                 </ul>

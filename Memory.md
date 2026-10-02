@@ -24,18 +24,23 @@
 
 1. **Decoupled Vercel-Render Reverse Proxy**:
    - `vercel.json` maps `/api/:match*` -> `https://extreme-sales-services-gh7s.onrender.com/api/:match*`.
-   - All frontend JS files fall back to `window.APP_CONFIG.BACKEND_URL` (`https://extreme-sales-services-gh7s.onrender.com`).
+   - Frontend `public/js/config.js` sets `BACKEND_URL: ''` in production to leverage the Vercel edge proxy, and `http://localhost:5000` for local dev.
 2. **Dual-Mode Persistence Layer**:
-   - Production connects to Firestore (`nam5`).
+   - Production connects to Firestore (`nam5`) via Firebase Admin SDK with least-privilege `firestore.rules`.
    - If credentials are unavailable, `server.js` gracefully switches to synchronized in-memory arrays (`isFirebaseMode = false`), guaranteeing offline operation.
 3. **Firestore `orderBy` Gotcha**:
    - Firestore silently excludes documents if queried with `.orderBy('created_at')` when `created_at` field is missing. All seed scripts and document writes MUST include `created_at: new Date().toISOString()`.
-4. **Dynamic `x-technician-id` Binding**:
-   - `technician.js` reads `localStorage.getItem('ess_user').id` to pass as `x-technician-id`, falling back to `tech-1`.
-   - `server.js` `/api/technician/jobs` includes an open-job fallback so newly created technicians always see available tasks.
-5. **Smart AMC Decrement Logic**:
+4. **JWT-Authoritative Technician Isolation (P0 IDOR Fixed)**:
+   - Client-provided `x-technician-id` headers are strictly ignored.
+   - Identity is derived exclusively from the verified JWT payload (`req.user.id`).
+   - Technicians strictly access only their own assigned tickets; no arbitrary jobs or open-job fallback leaks.
+5. **Atomic Firestore AMC Decrement Transaction**:
    - `GET /api/amc/check?phone=...` inspects active contracts in real time.
-   - When a ticket is submitted via `POST /api/services`, `remaining_services` is decremented atomically in Firestore.
+   - When a ticket is submitted via `POST /api/services`, ticket creation and `remaining_services` decrement execute inside an atomic Firestore `db.runTransaction()`, guaranteeing zero quota loss or race-condition over-consumption.
+6. **Algorithmic Heuristics & Truthfulness**:
+   - Dispatch uses a deterministic Multi-Objective Weighted Greedy Model (Mumbai zones, workload, skills, rating) with measured `performance.now()` latency (no hardware GPS tracking).
+   - Diagnostics uses rule-based HVAC fault tree triage with measured latency.
+   - Analytics aggregates real chronological Firestore records (no synthetic modulo numbers).
 
 ---
 

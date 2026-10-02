@@ -1,8 +1,19 @@
 // js/technician.js - Mobile-First Field Technician Operations
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+    ? window.APP_CONFIG.BACKEND_URL
+    : (isLocal ? 'http://localhost:5000' : '');
+
+const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || function(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 
 let currentTechId = 'tech-1';
 try {
@@ -133,7 +144,15 @@ function renderJobs() {
         card.className = "bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-4";
 
         const isAmc = job.service_type && job.service_type.includes('[✅ AMC Covered]');
-        const serviceClean = job.service_type.replace('[✅ AMC Covered]', '');
+        const serviceClean = (job.service_type || '').replace('[✅ AMC Covered]', '');
+        const safeReqId = escapeHtml(job.request_id || '');
+        const safeName = escapeHtml(job.name || '');
+        const safeCleanService = escapeHtml(serviceClean);
+        const safeDesc = escapeHtml(job.issue_description || 'Routine service inspection');
+        const safeAddr = escapeHtml(job.address || 'Address on file');
+        const safePhone = escapeHtml(job.phone || '');
+        const safeNotes = escapeHtml(job.completion_notes || 'All checks passed. Cooling restored.');
+        const safeStatus = escapeHtml(job.status || 'Assigned');
 
         const statusPillClass = {
             'Pending': 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-600/40',
@@ -146,14 +165,14 @@ function renderJobs() {
         let actionSection = '';
         if (job.status === 'Assigned') {
             actionSection = `
-                <button onclick="startJob('${job.request_id}')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-blue-500/25 transition flex items-center justify-center gap-1.5">
+                <button onclick="startJob('${safeReqId}')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-blue-500/25 transition flex items-center justify-center gap-1.5">
                     <span>🚀</span>
                     <span>Start Service (Arrived On-Site)</span>
                 </button>
             `;
         } else if (job.status === 'In Progress') {
             actionSection = `
-                <button onclick="openCompletionModal('${job.request_id}', '${encodeURIComponent(job.name)}')" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-emerald-500/25 transition flex items-center justify-center gap-1.5">
+                <button onclick="openCompletionModal('${safeReqId}', '${encodeURIComponent(job.name || '')}')" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-emerald-500/25 transition flex items-center justify-center gap-1.5">
                     <span>✓</span>
                     <span>Complete Job &amp; Sign Off</span>
                 </button>
@@ -165,7 +184,7 @@ function renderJobs() {
                         <span>✅</span> Service Successfully Completed
                     </div>
                     <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 italic">
-                        <strong>Sign-Off:</strong> "${job.completion_notes || 'All checks passed. Cooling restored.'}"
+                        <strong>Sign-Off:</strong> "${safeNotes}"
                     </p>
                 </div>
             `;
@@ -177,31 +196,31 @@ function renderJobs() {
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-mono font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-800/50">
-                            ${job.request_id}
+                            ${safeReqId}
                         </span>
                         ${isAmc ? '<span class="bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-700/50">★ AMC CONTRACT</span>' : ''}
                     </div>
                     <span class="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border ${statusPillClass}">
-                        ${job.status}
+                        ${safeStatus}
                     </span>
                 </div>
 
                 <!-- Customer Details -->
-                <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">${job.name}</h3>
-                <div class="font-bold text-xs text-blue-700 dark:text-blue-400 mt-0.5">${serviceClean}</div>
+                <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">${safeName}</h3>
+                <div class="font-bold text-xs text-blue-700 dark:text-blue-400 mt-0.5">${safeCleanService}</div>
 
                 <p class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mt-2.5 leading-relaxed">
-                    <strong class="text-slate-800 dark:text-slate-100">Issue:</strong> ${job.issue_description || 'Routine service inspection'}
+                    <strong class="text-slate-800 dark:text-slate-100">Issue:</strong> ${safeDesc}
                 </p>
 
                 <div class="mt-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
                     <div class="flex items-start gap-1.5">
                         <span>📍</span>
-                        <span class="font-medium text-slate-700 dark:text-slate-200">${job.address}</span>
+                        <span class="font-medium text-slate-700 dark:text-slate-200">${safeAddr}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <span>📞</span>
-                        <span class="font-bold text-slate-800 dark:text-slate-100">${job.phone}</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-100">${safePhone}</span>
                     </div>
                 </div>
             </div>
@@ -209,15 +228,15 @@ function renderJobs() {
             <!-- Bottom Actions -->
             <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <a href="tel:${job.phone}" class="flex-1 sm:flex-none text-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700">
+                    <a href="tel:${String(job.phone || '').replace(/[^0-9+]/g, '')}" class="flex-1 sm:flex-none text-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700">
                         <span>📞</span>
                         <span>Call</span>
                     </a>
-                    <a href="https://wa.me/91${job.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(job.name)},%20this%20is%20Extreme%20AC%20Technician%20Suresh%20regarding%20request%20${job.request_id}." target="_blank" class="flex-1 sm:flex-none text-center bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-600 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="https://wa.me/91${String(job.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(job.name || '')},%20this%20is%20Extreme%20AC%20Technician%20regarding%20request%20${encodeURIComponent(job.request_id || '')}." target="_blank" class="flex-1 sm:flex-none text-center bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-600 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         <span>💬</span>
                         <span>WhatsApp</span>
                     </a>
-                    <a href="https://maps.google.com/?q=${encodeURIComponent(job.address)}" target="_blank" class="flex-1 sm:flex-none text-center bg-blue-50 hover:bg-blue-600 dark:bg-blue-950/40 dark:hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white border border-blue-200 dark:border-blue-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="https://maps.google.com/?q=${encodeURIComponent((job.address || '') + ', Mumbai')}" target="_blank" class="flex-1 sm:flex-none text-center bg-blue-50 hover:bg-blue-600 dark:bg-blue-950/40 dark:hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white border border-blue-200 dark:border-blue-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         <span>📍</span>
                         <span>Map</span>
                     </a>
@@ -388,10 +407,11 @@ function showReceipt(job, bill, notes) {
             partsContainer.innerHTML = `<div class="text-[11px] text-slate-400 italic">No replacement hardware required (Standard Inspection)</div>`;
         } else {
             bill.parts.forEach(p => {
+                const safePartName = escapeHtml(p.name || 'Component');
                 partsContainer.innerHTML += `
                     <div class="flex justify-between">
-                        <span>+ ${p.name}</span>
-                        <span class="font-mono">₹${p.price.toFixed(2)}</span>
+                        <span>+ ${safePartName}</span>
+                        <span class="font-mono">₹${Number(p.price || 0).toFixed(2)}</span>
                     </div>
                 `;
             });
@@ -505,7 +525,7 @@ window.openJobChecklist = function(requestId) {
             <div class="flex justify-between items-center mb-5">
                 <div>
                     <h3 class="font-black text-slate-900 text-base">Service Checklist</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Job ${requestId}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Job ${escapeHtml(requestId)}</p>
                 </div>
                 <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
             </div>
@@ -613,7 +633,7 @@ window.openNoteModal = function(requestId) {
     modal.innerHTML = `
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-black text-slate-900">Job Note — ${requestId}</h3>
+                <h3 class="font-black text-slate-900">Job Note — ${escapeHtml(requestId)}</h3>
                 <button onclick="this.closest('.fixed').remove()" class="text-slate-400 font-bold text-lg">✕</button>
             </div>
             <textarea id="noteInput_${requestId}" rows="4" placeholder="Add field notes, parts used, issues found..."

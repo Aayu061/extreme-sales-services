@@ -1,11 +1,21 @@
 // services/emailService.js
 const sgMail = require('@sendgrid/mail');
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const isSendGridConfigured = Boolean(process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY.startsWith('SG.'));
+if (isSendGridConfigured) {
+  try {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  } catch (err) {
+    console.warn('⚠️ SendGrid initialization skipped:', err.message);
+  }
+}
 
 const emailService = {
   // Send booking confirmation email
   async sendBookingEmail(customerEmail, customerName, requestId, serviceType, phone) {
+    if (!isSendGridConfigured || !process.env.BUSINESS_EMAIL || !customerEmail) {
+      return { success: false, message: 'SendGrid email notification not configured or recipient email missing.' };
+    }
     try {
       const msg = {
         to: customerEmail,
@@ -59,6 +69,9 @@ const emailService = {
 
   // Send status update email
   async sendStatusUpdateEmail(customerEmail, customerName, requestId, newStatus, serviceType) {
+    if (!isSendGridConfigured || !process.env.BUSINESS_EMAIL || !customerEmail) {
+      return { success: false, message: 'SendGrid email notification not configured or recipient email missing.' };
+    }
     try {
       const statusColors = {
         'Pending': '#f59e0b',
@@ -125,6 +138,9 @@ const emailService = {
 
   // Send AMC subscription confirmation
   async sendAMCConfirmationEmail(customerEmail, customerName, planName, phone) {
+    if (!isSendGridConfigured || !process.env.BUSINESS_EMAIL || !customerEmail) {
+      return { success: false, message: 'SendGrid email notification not configured or recipient email missing.' };
+    }
     try {
       const msg = {
         to: customerEmail,

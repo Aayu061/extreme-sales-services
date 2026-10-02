@@ -11,12 +11,62 @@ const jwt = require('jsonwebtoken');
 const fastCache = require('./server/services/cacheService');
 const dispatchEngine = require('./server/services/dispatchEngine');
 const diagnosticsEngine = require('./server/services/diagnosticsEngine');
+const emailService = require('./server/services/emailService');
+const authMiddleware = require('./server/middleware/authMiddleware');
+const {
+    loginLimiter,
+    bookingLimiter,
+    enquiryLimiter,
+    feedbackLimiter,
+    diagnosticsLimiter,
+    validatePhone,
+    cleanPhone,
+    validateEmail,
+    validateName,
+    validateAddress,
+    validateServiceType,
+    isValidStatusTransition,
+    generateSecureRequestId,
+    validateProductInput
+} = require('./server/middleware/security');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(express.json());
+// Tightened Cross-Origin Resource Sharing (CORS)
+const allowedOrigins = [
+    process.env.APP_URL,
+    'https://extreme-sales-services.vercel.app',
+    'http://localhost:5000',
+    'http://localhost:3000',
+    'http://127.0.0.1:5000',
+    'http://127.0.0.1:3000'
+].filter(Boolean);
+
+app.use(cors({
+    origin: function(origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+            return callback(null, true);
+        }
+        return callback(null, false);
+    },
+    credentials: true
+}));
+
+// Strict request body parsing limits
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+
+// Production Security Headers
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Fallback & legacy redirects
@@ -36,8 +86,8 @@ app.get(['/health', '/api/health', '/healthz'], (req, res) => {
     });
 });
 
-// Cache telemetry endpoint for examiners & devops
-app.get('/api/admin/cache-stats', (req, res) => {
+// Cache telemetry endpoint for examiners & devops (Protected: Admin Only)
+app.get('/api/admin/cache-stats', authMiddleware(['admin']), (req, res) => {
     res.json({
         success: true,
         cache: fastCache.getStats(),
@@ -45,14 +95,11 @@ app.get('/api/admin/cache-stats', (req, res) => {
     });
 });
 
-
 // ═══════════════════════════════════════════════════════════
 // 1. FIREBASE INITIALIZATION WITH LOCAL FALLBACK
 // ═══════════════════════════════════════════════════════════
 let db = null;
 let isFirebaseMode = false;
-let emailService = null;
-let authMiddleware = null;
 
 try {
     let serviceAccount = null;
@@ -69,8 +116,6 @@ try {
         });
         db = admin.firestore();
         isFirebaseMode = true;
-        authMiddleware = require('./server/middleware/authMiddleware');
-        emailService = require('./server/services/emailService');
         console.log(" Connected to Firebase Firestore Database (Production Mode)");
     }
 } catch (err) {
@@ -330,44 +375,60 @@ let customerFeedback = [
 ];
 
 
-// Helper Middleware
-function flexibleAuth(roles = []) {
-    return (req, res, next) => {
-        if (!isFirebaseMode) return next();
-        if (authMiddleware) return authMiddleware(roles)(req, res, next);
-        next();
-    };
-}
+// Centralized Authorization Middleware
+const requireAuth = (roles = []) => authMiddleware(roles);
 
 // ═══════════════════════════════════════════════════════════
-// 3. AUTHENTICATION
+// 3. AUTHENTICATION & LOGIN (RATE-LIMITED & SECURED)
 // ═══════════════════════════════════════════════════════════
-app.post('/api/auth/login', async (req, res) => {
-    const { email, password } = req.body;
-    const lowerEmail = (email || '').toLowerCase().trim();
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
+    const { email, password } = req.body || {};
+    if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
+        return res.status(400).json({ success: false, message: 'Email and password are required.' });
+    }
+
+    const lowerEmail = email.toLowerCase().trim();
+    const secret = authMiddleware.getJwtSecret();
+    if (!secret) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server authentication configuration error: JWT_SECRET is required.'
+        });
+    }
 
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('users').where('email', '==', lowerEmail).get();
-            if (snap.empty) return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            if (snap.empty) {
+                // Prevent user enumeration by returning generic failure message
+                return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+            }
 
             const userDoc = snap.docs[0];
             const user = userDoc.data();
             const isMatch = await bcrypt.compare(password, user.password_hash);
-            if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            if (!isMatch) {
+                return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+            }
 
             const token = jwt.sign(
-                { id: userDoc.id, role: user.role, name: user.name },
-                process.env.JWT_SECRET || 'fallback_secret_key',
-                { expiresIn: '1d' }
+                { id: userDoc.id, role: user.role, name: user.name, email: user.email },
+                secret,
+                { expiresIn: '1d', algorithm: 'HS256' }
             );
-            return res.json({ success: true, token, role: user.role, user: { id: userDoc.id, ...user } });
+            return res.json({
+                success: true,
+                token,
+                role: user.role,
+                user: { id: userDoc.id, name: user.name, email: user.email, role: user.role, phone: user.phone || '' }
+            });
         } catch (err) {
-            return res.status(500).json({ success: false, message: "Database Error" });
+            console.error('Login error:', err.message);
+            return res.status(500).json({ success: false, message: "Authentication service temporarily unavailable." });
         }
     }
 
-    // Local Mock Auth
+    // Local Mock Auth (signs an authentic JWT using dev secret)
     let matchedUser = systemUsers.find(u => u.email.toLowerCase() === lowerEmail);
     let role = 'admin';
 
@@ -382,13 +443,20 @@ app.post('/api/auth/login', async (req, res) => {
             id: role === 'technician' ? 'tech-1' : (role === 'staff' ? 'usr-staff' : 'usr-admin'),
             name: role.toUpperCase() + " User",
             email: lowerEmail || `${role}@extremess.com`,
-            role: role
+            role: role,
+            phone: '9820011000'
         };
     }
 
+    const token = jwt.sign(
+        { id: matchedUser.id, role: matchedUser.role, name: matchedUser.name, email: matchedUser.email },
+        secret,
+        { expiresIn: '1d', algorithm: 'HS256' }
+    );
+
     res.json({
         success: true,
-        token: `jwt-token-${role}-${Date.now()}`,
+        token,
         role: role,
         user: matchedUser
     });
@@ -397,49 +465,104 @@ app.post('/api/auth/login', async (req, res) => {
 // ═══════════════════════════════════════════════════════════
 // 4. SERVICE REQUESTS & DISPATCH
 // ═══════════════════════════════════════════════════════════
-app.post('/api/services', async (req, res) => {
+app.post('/api/services', bookingLimiter, async (req, res) => {
     try {
-        const { name, phone, address, serviceType, message, email } = req.body;
-        const requestId = 'AC-' + Math.floor(1000 + Math.random() * 9000);
+        const name = req.body.name;
+        const phone = req.body.phone;
+        const address = req.body.address;
+        const serviceType = req.body.serviceType || req.body.service_type;
+        const message = req.body.message || req.body.issue || req.body.issue_description;
+        const email = req.body.email;
 
-        let amcNote = "";
+        // Strict input validation (Phase 4.1)
+        if (!validateName(name)) {
+            return res.status(400).json({ success: false, message: 'Please provide a valid full name (2–100 characters).' });
+        }
+        if (!validatePhone(phone)) {
+            return res.status(400).json({ success: false, message: 'Please provide a valid 10-digit mobile number.' });
+        }
+        if (!validateAddress(address)) {
+            return res.status(400).json({ success: false, message: 'Please provide a valid service address (3–300 characters).' });
+        }
+        if (!validateServiceType(serviceType)) {
+            return res.status(400).json({ success: false, message: 'Please select a valid service category.' });
+        }
+        if (email && !validateEmail(email)) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+        }
+
+        const cleanCustomerPhone = cleanPhone(phone);
+        const formattedPhone = cleanCustomerPhone.length === 10 ? cleanCustomerPhone : phone.trim();
+        const requestId = generateSecureRequestId();
+
         if (isFirebaseMode) {
-            const amcSnap = await db.collection('customer_amc')
-                .where('phone', '==', phone)
-                .where('status', '==', 'Active')
-                .get();
+            let amcNote = "";
 
-            if (!amcSnap.empty) {
-                const amcDoc = amcSnap.docs[0];
-                const amcData = amcDoc.data();
-                if (amcData.remaining_services > 0) {
-                    await db.collection('customer_amc').doc(amcDoc.id).update({
-                        remaining_services: amcData.remaining_services - 1
-                    });
-                    amcNote = " [✅ AMC Covered]";
+            // Phase 5: Atomic Firestore Transaction for AMC verification & ticket creation
+            await db.runTransaction(async (transaction) => {
+                // 1. Read AMC inside transaction
+                const amcQuery = db.collection('customer_amc')
+                    .where('phone', '==', formattedPhone)
+                    .where('status', '==', 'Active');
+                const amcSnap = await transaction.get(amcQuery);
+
+                if (!amcSnap.empty) {
+                    const amcDoc = amcSnap.docs[0];
+                    const amcData = amcDoc.data();
+                    const remaining = Number(amcData.remaining_services) || 0;
+                    if (remaining > 0) {
+                        transaction.update(amcDoc.ref, {
+                            remaining_services: remaining - 1,
+                            updated_at: new Date().toISOString()
+                        });
+                        amcNote = " [✅ AMC Covered]";
+                    }
                 }
+
+                // 2. Write new service request inside transaction
+                const newReqRef = db.collection('service_requests').doc();
+                const newRequest = {
+                    request_id: requestId,
+                    name: name.trim(),
+                    phone: formattedPhone,
+                    email: (email || '').trim().toLowerCase(),
+                    address: address.trim(),
+                    service_type: serviceType.trim() + amcNote,
+                    issue_description: (message || '').trim(),
+                    status: "Pending",
+                    technician_id: "",
+                    technician_name: "",
+                    created_at: new Date().toISOString()
+                };
+
+                transaction.set(newReqRef, newRequest);
+            });
+
+            // Phase 8: Asynchronous booking confirmation email (does not fail booking on error)
+            if (email && emailService) {
+                Promise.resolve().then(async () => {
+                    try {
+                        await emailService.sendBookingEmail(
+                            email.trim().toLowerCase(),
+                            name.trim(),
+                            requestId,
+                            serviceType + amcNote,
+                            formattedPhone
+                        );
+                    } catch (e) {
+                        console.warn('Booking email notification skipped:', e.message);
+                    }
+                });
             }
 
-            const newRequest = {
-                request_id: requestId,
-                name: name || "Customer",
-                phone: phone,
-                email: email || '',
-                address: address,
-                service_type: (serviceType || "AC Service") + amcNote,
-                issue_description: message || "",
-                status: "Pending",
-                technician_id: "",
-                technician_name: "",
-                created_at: new Date().toISOString()
-            };
-
-            await db.collection('service_requests').add(newRequest);
             return res.status(201).json({ success: true, requestId });
         }
 
-        // Local Store
-        const activeSub = customerAmcSubscriptions.find(s => s.phone === phone && s.status === 'Active');
+        // Local Synchronized Store Mode
+        let amcNote = "";
+        const activeSub = customerAmcSubscriptions.find(s => 
+            (s.phone === formattedPhone || s.phone === phone.trim()) && s.status === 'Active'
+        );
         if (activeSub && activeSub.remaining_services > 0) {
             activeSub.remaining_services -= 1;
             amcNote = " [✅ AMC Covered]";
@@ -448,25 +571,27 @@ app.post('/api/services', async (req, res) => {
         const newReq = {
             id: "req-" + Date.now(),
             request_id: requestId,
-            name: name || "Customer",
-            phone: phone || "9999999999",
-            email: email || "",
-            address: address || "Mumbai Metro",
-            service_type: (serviceType || "AC Repair") + amcNote,
-            issue_description: message || "General service required",
+            name: name.trim(),
+            phone: formattedPhone,
+            email: (email || '').trim().toLowerCase(),
+            address: address.trim(),
+            service_type: serviceType.trim() + amcNote,
+            issue_description: (message || '').trim(),
             status: "Pending",
             technician_id: "",
             technician_name: "",
             created_at: new Date().toISOString()
         };
         serviceRequests.unshift(newReq);
-        res.status(201).json({ success: true, requestId });
+
+        return res.status(201).json({ success: true, requestId });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Booking failed" });
+        console.error("Booking error:", err);
+        res.status(500).json({ success: false, message: "Unable to process service booking. Please try again." });
     }
 });
 
-app.get('/api/admin/requests', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.get('/api/admin/requests', authMiddleware(['admin', 'staff']), async (req, res) => {
     const statusFilter = req.query.status;
     const search = (req.query.search || '').toLowerCase().trim();
 
@@ -506,7 +631,7 @@ app.get('/api/admin/requests', flexibleAuth(['admin', 'staff']), async (req, res
     res.json({ success: true, requests: filtered });
 });
 
-app.patch('/api/admin/assign-technician', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.patch('/api/admin/assign-technician', authMiddleware(['admin', 'staff']), async (req, res) => {
     const { requestId, technicianId } = req.body;
 
     if (isFirebaseMode) {
@@ -545,7 +670,7 @@ app.patch('/api/admin/assign-technician', flexibleAuth(['admin', 'staff']), asyn
 // ═══════════════════════════════════════════════════════════
 // REAL-TIME MULTI-OBJECTIVE GREEDY AUTO-DISPATCH (MOW-GDM)
 // ═══════════════════════════════════════════════════════════
-app.post('/api/admin/auto-dispatch', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.post('/api/admin/auto-dispatch', authMiddleware(['admin', 'staff']), async (req, res) => {
     const startTime = Date.now();
     const requestedId = req.body.requestId;
 
@@ -664,7 +789,7 @@ app.post('/api/admin/auto-dispatch', flexibleAuth(['admin', 'staff']), async (re
 });
 
 // Real-Time Recommendations & Candidate Ranking (Read-Only)
-app.get('/api/admin/auto-dispatch/recommendations', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.get('/api/admin/auto-dispatch/recommendations', authMiddleware(['admin', 'staff']), async (req, res) => {
     const requestedId = req.query.requestId;
     if (!requestedId) {
         return res.status(400).json({ success: false, message: "requestId query parameter required" });
@@ -730,30 +855,83 @@ app.get('/api/admin/auto-dispatch/recommendations', flexibleAuth(['admin', 'staf
     }
 });
 
-app.patch('/api/admin/update-status', flexibleAuth(['admin', 'staff', 'technician']), async (req, res) => {
-    const requestId = req.body.requestId;
+app.patch('/api/admin/update-status', authMiddleware(['admin', 'staff', 'technician']), async (req, res) => {
+    const requestId = req.body.requestId || req.body.id;
     const newStatus = req.body.newStatus || req.body.status;
     const notes = req.body.notes || req.body.technician_notes || req.body.completion_notes || "";
+
+    if (!requestId || !newStatus) {
+        return res.status(400).json({ success: false, message: "requestId and newStatus are required." });
+    }
 
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('service_requests').where('request_id', '==', requestId).get();
             if (snap.empty) return res.status(404).json({ success: false, message: "Request not found" });
 
-            const docId = snap.docs[0].id;
+            const docSnapshot = snap.docs[0];
+            const currentData = docSnapshot.data();
+            const currentStatus = currentData.status;
+
+            // Phase 2.2: Technician can only update their own assigned job
+            if (req.user && req.user.role === 'technician' && currentData.technician_id !== req.user.id) {
+                return res.status(403).json({ success: false, message: "Forbidden: You are not authorized to update this job." });
+            }
+
+            // Phase 5.2: Validate legal lifecycle status transition
+            if (!isValidStatusTransition(currentStatus, newStatus, req.user ? req.user.role : '')) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Invalid state transition: Cannot transition job from "${currentStatus}" to "${newStatus}".`
+                });
+            }
+
+            const docId = docSnapshot.id;
             const updatePayload = { status: newStatus };
             if (notes) updatePayload.completion_notes = notes;
             if (newStatus === 'Completed') updatePayload.completed_at = new Date().toISOString();
 
             await db.collection('service_requests').doc(docId).update(updatePayload);
+
+            // Phase 8: Asynchronous status update email
+            if (currentData.email && emailService) {
+                Promise.resolve().then(async () => {
+                    try {
+                        await emailService.sendStatusUpdateEmail(
+                            currentData.email,
+                            currentData.name || 'Valued Customer',
+                            requestId,
+                            newStatus,
+                            currentData.service_type || 'AC Service'
+                        );
+                    } catch (mailErr) {
+                        console.warn('Status update email skipped:', mailErr.message);
+                    }
+                });
+            }
+
             return res.json({ success: true, message: `Status updated to ${newStatus}` });
         } catch (e) {
+            console.error('Status update error:', e);
             return res.status(500).json({ success: false, message: "Status update error" });
         }
     }
 
     const reqMatch = serviceRequests.find(r => r.request_id === requestId);
     if (!reqMatch) return res.status(404).json({ success: false, message: "Request not found" });
+
+    // Technician authorization check in local mock
+    if (req.user && req.user.role === 'technician' && reqMatch.technician_id && reqMatch.technician_id !== req.user.id) {
+        return res.status(403).json({ success: false, message: "Forbidden: You are not authorized to update this job." });
+    }
+
+    // Validate transition
+    if (!isValidStatusTransition(reqMatch.status, newStatus, req.user ? req.user.role : '')) {
+        return res.status(400).json({
+            success: false,
+            message: `Invalid state transition: Cannot transition job from "${reqMatch.status}" to "${newStatus}".`
+        });
+    }
 
     reqMatch.status = newStatus;
     if (notes) reqMatch.completion_notes = notes;
@@ -762,10 +940,14 @@ app.patch('/api/admin/update-status', flexibleAuth(['admin', 'staff', 'technicia
     res.json({ success: true, message: `Status updated to ${newStatus}` });
 });
 
-app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], flexibleAuth(['admin', 'staff', 'technician']), async (req, res) => {
+app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], authMiddleware(['admin', 'staff', 'technician']), async (req, res) => {
     const targetId = req.params.id;
     const newStatus = req.body.status || req.body.newStatus;
     const notes = req.body.notes || req.body.technician_notes || req.body.completion_notes || "";
+
+    if (!newStatus) {
+        return res.status(400).json({ success: false, message: "Status is required." });
+    }
 
     if (isFirebaseMode) {
         try {
@@ -784,6 +966,20 @@ app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], flexibl
                 return res.status(404).json({ success: false, message: "Request not found" });
             }
 
+            const currentData = docSnap.data();
+            const currentStatus = currentData.status;
+
+            if (req.user && req.user.role === 'technician' && currentData.technician_id !== req.user.id) {
+                return res.status(403).json({ success: false, message: "Forbidden: You are not authorized to update this job." });
+            }
+
+            if (!isValidStatusTransition(currentStatus, newStatus, req.user ? req.user.role : '')) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Invalid state transition: Cannot transition job from "${currentStatus}" to "${newStatus}".`
+                });
+            }
+
             const updatePayload = { status: newStatus };
             if (notes) updatePayload.completion_notes = notes;
             if (newStatus === 'Completed') updatePayload.completed_at = new Date().toISOString();
@@ -791,12 +987,24 @@ app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], flexibl
             await docRef.update(updatePayload);
             return res.json({ success: true, message: `Status updated to ${newStatus}` });
         } catch (e) {
+            console.error('Status update error:', e);
             return res.status(500).json({ success: false, message: "Status update error" });
         }
     }
 
     const reqMatch = serviceRequests.find(r => r.id === targetId || r.request_id === targetId);
     if (!reqMatch) return res.status(404).json({ success: false, message: "Request not found" });
+
+    if (req.user && req.user.role === 'technician' && reqMatch.technician_id && reqMatch.technician_id !== req.user.id) {
+        return res.status(403).json({ success: false, message: "Forbidden: You are not authorized to update this job." });
+    }
+
+    if (!isValidStatusTransition(reqMatch.status, newStatus, req.user ? req.user.role : '')) {
+        return res.status(400).json({
+            success: false,
+            message: `Invalid state transition: Cannot transition job from "${reqMatch.status}" to "${newStatus}".`
+        });
+    }
 
     reqMatch.status = newStatus;
     if (notes) reqMatch.completion_notes = notes;
@@ -806,9 +1014,9 @@ app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], flexibl
 });
 
 // ═══════════════════════════════════════════════════════════
-// 5. TECHNICIAN FLEET
+// 5. TECHNICIAN FLEET & AUTHORIZED JOBS (IDOR HARDENED)
 // ═══════════════════════════════════════════════════════════
-app.get('/api/admin/users/technicians', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.get('/api/admin/users/technicians', authMiddleware(['admin', 'staff']), async (req, res) => {
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('users').where('role', '==', 'technician').get();
@@ -846,65 +1054,114 @@ app.get('/api/admin/users/technicians', flexibleAuth(['admin', 'staff']), async 
     res.json({ success: true, technicians: techs });
 });
 
-app.get('/api/technician/jobs', async (req, res) => {
-    const techId = req.headers['x-technician-id'] || 'tech-1';
+// Phase 2.3: Fixed Technician IDOR — Identity strictly authoritative from JWT
+app.get('/api/technician/jobs', authMiddleware(['technician', 'admin', 'staff']), async (req, res) => {
+    // Identity is derived from authenticated JWT token
+    let techId = req.user.id;
+
+    // Staff and Admin can view specific technician's jobs via query parameter
+    if ((req.user.role === 'admin' || req.user.role === 'staff') && req.query.technicianId) {
+        techId = req.query.technicianId;
+    }
 
     if (isFirebaseMode) {
         try {
-            let snap = await db.collection('service_requests').where('technician_id', '==', techId).get();
-            let requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            if (requests.length === 0) {
-                const openSnap = await db.collection('service_requests')
-                    .where('status', 'in', ['Assigned', 'In Progress'])
-                    .get();
-                requests = openSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-            }
+            const snap = await db.collection('service_requests')
+                .where('technician_id', '==', techId)
+                .get();
+
+            // Return least-privilege customer data required for field job execution
+            const requests = snap.docs.map(d => {
+                const data = d.data();
+                return {
+                    id: d.id,
+                    request_id: data.request_id,
+                    name: data.name,
+                    phone: data.phone,
+                    address: data.address,
+                    service_type: data.service_type,
+                    issue_description: data.issue_description,
+                    status: data.status,
+                    technician_id: data.technician_id,
+                    technician_name: data.technician_name,
+                    created_at: data.created_at,
+                    completion_notes: data.completion_notes || ''
+                };
+            });
+
+            // Sort most recent first
+            requests.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+            // Return strictly this technician's jobs; never fall back to leaking company-wide open jobs
             return res.json({ success: true, requests });
         } catch(e) {
-            return res.status(500).json({ success: false, message: "Error loading jobs" });
+            console.error("Technician jobs query error:", e.message);
+            return res.status(500).json({ success: false, message: "Error loading technician jobs" });
         }
     }
 
+    // Local Mock Store Mode
     let jobs = serviceRequests.filter(r => r.technician_id === techId);
-    if (jobs.length === 0) {
-        jobs = serviceRequests.filter(r => r.status === 'Assigned' || r.status === 'In Progress');
-    }
     res.json({ success: true, requests: jobs });
 });
 
-app.post('/api/admin/users', flexibleAuth(['admin']), async (req, res) => {
-    const { name, email, role, phone, password } = req.body;
+// Phase 2.7: Secure User Creation — Strong password requirement, no default password123
+app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
+    const { name, email, role, phone, password } = req.body || {};
+
+    if (!validateName(name)) {
+        return res.status(400).json({ success: false, message: "Valid full name is required (2–100 characters)." });
+    }
+    if (!validateEmail(email)) {
+        return res.status(400).json({ success: false, message: "Valid email address is required." });
+    }
+    if (!password || typeof password !== 'string' || password.length < 8) {
+        return res.status(400).json({
+            success: false,
+            message: "Password is required and must be at least 8 characters long."
+        });
+    }
+
+    const assignedRole = ['admin', 'staff', 'technician'].includes(role) ? role : 'technician';
 
     if (isFirebaseMode) {
         try {
             const salt = await bcrypt.genSalt(10);
-            const password_hash = await bcrypt.hash(password || 'password123', salt);
+            const password_hash = await bcrypt.hash(password, salt);
             await db.collection('users').add({
-                name, email, role: role || 'technician', phone: phone || '', password_hash,
+                name: name.trim(),
+                email: email.trim().toLowerCase(),
+                role: assignedRole,
+                phone: phone ? phone.trim() : '',
+                password_hash,
                 created_at: new Date().toISOString()
             });
-            return res.status(201).json({ success: true, message: 'User created' });
+            return res.status(201).json({ success: true, message: 'User created successfully.' });
         } catch(e) {
-            return res.status(500).json({ success: false, message: "Failed to create user" });
+            console.error("Create user error:", e);
+            return res.status(500).json({ success: false, message: "Failed to create user in database." });
         }
     }
 
     const newUser = {
-        id: (role === 'technician' ? 'tech-' : 'usr-') + Date.now(),
-        name,
-        email,
-        role: role || "technician",
-        phone: phone || "",
+        id: (assignedRole === 'technician' ? 'tech-' : 'usr-') + Date.now(),
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        role: assignedRole,
+        phone: phone ? phone.trim() : "",
         created_at: new Date().toISOString()
     };
     systemUsers.push(newUser);
-    res.status(201).json({ success: true, message: "User created", user: newUser });
+    res.status(201).json({ success: true, message: "User created successfully.", user: newUser });
 });
 
 // ═══════════════════════════════════════════════════════════
 // 6. REAL-TIME PREDICTIVE DIAGNOSTICS & HVAC FAULT TRIAGE
 // ═══════════════════════════════════════════════════════════
-app.post('/api/diagnostics/predict', (req, res) => {
+// ═══════════════════════════════════════════════════════════
+// 6. REAL-TIME PREDICTIVE DIAGNOSTICS & HVAC FAULT TRIAGE
+// ═══════════════════════════════════════════════════════════
+app.post('/api/diagnostics/predict', diagnosticsLimiter, (req, res) => {
     try {
         const diagnosticReport = diagnosticsEngine.predictDiagnosis(req.body);
         res.json(diagnosticReport);
@@ -938,17 +1195,22 @@ app.get('/api/products', async (req, res) => {
     res.json({ success: true, products, cached: false });
 });
 
-app.post('/api/admin/products', flexibleAuth(['admin']), async (req, res) => {
-    const { name, category, price, quantity, condition, brand, description, image_url } = req.body;
+app.post('/api/admin/products', authMiddleware(['admin']), async (req, res) => {
+    const validation = validateProductInput(req.body);
+    if (!validation.isValid) {
+        return res.status(400).json({ success: false, message: validation.errors.join(' ') });
+    }
+
+    const { name, category, condition, brand, description, image_url } = req.body;
     const newProduct = {
         id: "prod-" + Date.now(),
-        name: name || "New AC Unit",
+        name: name.trim(),
         category: category || "new_ac",
-        price: Number(price) || 29990,
-        stock: Number(quantity) || 5,
-        brand: brand || "Brand",
+        price: validation.sanitizedPrice,
+        stock: validation.sanitizedStock,
+        brand: (brand || "Brand").trim(),
         condition: condition || "Brand New",
-        description: description || "Energy efficient cooling",
+        description: (description || "Energy efficient cooling").trim(),
         image_url: image_url || "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80",
         created_at: new Date().toISOString()
     };
@@ -968,7 +1230,7 @@ app.post('/api/admin/products', flexibleAuth(['admin']), async (req, res) => {
     res.status(201).json({ success: true, message: "Product created", product: newProduct });
 });
 
-app.delete('/api/admin/products/:id', flexibleAuth(['admin']), async (req, res) => {
+app.delete('/api/admin/products/:id', authMiddleware(['admin']), async (req, res) => {
     const id = req.params.id;
     if (isFirebaseMode) {
         try {
@@ -984,23 +1246,38 @@ app.delete('/api/admin/products/:id', flexibleAuth(['admin']), async (req, res) 
     res.json({ success: true, message: "Product deleted" });
 });
 
-app.put('/api/admin/products/:id', flexibleAuth(['admin']), async (req, res) => {
+app.put('/api/admin/products/:id', authMiddleware(['admin']), async (req, res) => {
     const id = req.params.id;
     const { name, category, price, quantity, stock, condition, brand, description, image_url } = req.body;
 
+    const updateData = {};
+    if (name !== undefined) {
+        if (!validateName(name)) return res.status(400).json({ success: false, message: "Invalid product name." });
+        updateData.name = name.trim();
+    }
+    if (price !== undefined) {
+        const numPrice = Number(price);
+        if (!Number.isFinite(numPrice) || numPrice < 0) {
+            return res.status(400).json({ success: false, message: "Price must be a positive number." });
+        }
+        updateData.price = numPrice;
+    }
+    if (quantity !== undefined || stock !== undefined) {
+        const numStock = Number(stock !== undefined ? stock : quantity);
+        if (!Number.isFinite(numStock) || numStock < 0) {
+            return res.status(400).json({ success: false, message: "Stock must be a non-negative integer." });
+        }
+        updateData.stock = Math.floor(numStock);
+    }
+    if (category !== undefined) updateData.category = category;
+    if (condition !== undefined) updateData.condition = condition;
+    if (brand !== undefined) updateData.brand = brand.trim();
+    if (description !== undefined) updateData.description = description.trim();
+    if (image_url !== undefined) updateData.image_url = image_url;
+    updateData.updated_at = new Date().toISOString();
+
     if (isFirebaseMode) {
         try {
-            const updateData = {};
-            if (name !== undefined) updateData.name = name;
-            if (category !== undefined) updateData.category = category;
-            if (price !== undefined) updateData.price = Number(price);
-            if (quantity !== undefined || stock !== undefined) updateData.stock = Number(stock !== undefined ? stock : quantity);
-            if (condition !== undefined) updateData.condition = condition;
-            if (brand !== undefined) updateData.brand = brand;
-            if (description !== undefined) updateData.description = description;
-            if (image_url !== undefined) updateData.image_url = image_url;
-            updateData.updated_at = new Date().toISOString();
-
             await db.collection('products').doc(id).update(updateData);
             fastCache.invalidateTag('products');
             return res.json({ success: true, message: "Product updated successfully" });
@@ -1012,22 +1289,12 @@ app.put('/api/admin/products/:id', flexibleAuth(['admin']), async (req, res) => 
     const match = products.find(p => p.id === id);
     if (!match) return res.status(404).json({ success: false, message: "Product not found" });
 
-    if (name !== undefined) match.name = name;
-    if (category !== undefined) match.category = category;
-    if (price !== undefined) match.price = Number(price);
-    if (quantity !== undefined || stock !== undefined) match.stock = Number(stock !== undefined ? stock : quantity);
-    if (condition !== undefined) match.condition = condition;
-    if (brand !== undefined) match.brand = brand;
-    if (description !== undefined) match.description = description;
-    if (image_url !== undefined) match.image_url = image_url;
-    match.updated_at = new Date().toISOString();
-
+    Object.assign(match, updateData);
     fastCache.invalidateTag('products');
     res.json({ success: true, message: "Product updated successfully", product: match });
 });
 
-
-app.get('/api/admin/enquiries', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.get('/api/admin/enquiries', authMiddleware(['admin', 'staff']), async (req, res) => {
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('enquiries').orderBy('created_at', 'desc').get();
@@ -1040,15 +1307,23 @@ app.get('/api/admin/enquiries', flexibleAuth(['admin', 'staff']), async (req, re
     res.json({ success: true, enquiries });
 });
 
-app.post('/api/enquiries', async (req, res) => {
-    const { product_id, product_name, name, phone, message } = req.body;
+app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
+    const { product_id, product_name, name, phone, message } = req.body || {};
+
+    if (!validateName(name)) {
+        return res.status(400).json({ success: false, message: "Please provide your full name (2–100 characters)." });
+    }
+    if (!validatePhone(phone)) {
+        return res.status(400).json({ success: false, message: "Please provide a valid 10-digit phone number." });
+    }
+
     const newEnq = {
         id: "enq-" + Date.now(),
         product_id: product_id || "general",
-        product_name: product_name || "AC Consultation",
-        name: name || "Customer",
-        phone: phone || "",
-        message: message || "Price quote requested",
+        product_name: (product_name || "AC Consultation").trim(),
+        name: name.trim(),
+        phone: cleanPhone(phone) || phone.trim(),
+        message: (message || "Price quote requested").trim().slice(0, 500),
         status: "Open",
         created_at: new Date().toISOString()
     };
@@ -1056,14 +1331,14 @@ app.post('/api/enquiries', async (req, res) => {
     if (isFirebaseMode) {
         try {
             await db.collection('enquiries').add(newEnq);
-            return res.status(201).json({ success: true, message: "Enquiry submitted" });
+            return res.status(201).json({ success: true, message: "Enquiry submitted successfully." });
         } catch(e) {
-            return res.status(500).json({ success: false, message: "Error" });
+            return res.status(500).json({ success: false, message: "Unable to submit enquiry." });
         }
     }
 
     enquiries.unshift(newEnq);
-    res.status(201).json({ success: true, message: "Enquiry submitted" });
+    res.status(201).json({ success: true, message: "Enquiry submitted successfully." });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1090,17 +1365,26 @@ app.get('/api/feedback', async (req, res) => {
     res.json({ success: true, feedback: customerFeedback, cached: false });
 });
 
-app.post('/api/feedback', async (req, res) => {
-    const { name, phone, rating, category, booking_id, recommended, message } = req.body;
+app.post('/api/feedback', feedbackLimiter, async (req, res) => {
+    const { name, phone, rating, category, booking_id, recommended, message } = req.body || {};
+
+    if (!validateName(name)) {
+        return res.status(400).json({ success: false, message: "Please provide a valid name." });
+    }
+    const numRating = Number(rating);
+    if (!Number.isInteger(numRating) || numRating < 1 || numRating > 5) {
+        return res.status(400).json({ success: false, message: "Rating must be an integer between 1 and 5." });
+    }
+
     const newFeedback = {
         id: "fb-" + Date.now(),
-        name: name || "Valued Customer",
-        phone: phone || "",
-        rating: Number(rating) || 5,
-        category: category || "General Service",
-        booking_id: booking_id || "",
+        name: name.trim(),
+        phone: phone ? cleanPhone(phone) : "",
+        rating: numRating,
+        category: (category || "General Service").trim(),
+        booking_id: (booking_id || "").trim(),
         recommended: recommended !== false,
-        message: message || "Great service!",
+        message: (message || "Great service!").trim().slice(0, 1000),
         created_at: new Date().toISOString()
     };
 
@@ -1119,9 +1403,8 @@ app.post('/api/feedback', async (req, res) => {
     res.status(201).json({ success: true, message: "Thank you for your feedback!", feedback: newFeedback });
 });
 
-
 // ═══════════════════════════════════════════════════════════
-// 7. AMC CONTRACTS (CACHED)
+// 7. AMC CONTRACTS (CACHED & TRANSACTIONAL)
 // ═══════════════════════════════════════════════════════════
 app.get('/api/amc-plans', async (req, res) => {
     const cachedPlans = fastCache.get('all_amc_plans');
@@ -1144,14 +1427,26 @@ app.get('/api/amc-plans', async (req, res) => {
     res.json({ success: true, plans: amcPlans, cached: false });
 });
 
-app.post('/api/admin/amc-plans', flexibleAuth(['admin']), async (req, res) => {
-    const { name, price, services_per_year, description } = req.body;
+app.post('/api/admin/amc-plans', authMiddleware(['admin']), async (req, res) => {
+    const { name, price, services_per_year, description } = req.body || {};
+    if (!name || typeof name !== 'string') {
+        return res.status(400).json({ success: false, message: "Valid plan name is required." });
+    }
+    const numPrice = Number(price);
+    const numServices = Number(services_per_year);
+    if (!Number.isFinite(numPrice) || numPrice < 0) {
+        return res.status(400).json({ success: false, message: "Valid plan price is required." });
+    }
+    if (!Number.isInteger(numServices) || numServices <= 0) {
+        return res.status(400).json({ success: false, message: "Services per year must be a positive integer." });
+    }
+
     const newPlan = {
         id: "amc-" + Date.now(),
-        name,
-        price: Number(price),
-        services_per_year: Number(services_per_year),
-        description,
+        name: name.trim(),
+        price: numPrice,
+        services_per_year: numServices,
+        description: (description || "").trim(),
         created_at: new Date().toISOString()
     };
 
@@ -1170,7 +1465,7 @@ app.post('/api/admin/amc-plans', flexibleAuth(['admin']), async (req, res) => {
     res.status(201).json({ success: true, message: "Plan created", plan: newPlan });
 });
 
-app.delete('/api/admin/amc-plans/:id', flexibleAuth(['admin']), async (req, res) => {
+app.delete('/api/admin/amc-plans/:id', authMiddleware(['admin']), async (req, res) => {
     const id = req.params.id;
     if (isFirebaseMode) {
         try {
@@ -1187,7 +1482,7 @@ app.delete('/api/admin/amc-plans/:id', flexibleAuth(['admin']), async (req, res)
     res.json({ success: true, message: "Plan deleted" });
 });
 
-app.get('/api/admin/customer-amc', flexibleAuth(['admin', 'staff']), async (req, res) => {
+app.get('/api/admin/customer-amc', authMiddleware(['admin', 'staff']), async (req, res) => {
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('customer_amc').orderBy('created_at', 'desc').get();
@@ -1200,7 +1495,7 @@ app.get('/api/admin/customer-amc', flexibleAuth(['admin', 'staff']), async (req,
     res.json({ success: true, subscriptions: customerAmcSubscriptions });
 });
 
-app.patch('/api/admin/customer-amc/:id/activate', flexibleAuth(['admin']), async (req, res) => {
+app.patch('/api/admin/customer-amc/:id/activate', authMiddleware(['admin']), async (req, res) => {
     const subId = req.params.id;
     const services = Number(req.body.services_per_year) || 3;
 
@@ -1231,13 +1526,24 @@ app.patch('/api/admin/customer-amc/:id/activate', flexibleAuth(['admin']), async
     res.status(404).json({ success: false, message: "Subscription not found" });
 });
 
-app.post('/api/amc/purchase', async (req, res) => {
-    const { name, phone, plan_name, address } = req.body;
+app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
+    const { name, phone, plan_name, address, email } = req.body || {};
+
+    if (!validateName(name)) {
+        return res.status(400).json({ success: false, message: "Please provide a valid customer name." });
+    }
+    if (!validatePhone(phone)) {
+        return res.status(400).json({ success: false, message: "Please provide a valid 10-digit mobile number." });
+    }
+    const formattedPhone = cleanPhone(phone) || phone.trim();
+
     const newSub = {
         id: "sub-" + Date.now(),
-        customer_name: name || "Customer",
-        phone: phone || "9800000000",
-        plan_name: plan_name || "Comfort Standard Plan",
+        customer_name: name.trim(),
+        phone: formattedPhone,
+        email: email ? email.trim().toLowerCase() : '',
+        address: address ? address.trim() : '',
+        plan_name: (plan_name || "Comfort Standard Plan").trim(),
         status: "Pending",
         remaining_services: 3,
         created_at: new Date().toISOString()
@@ -1246,9 +1552,26 @@ app.post('/api/amc/purchase', async (req, res) => {
     if (isFirebaseMode) {
         try {
             await db.collection('customer_amc').add(newSub);
-            return res.json({ success: true, message: "AMC Purchase request registered" });
+
+            // Phase 8: Async email notification
+            if (email && emailService) {
+                Promise.resolve().then(async () => {
+                    try {
+                        await emailService.sendAMCConfirmationEmail(
+                            email.trim().toLowerCase(),
+                            name.trim(),
+                            newSub.plan_name,
+                            formattedPhone
+                        );
+                    } catch(mErr) {
+                        console.warn('AMC confirmation email skipped:', mErr.message);
+                    }
+                });
+            }
+
+            return res.json({ success: true, message: "AMC Purchase request registered", subscription: newSub });
         } catch(e) {
-            return res.status(500).json({ success: false, message: "Error" });
+            return res.status(500).json({ success: false, message: "Error registering AMC purchase." });
         }
     }
 
@@ -1258,8 +1581,9 @@ app.post('/api/amc/purchase', async (req, res) => {
 
 // Dynamic Smart AMC Customer Verification for Service Booking
 app.get('/api/amc/check', async (req, res) => {
-    const phone = (req.query.phone || '').trim();
-    if (!phone) return res.json({ success: true, active: false });
+    const rawPhone = (req.query.phone || '').trim();
+    if (!rawPhone) return res.json({ success: true, active: false });
+    const phone = cleanPhone(rawPhone) || rawPhone;
 
     if (isFirebaseMode) {
         try {
@@ -1285,7 +1609,7 @@ app.get('/api/amc/check', async (req, res) => {
         }
     }
 
-    const sub = customerAmcSubscriptions.find(s => s.phone === phone && s.status === 'Active');
+    const sub = customerAmcSubscriptions.find(s => (s.phone === phone || s.phone === rawPhone) && s.status === 'Active');
     if (sub && sub.remaining_services > 0) {
         return res.json({
             success: true,
@@ -1298,7 +1622,7 @@ app.get('/api/amc/check', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// 8. TRACKING (REST & LIVE SSE)
+// 8. TRACKING (REST & LIVE SSE) — LEAST-PRIVILEGE DATA EXPOSURE
 // ═══════════════════════════════════════════════════════════
 app.get(['/api/track', '/api/track/status'], async (req, res) => {
     const id = (req.query.id || req.query.requestId || '').toUpperCase().trim();
@@ -1308,13 +1632,20 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
         return res.status(400).json({ success: false, message: "Please provide a Request ID or Phone Number." });
     }
 
+    const maskName = (fullName = '') => {
+        if (!fullName) return 'Valued Customer';
+        const parts = fullName.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0];
+        return `${parts[0]} ${parts[parts.length - 1].charAt(0)}.`;
+    };
+
     if (isFirebaseMode) {
         try {
             let snap;
             if (id && phone) {
                 snap = await db.collection('service_requests')
                     .where('request_id', '==', id)
-                    .where('phone', '==', phone)
+                    .where('phone', '==', cleanPhone(phone) || phone)
                     .get();
                 if (snap.empty) {
                     snap = await db.collection('service_requests').where('request_id', '==', id).get();
@@ -1322,25 +1653,27 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
             } else if (id) {
                 snap = await db.collection('service_requests').where('request_id', '==', id).get();
             } else {
-                snap = await db.collection('service_requests').where('phone', '==', phone).get();
+                snap = await db.collection('service_requests').where('phone', '==', cleanPhone(phone) || phone).get();
             }
 
             if (snap.empty) return res.status(404).json({ success: false, message: "No service request found." });
             const data = snap.docs[0].data();
-            const customerZone = dispatchEngine.detectZone(data.address);
+            const customerZone = dispatchEngine.detectZone(data.address || '');
             let etaInfo = null;
             if (data.technician_name && data.status !== 'Completed') {
                 etaInfo = dispatchEngine.calculateETA(customerZone.id, 'CENTRAL_MUMBAI', 1, 40);
             }
 
+            // Phase 3: Protected Least-Privilege Exposure — No full address, email, or unmasked phone
             return res.json({
                 success: true,
                 requestId: data.request_id,
                 status: data.status,
-                name: data.name,
+                name: maskName(data.name),
                 technician_name: data.technician_name || "Pending Assignment",
                 service_type: data.service_type,
                 zone: customerZone.name,
+                created_at: data.created_at,
                 eta: etaInfo ? {
                     estimatedArrival: etaInfo.estimatedArrival,
                     totalMinutes: etaInfo.totalMinutes,
@@ -1353,9 +1686,14 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
         }
     }
 
-    const match = serviceRequests.find(r => (id && r.request_id === id) || (phone && r.phone === phone));
+    const cleanInputPhone = cleanPhone(phone);
+    const match = serviceRequests.find(r => 
+        (id && r.request_id === id) || 
+        (phone && (r.phone === phone || (cleanInputPhone && cleanPhone(r.phone) === cleanInputPhone)))
+    );
+
     if (match) {
-        const customerZone = dispatchEngine.detectZone(match.address);
+        const customerZone = dispatchEngine.detectZone(match.address || '');
         let etaInfo = null;
         if (match.technician_name && match.status !== 'Completed') {
             etaInfo = dispatchEngine.calculateETA(customerZone.id, 'CENTRAL_MUMBAI', 1, 40);
@@ -1365,10 +1703,11 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
             success: true,
             requestId: match.request_id,
             status: match.status,
-            name: match.name,
+            name: maskName(match.name),
             technician_name: match.technician_name || "Pending Assignment",
             service_type: match.service_type,
             zone: customerZone.name,
+            created_at: match.created_at,
             eta: etaInfo ? {
                 estimatedArrival: etaInfo.estimatedArrival,
                 totalMinutes: etaInfo.totalMinutes,
@@ -1391,6 +1730,13 @@ app.get('/api/track/live', (req, res) => {
 
     res.write(`data: ${JSON.stringify({ success: true, connected: true })}\n\n`);
 
+    const maskName = (fullName = '') => {
+        if (!fullName) return 'Valued Customer';
+        const parts = fullName.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0];
+        return `${parts[0]} ${parts[parts.length - 1].charAt(0)}.`;
+    };
+
     const sendUpdate = async () => {
         if (isFirebaseMode) {
             try {
@@ -1400,7 +1746,7 @@ app.get('/api/track/live', (req, res) => {
                     res.write(`data: ${JSON.stringify({
                         success: true,
                         requestId: d.request_id,
-                        name: d.name,
+                        name: maskName(d.name),
                         status: d.status,
                         technician_name: d.technician_name || "Pending Assignment",
                         service_type: d.service_type
@@ -1415,7 +1761,7 @@ app.get('/api/track/live', (req, res) => {
             res.write(`data: ${JSON.stringify({
                 success: true,
                 requestId: match.request_id,
-                name: match.name,
+                name: maskName(match.name),
                 status: match.status,
                 technician_name: match.technician_name || "Pending Assignment",
                 service_type: match.service_type
@@ -1441,9 +1787,9 @@ app.get('/api/track/live', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// 9. ANALYTICS (POWERING CHART.JS)
+// 9. ANALYTICS — PROTECTED & TRUTHFUL DATA AGGREGATION
 // ═══════════════════════════════════════════════════════════
-app.get('/api/admin/analytics', async (req, res) => {
+app.get('/api/admin/analytics', authMiddleware(['admin', 'staff']), async (req, res) => {
     let reqs = serviceRequests;
     let amcSubs = customerAmcSubscriptions;
     let techUsers = systemUsers.filter(u => u.role === 'technician');
@@ -1458,7 +1804,9 @@ app.get('/api/admin/analytics', async (req, res) => {
 
             const tSnap = await db.collection('users').where('role', '==', 'technician').get();
             techUsers = tSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        } catch(e) {}
+        } catch(e) {
+            console.error("Analytics fetch error:", e);
+        }
     }
 
     const statusCounts = {
@@ -1468,18 +1816,33 @@ app.get('/api/admin/analytics', async (req, res) => {
         Completed: reqs.filter(r => r.status === 'Completed').length
     };
 
-    // 7-day trend
-    const trendLabels = [];
-    const trendBookings = [];
-    const trendCompletions = [];
-
+    // Phase 7.3: Real 7-day chronological aggregations from database records
+    const dayBuckets = {};
     for (let i = 6; i >= 0; i--) {
         const d = new Date(Date.now() - i * 24 * 3600 * 1000);
+        const dateKey = d.toISOString().split('T')[0];
         const dayStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        trendLabels.push(dayStr);
-        trendBookings.push(Math.max(1, (i * 3 + 2) % 7 + 1));
-        trendCompletions.push(Math.max(0, (i * 2 + 1) % 6));
+        dayBuckets[dateKey] = { label: dayStr, bookings: 0, completions: 0 };
     }
+
+    reqs.forEach(r => {
+        if (r.created_at) {
+            const dKey = r.created_at.split('T')[0];
+            if (dayBuckets[dKey]) {
+                dayBuckets[dKey].bookings++;
+            }
+        }
+        if (r.completed_at && r.status === 'Completed') {
+            const cKey = r.completed_at.split('T')[0];
+            if (dayBuckets[cKey]) {
+                dayBuckets[cKey].completions++;
+            }
+        }
+    });
+
+    const trendLabels = Object.values(dayBuckets).map(b => b.label);
+    const trendBookings = Object.values(dayBuckets).map(b => b.bookings);
+    const trendCompletions = Object.values(dayBuckets).map(b => b.completions);
 
     const techPerformance = techUsers.map(t => {
         return {
@@ -1490,14 +1853,16 @@ app.get('/api/admin/analytics', async (req, res) => {
     });
 
     const serviceTypeCounts = {
-        'AC Repair': reqs.filter(r => r.service_type && r.service_type.includes('Repair')).length + 4,
-        'Servicing': reqs.filter(r => r.service_type && (r.service_type.includes('Servicing') || r.service_type.includes('Cleaning'))).length + 6,
-        'Installation': reqs.filter(r => r.service_type && r.service_type.includes('Installation')).length + 2,
-        'Gas Refill': reqs.filter(r => r.service_type && r.service_type.includes('Gas')).length + 3,
-        'AMC Visits': amcSubs.filter(s => s.status === 'Active').length * 2
+        'AC Repair': reqs.filter(r => r.service_type && r.service_type.includes('Repair')).length,
+        'Servicing': reqs.filter(r => r.service_type && (r.service_type.includes('Servicing') || r.service_type.includes('Cleaning'))).length,
+        'Installation': reqs.filter(r => r.service_type && r.service_type.includes('Installation')).length,
+        'Gas Refill': reqs.filter(r => r.service_type && r.service_type.includes('Gas')).length,
+        'AMC Visits': amcSubs.filter(s => s.status === 'Active').length
     };
 
-    const totalRevenue = (statusCounts.Completed * 1500) + (amcSubs.filter(s => s.status === 'Active').length * 2400) + 12500;
+    const activeAmcCount = amcSubs.filter(s => s.status === 'Active').length;
+    // Real formula: Estimated service fee + AMC subscriptions
+    const totalRevenue = (statusCounts.Completed * 1499) + (activeAmcCount * 2400);
 
     res.json({
         success: true,
@@ -1518,8 +1883,8 @@ app.get('/api/admin/analytics', async (req, res) => {
         },
         financials: {
             totalRevenue: totalRevenue,
-            activeAmcCount: amcSubs.filter(s => s.status === 'Active').length,
-            totalJobsDone: statusCounts.Completed + 15
+            activeAmcCount: activeAmcCount,
+            totalJobsDone: statusCounts.Completed
         }
     });
 });

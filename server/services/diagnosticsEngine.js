@@ -108,6 +108,7 @@ class DiagnosticsEngine {
      * @returns {object} High-fidelity triage diagnosis
      */
     predictDiagnosis(input = {}) {
+        const start = performance.now();
         const text = `${input.description || ''} ${input.serviceType || ''}`.toLowerCase();
         const brand = input.brand || 'Standard Inverter';
         const age = Number(input.acAgeYears) || 3;
@@ -161,9 +162,11 @@ class DiagnosticsEngine {
         const adjustedMin = Math.round(primary.estimatedCost.min * brandMultiplier);
         const adjustedMax = Math.round(primary.estimatedCost.max * brandMultiplier * (1 + (age * 0.04)));
 
+        const latencyMs = Number((performance.now() - start).toFixed(2));
+
         return {
             status: 'success',
-            algorithm: 'HVAC Probabilistic Fault Tree Triage (PFT-Triage v3.1)',
+            algorithm: 'Rule-Based HVAC Diagnostics (Fault Tree Heuristic)',
             detectedDiagnosis: {
                 rootCause: primary.rootCause,
                 category: primary.category,
@@ -182,7 +185,7 @@ class DiagnosticsEngine {
                 matchedKeywordsCount: matchedRules.length
             },
             timestamp: new Date().toISOString(),
-            latencyMs: 0.4
+            latencyMs
         };
     }
 }

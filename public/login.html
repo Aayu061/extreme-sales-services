@@ -8,67 +8,16 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body {
-            min-height: 100vh;
-            transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        body.role-admin {
-            background: radial-gradient(circle at 10% 20%, #1e3a8a 0%, #0f172a 60%, #020617 100%) !important;
-        }
-        body.role-staff {
-            background: radial-gradient(circle at 10% 20%, #064e3b 0%, #062c26 60%, #021a15 100%) !important;
-        }
-        body.role-technician {
-            background: radial-gradient(circle at 10% 20%, #78350f 0%, #451a03 60%, #1c0a00 100%) !important;
+        .split-hero-bg {
+            background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%);
         }
         .portal-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
         }
         html.dark .portal-card {
-            background: rgba(15, 23, 42, 0.9) !important;
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
-        }
-        html.dark #portalTitle {
-            color: #f8fafc !important;
-        }
-        html.dark #portalSubtitle {
-            color: #94a3b8 !important;
-        }
-        html.dark .portal-card label {
-            color: #cbd5e1 !important;
-        }
-        html.dark .portal-card .role-tab:not(.active) {
-            color: #94a3b8 !important;
-        }
-        html.dark .portal-card .role-tab:not(.active):hover {
-            color: #f8fafc !important;
-        }
-        html.dark .portal-card .bg-gray-100 {
-            background-color: rgba(2, 6, 23, 0.6) !important;
-        }
-        html.dark .portal-card .bg-gray-50 {
-            background-color: rgba(2, 6, 23, 0.45) !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-        }
-        html.dark .portal-card button.bg-white {
-            background-color: #1e293b !important;
-            border-color: rgba(255, 255, 255, 0.12) !important;
-        }
-        html.dark .portal-card button.bg-white:hover {
-            background-color: #334155 !important;
-        }
-        html.dark .portal-card input {
-            background-color: rgba(2, 6, 23, 0.7) !important;
-            border-color: rgba(255, 255, 255, 0.15) !important;
-            color: #f8fafc !important;
-        }
-        html.dark .portal-card input:focus {
-            background-color: rgba(2, 6, 23, 0.95) !important;
-            border-color: #3b82f6 !important;
+            background: #111827 !important;
+            border-color: #1f2937 !important;
         }
     </style>
     <!-- Anti-flicker: apply dark class BEFORE first paint -->
@@ -82,115 +31,213 @@
           }
         } catch(e){}
       })();
-    </script></head>
-<body class="role-admin flex items-center justify-center min-h-screen p-4 sm:p-6 text-gray-900 font-sans antialiased relative overflow-hidden">
+    </script>
+</head>
+<body class="role-admin min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 font-sans antialiased flex flex-col justify-between">
 
-    <!-- Ambient Glowing Orbs -->
-    <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="w-full max-w-md relative z-10">
-
-        <!-- Top Branding -->
-        <div class="text-center mb-6">
-            <a href="index.html" class="inline-flex items-center gap-2 text-white hover:opacity-90 transition group">
-                <span class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-blue-500/30 group-hover:scale-105 transition">ES</span>
-                <span class="text-2xl font-black tracking-tight">Extreme <span class="text-blue-400">S&amp;S</span></span>
-            </a>
-            <p class="text-xs uppercase tracking-widest font-bold text-gray-400 mt-1">Enterprise Operations Portal</p>
-        </div>
-
-        <!-- Card Container -->
-        <div class="portal-card rounded-3xl p-6 sm:p-8">
-
-            <!-- Role Selector Tabs -->
-            <div class="mb-6">
-                <p class="text-[11px] font-extrabold uppercase tracking-wider text-gray-500 mb-2">Select Your Access Portal</p>
-                <div class="flex p-1 bg-gray-100 rounded-xl gap-1">
-                    <button type="button" onclick="setRole('admin', this)" class="role-tab active flex-1 py-2 text-xs font-bold rounded-lg text-gray-700 transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm">
-                        <span>🛡️</span> Admin
-                    </button>
-                    <button type="button" onclick="setRole('staff', this)" class="role-tab flex-1 py-2 text-xs font-bold rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center justify-center gap-1.5">
-                        <span>📋</span> Staff
-                    </button>
-                    <button type="button" onclick="setRole('technician', this)" class="role-tab flex-1 py-2 text-xs font-bold rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center justify-center gap-1.5">
-                        <span>🧑‍🔧</span> Field Tech
-                    </button>
-                </div>
-            </div>
-
-            <!-- Portal Badge Header -->
-            <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
-                <div>
-                    <h1 id="portalTitle" class="text-xl font-extrabold text-gray-900">Admin Control Center</h1>
-                    <p id="portalSubtitle" class="text-xs text-gray-500 mt-0.5">Manage full fleet, analytics, inventory &amp; AMCs</p>
-                </div>
-                <span id="roleBadge" class="bg-blue-100 text-blue-800 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
-                    Admin
-                </span>
-            </div>
-
-            <!-- Login Form -->
-            <form id="loginForm" class="space-y-4">
-                <input type="hidden" id="selectedRole" value="admin">
-
-                <div>
-                    <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Email Address</label>
-                    <div class="relative">
-                        <input
-                            type="email"
-                            id="email"
-                            required
-                            autocomplete="username"
-                            placeholder="Enter your registered email"
-                            class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition"
-                        >
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label for="password" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Password</label>
-                        <button type="button" onclick="togglePasswordVisibility()" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Show/Hide</button>
-                    </div>
-                    <div class="relative">
-                        <input
-                            type="password"
-                            id="password"
-                            required
-                            autocomplete="current-password"
-                            placeholder="••••••••"
-                            class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition font-mono"
-                        >
-                    </div>
-                </div>
-
-                <!-- Error Message Banner -->
-                <div id="errorMessage" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded-lg text-xs font-medium"></div>
-
-                <!-- Submit Button -->
-                <button
-                    type="submit"
-                    id="loginBtn"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition transform active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                    <span>Sign In to Portal</span>
-                    <span>→</span>
-                </button>
-            </form>
-
-            <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                <a href="index.html" class="hover:text-gray-900 font-medium transition">← Return to Website</a>
-                <a href="status.html" class="hover:text-blue-600 font-medium transition">Track Service GPS</a>
-            </div>
-
-        </div>
-
-        <p class="text-center text-xs text-gray-500 mt-6">
-            🔒 Secure 256-bit encrypted authentication. Authorized personnel only.
-        </p>
-
+    <!-- Theme Toggle Floating Button -->
+    <div class="fixed top-4 right-4 z-50">
+        <button
+          type="button"
+          class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-sm"
+          aria-label="Toggle Theme"
+        >
+          <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+          <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </button>
     </div>
+
+    <!-- MAIN SPLIT CONTAINER -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-12">
+        <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            
+            <!-- LEFT COLUMN: Brand Showcase & Value Proposition (Visible on lg+) -->
+            <div class="lg:col-span-5 split-hero-bg p-8 sm:p-12 text-white flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute inset-0 bg-blue-600/10 pointer-events-none"></div>
+                <div class="relative z-10 space-y-8">
+                    <!-- Brand -->
+                    <a href="index.html" class="inline-flex items-center gap-3 group">
+                        <span class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg shadow-md group-hover:scale-105 transition">ES</span>
+                        <div>
+                            <span class="text-2xl font-black tracking-tight text-white">Extreme <span class="text-blue-400">S&amp;S</span></span>
+                            <span class="block text-[10px] uppercase font-bold tracking-widest text-slate-400">Operations Control</span>
+                        </div>
+                    </a>
+
+                    <!-- Pitch -->
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 mb-3">
+                            HVAC Enterprise Platform
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
+                            Reliable Climate Control &amp; Doorstep Field Operations
+                        </h2>
+                        <p class="text-slate-300 text-xs sm:text-sm mt-3 leading-relaxed">
+                            Single pane of glass for real-time dispatch, inventory telemetry, algorithmic technician routing, and AMC contract lifecycle.
+                        </p>
+                    </div>
+
+                    <!-- Feature Pillars -->
+                    <div class="space-y-4 pt-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">01</div>
+                            <div>
+                                <p class="text-xs font-bold text-white">Automated Dispatch Engine</p>
+                                <p class="text-[11px] text-slate-400">Skill-based technician matching with live GPS milestone tracking.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">02</div>
+                            <div>
+                                <p class="text-xs font-bold text-white">Inventory &amp; Parts Logistics</p>
+                                <p class="text-[11px] text-slate-400">OEM compressors, sensors, and refrigerant stock control with audit logs.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">03</div>
+                            <div>
+                                <p class="text-xs font-bold text-white">Multi-Role Governance</p>
+                                <p class="text-[11px] text-slate-400">Strict RBAC with dedicated consoles for Administrators, Staff, and Techs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative z-10 pt-8 mt-8 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                    <span>Final Year Engineering Demo</span>
+                    <span>v2.4.0</span>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Role-Based Authentication Card -->
+            <div class="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-white dark:bg-slate-900">
+                <div class="max-w-md w-full mx-auto space-y-6">
+                    
+                    <!-- Header -->
+                    <div>
+                        <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Access Authentication</p>
+                        <h1 id="portalTitle" class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Admin Control Center</h1>
+                        <p id="portalSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage fleet dispatch, analytics, catalog &amp; AMC contracts.</p>
+                    </div>
+
+                    <!-- Role Switcher Tabs -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Select Portal Role</label>
+                            <span id="roleBadge" class="bg-blue-100 text-blue-800 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">Admin</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                            <button type="button" onclick="setRole('admin', this)" class="role-tab active py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-xs">
+                                <span>🛡️</span> Admin
+                            </button>
+                            <button type="button" onclick="setRole('staff', this)" class="role-tab py-2 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
+                                <span>📋</span> Staff
+                            </button>
+                            <button type="button" onclick="setRole('technician', this)" class="role-tab py-2 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
+                                <span>🧑‍🔧</span> Field Tech
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Demo Autofill Helpers -->
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Demo Quick Fill</span>
+                            <span class="text-[10px] text-slate-400">Click to load test account</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="fillCreds('admin@extremess.com', 'admin123', 'admin')" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-500 transition">
+                                Admin Demo
+                            </button>
+                            <button type="button" onclick="fillCreds('staff@extremess.com', 'staff123', 'staff')" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:border-emerald-500 transition">
+                                Staff Demo
+                            </button>
+                            <button type="button" onclick="fillCreds('tech@extremess.com', 'tech123', 'technician')" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:border-amber-500 transition">
+                                Tech Demo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" class="space-y-4">
+                        <input type="hidden" id="selectedRole" value="admin">
+
+                        <div class="form-field">
+                            <input
+                                type="email"
+                                id="email"
+                                required
+                                autocomplete="username"
+                                placeholder=" "
+                            >
+                            <label for="email">Official Email Address *</label>
+                        </div>
+
+                        <div class="form-field">
+                            <input
+                                type="password"
+                                id="password"
+                                required
+                                autocomplete="current-password"
+                                placeholder=" "
+                            >
+                            <label for="password">Password *</label>
+                            <button
+                                type="button"
+                                onclick="togglePasswordVisibility()"
+                                class="absolute right-3 top-3 text-xs text-slate-400 hover:text-blue-600 font-semibold"
+                            >
+                                Show
+                            </button>
+                        </div>
+
+                        <!-- Error Message Banner -->
+                        <div id="errorMessage" class="hidden bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 p-3 rounded-xl text-xs font-semibold"></div>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            id="loginBtn"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition flex items-center justify-center gap-2"
+                        >
+                            <span>Sign In to Portal</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </form>
+
+                    <!-- Links -->
+                    <div class="pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                        <a href="index.html" class="hover:text-slate-900 dark:hover:text-white transition font-medium">&larr; Return to Home</a>
+                        <a href="status.html" class="text-blue-600 hover:underline font-semibold">Track a Service Request</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-4 text-center text-xs text-slate-400 dark:text-slate-500">
+        &copy; 2026 Extreme Sales &amp; Services • Secure Enterprise Authentication (JWT + RBAC)
+    </footer>
+
+    <!-- HELPER SCRIPT FOR QUICK FILL -->
+    <script>
+        function fillCreds(email, password, role) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+            const buttons = document.querySelectorAll('.role-tab');
+            buttons.forEach(b => {
+                if (b.innerText.toLowerCase().includes(role === 'technician' ? 'tech' : role)) {
+                    setRole(role, b);
+                }
+            });
+        }
+    </script>
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>

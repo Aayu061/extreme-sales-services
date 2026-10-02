@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Service Status | Extreme Sales &amp; Services</title>
-    <meta name="description" content="Track your AC service request status in real time.">
+    <meta name="description" content="Track your HVAC and AC service request status in real time with live technician milestones and dispatch updates.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
@@ -19,37 +19,39 @@
           }
         } catch(e){}
       })();
-    </script>  </head>
-  <body class="bg-gray-50 text-gray-900 font-sans flex flex-col min-h-screen antialiased">
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans flex flex-col min-h-screen antialiased">
 
     <!-- NAVBAR -->
-    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-500 bg-transparent py-4">
+    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 py-3">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="glass-panel rounded-full px-6 py-1 flex justify-between items-center border-white/20 shadow-2xl">
+        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl px-6 py-2.5 flex justify-between items-center border border-slate-200/80 dark:border-slate-800 shadow-sm">
           <div class="flex-shrink-0 flex items-center">
-            <a href="index.html" class="text-xl md:text-2xl font-black tracking-tighter text-blue-600 hover:opacity-80 transition flex items-center gap-2">
-              <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm">ES</span>
-              Extreme <span class="text-gray-900">S&amp;S</span>
+            <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition flex items-center gap-2.5">
+              <span class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-sm">ES</span>
+              <span>Extreme <span class="text-blue-600 font-normal">S&amp;S</span></span>
             </a>
           </div>
-          <div class="hidden md:flex space-x-8 items-center">
-            <a href="index.html" class="nav-link text-gray-600 hover:text-blue-600 font-bold text-sm transition">Home</a>
-            <a href="products.html" class="nav-link text-gray-600 hover:text-blue-600 font-bold text-sm transition">Products</a>
-            <a href="status.html" class="nav-link active text-gray-950 font-black text-sm">Track Status</a>
-            <a href="amc.html" class="nav-link text-gray-600 hover:text-blue-600 font-bold text-sm transition">AMC Plans</a>
-            <a href="contact.html" class="nav-link text-gray-600 hover:text-blue-600 font-bold text-sm transition">Contact Us</a>
-            <a href="service.html" class="btn-glow px-6 py-2.5 rounded-full text-sm">Book Service</a>
+          <div class="hidden md:flex space-x-7 items-center">
+            <a href="index.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Home</a>
+            <a href="products.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Products</a>
+            <a href="status.html" class="nav-link active font-bold text-sm">Track Service</a>
+            <a href="amc.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">AMC Plans</a>
+            <a href="contact.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Contact Us</a>
+            <a href="service.html" class="btn-accent text-xs px-5 py-2.5 font-bold">Book Service</a>
+            
             <!-- Theme Toggle Button -->
             <button
               type="button"
-              class="theme-toggle-btn text-gray-600 dark:text-gray-300 hover:text-blue-600 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800"
+              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
           </div>
@@ -58,107 +60,125 @@
             <!-- Theme Toggle for Mobile -->
             <button
               type="button"
-              class="theme-toggle-btn text-gray-600 dark:text-gray-300 hover:text-blue-600 transition p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800"
+              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
-            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-gray-600 hover:text-blue-600 transition">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 transition p-2">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
             </button>
           </div>
         </div>
       </div>
-      <div id="mobileMenu" class="hidden absolute top-20 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100 p-6 md:hidden text-center flex flex-col space-y-4 font-bold">
-        <a href="index.html" class="text-gray-600 hover:text-blue-600">Home</a>
-        <a href="products.html" class="text-gray-600 hover:text-blue-600">Products</a>
-        <a href="status.html" class="text-blue-600">Track Status</a>
-        <a href="amc.html" class="text-gray-600 hover:text-blue-600">AMC Plans</a>
-        <a href="service.html" class="btn-glow py-4 rounded-2xl">Book Service</a>
+      <div id="mobileMenu" class="hidden absolute top-20 left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold">
+        <a href="index.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Home</a>
+        <a href="products.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Products</a>
+        <a href="status.html" class="text-blue-600 py-2">Track Service</a>
+        <a href="amc.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">AMC Plans</a>
+        <a href="contact.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Contact Us</a>
+        <a href="service.html" class="btn-accent py-3 rounded-xl text-white">Book Service</a>
       </div>
     </nav>
 
     <!-- HERO HEADER -->
-    <div class="hero-bg pt-40 pb-20 text-center relative overflow-hidden">
-      <div id="particleContainer"></div>
-      <div class="max-w-3xl mx-auto px-4 relative z-10 fade-up">
-        <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full text-[11px] font-black uppercase tracking-[0.25em] text-white opacity-80 mb-6">
-          <span class="live-dot mb-0.5"></span>
-          Live GPS Tracking
-        </div>
-        <h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-4 tracking-tight">Track Your Service</h1>
-        <p class="text-blue-100/70 text-lg md:text-xl font-medium max-w-xl mx-auto">Get absolute transparency with real-time status updates from our field engineers.</p>
+    <header class="bg-slate-900 pt-32 pb-16 text-center relative overflow-hidden border-b border-slate-800">
+      <div class="absolute inset-0 bg-radial-at-c from-blue-900/20 via-slate-900 to-slate-900 pointer-events-none"></div>
+      <div class="max-w-3xl mx-auto px-4 relative z-10">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live GPS Dispatch &amp; Telemetry
+        </span>
+        <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-3 tracking-tight">
+          Track Your <span class="text-blue-400">Service Status</span>
+        </h1>
+        <p class="text-slate-300 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+          Real-time milestones, dynamic dispatch algorithm ETA, and direct field coordination for your HVAC appointment.
+        </p>
       </div>
-    </div>
+    </header>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-grow mesh-bg py-20 px-4 relative">
-      <div class="max-w-2xl mx-auto space-y-10 relative z-10">
+    <main class="flex-grow py-12 px-4 relative">
+      <div class="max-w-2xl mx-auto space-y-8 relative z-10">
 
         <!-- Tracking Form Card -->
-        <div id="trackingFormCard" class="glass-panel rounded-[2.5rem] shadow-2xl p-10 reveal">
-          <div class="flex items-center gap-4 mb-10 border-b border-gray-100 pb-8">
-            <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 icon-glow transition-all duration-500">
-               <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/></svg>
+        <div id="trackingFormCard" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8">
+          <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/40 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">
+               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+               </svg>
             </div>
             <div>
-              <h2 class="text-2xl font-black text-gray-900 tracking-tight">Find Your Request</h2>
-              <p class="text-[11px] text-gray-400 font-black uppercase tracking-widest mt-1">Instant GPS Lookup</p>
+              <h2 class="text-lg font-bold text-slate-900 dark:text-white">Lookup Service Request</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Enter your Request ID and registered mobile number.</p>
             </div>
           </div>
 
-          <form id="trackingForm" class="space-y-6">
+          <form id="trackingForm" class="space-y-5">
             <div class="form-field">
               <input type="text" id="requestId" required placeholder=" " class="font-mono uppercase">
-              <label for="requestId">Request ID (e.g. AC-1024)</label>
+              <label for="requestId">Request ID (e.g. AC-1024) *</label>
             </div>
             <div class="form-field">
               <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder=" ">
-              <label for="phone">Phone Number</label>
+              <label for="phone">10-Digit Phone Number *</label>
             </div>
-            <button type="submit" class="btn-glow w-full py-5 rounded-3xl text-lg flex items-center justify-center gap-3">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-              Track Now
+            <button type="submit" class="btn-primary w-full py-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              <span>Track Service Now</span>
             </button>
           </form>
         </div>
 
         <!-- Progress Tracking Results Card -->
-        <div id="trackingResultsCard" class="hidden glass-panel rounded-[2.5rem] shadow-2xl p-10 reveal-stagger">
-          <div class="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
+        <div id="trackingResultsCard" class="hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8">
+          <div class="flex justify-between items-center mb-6 pb-5 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <p class="text-[10px] text-blue-500 font-black uppercase tracking-[0.2em] mb-2">Request Status</p>
-              <h2 class="text-3xl font-black text-gray-900 tracking-tighter">ID: <span id="displayId" class="text-blue-600">AC-XXXX</span></h2>
+              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-1">Live Request Milestones</p>
+              <h2 class="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">ID: <span id="displayId" class="text-blue-600 dark:text-blue-400">AC-XXXX</span></h2>
             </div>
-            <button type="button" onclick="location.reload()" class="bg-slate-100 font-black text-[10px] uppercase tracking-widest px-4 py-2 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition">Reset</button>
+            <button type="button" onclick="location.reload()" class="bg-slate-100 dark:bg-slate-800 font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition">Reset</button>
           </div>
 
           <!-- This will be populated by status.js into timelineContent -->
-          <div id="timelineContent" class="relative border-l-[3px] border-blue-100 ml-6 space-y-12 mt-12 py-2"></div>
+          <div id="timelineContent" class="relative mt-6 py-2"></div>
         </div>
 
         <!-- Help Tooltip -->
-        <div class="glass-panel rounded-3xl p-6 flex items-center gap-6 reveal translate-y-4">
-          <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center flex-shrink-0 text-amber-500 shadow-xl shadow-amber-500/5">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
+          <div class="w-10 h-10 bg-amber-50 dark:bg-amber-950/40 rounded-xl flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
           </div>
           <div class="flex-1">
-            <p class="text-md font-black text-gray-900 tracking-tight">Can't find your ID?</p>
-            <p class="text-xs font-medium text-gray-500 mt-1 leading-relaxed">It was sent via SMS when you booked. <a href="service.html" class="text-blue-600 font-bold underline hover:opacity-80 transition-opacity">Book new →</a></p>
+            <p class="text-sm font-bold text-slate-900 dark:text-white">Looking for your Booking ID?</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Your tracking code (e.g. AC-XXXX) was displayed upon booking confirmation. Need immediate help? <a href="service.html" class="text-blue-600 font-semibold underline hover:text-blue-700">Book new service &rarr;</a></p>
           </div>
         </div>
       </div>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-gray-950 text-white text-center py-12 border-t border-white/5">
-      <p class="text-gray-500 font-bold text-xs uppercase tracking-widest">&copy; 2026 Extreme S&amp;S. All Rights Reserved.</p>
-      <a href="index.html" class="text-gray-700 hover:text-white transition font-black text-[10px] tracking-widest mt-4 inline-block">Return to Base</a>
+    <footer class="bg-slate-900 text-slate-400 text-center py-8 border-t border-slate-800 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <p>&copy; 2026 Extreme Sales &amp; Services. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="index.html" class="hover:text-white transition">Home</a>
+          <a href="service.html" class="hover:text-white transition">Book Service</a>
+          <a href="contact.html" class="hover:text-white transition">Contact</a>
+        </div>
+      </div>
     </footer>
 
     <!-- SCRIPTS -->

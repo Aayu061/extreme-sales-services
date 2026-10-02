@@ -1,8 +1,19 @@
 // js/admin.js - Executive Admin Portal Logic & Real-Time Fleet Telemetry
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+    ? window.APP_CONFIG.BACKEND_URL
+    : (isLocal ? 'http://localhost:5000' : '');
+
+const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || function(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 
 const authHeaders = {
     'Content-Type': 'application/json',
@@ -209,42 +220,47 @@ function renderTable() {
         availableTechnicians.forEach(t => {
             const isSelected = req.technician_id === t.id ? 'selected' : '';
             const workload = t.active_jobs > 0 ? ` (${t.active_jobs} active)` : ' (Free)';
-            techOptions += `<option value="${t.id}" ${isSelected}>${t.name}${workload}</option>`;
+            techOptions += `<option value="${escapeHtml(t.id)}" ${isSelected}>${escapeHtml(t.name)}${workload}</option>`;
         });
 
         // AMC indicator
         const isAmc = req.service_type && req.service_type.includes('[✅ AMC Covered]');
-        const serviceClean = req.service_type.replace('[✅ AMC Covered]', '');
+        const serviceClean = (req.service_type || '').replace('[✅ AMC Covered]', '');
+        const safeReqId = escapeHtml(req.request_id || '');
+        const safeName = escapeHtml(req.name || '');
+        const safePhone = escapeHtml(req.phone || '');
+        const safeDesc = escapeHtml(req.issue_description || 'General inspection');
+        const safeTechName = escapeHtml(req.technician_name ? req.technician_name.split(' ')[0] : '');
 
         row.innerHTML = `
             <td class="px-5 py-4">
-                <div class="font-extrabold text-slate-900">${req.name}</div>
+                <div class="font-extrabold text-slate-900">${safeName}</div>
                 <div class="text-slate-500 text-[11px] flex items-center gap-1 mt-0.5">
-                    <span>📞</span> ${req.phone}
+                    <span>📞</span> ${safePhone}
                 </div>
                 <div class="text-[10px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded w-max mt-1 font-bold">
-                    ${req.request_id}
+                    ${safeReqId}
                 </div>
             </td>
             <td class="px-5 py-4">
-                <div class="font-bold text-slate-800">${serviceClean}</div>
+                <div class="font-bold text-slate-800">${escapeHtml(serviceClean)}</div>
                 ${isAmc ? '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full mt-1">★ AMC COVERED</span>' : ''}
-                <div class="text-[11px] text-slate-500 truncate max-w-xs mt-0.5 italic">"${req.issue_description || 'General inspection'}"</div>
+                <div class="text-[11px] text-slate-500 truncate max-w-xs mt-0.5 italic">"${safeDesc}"</div>
             </td>
             <td class="px-5 py-4">
                 <span class="badge-status ${stConf.class}">
                     <span class="w-1.5 h-1.5 rounded-full ${stConf.dot}"></span>
-                    <span>${req.status}</span>
+                    <span>${escapeHtml(req.status || 'Pending')}</span>
                 </span>
-                ${req.technician_name ? `<div class="text-[10px] text-slate-500 mt-1 font-medium">🧑‍🔧 ${req.technician_name.split(' ')[0]}</div>` : ''}
+                ${safeTechName ? `<div class="text-[10px] text-slate-500 mt-1 font-medium">🧑‍🔧 ${safeTechName}</div>` : ''}
             </td>
             <td class="px-5 py-4">
-                <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none font-medium">
+                <select onchange="assignTechnician('${safeReqId}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none font-medium">
                     ${techOptions}
                 </select>
             </td>
             <td class="px-5 py-4">
-                <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
+                <select onchange="updateRequestStatus('${safeReqId}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
                     <option value="Pending" ${req.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                     <option value="Assigned" ${req.status === 'Assigned' ? 'selected' : ''}>🧑‍🔧 Assigned</option>
                     <option value="In Progress" ${req.status === 'In Progress' ? 'selected' : ''}>🛠️ In Progress</option>
@@ -253,7 +269,7 @@ function renderTable() {
             </td>
             <td class="px-5 py-4">
                 <div class="flex items-center gap-1.5">
-                    <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20regarding%20your%20Extreme%20AC%20service%20request%20${req.request_id}" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded text-xs font-bold transition">
+                    <a href="https://wa.me/91${String(req.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name || '')},%20regarding%20your%20Extreme%20AC%20service%20request%20${encodeURIComponent(req.request_id || '')}" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded text-xs font-bold transition">
                         💬 WhatsApp
                     </a>
                 </div>
@@ -306,22 +322,24 @@ function renderTechniciansGrid() {
     availableTechnicians.forEach(t => {
         const card = document.createElement('div');
         card.className = "bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:shadow-md transition flex flex-col justify-between";
+        const safeName = escapeHtml(t.name || 'Technician');
+        const safeInitial = safeName.charAt(0) || 'T';
         card.innerHTML = `
             <div>
                 <div class="flex items-start justify-between mb-2">
                     <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center">
-                        ${t.name.charAt(0)}
+                        ${safeInitial}
                     </div>
                     <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${t.active_jobs > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
                         ${t.active_jobs > 0 ? `${t.active_jobs} Active Jobs` : 'Available / Free'}
                     </span>
                 </div>
-                <h4 class="font-extrabold text-slate-900 text-sm">${t.name}</h4>
-                <p class="text-xs text-slate-500 font-mono mt-0.5">${t.phone || 'Field Certified'}</p>
-                <p class="text-xs text-slate-400 truncate mt-0.5">${t.email}</p>
+                <h4 class="font-extrabold text-slate-900 text-sm">${safeName}</h4>
+                <p class="text-xs text-slate-500 font-mono mt-0.5">${escapeHtml(t.phone || 'Field Certified')}</p>
+                <p class="text-xs text-slate-400 truncate mt-0.5">${escapeHtml(t.email || '')}</p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
-                <span>Completed: ${t.completed_jobs || 0}</span>
+                <span>Completed: ${Number(t.completed_jobs || 0)}</span>
                 <span class="text-emerald-600 font-extrabold">Rating: 4.9 ★</span>
             </div>
         `;
@@ -378,11 +396,17 @@ async function fetchProducts() {
                 const catLabels = { new_ac: 'Brand New AC', used_ac: 'Certified 2nd Hand', spare_part: 'Genuine Spare' };
                 const catColors = { new_ac: 'bg-blue-600', used_ac: 'bg-slate-700', spare_part: 'bg-amber-600' };
 
+                const safeImg = escapeHtml(p.image_url || '');
+                const safeName = escapeHtml(p.name || '');
+                const safeCat = escapeHtml(p.category || '');
+                const safeDesc = escapeHtml(p.description || '');
+                const safeId = escapeHtml(p.id || '');
+
                 card.innerHTML = `
                     <div class="relative h-36 bg-slate-100 overflow-hidden">
-                        <img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover">
+                        <img src="${safeImg}" alt="${safeName}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80';">
                         <span class="absolute top-2 left-2 ${catColors[p.category] || 'bg-slate-800'} text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow">
-                            ${catLabels[p.category] || p.category}
+                            ${catLabels[p.category] || safeCat}
                         </span>
                         <span class="absolute top-2 right-2 bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded shadow">
                             Stock: ${p.stock !== undefined ? p.stock : 5}
@@ -390,16 +414,16 @@ async function fetchProducts() {
                     </div>
                     <div class="p-4 flex flex-col justify-between flex-1">
                         <div>
-                            <h4 class="font-extrabold text-slate-900 text-sm leading-snug">${p.name}</h4>
-                            <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">${p.description}</p>
+                            <h4 class="font-extrabold text-slate-900 text-sm leading-snug">${safeName}</h4>
+                            <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">${safeDesc}</p>
                         </div>
                         <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-base font-black text-blue-700">₹${(p.price || 0).toLocaleString('en-IN')}</span>
+                            <span class="text-base font-black text-blue-700">₹${(Number(p.price) || 0).toLocaleString('en-IN')}</span>
                             <div class="flex items-center gap-1.5">
-                                <button onclick="openEditProductModal('${p.id}')" class="text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 text-xs font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                                <button onclick="openEditProductModal('${safeId}')" class="text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 text-xs font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1">
                                     <span>✏️</span> Edit
                                 </button>
-                                <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700 border border-red-200 hover:bg-red-50 text-xs font-bold px-2.5 py-1 rounded-lg transition">
+                                <button onclick="deleteProduct('${safeId}')" class="text-red-500 hover:text-red-700 border border-red-200 hover:bg-red-50 text-xs font-bold px-2.5 py-1 rounded-lg transition">
                                     Delete
                                 </button>
                             </div>
@@ -512,16 +536,19 @@ async function fetchAmcData() {
             pData.plans.forEach(p => {
                 const div = document.createElement('div');
                 div.className = "bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm relative flex flex-col justify-between";
+                const safeName = escapeHtml(p.name || '');
+                const safeDesc = escapeHtml(p.description || '');
+                const safeId = escapeHtml(p.id || '');
                 div.innerHTML = `
                     <div>
-                        <h4 class="font-black text-slate-900 text-base">${p.name}</h4>
-                        <div class="text-2xl font-black text-blue-600 mt-2">₹${p.price}<span class="text-xs text-slate-400 font-normal">/yr</span></div>
+                        <h4 class="font-black text-slate-900 text-base">${safeName}</h4>
+                        <div class="text-2xl font-black text-blue-600 mt-2">₹${Number(p.price) || 0}<span class="text-xs text-slate-400 font-normal">/yr</span></div>
                         <span class="inline-block mt-2 bg-blue-50 text-blue-700 text-xs font-extrabold px-3 py-1 rounded-full">
-                            ${p.services_per_year} Free Services/Year
+                            ${Number(p.services_per_year) || 3} Free Services/Year
                         </span>
-                        <p class="text-xs text-slate-500 mt-3 italic">${p.description}</p>
+                        <p class="text-xs text-slate-500 mt-3 italic">${safeDesc}</p>
                     </div>
-                    <button onclick="deleteAmcPlan('${p.id}')" class="mt-4 text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wider">
+                    <button onclick="deleteAmcPlan('${safeId}')" class="mt-4 text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wider">
                         Delete Tier
                     </button>
                 `;
@@ -538,9 +565,13 @@ async function fetchAmcData() {
             sData.subscriptions.forEach(sub => {
                 const tr = document.createElement('tr');
                 const isPending = sub.status === 'Pending';
+                const safeSubId = escapeHtml(sub.id || '');
+                const safeCustName = escapeHtml(sub.customer_name || '');
+                const safePhone = escapeHtml(sub.phone || '');
+                const safePlanName = escapeHtml(sub.plan_name || '');
 
                 let action = isPending
-                    ? `<button onclick="activateAmc('${sub.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-xs transition">
+                    ? `<button onclick="activateAmc('${safeSubId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-xs transition">
                          Approve &amp; Activate
                        </button>`
                     : `<span class="text-xs text-slate-400 font-mono">Active till ${new Date(sub.end_date).toLocaleDateString()}</span>`;
@@ -548,13 +579,13 @@ async function fetchAmcData() {
                 tr.innerHTML = `
                     <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(sub.created_at).toLocaleDateString()}</td>
                     <td class="px-5 py-3.5">
-                        <div class="font-extrabold text-slate-900">${sub.customer_name}</div>
-                        <div class="text-xs text-slate-500">📞 ${sub.phone}</div>
+                        <div class="font-extrabold text-slate-900">${safeCustName}</div>
+                        <div class="text-xs text-slate-500">📞 ${safePhone}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-bold text-blue-700">${sub.plan_name}</td>
+                    <td class="px-5 py-3.5 font-bold text-blue-700">${safePlanName}</td>
                     <td class="px-5 py-3.5">
                         <span class="badge-status ${isPending ? 'badge-pending' : 'badge-completed'}">
-                            ${sub.status} ${!isPending ? `(${sub.remaining_services} visits left)` : ''}
+                            ${escapeHtml(sub.status || '')} ${!isPending ? `(${sub.remaining_services} visits left)` : ''}
                         </span>
                     </td>
                     <td class="px-5 py-3.5">${action}</td>
@@ -618,16 +649,20 @@ async function fetchEnquiries() {
             data.enquiries.forEach(enq => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                const safeName = escapeHtml(enq.name || '');
+                const safePhone = escapeHtml(enq.phone || '');
+                const safeProd = escapeHtml(enq.product_name || '');
+                const safeMsg = escapeHtml(enq.message || '');
                 tr.innerHTML = `
                     <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(enq.created_at).toLocaleDateString()}</td>
                     <td class="px-5 py-3.5">
-                        <div class="font-extrabold text-slate-900">${enq.name}</div>
-                        <div class="text-xs text-slate-500">📞 ${enq.phone}</div>
+                        <div class="font-extrabold text-slate-900">${safeName}</div>
+                        <div class="text-xs text-slate-500">📞 ${safePhone}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-bold text-blue-700">${enq.product_name}</td>
-                    <td class="px-5 py-3.5 text-xs text-slate-600 italic">"${enq.message}"</td>
+                    <td class="px-5 py-3.5 font-bold text-blue-700">${safeProd}</td>
+                    <td class="px-5 py-3.5 text-xs text-slate-600 italic">"${safeMsg}"</td>
                     <td class="px-5 py-3.5">
-                        <a href="https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20regarding%20your%20enquiry%20for%20${encodeURIComponent(enq.product_name)}" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-3 py-1 rounded-lg text-xs font-bold transition">
+                        <a href="https://wa.me/91${String(enq.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name || '')},%20regarding%20your%20enquiry%20for%20${encodeURIComponent(enq.product_name || '')}" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-3 py-1 rounded-lg text-xs font-bold transition">
                             💬 Message
                         </a>
                     </td>
@@ -686,11 +721,11 @@ setInterval(() => {
 // 8. ACTIVITY FEED
 // ═══════════════════════════════════════════════════════════
 const ACTIVITY_TEMPLATES = [
-    (r) => `🔧 New service request <strong>${r.request_id}</strong> from <strong>${r.name}</strong>`,
-    (r) => `✅ Job <strong>${r.request_id}</strong> marked Completed by engineer`,
-    (r) => `🚀 Engineer dispatched to <strong>${r.name}</strong> for ${r.service_type || 'AC Service'}`,
-    (r) => `📑 AMC contract activated for <strong>${r.name}</strong>`,
-    (r) => `⚠️ Urgent job flagged: <strong>${r.request_id}</strong> — ${r.service_type || 'Repair'}`,
+    (r) => `🔧 New service request <strong>${escapeHtml(r.request_id || '')}</strong> from <strong>${escapeHtml(r.name || '')}</strong>`,
+    (r) => `✅ Job <strong>${escapeHtml(r.request_id || '')}</strong> marked Completed by engineer`,
+    (r) => `🚀 Engineer dispatched to <strong>${escapeHtml(r.name || '')}</strong> for ${escapeHtml(r.service_type || 'AC Service')}`,
+    (r) => `📑 AMC contract activated for <strong>${escapeHtml(r.name || '')}</strong>`,
+    (r) => `⚠️ Urgent job flagged: <strong>${escapeHtml(r.request_id || '')}</strong> — ${escapeHtml(r.service_type || 'Repair')}`,
 ];
 
 const DOT_COLORS = ['bg-blue-500','bg-emerald-500','bg-purple-500','bg-amber-500','bg-red-500'];
@@ -777,7 +812,7 @@ async function checkLowStock() {
             alertEl.innerHTML = `
                 <span class="text-amber-500 font-black text-sm">⚠️ Low Stock Alert</span>
                 <span class="text-slate-600 text-xs ml-2">${lowStock.length} item(s) running low:</span>
-                ${lowStock.map(p => `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">${p.name} (${p.stock ?? p.quantity ?? '≤3'})</span>`).join('')}`;
+                ${lowStock.map(p => `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">${escapeHtml(p.name)} (${p.stock ?? p.quantity ?? '≤3'})</span>`).join('')}`;
         } else {
             alertEl.classList.add('hidden');
         }

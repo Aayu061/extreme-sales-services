@@ -330,6 +330,7 @@ class DispatchEngine {
      * Returns sorted ranking (top candidate at index 0)
      */
     findOptimalTechnician(request, technicians = []) {
+        const start = performance.now();
         if (!technicians || technicians.length === 0) {
             return null;
         }
@@ -345,13 +346,14 @@ class DispatchEngine {
         });
 
         const optimal = rankings[0];
+        const executionLatencyMs = Number((performance.now() - start).toFixed(2));
 
         return {
             optimalTechnician: optimal,
             rankings,
-            algorithm: 'MOW-GDM v2.4 (Multi-Objective Weighted Greedy Dispatch Model)',
+            algorithm: 'Heuristic Dispatch Engine (Multi-Objective Weighted Greedy Model)',
             timestamp: new Date().toISOString(),
-            executionLatencyMs: 0.8
+            executionLatencyMs
         };
     }
 }

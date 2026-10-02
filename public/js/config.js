@@ -1,25 +1,43 @@
 /**
  * public/js/config.js - Centralized Client Configuration
- * Auto-detects local vs production environment, manages API endpoints,
- * and pre-warms the cloud backend to eliminate cold-start delays.
+ * Auto-detects local vs production environment and manages API endpoints.
+ * In production on Vercel, requests use relative '/api' which transparently proxies
+ * to Render via Vercel's edge rewrite rules. In local development, requests target http://localhost:5000.
  */
 (function() {
     const isLocal = window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1' || 
                     window.location.protocol === 'file:';
 
-    const defaultRemote = 'https://extreme-sales-services-gh7s.onrender.com';
+    // In local development, point to local Express server.
+    // In production, use empty string '' so `${BACKEND_URL}/api/...` resolves to relative `/api/...` via Vercel edge rewrite.
+    const backendUrl = isLocal ? 'http://localhost:5000' : '';
+    const apiBase = isLocal ? 'http://localhost:5000/api' : '/api';
+
+    // Global XSS Sanitization Utility (Phase 4)
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
 
     window.APP_CONFIG = {
-        BACKEND_URL: isLocal ? 'http://localhost:5000' : defaultRemote,
-        IS_LOCAL: isLocal
+        BACKEND_URL: backendUrl,
+        API_BASE: apiBase,
+        IS_LOCAL: isLocal,
+        escapeHtml: escapeHtml
     };
 
-    // Auto-prewarm cloud backend silently in the background
+    window.escapeHtml = escapeHtml;
+
+    // Auto-prewarm cloud backend via Vercel proxy
     if (!isLocal && typeof fetch === 'function') {
         try {
-            fetch(`${defaultRemote}/api/health`, { mode: 'cors', cache: 'no-store' })
-                .catch(() => {});
+            fetch('/api/health', { cache: 'no-store' }).catch(() => {});
         } catch(e) {}
     }
 })();

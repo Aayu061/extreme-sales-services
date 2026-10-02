@@ -1,8 +1,9 @@
 // js/login.js - Universal Multi-Role Authentication Logic
 
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:5000'
-    : ((window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL) || 'https://extreme-sales-services-gh7s.onrender.com');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
+    ? window.APP_CONFIG.BACKEND_URL
+    : (isLocal ? 'http://localhost:5000' : '');
 
 const roleMeta = {
     admin: {

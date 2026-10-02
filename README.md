@@ -28,15 +28,34 @@ Comprehensive Software Engineering (SE) documentation has been generated conform
 
 ---
 
+## 📊 Implementation & Truthfulness Matrix
+
+To maintain strict engineering integrity, all system capabilities are categorized transparently:
+
+| Feature / Module | Status | Technical Reality & Architecture |
+|---|---|---|
+| **Online Service Booking Engine** | `IMPLEMENTED` | REST endpoint (`POST /api/services`) with Indian phone validation, sanitization, and collision-resistant IDs (`AC-YYYYMMDD-XXXX`). |
+| **Atomic AMC Transactions** | `IMPLEMENTED` | Cloud Firestore `db.runTransaction()` atomically checks quota, decrements `remaining_services`, and creates ticket. |
+| **Heuristic Dispatch Engine** | `IMPLEMENTED` | Multi-Objective Weighted Greedy Model (35% zone proximity, 30% workload, 20% skill, 15% rating) with real `performance.now()` latency. *Note: Algorithmic heuristic dispatch; not hardware GPS tracking.* |
+| **Smart HVAC Diagnostics** | `IMPLEMENTED` | Deterministic rule-based fault tree triage mapping symptoms/sounds to root causes and cost ranges with real measured latency. *Note: Rule-based heuristic; not deep learning ML.* |
+| **Executive Business Analytics** | `IMPLEMENTED` | Real 7-day chronological Firestore aggregation calculating actual bookings, completions, and revenue. *Note: Real DB aggregation; zero synthetic mathematical formulas.* |
+| **Field Technician Portal & Signatures** | `IMPLEMENTED` | Role-restricted (`technician`) mobile console, high-contrast dark-mode signature canvas, receipt modal, and parts logger. |
+| **JWT RBAC & IDOR Protection** | `IMPLEMENTED` | Strictly derives identity from verified JWT claims (`req.user.id`). No client header overrides (`x-technician-id`), no open-job fallback leaks. Fails closed if `JWT_SECRET` missing in prod. |
+| **Transactional Email Service** | `IMPLEMENTED` | Non-blocking, asynchronous SendGrid email delivery for booking confirmations and status changes; logs gracefully if `SENDGRID_API_KEY` is omitted. |
+| **Milestone Service Tracker** | `IMPLEMENTED` | 4-Stage visual status stepper (`Pending` -> `Assigned` -> `In Progress` -> `Completed`) with Server-Sent Events (SSE). Masked customer PII. *Note: Status-based milestone tracking; not satellite GPS.* |
+| **Interactive 3D AC Unit Simulator** | `PLANNED / DEMO` | Three.js interactive visualizer is planned for future releases; currently cost estimator & specs modals serve customer consultation. |
+
+---
+
 ## 🚀 Key Features
-- **Decoupled Architecture**: High-speed static frontend served on Vercel Edge with zero-CORS reverse-proxy rewrites to Render backend API.
+- **Decoupled Architecture**: High-speed static frontend served on Vercel Edge with zero-CORS reverse-proxy rewrites (`/api/*`) to Render backend API.
 - **Online Service Booking Engine**: Direct booking for AC Repair, Servicing, Installation, Gas Refill, and AMC visits.
-- **Smart AMC Verification**: Automatically inspects customer phone numbers against active AMC contracts, decrements visit quotas, and tags requests as pre-paid.
-- **Dispatcher Command Center (`/staff.html`)**: Ticket triage, lifecycle status filtering, and live technician workload balancing.
-- **Technician Field Console (`/technician.html`)**: Mobile-friendly job board with diagnostic notes and spare parts logging.
-- **Real-Time Ticket Tracker (`/status.html`)**: REST and Server-Sent Events (SSE) live progress tracking (`/api/track/live`).
+- **Smart AMC Verification**: Automatically inspects customer phone numbers against active AMC contracts, decrements visit quotas atomically, and tags requests as pre-paid.
+- **Dispatcher Command Center (`/staff.html`)**: Ticket triage, lifecycle status filtering, and heuristic algorithmic technician workload balancing.
+- **Technician Field Console (`/technician.html`)**: Mobile-friendly job board with diagnostic notes, spare parts logging, and dark-mode safe digital signature capture.
+- **Milestone Ticket Tracker (`/status.html`)**: REST and Server-Sent Events (SSE) live progress tracking (`/api/track/live`) with customer data privacy.
 - **Resilient Dual-Mode Architecture**: Operates with Google Cloud Firebase Firestore in production or seamlessly switches to a synchronized local memory store for zero-dependency development.
-- **SendGrid Email Notifications**: Automated branded HTML email dispatch for booking confirmations and status updates.
+- **SendGrid Email Notifications**: Automated branded HTML email dispatch for booking confirmations and status updates with non-blocking error handling.
 - **Executive BI Dashboard (`/admin.html`)**: Real-time revenue analytics, 7-day volume trends, and technician performance metrics powered by Chart.js.
 
 ---
@@ -48,7 +67,7 @@ Comprehensive Software Engineering (SE) documentation has been generated conform
 | **Executive Admin** | [/login.html](https://extreme-sales-services.vercel.app/login.html) | `extremess0121@gmail.com` / `ESS@123` | Full Access & Analytics |
 | **Staff / Dispatcher** | [/staff.html](https://extreme-sales-services.vercel.app/staff.html) | Login via portal with Staff role | Ticket Triage & Dispatch |
 | **Field Technician** | [/technician.html](https://extreme-sales-services.vercel.app/technician.html) | Login via portal with Technician role | Field Jobs & Diagnostics |
-| **Customer Tracking** | [/status.html](https://extreme-sales-services.vercel.app/status.html) | Request ID & Phone Number | Live GPS & Progress Tracking |
+| **Customer Tracking** | [/status.html](https://extreme-sales-services.vercel.app/status.html) | Request ID & Phone Number | Live Stepper & Progress Tracking |
 
 ---
 
@@ -58,7 +77,10 @@ Comprehensive Software Engineering (SE) documentation has been generated conform
 # 1. Install dependencies
 npm install
 
-# 2. Run local development server
+# 2. Run automated security and functionality tests
+npm test
+
+# 3. Run local development server
 npm start
 # Server starts on http://localhost:5000 in Synchronized Local Mode (or Cloud Mode if firebase-credentials.json exists)
 ```
