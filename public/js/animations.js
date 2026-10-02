@@ -886,3 +886,56 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+/* ─── 17. Cookie Consent Banner (Production Ready) ───────── */
+(function initCookieBanner() {
+  if (localStorage.getItem('cookie_consent_accepted')) return;
+
+  const path = window.location.pathname.toLowerCase();
+  if (path.includes('admin') || path.includes('staff') || path.includes('technician')) return;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const banner = document.createElement('div');
+    banner.id = 'cookieConsentBanner';
+    banner.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9999] bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 text-white p-4 sm:p-5 rounded-2xl shadow-2xl transition-all duration-500 transform translate-y-8 opacity-0 flex flex-col gap-3 text-xs';
+    banner.innerHTML = `
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">🍪</span>
+        <div class="space-y-1">
+          <p class="font-bold text-white text-sm">Cookie &amp; Service Preferences</p>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            We use lightweight cookies and session storage to optimize live service dispatch tracking and remember your preferences. Read our <a href="privacy.html" class="text-blue-400 hover:underline">Privacy Policy</a>.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-1">
+        <button type="button" id="declineCookieBtn" class="px-3 py-1.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs font-semibold transition">
+          Dismiss
+        </button>
+        <button type="button" id="acceptCookieBtn" class="btn-glow px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm">
+          Accept All
+        </button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    setTimeout(() => {
+      banner.classList.remove('translate-y-8', 'opacity-0');
+    }, 1200);
+
+    const dismiss = () => {
+      banner.classList.add('translate-y-8', 'opacity-0');
+      setTimeout(() => banner.remove(), 400);
+    };
+
+    banner.querySelector('#acceptCookieBtn').addEventListener('click', () => {
+      localStorage.setItem('cookie_consent_accepted', 'true');
+      dismiss();
+    });
+
+    banner.querySelector('#declineCookieBtn').addEventListener('click', () => {
+      localStorage.setItem('cookie_consent_accepted', 'dismissed');
+      dismiss();
+    });
+  });
+})();
+

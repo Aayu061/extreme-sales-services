@@ -1246,6 +1246,15 @@ app.get('/api/admin/analytics', async (req, res) => {
     });
 });
 
+// 404 Catch-All Page Handler
+app.use((req, res) => {
+    if (req.accepts('html')) {
+        res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+    } else {
+        res.status(404).json({ success: false, error: 'Endpoint not found' });
+    }
+});
+
 if (require.main === module) {
     app.listen(PORT, () => {
         console.log(` Extreme Sales & Services Server running on http://localhost:${PORT}`);
