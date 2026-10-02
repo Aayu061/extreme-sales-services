@@ -1269,46 +1269,6 @@ html.dark nav#mainNav.bg-white\/95 .theme-toggle-btn:hover {
   to { opacity: 0; transform: translateY(-15px) scale(0.95); }
 }
 
-/* Floating Demo Role Switcher */
-.demo-switcher {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  z-index: 9000;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.5rem 0.75rem;
-  border-radius: 9999px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-.demo-switcher-pill {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.35rem 0.75rem;
-  border-radius: 9999px;
-  color: #cbd5e1;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.demo-switcher-pill:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-}
-
-.demo-switcher-pill.active {
-  background: #3b82f6;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
-}
-
 /* ═══════════════════════════════════════════════════════════
    INTERACTIVE HOMEPAGE & CONTACT COMPONENTS
 ═══════════════════════════════════════════════════════════ */

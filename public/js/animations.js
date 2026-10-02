@@ -505,40 +505,6 @@ window.showToast = function(message, type = 'info', duration = 3500) {
   }, duration);
 };
 
-/* ─── 8. Floating Dev / Demo Role Switcher ─────────────────────── */
-window.initDemoSwitcher = function() {
-  if (document.getElementById('demoSwitcher')) return;
-
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-  const switcher = document.createElement('div');
-  switcher.id = 'demoSwitcher';
-  switcher.className = 'demo-switcher hidden sm:flex';
-
-  const links = [
-    { label: '🌐 Site', href: 'index.html', page: 'index.html' },
-    { label: '🛡️ Admin', href: 'admin.html', page: 'admin.html', role: 'admin' },
-    { label: '📋 Staff', href: 'staff.html', page: 'staff.html', role: 'staff' },
-    { label: '🧑‍🔧 Tech', href: 'technician.html', page: 'technician.html', role: 'technician' },
-    { label: '📍 Track', href: 'status.html', page: 'status.html' }
-  ];
-
-  let html = `<span class="text-[10px] font-extrabold uppercase tracking-widest text-blue-400 pl-1 mr-1">Demo</span>`;
-  links.forEach(l => {
-    const isActive = currentPath === l.page;
-    html += `<a href="${l.href}" onclick="if('${l.role || ''}') { localStorage.setItem('ess_token', 'demo-${l.role}-token'); localStorage.setItem('ess_role', '${l.role}'); }" class="demo-switcher-pill ${isActive ? 'active' : ''}">${l.label}</a>`;
-  });
-
-  switcher.innerHTML = html;
-  document.body.appendChild(switcher);
-};
-
-// Automatically mount demo switcher on DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', window.initDemoSwitcher);
-} else {
-  window.initDemoSwitcher();
-}
-
 /* ─── 9. Interactive AC Diagnostic Tool ─────────────────── */
 const diagnosticData = {
   'no-cooling': {

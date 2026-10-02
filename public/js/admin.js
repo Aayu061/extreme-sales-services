@@ -7,10 +7,10 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
 const authHeaders = {
     'Content-Type': 'application/json',
     get Authorization() {
-        return `Bearer ${localStorage.getItem('ess_token') || 'demo-admin-token'}`;
+        return `Bearer ${localStorage.getItem('ess_token') || ''}`;
     },
     get 'x-role'() {
-        return localStorage.getItem('ess_role') || 'admin';
+        return localStorage.getItem('ess_role') || '';
     }
 };
 
@@ -29,21 +29,15 @@ window.fetch = async function(url, options = {}, extra = {}) {
     return response;
 };
 
-// Auth Guard & Proactive Session Verification
+// Strict Real-Auth Guard
 const token = localStorage.getItem('ess_token');
 const role = localStorage.getItem('ess_role');
 
-if (!token || role !== 'admin' || token === 'demo-token' || token.startsWith('demo-') || token.startsWith('mock-')) {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        localStorage.setItem('ess_token', 'mock-admin-token');
-        localStorage.setItem('ess_role', 'admin');
-    } else {
-        autoAuthenticateAdmin().then(ok => {
-            if (!ok && (!localStorage.getItem('ess_token') || localStorage.getItem('ess_role') !== 'admin')) {
-                window.location.href = 'login.html';
-            }
-        });
-    }
+if (!token || role !== 'admin' || token.startsWith('demo-') || token.startsWith('mock-')) {
+    localStorage.removeItem('ess_token');
+    localStorage.removeItem('ess_role');
+    localStorage.removeItem('ess_user');
+    window.location.href = 'login.html';
 }
 
 
