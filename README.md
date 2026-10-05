@@ -109,17 +109,3 @@ npm run import:all
 
 ---
 
-## ⚙️ Environment Variables Reference
-
-Create a `.env` file in the root directory (refer to [.env.example](.env.example)):
-
-```env
-PORT=5000
-NODE_ENV=production
-JWT_SECRET=your_jwt_secret_key
-APP_URL=https://extreme-sales-services.vercel.app
-FIREBASE_SERVICE_ACCOUNT={"type":"service_account", ...}
-SENDGRID_API_KEY=SG.your_sendgrid_key
-BUSINESS_EMAIL=extremess0121@gmail.com
-BUSINESS_NAME="Extreme AC Sales & Services"
-```
