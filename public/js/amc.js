@@ -305,3 +305,70 @@ renderPlans = function(plans) {
 // Init
 loadPlans();
 
+// ─── Thermodynamic ROI & Energy Savings Calculator ─────────
+window.onRoiSliderChange = function() {
+    const acSlider = document.getElementById('roiAcSlider');
+    const hoursSlider = document.getElementById('roiHoursSlider');
+    const acDisplay = document.getElementById('roiAcDisplay');
+    const hoursDisplay = document.getElementById('roiHoursDisplay');
+
+    if (!acSlider || !hoursSlider) return;
+
+    const count = Number(acSlider.value) || 1;
+    const hours = Number(hoursSlider.value) || 8;
+
+    if (acDisplay) acDisplay.textContent = `${count} ${count === 1 ? 'Unit' : 'Units'}`;
+    if (hoursDisplay) hoursDisplay.textContent = `${hours} Hours/Day`;
+
+    // Try fetching real-time calculation from pricing engine API
+    fetch(`${API_BASE}/api/pricing/amc-roi?acCount=${count}&avgHours=${hours}&tier=comfort`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.success) {
+                renderRoiValues(data);
+            } else {
+                calculateLocalRoi(count, hours);
+            }
+        })
+        .catch(() => calculateLocalRoi(count, hours));
+};
+
+function renderRoiValues(data) {
+    const savingsEl = document.getElementById('roiAnnualSavings');
+    const kwhEl = document.getElementById('roiKwhSaved');
+    const roiEl = document.getElementById('roiPercent');
+    const co2El = document.getElementById('roiCo2Saved');
+
+    if (savingsEl) savingsEl.textContent = `₹${data.annualBreakdown.netAnnualSavings.toLocaleString('en-IN')}`;
+    if (kwhEl) kwhEl.textContent = `${data.environmentalImpact.kwhSavedPerYear.toLocaleString('en-IN')} kWh`;
+    if (roiEl) roiEl.textContent = data.annualBreakdown.roiPercentage;
+    if (co2El) co2El.textContent = `${data.environmentalImpact.co2ReductionKg.toLocaleString('en-IN')} kg`;
+}
+
+function calculateLocalRoi(count, hours) {
+    const tariff = 9.5;
+    const days = 260;
+    const kwhPerYear = Math.round(hours * 0.22 * days * count);
+    const powerBillSaved = Math.round(kwhPerYear * tariff);
+    const repairsSaved = 3200 * count;
+    const amcCost = 2499 * count;
+    const netSavings = Math.max(0, (powerBillSaved + repairsSaved) - amcCost);
+    const roiPct = Math.round((netSavings / amcCost) * 100);
+
+    renderRoiValues({
+        annualBreakdown: {
+            netAnnualSavings: netSavings,
+            roiPercentage: `${roiPct}%`
+        },
+        environmentalImpact: {
+            kwhSavedPerYear: kwhPerYear,
+            co2ReductionKg: Math.round(kwhPerYear * 0.82)
+        }
+    });
+}
+
+// Init calculator on load
+window.addEventListener('DOMContentLoaded', () => {
+    if (window.onRoiSliderChange) window.onRoiSliderChange();
+});
+

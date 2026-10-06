@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const fastCache = require('./server/services/cacheService');
 const dispatchEngine = require('./server/services/dispatchEngine');
 const diagnosticsEngine = require('./server/services/diagnosticsEngine');
+const pricingEngine = require('./server/services/pricingEngine');
 const emailService = require('./server/services/emailService');
 const authMiddleware = require('./server/middleware/authMiddleware');
 const {
@@ -1167,6 +1168,30 @@ app.post('/api/diagnostics/predict', diagnosticsLimiter, (req, res) => {
         res.json(diagnosticReport);
     } catch (e) {
         res.status(500).json({ success: false, message: "Diagnostics triage failed", error: e.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════
+// 6A. DYNAMIC PRICING & AMC LIFECYCLE ROI OPTIMIZATION
+// ═══════════════════════════════════════════════════════════
+app.post('/api/pricing/calculate', (req, res) => {
+    try {
+        const quote = pricingEngine.calculateQuote(req.body);
+        res.json(quote);
+    } catch (e) {
+        res.status(500).json({ success: false, message: "Pricing calculation error", error: e.message });
+    }
+});
+
+app.get('/api/pricing/amc-roi', (req, res) => {
+    try {
+        const acCount = req.query.acCount || 1;
+        const avgHours = req.query.avgHours || 8;
+        const planTier = req.query.tier || 'comfort';
+        const roi = pricingEngine.calculateAmcRoi(acCount, avgHours, planTier);
+        res.json(roi);
+    } catch (e) {
+        res.status(500).json({ success: false, message: "AMC ROI calculation error", error: e.message });
     }
 });
 

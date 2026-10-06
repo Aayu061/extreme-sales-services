@@ -227,38 +227,72 @@ class DispatchEngine {
      * Evaluates a technician against a specific service request
      * Returns individual score components and weighted composite score (0-100)
      */
+    /**
+     * Calculates Haversine Geodesic Distance in km between two coordinate pairs
+     */
+    haversineKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth radius in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        // Apply 1.25 urban road curvature routing factor for Mumbai street grid
+        return Number((R * c * 1.25).toFixed(1));
+    }
+
+    /**
+     * Evaluates a technician against a specific service request
+     * Returns individual score components and weighted composite score (0-100)
+     */
     scoreTechnician(technician, request) {
         const profile = KNOWN_TECH_PROFILES[technician.id] || {
             name: technician.name || 'Field Tech',
-            zone: 'CENTRAL_MUMBAI',
-            rating: 4.80,
-            experienceYears: 4,
-            skills: ['GENERAL_HVAC', 'JET_WASH'],
+            zone: technician.zone || 'CENTRAL_MUMBAI',
+            rating: technician.rating || 4.80,
+            experienceYears: technician.experience_years || 4,
+            skills: technician.skills || ['GENERAL_HVAC', 'JET_WASH'],
             avgJobMinutes: 45
         };
 
-        const customerZone = this.detectZone(request.address);
-        const techZoneId = profile.zone || 'CENTRAL_MUMBAI';
+        const targetAddress = request.address || request.customer_address || '';
+        const customerZone = this.detectZone(targetAddress);
+        const techZoneId = technician.zone || profile.zone || 'CENTRAL_MUMBAI';
 
         // 1. GEO-PROXIMITY SCORE (0 - 100)
-        // Same zone = 100, Adjacent = 75 - 85, Distant = 40 - 55
-        const transitInfo = (TRANSIT_MATRIX[techZoneId] && TRANSIT_MATRIX[techZoneId][customerZone.id])
-            ? TRANSIT_MATRIX[techZoneId][customerZone.id]
+        let transitInfo = (TRANSIT_MATRIX[techZoneId] && TRANSIT_MATRIX[techZoneId][customerZone.id])
+            ? { ...TRANSIT_MATRIX[techZoneId][customerZone.id] }
             : { distKm: 15, baseMins: 35 };
 
-        // Linear penalty based on distance: max 40km
-        const geoScore = Math.max(20, Math.min(100, Math.round(100 - (transitInfo.distKm * 2.1))));
+        if (ZONES[techZoneId] && customerZone && ZONES[techZoneId].coords && customerZone.coords) {
+            transitInfo.distKm = this.haversineKm(
+                ZONES[techZoneId].coords.lat,
+                ZONES[techZoneId].coords.lng,
+                customerZone.coords.lat,
+                customerZone.coords.lng
+            );
+        }
+        const distKm = transitInfo.distKm;
+
+        // Linear penalty based on real distance: max 40km
+        const geoScore = Math.max(20, Math.min(100, Math.round(100 - (distKm * 2.1))));
 
         // 2. WORKLOAD SCORE (0 - 100)
-        // 0 active jobs = 100, 1 active job = 75, 2 active jobs = 45, 3+ = 15
-        const activeJobs = technician.active_jobs !== undefined ? technician.active_jobs : (profile.active_jobs || 0);
+        const activeJobs = technician.active_jobs !== undefined
+            ? technician.active_jobs
+            : (technician.current_load !== undefined ? technician.current_load : (profile.active_jobs || 0));
         let workloadScore = 100;
         if (activeJobs === 1) workloadScore = 75;
         else if (activeJobs === 2) workloadScore = 45;
         else if (activeJobs >= 3) workloadScore = Math.max(10, 30 - ((activeJobs - 3) * 10));
 
+        // Fatigue penalty if technician is overbooked
+        if (activeJobs >= 4) {
+            workloadScore = Math.max(5, workloadScore - 15);
+        }
+
         // 3. SKILL MATCH SCORE (0 - 100)
-        // Determine required skills from request service_type
         let requiredSkills = ['GENERAL_HVAC'];
         for (const [srvKey, reqSkills] of Object.entries(SERVICE_SKILL_REQUIREMENTS)) {
             if ((request.service_type || '').toLowerCase().includes(srvKey.toLowerCase())) {
@@ -267,24 +301,35 @@ class DispatchEngine {
             }
         }
 
-        const techSkills = new Set(profile.skills || []);
+        const techSkills = new Set(technician.skills || profile.skills || []);
         let matchCount = 0;
         requiredSkills.forEach(s => {
-            if (techSkills.has(s)) matchCount++;
+            if (techSkills.has(s) || techSkills.has(s.replace(/_/g, ' '))) matchCount++;
         });
         const skillScore = Math.round((matchCount / Math.max(1, requiredSkills.length)) * 100);
 
         // 4. RATING & EXPERIENCE SCORE (0 - 100)
-        // 5.0 rating = 100; 4.0 rating = 70
-        const ratingVal = profile.rating || 4.75;
+        const ratingVal = technician.rating || profile.rating || 4.75;
         const ratingScore = Math.round(Math.min(100, Math.max(50, (ratingVal - 3.5) * 66.6)));
 
-        // 5. WEIGHTED COMPOSITE CALCULATION
+        // 5. DYNAMIC PRIORITY WEIGHT ADJUSTMENT
+        const issueText = `${request.issue_description || ''} ${request.service_type || ''}`.toLowerCase();
+        const isUrgent = issueText.includes('trip') || issueText.includes('spark') || issueText.includes('mcb') ||
+                         issueText.includes('gas leak') || issueText.includes('urgent') || request.priority === 'HIGH';
+
+        const weights = isUrgent ? {
+            GEO_PROXIMITY: 0.45,
+            WORKLOAD: 0.25,
+            SKILL_MATCH: 0.18,
+            RATING: 0.12
+        } : this.WEIGHTS;
+
+        // 6. WEIGHTED COMPOSITE CALCULATION
         const compositeScore = Number((
-            (geoScore * this.WEIGHTS.GEO_PROXIMITY) +
-            (workloadScore * this.WEIGHTS.WORKLOAD) +
-            (skillScore * this.WEIGHTS.SKILL_MATCH) +
-            (ratingScore * this.WEIGHTS.RATING)
+            (geoScore * weights.GEO_PROXIMITY) +
+            (workloadScore * weights.WORKLOAD) +
+            (skillScore * weights.SKILL_MATCH) +
+            (ratingScore * weights.RATING)
         ).toFixed(1));
 
         // Dynamic ETA

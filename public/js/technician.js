@@ -676,3 +676,121 @@ window.triggerSOS = function() {
     );
 };
 
+// ─── Field Diagnostics & Multimeter Guide ────────────────
+const TECH_GUIDE_DATA = {
+    mcb: {
+        title: 'Compressor Ground Fault / Run Capacitor Short',
+        severity: '🔴 CRITICAL HAZARD',
+        steps: [
+            '1. Turn OFF main double-pole isolator switch immediately.',
+            '2. Discharge run and start capacitors with 20k ohm resistor.',
+            '3. Set multimeter to Resistance (Ohms). Measure across compressor C-R-S pins.',
+            '4. Verify resistance to casing ground is INFINITE (>10M ohms). If 0 or low, compressor is grounded.',
+            '5. Test capacitor capacitance using DMM capacitance mode (replace if >5% off rating).'
+        ],
+        parts: 'OEM Run Capacitor 45uF/50uF, Magnetic Contactor'
+    },
+    ice: {
+        title: 'Refrigerant Undercharge or Expansion Blockage',
+        severity: '🟡 MODERATE RISK',
+        steps: [
+            '1. Thaw ice by running in Fan Only mode for 15 minutes.',
+            '2. Connect digital manifold gauge to low-pressure suction port.',
+            '3. Read running suction pressure (target: 120-130 PSI for R32, 115-125 PSI for R410A).',
+            '4. If pressure is under 80 PSI, conduct electronic halogen leak search on flare nuts.',
+            '5. Tighten flares with torque wrench, braze if cracked, evacuate to 500 microns before gas top-up.'
+        ],
+        parts: 'R32/R410A Eco Refrigerant, Brass Flare Nuts'
+    },
+    warm: {
+        title: 'Condenser Fan Stalled or Inverter Power PCB Defect',
+        severity: '🟡 MODERATE RISK',
+        steps: [
+            '1. Verify indoor return air sensor resistance (standard: 10k ohm at 25°C).',
+            '2. Check outdoor fan motor capacitor (usually 2.5uF - 4uF).',
+            '3. Measure DC bus voltage across IPM rectifier terminals (expected ~310V DC).',
+            '4. Inspect outdoor heat sink thermal compound for dry-out or blistering.',
+            '5. Inspect 4-core communication signal voltage fluctuation between terminals 1 & 3.'
+        ],
+        parts: 'Outdoor Fan Motor, Inverter PCB IPM Board'
+    },
+    water: {
+        title: 'Clogged Condensate Drain / Cracked Siphon Pan',
+        severity: '🟢 STANDARD',
+        steps: [
+            '1. Remove front indoor shroud; inspect condensate collector tray.',
+            '2. Inject nitrogen pulse or hand pump through drain exit line to flush bio-slime.',
+            '3. Verify indoor mounting bracket spirit-level tilt (minimum 3mm slope towards drain).',
+            '4. Pour 1 liter of water into tray to verify rapid unhindered gravity evacuation.'
+        ],
+        parts: 'Spiral Antibacterial Drain Hose, Neutral Drain Biocide'
+    },
+    error: {
+        title: 'Serial Communication / Sensor Open Circuit (E1 - E6)',
+        severity: '🟡 MODERATE RISK',
+        steps: [
+            '1. Power cycle mains isolator for 3 minutes to clear transient MCU freeze.',
+            '2. Measure resistance of ambient thermistor and copper coil pipe sensor.',
+            '3. Verify tight terminal screw clamping on indoor/outdoor interconnecting terminal blocks.',
+            '4. Check inverter outdoor motherboard red/green diagnostics LED blink code table.'
+        ],
+        parts: '10k/15k NTC Thermistor Sensor Pair, Shielded Comm Cable'
+    },
+    noise: {
+        title: 'Blower Bushing Wear or Outdoor Neoprene Damper Failure',
+        severity: '🟢 STANDARD',
+        steps: [
+            '1. Spin cross-flow wheel manually by hand; check for eccentric shaft wobble.',
+            '2. Lubricate rubber sleeve bearing with high-temperature synthetic silicone grease.',
+            '3. Tighten 4 outdoor mounting cantilever bracket anchor bolts.',
+            '4. Install 4 anti-vibration neoprene rubber pads beneath outdoor feet.'
+        ],
+        parts: 'Neoprene Anti-Vibration Pads (Set of 4), Blower Bearing Bushing'
+    }
+};
+
+window.openTechDiagnosticGuide = function() {
+    const modal = document.getElementById('techDiagnosticModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        window.loadTechGuide('mcb');
+    }
+};
+
+window.closeTechDiagnosticGuide = function() {
+    const modal = document.getElementById('techDiagnosticModal');
+    if (modal) modal.classList.add('hidden');
+};
+
+window.loadTechGuide = function(key, btnEl) {
+    if (btnEl) {
+        document.querySelectorAll('.tech-guide-chip').forEach(c => {
+            c.classList.remove('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+            c.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-700');
+        });
+        btnEl.classList.add('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+        btnEl.classList.remove('border-slate-200', 'bg-slate-50', 'text-slate-700');
+    }
+
+    const data = TECH_GUIDE_DATA[key] || TECH_GUIDE_DATA.mcb;
+    const contentEl = document.getElementById('techGuideContent');
+    if (!contentEl) return;
+
+    contentEl.innerHTML = `
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+            <h4 class="font-black text-slate-900 text-sm">${data.title}</h4>
+            <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${data.severity.includes('CRITICAL') ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${data.severity}</span>
+        </div>
+        <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Standard Field Verification Checklist:</span>
+            <ul class="space-y-1.5 text-xs text-slate-700 font-medium">
+                ${data.steps.map(s => `<li class="flex items-start gap-1.5"><span class="text-blue-600 font-bold shrink-0">→</span><span>${s}</span></li>`).join('')}
+            </ul>
+        </div>
+        <div class="pt-2 border-t border-slate-200 text-xs">
+            <span class="font-bold text-slate-500">Recommended Spares:</span>
+            <span class="font-bold text-blue-700 ml-1">${data.parts}</span>
+        </div>
+    `;
+};
+
