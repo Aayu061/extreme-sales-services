@@ -68,4 +68,13 @@
   - Smooth 240ms numerical count & crossfade for Instant HVAC Cost Estimator selections with tabular figures (`tabular-nums`) to prevent layout shifts.
   - Sticky navbar scroll-spy with active section highlighting across homepage sections and smooth anchor scrolling.
   - Full `@media (prefers-reduced-motion: reduce)` accessibility coverage across CSS and JS.
+- [x] Phase 8: Advanced Algorithmic Intelligence & Interactive Frontend UI/UX HUD Systems:
+  - Backend Predictive Diagnostics Upgrade: Multi-symptom token scoring, Failure Mode & Effects Analysis (FMEA) Risk Priority Number (RPN) model, Weibull-inspired equipment degradation curve, and seasonal climate factors (`server/services/diagnosticsEngine.js`).
+  - Backend Fleet Dispatch Upgrade: Haversine geodesic routing, dynamic emergency SLA urgency coefficient boosting, and queuing fatigue balancing (`server/services/dispatchEngine.js`).
+  - Backend Dynamic Pricing & AMC Lifecycle ROI Engine: Multi-attribute quote calculation with high-rise elevation safety surcharge and thermodynamic annual energy & breakdown savings model (`server/services/pricingEngine.js`, `POST /api/pricing/calculate`, `GET /api/pricing/amc-roi`).
+  - Frontend Interactive Diagnostics HUD: Instant root-cause inference, FMEA risk meter, genuine OEM spare pricing, and direct 1-click pre-filled booking integration (`public/index.html`, `public/js/diagnosticsWidget.js`, `public/js/service.js`).
+  - Frontend AMC Energy & Financial ROI Calculator: Real-time unit count and operating hours slider calculating kWh savings, net money saved, and ROI % (`public/amc.html`, `public/js/amc.js`).
+  - Frontend Field Diagnostics Guide: Quick reference modal with step-by-step multimeter test procedures and target refrigerant pressure telemetry (`public/technician.html`, `public/js/technician.js`).
+  - 100% Green Automated Verification: 33 out of 33 unit and algorithmic tests passing (`test/security_verification.test.js`, `test/algorithms.test.js`).
+
 

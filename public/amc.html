@@ -25,7 +25,7 @@
     </script>
   </head>
   <body class="bg-slate-50 font-sans antialiased text-slate-900 flex flex-col min-h-screen">
-    
+
     <!-- NAVBAR -->
     <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 py-3">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,7 +43,7 @@
             <a href="amc.html" class="nav-link active font-bold text-sm">AMC Plans</a>
             <a href="contact.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Contact Us</a>
             <a href="service.html" class="btn-accent text-xs px-5 py-2.5 font-bold">Book Service</a>
-            
+
             <!-- Theme Toggle Button -->
             <button
               type="button"
@@ -152,6 +152,76 @@
           </div>
         </div>
       </div>
+
+      <!-- INTERACTIVE THERMODYNAMIC ROI & ELECTRICITY SAVINGS CALCULATOR -->
+      <section class="py-16 bg-slate-900 text-white rounded-3xl mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-12 p-6 sm:p-12 shadow-2xl border border-slate-800">
+        <div class="max-w-4xl mx-auto text-center mb-10">
+          <div class="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-3">
+            <span>⚡</span> Thermodynamic Energy Efficiency Algorithm
+          </div>
+          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight mb-2">
+            Calculate Your Annual Power &amp; Repair Savings
+          </h2>
+          <p class="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto">
+            Scaled, unwashed condenser coils force compressors to draw 18–25% excess electricity. See your projected savings with certified preventive maintenance.
+          </p>
+        </div>
+
+        <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <!-- Sliders -->
+          <div class="lg:col-span-6 bg-slate-800/80 p-6 sm:p-8 rounded-2xl border border-slate-700/80 space-y-6">
+            <div>
+              <div class="flex justify-between items-center text-xs font-bold mb-2">
+                <span class="text-slate-300">Total AC Units to Protect</span>
+                <span id="roiAcDisplay" class="text-blue-400 font-mono text-base font-black">2 Units</span>
+              </div>
+              <input type="range" id="roiAcSlider" min="1" max="10" value="2" class="roi-slider" oninput="onRoiSliderChange()">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                <span>1 Unit</span>
+                <span>5 Units</span>
+                <span>10+ Commercial</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center text-xs font-bold mb-2">
+                <span class="text-slate-300">Daily Running Hours per AC</span>
+                <span id="roiHoursDisplay" class="text-blue-400 font-mono text-base font-black">8 Hours/Day</span>
+              </div>
+              <input type="range" id="roiHoursSlider" min="2" max="18" value="8" class="roi-slider" oninput="onRoiSliderChange()">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                <span>2 hrs (Night only)</span>
+                <span>8 hrs (Standard)</span>
+                <span>18 hrs (24x7 / Office)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Output Grid -->
+          <div class="lg:col-span-6 grid grid-cols-2 gap-4">
+            <div class="bg-gradient-to-br from-emerald-900/40 to-slate-800/80 p-5 rounded-2xl border border-emerald-500/30">
+              <span class="text-[10px] uppercase font-mono text-emerald-400 font-bold block mb-1">Net Annual Savings</span>
+              <span id="roiAnnualSavings" class="text-2xl sm:text-3xl font-black text-white font-mono">₹4,200</span>
+              <span class="text-[11px] text-emerald-300 block mt-1 font-semibold">Repairs + power bills saved</span>
+            </div>
+            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700/80">
+              <span class="text-[10px] uppercase font-mono text-blue-400 font-bold block mb-1">Electricity Saved</span>
+              <span id="roiKwhSaved" class="text-2xl sm:text-3xl font-black text-white font-mono">458 kWh</span>
+              <span class="text-[11px] text-slate-400 block mt-1">Units saved via clean heat exchange</span>
+            </div>
+            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700/80">
+              <span class="text-[10px] uppercase font-mono text-amber-400 font-bold block mb-1">Customer Investment ROI</span>
+              <span id="roiPercent" class="text-2xl sm:text-3xl font-black text-white font-mono">168%</span>
+              <span class="text-[11px] text-slate-400 block mt-1">Net positive returns on AMC cost</span>
+            </div>
+            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700/80">
+              <span class="text-[10px] uppercase font-mono text-teal-400 font-bold block mb-1">Carbon Offset</span>
+              <span id="roiCo2Saved" class="text-2xl sm:text-3xl font-black text-white font-mono">375 kg</span>
+              <span class="text-[11px] text-teal-300 block mt-1">CO₂ emissions prevented</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- WHY AMC SECTION -->
       <section class="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">

@@ -110,12 +110,17 @@
         </div>
       </div>
 
-      <!-- SOS BUTTON -->
-      <div class="flex items-center justify-between">
-        <button type="button" onclick="triggerSOS()" class="sos-btn">
-          🆘 Emergency SOS
-        </button>
-        <span class="text-xs text-slate-400 font-medium">Press SOS to alert staff &amp; auto-call support</span>
+      <!-- QUICK ACTIONS: SOS & DIAGNOSTIC GUIDE -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="triggerSOS()" class="sos-btn">
+            🆘 Emergency SOS
+          </button>
+          <button type="button" onclick="openTechDiagnosticGuide()" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer">
+            <span>🔧</span> Field Diagnostics &amp; Multimeter Guide
+          </button>
+        </div>
+        <span class="text-xs text-slate-400 font-medium">Quick reference &amp; component checklists</span>
       </div>
 
       <!-- FILTER TABS -->
@@ -303,6 +308,68 @@
           </button>
         </div>
 
+      </div>
+    </div>
+
+    <!-- FIELD DIAGNOSTICS & MULTIMETER GUIDE MODAL -->
+    <div id="techDiagnosticModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-lg font-black text-slate-900">Field Diagnostics &amp; Multimeter Guide</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Automated HVAC fault tree, multimeter test steps &amp; target pressures</p>
+          </div>
+          <button type="button" onclick="closeTechDiagnosticGuide()" class="text-slate-400 hover:text-slate-600 font-bold text-xl cursor-pointer">✕</button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Quick Selector -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Select Primary Observed Symptom</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <button type="button" onclick="loadTechGuide('mcb', this)" class="tech-guide-chip active p-2.5 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 font-bold text-xs text-left cursor-pointer">
+                ⚡ MCB Tripping
+              </button>
+              <button type="button" onclick="loadTechGuide('ice', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+                ❄️ Suction Frosting
+              </button>
+              <button type="button" onclick="loadTechGuide('warm', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+                🔥 No Cooling / Stalled
+              </button>
+              <button type="button" onclick="loadTechGuide('water', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+                💧 Water Dripping
+              </button>
+              <button type="button" onclick="loadTechGuide('error', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+                ⚠️ Error Code (E1-E6)
+              </button>
+              <button type="button" onclick="loadTechGuide('noise', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+                📢 Severe Vibration
+              </button>
+            </div>
+          </div>
+
+          <!-- Guide Card -->
+          <div id="techGuideContent" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Target Telemetry Reference -->
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900">
+            <span class="font-bold block mb-1">Standard Field Reference Values:</span>
+            <div class="grid grid-cols-2 gap-2 text-[11px]">
+              <div>• <strong>R32 Running:</strong> 115 - 135 PSI</div>
+              <div>• <strong>R410A Running:</strong> 110 - 130 PSI</div>
+              <div>• <strong>Delta T (Supply vs Return):</strong> 8°C - 12°C</div>
+              <div>• <strong>Capacitor Tolerance:</strong> &plusmn;5% rated &mu;F</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5 pt-3 border-t border-slate-100 flex justify-end">
+          <button type="button" onclick="closeTechDiagnosticGuide()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition cursor-pointer">
+            Close Guide
+          </button>
+        </div>
       </div>
     </div>
 

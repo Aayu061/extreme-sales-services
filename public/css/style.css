@@ -3305,6 +3305,98 @@ html.dark .booking-step-title {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   SMART HVAC DIAGNOSTICS & FMEA TRIAGE HUD
+═══════════════════════════════════════════════════════════ */
+.diag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border: 1.5px solid var(--theme-border);
+  background-color: var(--theme-surface);
+  color: var(--theme-text-secondary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.diag-chip:hover {
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+.diag-chip.active {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #ffffff !important;
+  border-color: #1d4ed8;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+  transform: scale(1.02);
+}
+html.dark .diag-chip {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+html.dark .diag-chip:hover {
+  border-color: #60a5fa;
+  color: #93c5fd;
+}
+html.dark .diag-chip.active {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #ffffff !important;
+}
+
+/* FMEA Risk Priority Meter */
+.fmea-risk-bar {
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #e2e8f0;
+  overflow: hidden;
+  position: relative;
+}
+html.dark .fmea-risk-bar {
+  background-color: #334155;
+}
+.fmea-risk-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* AMC Thermodynamic ROI Slider */
+.roi-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  outline: none;
+  transition: background 0.2s;
+}
+html.dark .roi-slider {
+  background: #334155;
+}
+.roi-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.roi-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* ═══════════════════════════════════════════════════════════
    ACCESSIBILITY: PREFERS-REDUCED-MOTION
 ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {

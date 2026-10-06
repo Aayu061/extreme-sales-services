@@ -155,9 +155,9 @@ function isValidStatusTransition(currentStatus, nextStatus, userRole = '') {
 // Collision-Resistant Request ID Generator (e.g. AC-20261002-8F2B7K)
 function generateSecureRequestId() {
     const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
+    const yyyy = now.getUTCFullYear();
+    const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(now.getUTCDate()).padStart(2, '0');
     const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Base32 unambiguous set (32^6 = >1 billion space)
     let suffix = '';
     for (let i = 0; i < 6; i++) {

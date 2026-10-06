@@ -35,9 +35,19 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             const msgEl = document.getElementById('message');
-            if (msgEl && !msgEl.value) {
-                msgEl.value = `[3D Estimator Quote] ${decodeURIComponent(serviceParam)}`;
+            const issueParam = params.get('issue');
+            if (msgEl) {
+                if (issueParam) {
+                    msgEl.value = decodeURIComponent(issueParam);
+                } else if (!msgEl.value) {
+                    msgEl.value = `[3D Estimator Quote] ${decodeURIComponent(serviceParam)}`;
+                }
             }
+        } else if (params.get('issue')) {
+            const msgEl = document.getElementById('message');
+            if (msgEl) msgEl.value = decodeURIComponent(params.get('issue'));
+            const selectEl = document.getElementById('serviceType');
+            if (selectEl) selectEl.value = 'repair';
         }
     } catch(err) {
         console.warn('URL param parse note:', err);
