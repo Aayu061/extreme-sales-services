@@ -1903,6 +1903,7 @@ html.dark .symptom-chip.active {
    SEASONAL URGENCY BANNER
 ═══════════════════════════════════════════════════════════ */
 #seasonalBanner {
+  display: none;
   background: linear-gradient(90deg, #dc2626, #ef4444, #f97316, #ef4444, #dc2626);
   background-size: 300% 100%;
   animation: bannerShimmer 4s ease infinite;
