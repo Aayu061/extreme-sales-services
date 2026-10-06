@@ -39,7 +39,7 @@
     <div id="scrollProgressBar"></div>
 
     <!-- Seasonal Urgency Banner (injected by JS) -->
-    <div id="seasonalBanner" style="display:none"></div>
+    <div id="seasonalBanner"></div>
     <!-- NAVBAR -->
     <nav
       id="mainNav"
@@ -509,191 +509,6 @@
 
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- SMART HVAC FAULT TRIAGE & FMEA DIAGNOSTICS HUD -->
-    <section id="diagnostics" class="py-24 bg-slate-900 text-white relative overflow-hidden border-b border-slate-800">
-      <div class="absolute inset-0 bg-blue-600/5 pointer-events-none"></div>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        <div class="text-center mb-16 reveal">
-          <div class="inline-flex items-center gap-2 bg-blue-900/60 border border-blue-500/40 text-blue-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-            <span>🔬</span> AI Predictive Diagnostics &amp; FMEA Triage
-          </div>
-          <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
-            Smart HVAC Fault Diagnoser
-          </h2>
-          <p class="text-slate-300 max-w-2xl mx-auto text-sm md:text-base font-medium">
-            Select observed symptoms or type your issue. Our thermodynamic triage algorithm evaluates root causes, safety risk (FMEA RPN), and genuine OEM spare estimates instantly.
-          </p>
-        </div>
-
-        <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start reveal">
-          
-          <!-- LEFT COLUMN: Symptom Selector & Input -->
-          <div class="lg:col-span-6 bg-slate-800/80 backdrop-blur-md border border-slate-700/80 rounded-[2rem] p-6 sm:p-8 shadow-2xl">
-            <h3 class="text-xs font-extrabold text-blue-400 uppercase tracking-widest mb-4">
-              Step 1 • Select Observed Symptoms
-            </h3>
-            
-            <!-- Symptom Chips Grid -->
-            <div class="flex flex-wrap gap-2.5 mb-6">
-              <button type="button" onclick="selectDiagChip('Warm air blowing and not cooling', this)" class="diag-chip">
-                <span>🔥</span> Warm Air / No Cool
-              </button>
-              <button type="button" onclick="selectDiagChip('Ice and frost freezing on copper pipe', this)" class="diag-chip">
-                <span>❄️</span> Ice On Copper Pipe
-              </button>
-              <button type="button" onclick="selectDiagChip('Water dripping from indoor blower unit', this)" class="diag-chip">
-                <span>💧</span> Water Dripping
-              </button>
-              <button type="button" onclick="selectDiagChip('MCB tripping and electrical spark near AC', this)" class="diag-chip">
-                <span>⚡</span> MCB Tripping / Spark
-              </button>
-              <button type="button" onclick="selectDiagChip('Loud rattling and vibration shaking noise', this)" class="diag-chip">
-                <span>📢</span> Rattling / Shaking
-              </button>
-              <button type="button" onclick="selectDiagChip('Foul mildew smell and dust odor blowing', this)" class="diag-chip">
-                <span>👃</span> Foul Mildew Odor
-              </button>
-            </div>
-
-            <form onsubmit="handleDiagSubmit(event)" class="space-y-4">
-              <div>
-                <label for="diagCustomInput" class="block text-xs font-bold text-slate-300 uppercase mb-1.5">
-                  Or Describe Symptoms in Detail
-                </label>
-                <div class="relative">
-                  <input
-                    type="text"
-                    id="diagCustomInput"
-                    placeholder="e.g. AC turns off after 10 mins with blinking timer light..."
-                    class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
-                  >
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="diagBrandSelect" class="block text-[11px] font-bold text-slate-400 uppercase mb-1">
-                    AC Brand
-                  </label>
-                  <select
-                    id="diagBrandSelect"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition"
-                  >
-                    <option value="Daikin">Daikin Inverter</option>
-                    <option value="Voltas">Voltas</option>
-                    <option value="Mitsubishi Electric">Mitsubishi Electric</option>
-                    <option value="Carrier">Carrier</option>
-                    <option value="Blue Star">Blue Star</option>
-                    <option value="Hitachi">Hitachi</option>
-                    <option value="O General">O General</option>
-                    <option value="Panasonic">Panasonic</option>
-                    <option value="Other / Standard">Other Brand</option>
-                  </select>
-                </div>
-                <div class="flex items-end">
-                  <button
-                    type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs py-2.5 px-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>Analyze Fault</span>
-                    <span>⚡</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <!-- RIGHT COLUMN: Interactive Triage HUD Result Card -->
-          <div id="diagResultCard" class="lg:col-span-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700/80 rounded-[2rem] p-6 sm:p-8 shadow-2xl relative">
-            
-            <!-- Loading Spinner -->
-            <div id="diagLoading" class="hidden py-16 text-center">
-              <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-3"></div>
-              <p class="text-xs text-slate-400 font-mono">Running Fault Tree Triage &amp; FMEA Scoring...</p>
-            </div>
-
-            <!-- Content -->
-            <div id="diagContent" class="space-y-6">
-              
-              <!-- Header & Badges -->
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/80 pb-4">
-                <span id="diagCategory" class="text-[11px] font-extrabold uppercase tracking-widest text-blue-400 bg-blue-950/70 border border-blue-800/60 px-3 py-1 rounded-full">
-                  Refrigeration Cycle
-                </span>
-                <span id="diagUrgencyBadge" class="text-xs font-black px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  🟡 Moderate Priority
-                </span>
-              </div>
-
-              <!-- Root Cause -->
-              <div>
-                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1">
-                  Inferred Root Cause
-                </span>
-                <h4 id="diagRootCause" class="text-lg sm:text-xl font-black text-white leading-snug">
-                  Outdoor Condenser Fan Motor Stalled or Inverter Power PCB Defect
-                </h4>
-              </div>
-
-              <!-- FMEA Risk Meter & Health Index -->
-              <div class="bg-slate-900/80 border border-slate-700/60 rounded-2xl p-4 space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold">
-                  <span class="text-slate-300">Failure Risk Priority Number (FMEA)</span>
-                  <span id="diagRpnVal" class="text-amber-400 font-mono">RPN: 168 / 1000</span>
-                </div>
-                <div class="fmea-risk-bar">
-                  <div id="diagRpnFill" class="fmea-risk-fill bg-amber-500" style="width: 45%;"></div>
-                </div>
-                <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
-                  <span>Safety Protocol: Monitored</span>
-                  <span id="diagHealthIndex" class="text-emerald-400 font-bold">82% Efficiency Health</span>
-                </div>
-              </div>
-
-              <!-- Cost Band & Parts -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3.5">
-                  <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-0.5">Estimated Cost Band</span>
-                  <span id="diagCostRange" class="text-lg font-black text-white font-mono">₹950 - ₹3,800</span>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3.5">
-                  <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-0.5">Recommended OEM Parts</span>
-                  <ul id="diagPartsList" class="space-y-1">
-                    <!-- Populated dynamically -->
-                  </ul>
-                </div>
-              </div>
-
-              <!-- Safety Advisory -->
-              <div class="bg-blue-950/40 border border-blue-800/40 rounded-xl p-3 text-xs text-blue-200 flex items-start gap-2.5">
-                <span class="text-base flex-shrink-0">🛡️</span>
-                <p id="diagSafetyAdvisory" class="leading-relaxed">
-                  Verify remote is set to Cool Mode with snowflake icon at 22°C-24°C.
-                </p>
-              </div>
-
-              <!-- 1-Click Action -->
-              <div class="pt-2">
-                <a
-                  id="diagBookBtn"
-                  href="service.html?serviceType=repair"
-                  class="btn-glow w-full py-3.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-xl"
-                >
-                  <span>Book Service for This Diagnostic</span>
-                  <span>→</span>
-                </a>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
       </div>
     </section>
 
@@ -1491,7 +1306,6 @@
     <script src="js/config.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/costEstimator.js"></script>
-    <script src="js/diagnosticsWidget.js"></script>
     <script>
       // Page-specific Typewriter
       const typewriterVal = [
