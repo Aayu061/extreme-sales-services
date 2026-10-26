@@ -221,7 +221,7 @@
         </p>
 
         <!-- CTA Action Buttons -->
-        <div class="flex flex-wrap justify-center items-center gap-3.5 mb-6">
+        <div id="heroCtaContainer" class="flex flex-wrap justify-center items-center gap-3.5 mb-6">
           <a
             href="service.html"
             class="btn-accent !py-3 !px-6 !text-sm flex items-center gap-2 font-bold shadow-md hover:scale-105 transition-all"
@@ -1306,8 +1306,8 @@
         "Smart Control",
       ];
       let i = 0;
-      let j = 0;
-      let isDeleting = false;
+      let j = typewriterVal[0].length;
+      let isDeleting = true;
       function type() {
         const el = document.getElementById("typewriter");
         if (!el) return;
@@ -1317,17 +1317,17 @@
 
         let speed = isDeleting ? 50 : 150;
         if (!isDeleting && j === fullTxt.length + 1) {
-          speed = 2000;
+          speed = 2200;
           isDeleting = true;
         } else if (isDeleting && j === 0) {
           isDeleting = false;
           i = (i + 1) % typewriterVal.length;
-          speed = 500;
+          speed = 400;
         }
 
         setTimeout(type, speed);
       }
-      setTimeout(type, 1000);
+      setTimeout(type, 2200);
     </script>
   </body>
 </html>
