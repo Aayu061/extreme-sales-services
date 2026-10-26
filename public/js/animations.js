@@ -42,7 +42,8 @@
     const trustBadge = heroSection.querySelector('.inline-flex');
     const h1 = heroSection.querySelector('h1');
     const subtitle = heroSection.querySelector('p');
-    const ctas = heroSection.querySelectorAll('.btn-accent, a[href="products.html"]');
+    const ctaContainer = document.getElementById('heroCtaContainer');
+    const ctas = ctaContainer ? ctaContainer.querySelectorAll('a') : heroSection.querySelectorAll('.btn-accent, a[href="products.html"]');
     const valueStrip = heroSection.querySelector('.inline-flex.flex-wrap');
     const pillars = heroSection.querySelectorAll('.grid > div');
 
@@ -64,7 +65,11 @@
       tl.from(subtitle, { y: 20, opacity: 0, duration: 0.6 }, '-=0.4');
     }
     if (ctas && ctas.length) {
-      tl.from(ctas, { y: 20, opacity: 0, stagger: 0.1, duration: 0.5 }, '-=0.3');
+      tl.fromTo(ctas, 
+        { y: 20, opacity: 0 }, 
+        { y: 0, opacity: 1, stagger: 0.1, duration: 0.5, clearProps: 'all' }, 
+        '-=0.3'
+      );
     }
     if (valueStrip) {
       tl.from(valueStrip, { scale: 0.95, opacity: 0, duration: 0.5 }, '-=0.2');
