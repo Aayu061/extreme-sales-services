@@ -25,30 +25,30 @@
       })();
     </script>
   </head>
-  <body class="bg-[#F2EDE3] text-[#342C27] font-sans flex flex-col min-h-screen antialiased">
+  <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] font-sans flex flex-col min-h-screen antialiased">
 
     <!-- NAVBAR -->
-    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 bg-[#F2EDE3]/90 backdrop-blur-md shadow-xs">
+    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#F2EDE3]/90 dark:bg-[#1A1412]/90 backdrop-blur-md shadow-xs">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
           <div class="flex-shrink-0 flex items-center">
-            <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] hover:opacity-90 transition flex items-center gap-2.5">
-              <span class="bg-[#342C27] text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-xs">ES</span>
-              <span>Extreme <span class="text-[#A05B3A]">S&amp;S</span></span>
+            <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5">
+              <span class="bg-[#342C27] dark:bg-[#27211D] border border-transparent dark:border-[#B8AA98]/20 text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-xs">ES</span>
+              <span>Extreme <span class="text-[#A05B3A] dark:text-[#E4C99A]">S&amp;S</span></span>
             </a>
           </div>
           <div class="hidden md:flex space-x-7 items-center">
-            <a href="index.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Home</a>
-            <a href="products.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Products</a>
-            <a href="status.html" class="nav-link active text-[#A05B3A] font-bold text-sm">Track Service</a>
-            <a href="amc.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">AMC Plans</a>
-            <a href="contact.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Contact Us</a>
+            <a href="index.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Home</a>
+            <a href="products.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Products</a>
+            <a href="status.html" class="nav-link active text-[#A05B3A] dark:text-[#E4C99A] font-bold text-sm">Track Service</a>
+            <a href="amc.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">AMC Plans</a>
+            <a href="contact.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Contact Us</a>
             <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs px-5 py-2.5 font-bold rounded-xl shadow-sm transition">Book Service</a>
 
             <!-- Theme Toggle Button -->
             <button
               type="button"
-              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 border border-[#B8AA98]/50"
+              class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@
             <!-- Theme Toggle for Mobile -->
             <button
               type="button"
-              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60"
+              class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D]"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
-            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-[#655448] hover:text-[#342C27] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60">
+            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D]">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
@@ -82,26 +82,26 @@
           </div>
         </div>
       </div>
-      <div id="mobileMenu" class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold mt-2">
-        <a href="index.html" class="text-[#655448] hover:text-[#342C27] py-2">Home</a>
-        <a href="products.html" class="text-[#655448] hover:text-[#342C27] py-2">Products</a>
-        <a href="status.html" class="text-[#A05B3A] py-2">Track Service</a>
-        <a href="amc.html" class="text-[#655448] hover:text-[#342C27] py-2">AMC Plans</a>
-        <a href="contact.html" class="text-[#655448] hover:text-[#342C27] py-2">Contact Us</a>
+      <div id="mobileMenu" class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold mt-2">
+        <a href="index.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] py-2">Home</a>
+        <a href="products.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] py-2">Products</a>
+        <a href="status.html" class="text-[#A05B3A] dark:text-[#E4C99A] py-2">Track Service</a>
+        <a href="amc.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] py-2">AMC Plans</a>
+        <a href="contact.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] py-2">Contact Us</a>
         <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] py-3 rounded-xl text-[#F2EDE3] font-bold shadow-sm">Book Service</a>
       </div>
     </nav>
 
     <!-- HERO HEADER -->
-    <header class="pt-32 pb-14 text-center relative overflow-hidden border-b border-[#B8AA98]/40 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3]">
+    <header class="pt-32 pb-14 text-center relative overflow-hidden border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3] dark:from-[#1A1412] dark:to-[#27211D]">
       <div class="max-w-3xl mx-auto px-4 relative z-10">
-        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 backdrop-blur-sm text-[#A05B3A] border border-[#B8AA98]/50 shadow-xs mb-4">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-sm text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-xs mb-4">
           <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span> Live Dispatch &amp; Telemetry
         </span>
-        <h1 class="text-3xl md:text-5xl font-black text-[#342C27] leading-tight mb-3 tracking-tight">
-          Track Your <span class="text-[#A05B3A]">Service Status</span>
+        <h1 class="text-3xl md:text-5xl font-black text-[#342C27] dark:text-[#F2EDE3] leading-tight mb-3 tracking-tight">
+          Track Your <span class="text-[#A05B3A] dark:text-[#E4C99A]">Service Status</span>
         </h1>
-        <p class="text-[#655448] text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
+        <p class="text-[#655448] dark:text-[#B8AA98] text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
           Real-time milestones, verified technician ETA, and direct field coordination for your HVAC appointment.
         </p>
       </div>
@@ -112,16 +112,16 @@
       <div class="max-w-2xl mx-auto space-y-8 relative z-10">
 
         <!-- Tracking Form Card -->
-        <div id="trackingFormCard" class="bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl shadow-sm p-6 sm:p-8">
-          <div class="flex items-center gap-4 mb-6 pb-6 border-b border-[#B8AA98]/40">
-            <div class="w-12 h-12 bg-[#A05B3A]/15 rounded-xl flex items-center justify-center text-[#A05B3A] font-bold shrink-0">
+        <div id="trackingFormCard" class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl shadow-sm p-6 sm:p-8">
+          <div class="flex items-center gap-4 mb-6 pb-6 border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <div class="w-12 h-12 bg-[#A05B3A]/15 dark:bg-[#A05B3A]/25 rounded-xl flex items-center justify-center text-[#A05B3A] dark:text-[#E4C99A] font-bold shrink-0">
                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
                </svg>
             </div>
             <div>
-              <h2 class="text-lg font-bold text-[#342C27]">Lookup Service Request</h2>
-              <p class="text-xs text-[#655448] mt-0.5">Enter your Request ID and registered mobile number.</p>
+              <h2 class="text-lg font-bold text-[#342C27] dark:text-[#F2EDE3]">Lookup Service Request</h2>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Enter your Request ID and registered mobile number.</p>
             </div>
           </div>
 
@@ -144,13 +144,13 @@
         </div>
 
         <!-- Progress Tracking Results Card -->
-        <div id="trackingResultsCard" class="hidden bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl shadow-sm p-6 sm:p-8">
-          <div class="flex justify-between items-center mb-6 pb-5 border-b border-[#B8AA98]/40">
+        <div id="trackingResultsCard" class="hidden bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl shadow-sm p-6 sm:p-8">
+          <div class="flex justify-between items-center mb-6 pb-5 border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
             <div>
-              <p class="text-[11px] text-[#A05B3A] font-bold uppercase tracking-wider mb-1">Live Request Milestones</p>
-              <h2 class="text-2xl font-black text-[#342C27] font-mono tracking-tight">ID: <span id="displayId" class="text-[#A05B3A]">AC-XXXX</span></h2>
+              <p class="text-[11px] text-[#A05B3A] dark:text-[#E4C99A] font-bold uppercase tracking-wider mb-1">Live Request Milestones</p>
+              <h2 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] font-mono tracking-tight">ID: <span id="displayId" class="text-[#A05B3A] dark:text-[#E4C99A]">AC-XXXX</span></h2>
             </div>
-            <button type="button" onclick="location.reload()" class="bg-[#F2EDE3] border border-[#B8AA98]/40 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-xl text-[#655448] hover:text-[#342C27] hover:bg-[#EAE3D6] transition">Reset</button>
+            <button type="button" onclick="location.reload()" class="bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-xl text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] hover:bg-[#EAE3D6] dark:hover:bg-[#342C27] transition">Reset</button>
           </div>
 
           <!-- This will be populated by status.js into timelineContent -->
@@ -158,28 +158,28 @@
         </div>
 
         <!-- Help Tooltip -->
-        <div class="bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 bg-[#E4C99A]/30 rounded-xl flex items-center justify-center shrink-0 text-[#8B4D2F]">
+        <div class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
+          <div class="w-10 h-10 bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 rounded-xl flex items-center justify-center shrink-0 text-[#8B4D2F] dark:text-[#E4C99A]">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
           </div>
           <div class="flex-1">
-            <p class="text-sm font-bold text-[#342C27]">Looking for your Booking ID?</p>
-            <p class="text-xs text-[#655448] mt-0.5">Your tracking code (e.g. AC-XXXX) was displayed upon booking confirmation. Need immediate help? <a href="service.html" class="text-[#A05B3A] font-semibold underline hover:text-[#8B4D2F]">Book new service &rarr;</a></p>
+            <p class="text-sm font-bold text-[#342C27] dark:text-[#F2EDE3]">Looking for your Booking ID?</p>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Your tracking code (e.g. AC-XXXX) was displayed upon booking confirmation. Need immediate help? <a href="service.html" class="text-[#A05B3A] dark:text-[#E4C99A] font-semibold underline hover:text-[#8B4D2F] dark:hover:text-[#F2EDE3]">Book new service &rarr;</a></p>
           </div>
         </div>
       </div>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-[#FDFBF7] text-[#655448] text-center py-8 border-t border-[#B8AA98]/40 mt-auto">
+    <footer class="bg-[#FDFBF7] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-center py-8 border-t border-[#B8AA98]/40 dark:border-[#B8AA98]/20 mt-auto">
       <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <p>&copy; 2026 Extreme Sales &amp; Services • Verified Live Tracking</p>
         <div class="flex gap-4">
-          <a href="index.html" class="hover:text-[#A05B3A] transition">Home</a>
-          <a href="service.html" class="hover:text-[#A05B3A] transition">Book Service</a>
-          <a href="contact.html" class="hover:text-[#A05B3A] transition">Contact</a>
+          <a href="index.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Home</a>
+          <a href="service.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Book Service</a>
+          <a href="contact.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Contact</a>
         </div>
       </div>
     </footer>
