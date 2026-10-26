@@ -295,9 +295,10 @@ class DiagnosticsEngine {
      */
     predictDiagnosis(input = {}) {
         const start = performance.now();
-        const text = `${input.description || ''} ${input.serviceType || ''}`.toLowerCase();
+        const symptomsStr = Array.isArray(input.symptoms) ? input.symptoms.join(' ') : (input.symptoms || '');
+        const text = `${input.description || ''} ${input.serviceType || ''} ${input.issue || ''} ${input.problem || ''} ${symptomsStr}`.toLowerCase();
         const brand = input.brand || 'Standard Inverter';
-        const age = Number(input.acAgeYears) || 3;
+        const age = Number(input.acAgeYears || input.ageYears || input.age) || 3;
         const seasonal = this.getSeasonalContext();
         const equipmentHealth = this.calculateEquipmentHealth(age, brand);
 
@@ -380,6 +381,15 @@ class DiagnosticsEngine {
 
         return {
             status: 'success',
+            success: true,
+            severityLevel: severity,
+            fmeaScore: {
+                rpn,
+                severity: S,
+                occurrence: O,
+                detection: D,
+                riskLevel
+            },
             algorithm: 'Rule-Based HVAC Diagnostics (Fault Tree Heuristic)',
             detectedDiagnosis: {
                 rootCause: primary.rootCause,

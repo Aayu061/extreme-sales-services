@@ -41,11 +41,27 @@ class PricingEngine {
      */
     calculateQuote(params = {}) {
         const start = performance.now();
-        const serviceKey = params.serviceKey || 'jet_wash';
-        const unitType = params.unitType || 'split';
+        const serviceAliasMap = {
+            'deep_cleaning': 'jet_wash',
+            'deep_cleaning_foam': 'jet_wash',
+            'foam_wash': 'jet_wash',
+            'gas_charging': 'gas_refill',
+            'gas_leak': 'gas_refill',
+            'gas_filling': 'gas_refill',
+            'repair': 'cooling_repair',
+            'cooling_issue': 'cooling_repair',
+            'install': 'installation',
+            'uninstall': 'uninstallation',
+            'audit': 'health_check'
+        };
+
+        const rawService = String(params.serviceKey || params.serviceType || 'jet_wash').toLowerCase();
+        const serviceKey = serviceAliasMap[rawService] || rawService;
+        const unitType = String(params.unitType || params.acType || 'split').toLowerCase();
         const tonnage = String(params.tonnage || '1.5');
         const floorLevel = Number(params.floorLevel) || 1;
         const hasHighRiseHazard = Boolean(params.hasHighRiseHazard || floorLevel > 4);
+        const units = Math.max(1, Math.min(20, Number(params.units || params.acCount || 1)));
 
         const service = SERVICE_BASE_RATES[serviceKey] || SERVICE_BASE_RATES.jet_wash;
         const typeMulti = (UNIT_TYPE_MULTIPLIERS[unitType] && UNIT_TYPE_MULTIPLIERS[unitType].factor) || 1.0;
@@ -57,7 +73,8 @@ class PricingEngine {
             elevationPremium = floorLevel > 10 ? 350 : 200; // Safety harness and bracket rigging
         }
 
-        const rawBase = Math.round((service.baseLabor + service.baseParts) * typeMulti * tonMulti) + elevationPremium;
+        const unitCost = Math.round((service.baseLabor + service.baseParts) * typeMulti * tonMulti);
+        const rawBase = (unitCost * units) + elevationPremium;
         const gst = Math.round(rawBase * 0.18);
         const total = rawBase + gst;
 
@@ -69,6 +86,9 @@ class PricingEngine {
             success: true,
             serviceName: service.name,
             breakdown: {
+                baseRate: service.baseLabor + service.baseParts,
+                unitCost,
+                units,
                 basePrice: rawBase,
                 gstRatePercent: 18,
                 gstAmount: gst,
@@ -80,6 +100,7 @@ class PricingEngine {
             specifications: {
                 unitType: (UNIT_TYPE_MULTIPLIERS[unitType] && UNIT_TYPE_MULTIPLIERS[unitType].label) || unitType,
                 tonnage: `${tonnage} Ton`,
+                unitsCount: units,
                 estimatedDuration: `${service.durationMins} minutes`,
                 suggestedWarrantyDays: serviceKey === 'gas_refill' ? 90 : (serviceKey === 'installation' ? 180 : 30)
             },

@@ -1162,7 +1162,7 @@ app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
 // ═══════════════════════════════════════════════════════════
 // 6. REAL-TIME PREDICTIVE DIAGNOSTICS & HVAC FAULT TRIAGE
 // ═══════════════════════════════════════════════════════════
-app.post('/api/diagnostics/predict', diagnosticsLimiter, (req, res) => {
+app.post(['/api/diagnostics/predict', '/api/diagnostics/analyze'], diagnosticsLimiter, (req, res) => {
     try {
         const diagnosticReport = diagnosticsEngine.predictDiagnosis(req.body);
         res.json(diagnosticReport);
@@ -1185,9 +1185,9 @@ app.post('/api/pricing/calculate', (req, res) => {
 
 app.get('/api/pricing/amc-roi', (req, res) => {
     try {
-        const acCount = req.query.acCount || 1;
-        const avgHours = req.query.avgHours || 8;
-        const planTier = req.query.tier || 'comfort';
+        const acCount = req.query.acCount || req.query.acUnits || 1;
+        const avgHours = req.query.avgHours || req.query.dailyHours || 8;
+        const planTier = req.query.tier || req.query.planTier || 'comfort';
         const roi = pricingEngine.calculateAmcRoi(acCount, avgHours, planTier);
         res.json(roi);
     } catch (e) {
@@ -1431,7 +1431,7 @@ app.post('/api/feedback', feedbackLimiter, async (req, res) => {
 // ═══════════════════════════════════════════════════════════
 // 7. AMC CONTRACTS (CACHED & TRANSACTIONAL)
 // ═══════════════════════════════════════════════════════════
-app.get('/api/amc-plans', async (req, res) => {
+app.get(['/api/amc-plans', '/api/amc/plans'], async (req, res) => {
     const cachedPlans = fastCache.get('all_amc_plans');
     if (cachedPlans) {
         return res.json({ success: true, plans: cachedPlans, cached: true, latency: '<1ms' });
