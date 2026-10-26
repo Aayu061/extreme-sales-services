@@ -106,13 +106,15 @@ async function fetchStatus(id, phone) {
 }
 
 // ─── Master Render ───────────────────────────────────────────────
-function renderAll(status, techName, serviceType, customerName, serverEta = null, zone = null) {
+function renderAll(status, techName, serviceType, customerName) {
     const changed = status !== lastStatus;
     lastStatus    = status;
 
     renderStepper(status);
     renderTimeline(status, techName, serviceType, customerName);
-    renderEtaCard(status, techName, serverEta, zone);
+
+    const oldEta = document.getElementById('etaCard');
+    if (oldEta) oldEta.remove();
 
     if (status === 'Completed') {
         if (changed) launchConfetti();
@@ -188,76 +190,6 @@ function renderStepper(currentStatus) {
     }, 100);
 }
 
-// ─── ETA Countdown Card ─────────────────────────────────────────
-function renderEtaCard(status, techName, serverEta = null, zone = null) {
-    if (etaInterval) clearInterval(etaInterval);
-    let el = document.getElementById('etaCard');
-    if (!el) {
-        el = document.createElement('div');
-        el.id = 'etaCard';
-        el.className = 'eta-card mb-8';
-        timelineContent.insertAdjacentElement('beforebegin', el);
-    }
-
-    if (status === 'Completed') {
-        el.innerHTML = `
-            <span class="text-3xl">🎉</span>
-            <div>
-                <div class="text-[#F2EDE3] font-black text-base">Service Completed!</div>
-                <div class="text-[#B8AA98] text-xs mt-0.5 font-medium">Your AC is running perfectly. Invoice sent to your phone.</div>
-            </div>`;
-        return;
-    }
-
-    // Dynamic Server ETA or Fallback
-    if (serverEta && serverEta.totalMinutes) {
-        etaMinutes = serverEta.totalMinutes;
-    } else {
-        etaMinutes = status === 'Pending' ? 60 : status === 'Assigned' ? 35 : status === 'In Progress' ? 15 : 0;
-    }
-    let secs = etaMinutes * 60;
-
-    const trafficInfo = serverEta ? ` • ${serverEta.trafficFactor}` : '';
-    const zoneInfo = zone ? ` [${zone}]` : '';
-
-    const render = () => {
-        const m = Math.floor(secs / 60);
-        const s = secs % 60;
-        const display = m > 0 ? `${m}m ${String(s).padStart(2,'0')}s` : `${s}s`;
-        const safeTechName = escapeHtml(techName || '');
-        const statusMsg = status === 'Pending'
-            ? 'Coordinating with dispatch algorithm'
-            : status === 'Assigned'
-            ? `Engineer ${safeTechName} dispatched${zoneInfo}${trafficInfo}`
-            : 'Engineer is working on-site';
-
-        const arrivalBadge = (serverEta && serverEta.estimatedArrival)
-            ? `<span class="text-xs font-semibold text-[#E4C99A] ml-2.5">(Est. Arrival: ${escapeHtml(serverEta.estimatedArrival)})</span>`
-            : '';
-
-        el.innerHTML = `
-            <div class="text-2xl">⏱️</div>
-            <div class="flex-1">
-                <div class="text-[#E4C99A] text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5">
-                    <span>Algorithm Dynamic ETA</span>
-                    ${serverEta ? '<span class="bg-[#A05B3A]/20 text-[#E4C99A] px-1.5 py-0.5 rounded text-[9px]">MOW-GDM Queuing Model</span>' : ''}
-                </div>
-                <div class="eta-time-display text-[#F2EDE3] font-mono text-2xl font-black flex items-baseline flex-wrap">
-                    <span>${display}</span>
-                    ${arrivalBadge}
-                </div>
-                <div class="text-[#B8AA98] text-xs font-medium">${statusMsg}</div>
-            </div>
-            <div class="text-right">
-                <a href="tel:+917977805245" class="text-[#E4C99A] text-xs font-bold underline hover:text-[#F2EDE3] transition">📞 Call Support</a>
-            </div>`;
-
-        if (secs > 0) secs--;
-    };
-
-    render();
-    etaInterval = setInterval(render, 1000);
-}
 
 // ─── Share Bar ───────────────────────────────────────────────────
 function injectShareBar(id, phone) {
