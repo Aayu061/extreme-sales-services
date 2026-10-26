@@ -9,153 +9,154 @@
 (function () {
   'use strict';
 
-  /* ─── 0. Bose Design System Universal Preloader & Link Transition Engine ─── */
-  const initBoseLoadingSystem = () => {
-    // 1. Laser top loader for page-to-page link transitions
-    let topLoader = document.getElementById('boseTopLoader');
-    if (!topLoader) {
-      topLoader = document.createElement('div');
-      topLoader.id = 'boseTopLoader';
-      if (document.body) {
-        document.body.appendChild(topLoader);
-      } else if (document.documentElement) {
-        document.documentElement.appendChild(topLoader);
-      }
+  /* ─── 0. Universal Loading & Transition System (Clean & Instant) ─── */
+  const initLoadingSystem = () => {
+    // Non-blocking parallel probe to server health check
+    fetch('/api/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLoadingSystem);
+  } else {
+    initLoadingSystem();
+  }
+
+  /* ─── 1. GSAP Engine Core & Pre-Flight Registration ─── */
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasGSAP = typeof gsap !== 'undefined';
+
+  if (hasGSAP) {
+    if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+    if (typeof ScrollToPlugin !== 'undefined') gsap.registerPlugin(ScrollToPlugin);
+    gsap.config({ autoSleep: 60, force3D: true });
+  }
+
+  /* ─── 1A. GSAP Hero Entrance Choreography (Executive High-End) ─── */
+  const initHeroAnimation = () => {
+    if (!hasGSAP || prefersReducedMotion) return;
+    const heroSection = document.getElementById('hero');
+    if (!heroSection) return;
+
+    const nav = document.getElementById('mainNav');
+    const greeting = document.getElementById('heroGreeting');
+    const trustBadge = heroSection.querySelector('.inline-flex');
+    const h1 = heroSection.querySelector('h1');
+    const subtitle = heroSection.querySelector('p');
+    const ctas = heroSection.querySelectorAll('.btn-accent, a[href="products.html"]');
+    const valueStrip = heroSection.querySelector('.inline-flex.flex-wrap');
+    const pillars = heroSection.querySelectorAll('.grid > div');
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    if (nav) {
+      tl.from(nav, { y: -25, opacity: 0, duration: 0.7 });
     }
-
-    const triggerTopLoader = (callback) => {
-      if (!topLoader) return;
-      topLoader.style.opacity = '1';
-      topLoader.style.width = '35%';
-      setTimeout(() => { if (topLoader) topLoader.style.width = '75%'; }, 60);
-      setTimeout(() => { if (topLoader) topLoader.style.width = '95%'; }, 160);
-      if (typeof callback === 'function') {
-        setTimeout(callback, 220);
-      }
-    };
-
-    // 2. Intercept internal link clicks to execute loading process
-    document.addEventListener('click', (e) => {
-      const link = e.target.closest('a');
-      if (!link) return;
-      const href = link.getAttribute('href');
-      if (!href) return;
-
-      // Ignore anchor jumps on same page, javascript:, tel:, mailto:, new tabs
-      if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('tel:') || href.startsWith('mailto:') || link.target === '_blank') {
-        return;
-      }
-
-      const isInternal = !href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('//');
-      if (isInternal) {
-        e.preventDefault();
-        triggerTopLoader(() => {
-          window.location.href = href;
-        });
-      }
-    });
-
-    // 3. Universal Bose Preloader on initial load
-    if (!document.getElementById('bosePreloader')) {
-      const preloader = document.createElement('div');
-      preloader.id = 'bosePreloader';
-      preloader.setAttribute('role', 'status');
-      preloader.setAttribute('aria-label', 'Loading Extreme Sales & Services');
-      preloader.innerHTML = `
-        <div class="bose-loader-ring-wrapper">
-          <div class="bose-loader-pulse-ring"></div>
-          <div class="bose-loader-pulse-ring"></div>
-          <div class="bose-loader-pulse-ring"></div>
-          <div class="bose-loader-core">
-            <span style="font-weight:900; font-size:1.4rem; letter-spacing:-0.05em; background: linear-gradient(135deg, #ffffff, #cc9cdc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ES</span>
-          </div>
-        </div>
-
-        <div style="text-align:center; margin-bottom:1.5rem;">
-          <div style="font-size:0.75rem; font-weight:900; letter-spacing:0.25em; text-transform:uppercase; color:#ffffff; margin-bottom:0.35rem;">Extreme Sales &amp; Services</div>
-          <div style="font-size:0.68rem; font-family:'JetBrains Mono', monospace; color:#cc9cdc; letter-spacing:0.1em; text-transform:uppercase; opacity:0.85;">Intelligent Climate Architecture</div>
-        </div>
-
-        <div class="bose-progress-container">
-          <div id="boseProgressBar" class="bose-progress-bar"></div>
-        </div>
-
-        <div style="display:flex; align-items:center; justify-content:space-between; width:300px; max-width:85vw; margin-bottom:1.25rem; font-size:0.7rem; font-family:'JetBrains Mono', monospace; color:#999999;">
-          <span id="boseTelemetryConsole" class="bose-telemetry-console">[SYS] INITIALIZING CORE...</span>
-          <span id="boseProgressPercent" style="font-weight:700; color:#ffffff; margin-left:0.5rem;">0%</span>
-        </div>
-
-        <div class="bose-telemetry-badge" style="font-size:0.65rem; padding:0.35rem 0.85rem;">
-          <span class="bose-telemetry-pulse"></span>
-          <span style="font-family:'JetBrains Mono', monospace;">MOW-GDM v2.4 &bull; DYNAMIC ETA &bull; SUB-1MS KV</span>
-        </div>
-      `;
-
-      if (document.body) {
-        document.body.appendChild(preloader);
-      } else if (document.documentElement) {
-        document.documentElement.appendChild(preloader);
-      }
-
-      const progressBar = preloader.querySelector('#boseProgressBar');
-      const progressPercent = preloader.querySelector('#boseProgressPercent');
-      const consoleLog = preloader.querySelector('#boseTelemetryConsole');
-
-      const steps = [
-        { pct: 24, text: '[SYS] CORE ASSETS & SHADERS READY' },
-        { pct: 52, text: '[ALGO] CALIBRATING MOW-GDM FLEET DISPATCH' },
-        { pct: 76, text: '[DIAGNOSTICS] PRE-COMPILING HVAC TRIAGE' },
-        { pct: 92, text: '[CACHE] IN-MEMORY KV READY (<1MS)' },
-        { pct: 100, text: '[READY] ESS PLATFORM INITIALIZED' }
-      ];
-
-      // Non-blocking parallel probe to server
-      fetch('/api/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
-
-      let stepIndex = 0;
-      const interval = setInterval(() => {
-        if (stepIndex < steps.length) {
-          const item = steps[stepIndex];
-          if (progressBar) progressBar.style.width = `${item.pct}%`;
-          if (progressPercent) progressPercent.textContent = `${item.pct}%`;
-          if (consoleLog) consoleLog.textContent = item.text;
-          stepIndex++;
-        } else {
-          clearInterval(interval);
-          setTimeout(() => {
-            preloader.classList.add('bose-preloader-hidden');
-            setTimeout(() => {
-              if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
-            }, 650);
-          }, 140);
-        }
-      }, 90);
-
-      // Failsafe timer so user is never blocked
-      setTimeout(() => {
-        clearInterval(interval);
-        preloader.classList.add('bose-preloader-hidden');
-        setTimeout(() => {
-          if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
-        }, 650);
-      }, 1500);
+    if (greeting) {
+      tl.from(greeting, { y: 15, opacity: 0, duration: 0.4 }, '-=0.4');
+    }
+    if (trustBadge) {
+      tl.from(trustBadge, { scale: 0.85, opacity: 0, duration: 0.5, ease: 'back.out(1.5)' }, '-=0.2');
+    }
+    if (h1) {
+      tl.from(h1, { y: 35, opacity: 0, duration: 0.8, ease: 'power4.out' }, '-=0.3');
+    }
+    if (subtitle) {
+      tl.from(subtitle, { y: 20, opacity: 0, duration: 0.6 }, '-=0.4');
+    }
+    if (ctas && ctas.length) {
+      tl.from(ctas, { y: 20, opacity: 0, stagger: 0.1, duration: 0.5 }, '-=0.3');
+    }
+    if (valueStrip) {
+      tl.from(valueStrip, { scale: 0.95, opacity: 0, duration: 0.5 }, '-=0.2');
+    }
+    if (pillars && pillars.length) {
+      tl.from(pillars, { y: 15, opacity: 0, stagger: 0.06, duration: 0.45 }, '-=0.2');
     }
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initBoseLoadingSystem);
+    document.addEventListener('DOMContentLoaded', initHeroAnimation);
   } else {
-    initBoseLoadingSystem();
+    initHeroAnimation();
   }
 
-  /* ─── 1. Scroll Reveal (Restrained, Polished & Accessible) ─── */
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const revealElements = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-left, .reveal-right');
+  /* ─── 1B. GSAP ScrollTrigger Batch Scroll Reveal ─── */
+  const revealElements = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-left, .reveal-right, .card-3d');
 
   if (prefersReducedMotion) {
     revealElements.forEach((el) => el.classList.add('visible'));
     document.querySelectorAll('.step-connector').forEach((el) => el.classList.add('visible'));
+  } else if (hasGSAP && typeof ScrollTrigger !== 'undefined') {
+    // GSAP ScrollTrigger hardware-accelerated batches
+    ScrollTrigger.batch('.reveal, .card-3d', {
+      interval: 0.1,
+      batchMax: 6,
+      start: 'top 88%',
+      once: true,
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: 'power2.out',
+          overwrite: 'auto',
+          onComplete: () => {
+            batch.forEach((el) => el.classList.add('visible'));
+          }
+        });
+      }
+    });
+
+    ScrollTrigger.batch('.reveal-stagger', {
+      interval: 0.1,
+      batchMax: 8,
+      start: 'top 88%',
+      once: true,
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          stagger: 0.1,
+          ease: 'power2.out',
+          overwrite: 'auto',
+          onComplete: () => {
+            batch.forEach((el) => el.classList.add('visible'));
+          }
+        });
+      }
+    });
+
+    ScrollTrigger.batch('.reveal-left', {
+      start: 'top 88%',
+      once: true,
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          opacity: 1,
+          x: 0,
+          duration: 0.75,
+          ease: 'power2.out',
+          onComplete: () => batch.forEach((el) => el.classList.add('visible'))
+        });
+      }
+    });
+
+    ScrollTrigger.batch('.reveal-right', {
+      start: 'top 88%',
+      once: true,
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          opacity: 1,
+          x: 0,
+          duration: 0.75,
+          ease: 'power2.out',
+          onComplete: () => batch.forEach((el) => el.classList.add('visible'))
+        });
+      }
+    });
   } else {
+    // Native IntersectionObserver Fallback
     const revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -165,17 +166,13 @@
           }
         });
       },
-      {
-        threshold: 0.08,
-        rootMargin: '0px 0px -40px 0px'
-      }
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
     );
-
     revealElements.forEach((el) => revealObserver.observe(el));
     document.querySelectorAll('.step-connector').forEach((el) => revealObserver.observe(el));
   }
 
-  /* ─── 2. 3-Step Service Process Scroll Progress (No Scroll Hijacking) ─── */
+  /* ─── 2. 3-Step Service Process Scroll Progress (GSAP Scrubbed) ─── */
   const initProcessProgress = () => {
     const processSection = document.getElementById('process');
     const stepsContainer = document.getElementById('processStepsList') || (processSection ? processSection.querySelector('.space-y-12') : null);
@@ -185,7 +182,6 @@
     const stepBadges = stepsContainer.querySelectorAll('.step-badge, .process-step-node');
     if (stepBadges.length < 2) return;
 
-    // Ensure continuous track and fill line exists
     let track = stepsContainer.querySelector('.process-line-track');
     let fill = stepsContainer.querySelector('.process-line-fill');
 
@@ -214,63 +210,56 @@
       track.style.height = `${Math.max(0, totalHeight)}px`;
     };
 
-    const updateProgress = () => {
-      if (prefersReducedMotion) {
-        if (fill) fill.style.height = '100%';
-        stepBadges.forEach((b) => b.classList.add('step-active'));
-        return;
-      }
+    if (prefersReducedMotion) {
+      if (fill) fill.style.height = '100%';
+      stepBadges.forEach((b) => b.classList.add('step-active'));
+      return;
+    }
 
-      const bFirst = stepBadges[0].getBoundingClientRect();
-      const bLast = stepBadges[stepBadges.length - 1].getBoundingClientRect();
-      const vh = window.innerHeight;
+    if (hasGSAP && typeof ScrollTrigger !== 'undefined') {
+      updateGeometry();
+      window.addEventListener('resize', updateGeometry, { passive: true });
 
-      // Start line animation when step 1 badge reaches ~70% of viewport
-      // Complete line animation when step 3 badge reaches ~45% of viewport
-      const startThreshold = vh * 0.70;
-      const endThreshold = vh * 0.45;
-
-      const totalDistance = (bLast.top - bFirst.top) + (startThreshold - endThreshold);
-      const scrolled = startThreshold - bFirst.top;
-      const progress = Math.max(0, Math.min(1, scrolled / totalDistance));
-
-      if (fill) {
-        fill.style.height = `${(progress * 100).toFixed(1)}%`;
-      }
-
-      // Progressively illuminate step badges as the line passes through them
-      stepBadges.forEach((badge, idx) => {
-        const threshold = idx === 0 ? 0.04 : (idx / (stepBadges.length - 1)) * 0.95;
-        if (progress >= threshold) {
-          badge.classList.add('step-active');
-        } else {
-          badge.classList.remove('step-active');
+      ScrollTrigger.create({
+        trigger: processSection,
+        start: 'top 75%',
+        end: 'bottom 60%',
+        scrub: 0.5,
+        onUpdate: (self) => {
+          if (fill) fill.style.height = `${(self.progress * 100).toFixed(1)}%`;
+          stepBadges.forEach((badge, idx) => {
+            const threshold = idx === 0 ? 0.05 : (idx / (stepBadges.length - 1)) * 0.95;
+            if (self.progress >= threshold) {
+              badge.classList.add('step-active');
+            } else {
+              badge.classList.remove('step-active');
+            }
+          });
         }
       });
-    };
+    } else {
+      // Intersection/Scroll fallback
+      const updateProgressFallback = () => {
+        const bFirst = stepBadges[0].getBoundingClientRect();
+        const bLast = stepBadges[stepBadges.length - 1].getBoundingClientRect();
+        const vh = window.innerHeight;
+        const startThreshold = vh * 0.70;
+        const endThreshold = vh * 0.45;
+        const totalDistance = (bLast.top - bFirst.top) + (startThreshold - endThreshold);
+        const scrolled = startThreshold - bFirst.top;
+        const progress = Math.max(0, Math.min(1, scrolled / totalDistance));
 
-    let isTicking = false;
-    const onScroll = () => {
-      if (!isTicking) {
-        requestAnimationFrame(() => {
-          updateProgress();
-          isTicking = false;
+        if (fill) fill.style.height = `${(progress * 100).toFixed(1)}%`;
+        stepBadges.forEach((badge, idx) => {
+          const threshold = idx === 0 ? 0.04 : (idx / (stepBadges.length - 1)) * 0.95;
+          if (progress >= threshold) badge.classList.add('step-active');
+          else badge.classList.remove('step-active');
         });
-        isTicking = true;
-      }
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', () => {
-      updateGeometry();
-      updateProgress();
-    }, { passive: true });
-
-    // Initial positioning after layout calculation
-    setTimeout(() => {
-      updateGeometry();
-      updateProgress();
-    }, 80);
+      };
+      window.addEventListener('scroll', updateProgressFallback, { passive: true });
+      window.addEventListener('resize', () => { updateGeometry(); updateProgressFallback(); }, { passive: true });
+      setTimeout(() => { updateGeometry(); updateProgressFallback(); }, 80);
+    }
   };
 
   if (document.readyState === 'loading') {
@@ -279,37 +268,57 @@
     initProcessProgress();
   }
 
-  /* ─── 3. Number Counter ───────────────────────────────── */
+  /* ─── 3. GSAP Smooth Numerical Odometer Counters ────────── */
   function animateCounter(el) {
-    const target   = parseInt(el.dataset.target, 10);
-    const suffix   = el.dataset.suffix || '';
-    const duration = 1500;
-    const start    = performance.now();
+    const target = parseInt(el.dataset.target, 10);
+    const suffix = el.dataset.suffix || '';
+    if (isNaN(target)) return;
 
-    const update = (now) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased    = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.floor(eased * target) + suffix;
-      if (progress < 1) requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
-  }
-
-  const counterObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          counterObserver.unobserve(entry.target);
+    if (hasGSAP && !prefersReducedMotion) {
+      const counterObj = { value: 0 };
+      gsap.to(counterObj, {
+        value: target,
+        duration: 1.8,
+        ease: 'power2.out',
+        onUpdate: () => {
+          el.textContent = Math.floor(counterObj.value).toLocaleString('en-IN') + suffix;
         }
       });
-    },
-    { threshold: 0.5 }
-  );
+    } else {
+      const duration = 1500;
+      const start = performance.now();
+      const update = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(eased * target).toLocaleString('en-IN') + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+    }
+  }
 
-  document
-    .querySelectorAll('[data-target]')
-    .forEach((el) => counterObserver.observe(el));
+  if (hasGSAP && typeof ScrollTrigger !== 'undefined' && !prefersReducedMotion) {
+    ScrollTrigger.batch('[data-target]', {
+      start: 'top 90%',
+      once: true,
+      onEnter: (batch) => {
+        batch.forEach((el) => animateCounter(el));
+      }
+    });
+  } else {
+    const counterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    document.querySelectorAll('[data-target]').forEach((el) => counterObserver.observe(el));
+  }
 
   /* ─── 4. 3D Card Tilt ────────────────────────────────── */
   document.querySelectorAll('.card-3d').forEach((card) => {
@@ -406,10 +415,18 @@
         e.preventDefault();
         const target = document.querySelector('#services');
         if (target) {
-          window.scrollTo({
-            top: target.offsetTop - 80,
-            behavior: 'smooth'
-          });
+          if (hasGSAP && typeof ScrollToPlugin !== 'undefined' && !prefersReducedMotion) {
+            gsap.to(window, {
+              duration: 0.85,
+              scrollTo: { y: target, offsetY: 75 },
+              ease: 'power3.inOut'
+            });
+          } else {
+            window.scrollTo({
+              top: target.offsetTop - 80,
+              behavior: 'smooth'
+            });
+          }
         }
       });
     }
@@ -490,16 +507,25 @@
     // Smooth scroll for in-page anchors with sticky navbar offset
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener('click', (e) => {
-        const targetId = anchor.getAttribute('href').slice(1);
-        if (!targetId) return;
+        const href = anchor.getAttribute('href');
+        if (!href || href === '#') return;
+        const targetId = href.slice(1);
         const target = document.getElementById(targetId);
         if (target) {
           e.preventDefault();
-          const targetOffset = target.getBoundingClientRect().top + window.scrollY - 75;
-          window.scrollTo({
-            top: targetOffset,
-            behavior: prefersReducedMotion ? 'auto' : 'smooth'
-          });
+          if (hasGSAP && typeof ScrollToPlugin !== 'undefined' && !prefersReducedMotion) {
+            gsap.to(window, {
+              duration: 0.85,
+              scrollTo: { y: target, offsetY: 75 },
+              ease: 'power3.inOut'
+            });
+          } else {
+            const targetOffset = target.getBoundingClientRect().top + window.scrollY - 75;
+            window.scrollTo({
+              top: targetOffset,
+              behavior: prefersReducedMotion ? 'auto' : 'smooth'
+            });
+          }
           if (history.pushState) {
             history.pushState(null, null, `#${targetId}`);
           }
@@ -554,14 +580,13 @@
     window.dispatchEvent(new Event('scroll'));
   };
 
-  // On first visit: default to Bose Dark Mode
+  // On first visit: default to Clean Light Mode
   const initTheme = () => {
     const saved = localStorage.getItem('theme');
-    if (saved) {
-      applyTheme(saved);
-    } else {
-      // Bose Design System specification: default to dark
+    if (saved === 'dark') {
       applyTheme('dark');
+    } else {
+      applyTheme('light');
     }
   };
 
@@ -569,10 +594,17 @@
   const toggleTheme = (triggerBtn) => {
     const willBeDark = !document.documentElement.classList.contains('dark');
 
-    // Brief spin animation on the clicked button
+    // Smooth button spin & spring pop with GSAP
     if (triggerBtn && !prefersReducedMotion) {
-      triggerBtn.classList.add('theme-toggle-spin');
-      setTimeout(() => triggerBtn.classList.remove('theme-toggle-spin'), 500);
+      if (hasGSAP) {
+        gsap.fromTo(triggerBtn, 
+          { rotation: 0, scale: 0.9 }, 
+          { rotation: willBeDark ? 360 : -360, scale: 1, duration: 0.45, ease: 'back.out(2)' }
+        );
+      } else {
+        triggerBtn.classList.add('theme-toggle-spin');
+        setTimeout(() => triggerBtn.classList.remove('theme-toggle-spin'), 500);
+      }
     }
 
     applyTheme(willBeDark ? 'dark' : 'light');
@@ -580,7 +612,7 @@
     // Friendly toast confirmation
     if (window.showToast) {
       window.showToast(
-        willBeDark ? '🌙 Dark mode on' : '☀️ Light mode on',
+        willBeDark ? '🌙 Dark mode active' : '☀️ Light mode active',
         'info',
         1800
       );
@@ -609,7 +641,7 @@
 
 })();
 
-/* ─── 7. Global Toast Notification System ─────────────────────── */
+/* ─── 7. Global Toast Notification System (GSAP Powered) ─────── */
 window.showToast = function(message, type = 'info', duration = 3500) {
   let container = document.getElementById('toastContainer');
   if (!container) {
@@ -629,18 +661,82 @@ window.showToast = function(message, type = 'info', duration = 3500) {
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `
     <span class="text-lg">${typeIcons[type] || 'ℹ️'}</span>
-    <div class="flex-1 text-sm font-semibold">${message}</div>
-    <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-700 text-sm font-bold ml-2">✕</button>
+    <div class="flex-1 text-xs sm:text-sm font-semibold">${message}</div>
+    <button type="button" class="text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white text-sm font-bold ml-2 cursor-pointer">✕</button>
   `;
 
+  const closeBtn = toast.querySelector('button');
   container.appendChild(toast);
 
-  setTimeout(() => {
-    toast.classList.add('toast-exit');
-    setTimeout(() => {
-      if (toast.parentElement) toast.remove();
-    }, 300);
-  }, duration);
+  const hasGSAP = typeof gsap !== 'undefined';
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (hasGSAP && !prefersReducedMotion) {
+    gsap.fromTo(toast, 
+      { y: -25, opacity: 0, scale: 0.92 }, 
+      { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }
+    );
+  }
+
+  let isDismissed = false;
+  const dismiss = () => {
+    if (isDismissed) return;
+    isDismissed = true;
+    if (hasGSAP && !prefersReducedMotion) {
+      gsap.to(toast, {
+        opacity: 0,
+        x: 40,
+        scale: 0.95,
+        duration: 0.28,
+        ease: 'power2.in',
+        onComplete: () => toast.remove()
+      });
+    } else {
+      toast.classList.add('toast-exit');
+      setTimeout(() => toast.remove(), 250);
+    }
+  };
+
+  if (closeBtn) closeBtn.onclick = dismiss;
+  setTimeout(dismiss, duration);
+};
+
+/* ─── 8. Global Modal Spring Pop Helpers ─────────────────────── */
+window.openGsapModal = function(modalEl) {
+  if (!modalEl) return;
+  modalEl.classList.remove('hidden');
+  const dialogCard = modalEl.querySelector('.bg-white, .bg-\\[\\#FDFBF7\\], .bg-\\[\\#27211D\\], [class*="rounded-3xl"], [class*="rounded-2xl"]');
+  if (typeof gsap !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.fromTo(modalEl, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+    if (dialogCard) {
+      gsap.fromTo(dialogCard, 
+        { scale: 0.92, y: 20, opacity: 0 }, 
+        { scale: 1, y: 0, opacity: 1, duration: 0.35, ease: 'back.out(1.4)' }
+      );
+    }
+  }
+};
+
+window.closeGsapModal = function(modalEl) {
+  if (!modalEl) return;
+  const dialogCard = modalEl.querySelector('.bg-white, .bg-\\[\\#FDFBF7\\], .bg-\\[\\#27211D\\], [class*="rounded-3xl"], [class*="rounded-2xl"]');
+  if (typeof gsap !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (dialogCard) {
+      gsap.to(dialogCard, { scale: 0.94, y: 15, opacity: 0, duration: 0.2, ease: 'power2.in' });
+    }
+    gsap.to(modalEl, {
+      opacity: 0,
+      duration: 0.22,
+      ease: 'power2.in',
+      onComplete: () => {
+        modalEl.classList.add('hidden');
+        gsap.set(modalEl, { clearProps: 'all' });
+        if (dialogCard) gsap.set(dialogCard, { clearProps: 'all' });
+      }
+    });
+  } else {
+    modalEl.classList.add('hidden');
+  }
 };
 
 /* ─── 9. Interactive AC Diagnostic Tool ─────────────────── */
@@ -653,57 +749,57 @@ const diagnosticData = {
     time: '45 Minutes',
     price: '₹499 - ₹1,499',
     issueParam: 'No Cooling',
-    algoCode: 'MOW-GDM#842 (Refrigerant Loss Model)',
-    algoConf: '98.4%',
-    algoPriority: 'P1-HIGH'
+    algoCode: 'Expert Diagnosis: Gas Leakage / Coil Clog',
+    algoConf: 'Accuracy: 98% Match',
+    algoPriority: 'Priority: High'
   },
   'water-leak': {
-    badge: 'Water Drainage Fault',
-    category: 'Category: Drain Pipe & Coil Wash',
+    badge: 'Drainage Fault',
+    category: 'Category: Drain Line & Deep Cleaning',
     title: 'Indoor Unit Water Dripping / Overflow',
-    desc: 'Occurs when algae, dust or mold block the condensate drain line or when the evaporator coil is frozen due to restricted airflow.',
+    desc: 'Occurs when dust or algae block the condensate drainage tray or when internal filters are frozen due to restricted airflow.',
     time: '30 Minutes',
     price: '₹399 - ₹799',
     issueParam: 'Water Leaking',
-    algoCode: 'MOW-GDM#319 (Condensate Trap Sensor)',
-    algoConf: '99.1%',
-    algoPriority: 'P2-STANDARD'
+    algoCode: 'Expert Diagnosis: Blocked Condensate Trap',
+    algoConf: 'Accuracy: 99% Match',
+    algoPriority: 'Priority: Normal'
   },
   'noise': {
     badge: 'Mechanical Vibration',
     category: 'Category: Blower Motor & Fan Bearings',
     title: 'Loud Rattling, Screeching or Vibrations',
-    desc: 'Indicates loose motor mounting bolts, worn blower wheel bearings, or debris trapped inside the outdoor fan shroud.',
+    desc: 'Indicates loose motor mounting dampers, worn blower wheel bearings, or minor debris trapped inside the outdoor fan unit.',
     time: '40 Minutes',
     price: '₹499 - ₹1,299',
     issueParam: 'Loud Noise',
-    algoCode: 'MOW-GDM#405 (Harmonic Vibration Analysis)',
-    algoConf: '96.8%',
-    algoPriority: 'P2-STANDARD'
+    algoCode: 'Expert Diagnosis: Fan Bearing / Damper Wear',
+    algoConf: 'Accuracy: 97% Match',
+    algoPriority: 'Priority: Normal'
   },
   'power-trip': {
-    badge: 'Electrical Safety Fault',
+    badge: 'Electrical Safety Alert',
     category: 'Category: Capacitor, Relay & PCB',
-    title: 'MCB Circuit Tripping / Power Loss',
-    desc: 'Signifies a shorted starting capacitor, damaged compressor relay, or overloaded electrical wiring drawing excessive amperage.',
+    title: 'MCB Circuit Tripping / Power Cut',
+    desc: 'Signifies an aged starting capacitor, weak compressor relay, or overloaded electrical wiring drawing excess current.',
     time: '50 Minutes',
     price: '₹699 - ₹1,899',
     issueParam: 'Power Tripping',
-    algoCode: 'MOW-GDM#912 (Inverter Amperage Overdraw)',
-    algoConf: '99.7%',
-    algoPriority: 'P0-CRITICAL'
+    algoCode: 'Expert Diagnosis: Capacitor / Inverter Load',
+    algoConf: 'Accuracy: 99% Match',
+    algoPriority: 'Priority: Critical Safety'
   },
   'smell': {
     badge: 'Air Quality & Hygiene',
-    category: 'Category: Anti-Bacterial Jet Wash',
+    category: 'Category: Anti-Bacterial Foam Jet Wash',
     title: 'Musty Foul Odor & Mold Discharge',
-    desc: 'Bacterial growth on dirty evaporator fins and standing tray water. Requires 140-bar high-pressure anti-fungal jet wash.',
+    desc: 'Microbial buildup on evaporator cooling fins. Resolved by our high-pressure anti-bacterial eco-foam wash.',
     time: '35 Minutes',
     price: '₹499 - ₹899',
     issueParam: 'Foul Smell',
-    algoCode: 'MOW-GDM#204 (Biofilm Resistance Index)',
-    algoConf: '97.5%',
-    algoPriority: 'P3-PREVENTIVE'
+    algoCode: 'Expert Diagnosis: Deep Chemical Wash Required',
+    algoConf: 'Accuracy: 98% Match',
+    algoPriority: 'Priority: Preventive'
   },
   'gas-wash': {
     badge: 'Pre-Summer Deep Care',
@@ -975,19 +1071,60 @@ window.dismissBanner = function() {
   document.documentElement.style.setProperty('--banner-height', '0px');
 };
 
-/* ─── 14. FAQ Accordion ──────────────────────────────────── */
+/* ─── 14. FAQ Accordion (GSAP Powered) ───────────────────── */
 window.toggleFaq = function(triggerBtn) {
   const item = triggerBtn.closest('.faq-item');
   if (!item) return;
+  const body = item.querySelector('.faq-body');
+  const icon = triggerBtn.querySelector('.faq-icon');
   const isOpen = item.classList.contains('open');
+  const hasGSAP = typeof gsap !== 'undefined';
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Close all other items
+  // Close all other open items with smooth collapse
   document.querySelectorAll('.faq-item.open').forEach(el => {
-    if (el !== item) el.classList.remove('open');
+    if (el !== item) {
+      el.classList.remove('open');
+      const otherBody = el.querySelector('.faq-body');
+      const otherIcon = el.querySelector('.faq-icon');
+      if (hasGSAP && !prefersReducedMotion && otherBody) {
+        gsap.to(otherBody, { height: 0, opacity: 0, duration: 0.28, ease: 'power2.out', clearProps: 'height,opacity' });
+      }
+      if (hasGSAP && !prefersReducedMotion && otherIcon) {
+        gsap.to(otherIcon, { rotation: 0, duration: 0.25 });
+        otherIcon.textContent = '+';
+      } else if (otherIcon) {
+        otherIcon.textContent = '+';
+      }
+    }
   });
 
-  // Toggle current
-  item.classList.toggle('open', !isOpen);
+  if (isOpen) {
+    item.classList.remove('open');
+    if (hasGSAP && !prefersReducedMotion && body) {
+      gsap.to(body, { height: 0, opacity: 0, duration: 0.28, ease: 'power2.out', clearProps: 'height,opacity' });
+    }
+    if (hasGSAP && !prefersReducedMotion && icon) {
+      gsap.to(icon, { rotation: 0, duration: 0.25 });
+      icon.textContent = '+';
+    } else if (icon) {
+      icon.textContent = '+';
+    }
+  } else {
+    item.classList.add('open');
+    if (hasGSAP && !prefersReducedMotion && body) {
+      gsap.fromTo(body,
+        { height: 0, opacity: 0 },
+        { height: 'auto', opacity: 1, duration: 0.35, ease: 'power2.out' }
+      );
+    }
+    if (hasGSAP && !prefersReducedMotion && icon) {
+      gsap.to(icon, { rotation: 45, duration: 0.3, ease: 'back.out(1.8)' });
+      icon.textContent = '+';
+    } else if (icon) {
+      icon.textContent = '−';
+    }
+  }
 };
 
 /* ─── 15. Keyboard Shortcut '/' to focus Pincode ─────────── */
@@ -1037,22 +1174,22 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('DOMContentLoaded', () => {
     const banner = document.createElement('div');
     banner.id = 'cookieConsentBanner';
-    banner.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9999] bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 text-white p-4 sm:p-5 rounded-2xl shadow-2xl transition-all duration-500 transform translate-y-8 opacity-0 flex flex-col gap-3 text-xs';
+    banner.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9999] bg-[#27211D]/95 backdrop-blur-xl border border-[#B8AA98]/40 text-[#F2EDE3] p-4 sm:p-5 rounded-2xl shadow-2xl transition-all duration-500 transform translate-y-8 opacity-0 flex flex-col gap-3 text-xs';
     banner.innerHTML = `
       <div class="flex items-start gap-3">
         <span class="text-2xl flex-shrink-0">🍪</span>
         <div class="space-y-1">
-          <p class="font-bold text-white text-sm">Cookie &amp; Service Preferences</p>
-          <p class="text-slate-300 text-xs leading-relaxed">
-            We use lightweight cookies and session storage to optimize live service dispatch tracking and remember your preferences. Read our <a href="privacy.html" class="text-blue-400 hover:underline">Privacy Policy</a>.
+          <p class="font-bold text-[#F2EDE3] text-sm">Cookie &amp; Service Preferences</p>
+          <p class="text-[#B8AA98] text-xs leading-relaxed">
+            We use lightweight cookies and session storage to optimize live service dispatch tracking and remember your preferences. Read our <a href="privacy.html" class="text-[#E4C99A] hover:underline font-semibold">Privacy Policy</a>.
           </p>
         </div>
       </div>
       <div class="flex items-center justify-end gap-2 pt-1">
-        <button type="button" id="declineCookieBtn" class="px-3 py-1.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs font-semibold transition">
+        <button type="button" id="declineCookieBtn" class="px-3.5 py-1.5 rounded-xl border border-[#B8AA98]/40 hover:bg-[#342C27] text-[#B8AA98] hover:text-[#F2EDE3] text-xs font-semibold transition">
           Dismiss
         </button>
-        <button type="button" id="acceptCookieBtn" class="btn-glow px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm">
+        <button type="button" id="acceptCookieBtn" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] px-4 py-1.5 rounded-xl text-xs font-bold shadow-xs transition">
           Accept All
         </button>
       </div>

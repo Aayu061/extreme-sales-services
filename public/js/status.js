@@ -53,8 +53,26 @@ function startTracking(id, phone) {
     if (etaInterval)  clearInterval(etaInterval);
 
     displayId.innerText = id;
-    formCard.classList.add('hidden');
-    resultsCard.classList.remove('hidden');
+    
+    if (typeof gsap !== 'undefined') {
+        gsap.to(formCard, {
+            opacity: 0,
+            y: -15,
+            duration: 0.25,
+            ease: 'power2.in',
+            onComplete: () => {
+                formCard.classList.add('hidden');
+                resultsCard.classList.remove('hidden');
+                gsap.fromTo(resultsCard,
+                    { opacity: 0, y: 20, scale: 0.98 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'power2.out' }
+                );
+            }
+        });
+    } else {
+        formCard.classList.add('hidden');
+        resultsCard.classList.remove('hidden');
+    }
 
     // Inject share-link bar
     injectShareBar(id, phone);
@@ -141,11 +159,11 @@ function renderStepper(currentStatus) {
         bar.id = 'stepperBar';
         bar.className = 'mt-4 mb-8';
         bar.innerHTML = `
-            <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1.5">
+            <div class="flex justify-between text-[10px] font-bold text-[#655448] mb-1.5">
                 <span>Progress</span><span id="stepperPct">0%</span>
             </div>
-            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div id="stepperFill" class="h-full rounded-full transition-all duration-700" style="background: linear-gradient(90deg,#10b981,#2563eb); width:0%"></div>
+            <div class="h-2 bg-[#E6DFD3] border border-[#B8AA98]/30 rounded-full overflow-hidden">
+                <div id="stepperFill" class="h-full rounded-full transition-all duration-700" style="background: linear-gradient(90deg,#77B89A,#A05B3A); width:0%"></div>
             </div>`;
         el.insertAdjacentElement('afterend', bar);
     }
@@ -154,6 +172,19 @@ function renderStepper(currentStatus) {
         const pctEl = document.getElementById('stepperPct');
         if (fill) fill.style.width = pct + '%';
         if (pctEl) pctEl.textContent = pct + '%';
+        
+        if (typeof gsap !== 'undefined') {
+            const activeDot = el.querySelector('.stepper-step.active .stepper-dot');
+            if (activeDot) {
+                gsap.to(activeDot, {
+                    scale: 1.18,
+                    repeat: -1,
+                    yoyo: true,
+                    duration: 0.85,
+                    ease: 'sine.inOut'
+                });
+            }
+        }
     }, 100);
 }
 
@@ -172,8 +203,8 @@ function renderEtaCard(status, techName, serverEta = null, zone = null) {
         el.innerHTML = `
             <span class="text-3xl">🎉</span>
             <div>
-                <div class="text-white font-black text-base">Service Completed!</div>
-                <div class="text-blue-300 text-xs mt-0.5 font-medium">Your AC is running perfectly. Invoice sent to your phone.</div>
+                <div class="text-[#F2EDE3] font-black text-base">Service Completed!</div>
+                <div class="text-[#B8AA98] text-xs mt-0.5 font-medium">Your AC is running perfectly. Invoice sent to your phone.</div>
             </div>`;
         return;
     }
@@ -203,15 +234,15 @@ function renderEtaCard(status, techName, serverEta = null, zone = null) {
         el.innerHTML = `
             <div class="text-2xl">⏱️</div>
             <div class="flex-1">
-                <div class="text-blue-300 text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5">
+                <div class="text-[#E4C99A] text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5">
                     <span>Algorithm Dynamic ETA</span>
-                    ${serverEta ? '<span class="bg-blue-400/20 text-blue-200 px-1 rounded text-[9px]">MOW-GDM</span>' : ''}
+                    ${serverEta ? '<span class="bg-[#A05B3A]/20 text-[#E4C99A] px-1 rounded text-[9px]">MOW-GDM</span>' : ''}
                 </div>
-                <div class="eta-time-display">${display}</div>
-                <div class="text-blue-300 text-xs font-medium">${statusMsg}</div>
+                <div class="eta-time-display text-[#F2EDE3] font-mono text-2xl font-black">${display}</div>
+                <div class="text-[#B8AA98] text-xs font-medium">${statusMsg}</div>
             </div>
             <div class="text-right">
-                <a href="tel:+917977805245" class="text-blue-300 text-xs font-bold underline hover:text-white transition">📞 Call Support</a>
+                <a href="tel:+917977805245" class="text-[#E4C99A] text-xs font-bold underline hover:text-[#F2EDE3] transition">📞 Call Support</a>
             </div>`;
 
         if (secs > 0) secs--;
@@ -230,12 +261,12 @@ function injectShareBar(id, phone) {
     bar.className = 'flex items-center gap-3 mb-8 flex-wrap';
     const trackUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(id)}&phone=${encodeURIComponent(phone)}`;
     bar.innerHTML = `
-        <div class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 font-mono truncate">${trackUrl}</div>
-        <button onclick="copyTrackLink('${trackUrl}')" class="flex-shrink-0 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5">
+        <div class="flex-1 bg-[#F2EDE3] border border-[#B8AA98]/40 rounded-xl px-3 py-2 text-xs text-[#655448] font-mono truncate">${trackUrl}</div>
+        <button onclick="copyTrackLink('${trackUrl}')" class="flex-shrink-0 bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
             <span>📋</span> Copy Link
         </button>
         <a href="https://wa.me/?text=Track my AC service: ${encodeURIComponent(trackUrl)}" target="_blank"
-           class="flex-shrink-0 bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5">
+           class="flex-shrink-0 bg-[#1D3D2B] hover:bg-[#163022] text-[#F2EDE3] text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
             <span>💬</span> Share on WA
         </a>`;
     resultsCard.querySelector('.flex').after(bar);
@@ -263,14 +294,14 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
     const currentIndex = stages.findIndex(s => s.key === currentStatus);
 
     let html = `
-        <div class="mb-6 p-4 bg-blue-50/80 rounded-2xl border border-blue-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div class="mb-6 p-4 bg-[#F2EDE3] rounded-2xl border border-[#B8AA98]/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">Active Service Details</span>
-                <div class="text-sm font-black text-slate-900">${safeService}</div>
-                ${customerName ? `<div class="text-xs text-slate-500">Customer: <strong>${safeCustomer}</strong></div>` : ''}
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#A05B3A]">Active Service Details</span>
+                <div class="text-sm font-black text-[#342C27]">${safeService}</div>
+                ${customerName ? `<div class="text-xs text-[#655448]">Customer: <strong>${safeCustomer}</strong></div>` : ''}
             </div>
             ${techName && techName !== 'Pending Assignment' ? `
-                <div class="bg-white px-3 py-1.5 rounded-xl border border-blue-200 text-xs font-bold text-blue-900 flex items-center gap-1.5 shadow-sm">
+                <div class="bg-[#FDFBF7] px-3 py-1.5 rounded-xl border border-[#B8AA98]/40 text-xs font-bold text-[#342C27] flex items-center gap-1.5 shadow-xs">
                     <span>🧑‍🔧</span><span>${safeTech}</span>
                 </div>` : ''}
         </div>`;
@@ -281,15 +312,15 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
         let dotHtml, textClass, badge = '';
 
         if (isPast) {
-            dotHtml   = `<div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-black text-xs shadow-md">✓</div>`;
-            textClass = 'text-slate-700 font-bold';
+            dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#77B89A] text-[#1D3D2B] flex items-center justify-center font-black text-xs shadow-md">✓</div>`;
+            textClass = 'text-[#342C27] font-bold';
         } else if (isCurrent) {
-            dotHtml   = `<div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-lg relative"><span class="w-full h-full rounded-full bg-blue-500 animate-ping absolute opacity-75"></span><span class="relative z-10">●</span></div>`;
-            textClass = 'text-blue-600 font-extrabold';
-            badge     = `<span class="bg-blue-100 text-blue-800 text-[10px] font-black uppercase px-2 py-0.5 rounded-full ml-2">Active Stage</span>`;
+            dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#A05B3A] text-[#F2EDE3] flex items-center justify-center font-black text-xs shadow-lg relative"><span class="w-full h-full rounded-full bg-[#A05B3A] animate-ping absolute opacity-75"></span><span class="relative z-10">●</span></div>`;
+            textClass = 'text-[#A05B3A] font-extrabold';
+            badge     = `<span class="bg-[#A05B3A]/15 text-[#A05B3A] border border-[#A05B3A]/30 text-[10px] font-black uppercase px-2 py-0.5 rounded-full ml-2">Active Stage</span>`;
         } else {
-            dotHtml   = `<div class="w-8 h-8 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center font-bold text-xs">○</div>`;
-            textClass = 'text-slate-400';
+            dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#F2EDE3] border border-[#B8AA98]/40 text-[#655448] flex items-center justify-center font-bold text-xs">○</div>`;
+            textClass = 'text-[#655448]';
         }
 
         html += `
@@ -300,12 +331,19 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
                         <h4 class="text-sm ${textClass}">${stage.title}</h4>
                         ${badge}
                     </div>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">${stage.desc}</p>
+                    <p class="text-xs text-[#655448] mt-1 leading-relaxed">${stage.desc}</p>
                 </div>
             </div>`;
     });
 
     timelineContent.innerHTML = html;
+
+    if (typeof gsap !== 'undefined' && timelineContent.children.length > 0) {
+        gsap.fromTo(timelineContent.children,
+            { opacity: 0, x: -14 },
+            { opacity: 1, x: 0, duration: 0.35, stagger: 0.07, ease: 'power2.out' }
+        );
+    }
 }
 
 // ─── Confetti ────────────────────────────────────────────────────
@@ -313,7 +351,7 @@ let confettiFired = false;
 function launchConfetti() {
     if (confettiFired) return;
     confettiFired = true;
-    const colors = ['#2563eb','#10b981','#f59e0b','#ef4444','#6366f1','#06b6d4'];
+    const colors = ['#A05B3A','#77B89A','#E4C99A','#B8AA98','#655448','#342C27'];
     for (let i = 0; i < 60; i++) {
         const p = document.createElement('div');
         p.className = 'confetti-piece';
@@ -337,18 +375,18 @@ function renderRatingWidget() {
     if (ratingSubmitted || document.getElementById('ratingWidget')) return;
     const widget = document.createElement('div');
     widget.id = 'ratingWidget';
-    widget.className = 'mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 text-center';
+    widget.className = 'mt-6 bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl p-6 text-center shadow-sm';
     widget.innerHTML = `
-        <p class="text-xs font-extrabold uppercase tracking-widest text-blue-600 mb-2">Rate Your Experience</p>
-        <h3 class="font-black text-slate-900 mb-4">How did our engineer do?</h3>
+        <p class="text-xs font-extrabold uppercase tracking-widest text-[#A05B3A] mb-2">Rate Your Experience</p>
+        <h3 class="font-black text-[#342C27] mb-4">How did our engineer do?</h3>
         <div id="ratingStars" class="flex justify-center gap-3 mb-4">
             ${[1,2,3,4,5].map(n => `
                 <button onclick="selectRating(${n})" class="text-3xl transition-transform hover:scale-125 rating-star" data-val="${n}">⭐</button>
             `).join('')}
         </div>
         <textarea id="ratingComment" placeholder="Any comments? (optional)" rows="2"
-            class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:ring-2 focus:ring-blue-400 resize-none mb-3"></textarea>
-        <button onclick="submitRating()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition">
+            class="w-full border border-[#B8AA98]/40 bg-[#F2EDE3] text-[#342C27] rounded-xl px-3 py-2 text-xs font-medium outline-none focus:ring-2 focus:ring-[#A05B3A] resize-none mb-3"></textarea>
+        <button onclick="submitRating()" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] font-bold px-6 py-2.5 rounded-xl text-sm transition active:scale-[0.99] shadow-sm">
             Submit Rating →
         </button>`;
     timelineContent.appendChild(widget);
@@ -375,7 +413,7 @@ window.submitRating = async () => {
     ratingSubmitted = true;
     document.getElementById('ratingWidget').innerHTML = `
         <div class="text-4xl mb-3">🙏</div>
-        <p class="font-black text-slate-900">Thank you for your feedback!</p>
-        <p class="text-slate-500 text-sm mt-1">Your ${selectedRating}★ rating helps us improve our service.</p>`;
+        <p class="font-black text-[#342C27]">Thank you for your feedback!</p>
+        <p class="text-[#655448] text-sm mt-1">Your ${selectedRating}★ rating helps us improve our service.</p>`;
     if (window.showToast) window.showToast('Rating submitted! Thank you.', 'success');
 };

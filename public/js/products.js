@@ -18,7 +18,7 @@ const API_URL = `${API_BASE}/api/products`;
 const ENQUIRY_URL = `${API_BASE}/api/enquiries`;
 
 const productGrid = document.getElementById('productGrid');
-let allProducts = [];
+var allProducts = [];
 let activeCategory = 'all';
 let productPriceRange = { min: 0, max: 100000 };
 
@@ -88,16 +88,16 @@ function updateComparePanel() {
     }
     panel.classList.add('visible');
     const items = compareList.map(p => `<div class="flex items-center gap-2">
-        <img src="${sanitizeProductImage(p.image_url)}" class="w-10 h-10 object-contain rounded-lg border" onerror="this.src='${RELIABLE_PRODUCT_FALLBACK}'">
-        <div><div class="text-xs font-bold text-slate-800 max-w-[140px] truncate">${p.name}</div><div class="text-blue-600 font-black text-sm">₹${p.price}</div></div>
-    </div>`).join('<div class="text-slate-400 font-black text-xl">vs</div>');
+        <img src="${sanitizeProductImage(p.image_url)}" class="w-10 h-10 object-contain rounded-lg border border-[#B8AA98]/40 bg-white" onerror="this.src='${RELIABLE_PRODUCT_FALLBACK}'">
+        <div><div class="text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] max-w-[140px] truncate">${p.name}</div><div class="text-[#A05B3A] font-black text-sm">₹${p.price}</div></div>
+    </div>`).join('<div class="text-[#B8AA98] font-black text-xl">vs</div>');
     panel.innerHTML = `<div class="flex items-center gap-4 max-w-6xl mx-auto flex-wrap">
-        <span class="text-xs font-extrabold uppercase tracking-widest text-slate-500">Compare (${compareList.length}/2)</span>
+        <span class="text-xs font-extrabold uppercase tracking-widest text-[#655448] dark:text-[#B8AA98]">Compare (${compareList.length}/2)</span>
         ${items}
         ${compareList.length === 2
-            ? `<button onclick="showCompareFull()" class="ml-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2 rounded-xl text-sm transition">Compare Now →</button>`
-            : `<span class="ml-auto text-xs text-slate-400">Select 1 more to compare</span>`}
-        <button onclick="clearCompare()" class="text-slate-400 hover:text-slate-700 font-bold text-xs">✕ Clear</button>
+            ? `<button onclick="showCompareFull()" class="ml-auto bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold px-5 py-2 rounded-xl text-sm transition shadow-xs">Compare Now →</button>`
+            : `<span class="ml-auto text-xs text-[#655448] dark:text-[#B8AA98]">Select 1 more to compare</span>`}
+        <button onclick="clearCompare()" class="text-[#655448] hover:text-[#A6382E] font-bold text-xs">✕ Clear</button>
     </div>`;
 }
 
@@ -113,22 +113,22 @@ function showCompareFull() {
     const emiA = Math.round(a.price / 12);
     const emiB = Math.round(b.price / 12);
     const win = document.createElement('div');
-    win.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4';
+    win.className = 'fixed inset-0 bg-[#27211D]/75 backdrop-blur-md z-[200] flex items-center justify-center p-4';
     win.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-3xl w-full p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 rounded-3xl max-w-3xl w-full p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black text-slate-900">Product Comparison</h2>
-                <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+                <h2 class="text-xl font-black text-[#342C27] dark:text-[#F2EDE3]">Product Comparison</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-[#655448] hover:text-[#342C27] font-bold text-lg">✕</button>
             </div>
             <div class="grid grid-cols-2 gap-6">
                 ${[a, b].map(p => `
-                <div class="text-center border border-slate-100 rounded-2xl p-5">
+                <div class="text-center border border-[#B8AA98]/40 bg-[#E6DFD3]/30 dark:bg-[#1F1916] rounded-2xl p-5">
                     <img src="${escapeHtml(sanitizeProductImage(p.image_url || ''))}" class="h-28 object-contain mx-auto mb-3" onerror="this.src='${RELIABLE_PRODUCT_FALLBACK}'">
-                    <h3 class="font-black text-slate-900 text-sm mb-1">${escapeHtml(p.name || '')}</h3>
-                    <p class="text-blue-600 font-black text-xl mb-1">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
-                    <p class="text-indigo-500 text-xs font-semibold">EMI from ₹${Math.round((Number(p.price) || 0)/12).toLocaleString('en-IN')}/mo</p>
-                    <p class="text-slate-500 text-xs mt-2 leading-relaxed">${escapeHtml(p.description || '')}</p>
-                    <button onclick="openModal('${encodeURIComponent(JSON.stringify(p))}')" class="mt-4 bg-blue-600 text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-blue-500 transition">Enquire Now</button>
+                    <h3 class="font-black text-[#342C27] dark:text-[#F2EDE3] text-sm mb-1">${escapeHtml(p.name || '')}</h3>
+                    <p class="text-[#A05B3A] font-black text-xl mb-1">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
+                    <p class="text-[#655448] dark:text-[#B8AA98] text-xs font-semibold">EMI from ₹${Math.round((Number(p.price) || 0)/12).toLocaleString('en-IN')}/mo</p>
+                    <p class="text-[#655448] dark:text-[#B8AA98] text-xs mt-2 leading-relaxed">${escapeHtml(p.description || '')}</p>
+                    <button onclick="openModal('${encodeURIComponent(JSON.stringify(p))}')" class="mt-4 bg-[#A05B3A] text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-[#944E2E] transition shadow-xs">Enquire Now</button>
                 </div>`).join('')}
             </div>
         </div>`;
@@ -147,9 +147,9 @@ function renderProducts(productsArray) {
         productGrid.innerHTML = `
             <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
                 <div class="text-6xl mb-4">🔍</div>
-                <h3 class="font-black text-slate-700 text-xl mb-2">No Products Found</h3>
-                <p class="text-slate-500 text-sm mb-6">Try adjusting your filters or search term.</p>
-                <button onclick="clearFilters()" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-blue-500 transition">Clear Filters</button>
+                <h3 class="font-black text-[#342C27] dark:text-[#F2EDE3] text-xl mb-2">No Products Found</h3>
+                <p class="text-[#655448] dark:text-[#B8AA98] text-sm mb-6">Try adjusting your filters or search term.</p>
+                <button onclick="clearFilters()" class="bg-[#A05B3A] text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-[#944E2E] transition shadow-xs">Clear Filters</button>
             </div>`;
         return;
     }
@@ -160,10 +160,14 @@ function renderProducts(productsArray) {
 
     productsArray.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 relative flex flex-col group';
+        card.className = 'neuro-card bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative flex flex-col group';
 
-        const catMap = { new_ac: ['Brand New','bg-emerald-600'], used_ac: ['Certified 2nd Hand','bg-blue-600'], spare_part: ['Genuine Spare','bg-orange-500'] };
-        const [badgeLabel, badgeClass] = catMap[p.category] || ['Item','bg-slate-500'];
+        const catMap = { 
+            new_ac: ['Brand New','bg-[#77B89A] text-[#1D3D2B]'], 
+            used_ac: ['Refurbished','bg-[#E4C99A] text-[#342C27]'], 
+            spare_part: ['Genuine Spare','bg-[#A05B3A] text-white'] 
+        };
+        const [badgeLabel, badgeClass] = catMap[p.category] || ['Item','bg-[#B8AA98] text-[#342C27]'];
 
         const stockVal  = p.stock ?? p.quantity ?? 10;
         const isLowStock = Number(stockVal) <= 3;
@@ -174,32 +178,32 @@ function renderProducts(productsArray) {
         const safeDesc = escapeHtml(p.description || (p.category || '').replace('_',' '));
 
         card.innerHTML = `
-            <div class="product-img-wrap h-48 bg-slate-50 flex items-center justify-center p-4 relative cursor-pointer" onclick="viewProductDetails('${encodedData}')">
+            <div class="product-img-wrap h-48 bg-[#E6DFD3]/40 dark:bg-[#1F1916] flex items-center justify-center p-4 relative cursor-pointer" onclick="viewProductDetails('${encodedData}')">
                 <img src="${safeImg}" alt="${safeName}"
                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80';"
-                    class="h-full object-contain transition-transform duration-300 hover:scale-105">
-                <span class="absolute top-3 left-3 ${badgeClass} text-white text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full tracking-wide shadow-sm">${badgeLabel}</span>
+                    class="h-full object-contain transition-transform duration-300 group-hover:scale-105">
+                <span class="absolute top-3 left-3 ${badgeClass} text-[10px] uppercase font-bold px-2.5 py-1 rounded-full tracking-wide shadow-xs">${badgeLabel}</span>
                 ${isLowStock ? `<span class="stock-low-badge">⚠ Only ${Number(stockVal)} left!</span>` : ''}
             </div>
-            <div class="p-5 flex flex-col flex-1 border-t border-slate-100">
-                <div class="flex items-center gap-1 text-amber-400 text-xs mb-1">
+            <div class="p-5 flex flex-col flex-1 border-t border-[#B8AA98]/30">
+                <div class="flex items-center gap-1 text-amber-500 text-xs mb-1">
                     <span>★★★★☆</span>
-                    <span class="text-[10px] text-slate-400 font-bold ml-1">(4.8)</span>
+                    <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-bold ml-1">(4.8)</span>
                 </div>
-                <h3 class="font-bold text-slate-900 text-base leading-tight mb-1 cursor-pointer hover:text-blue-600 transition" onclick="viewProductDetails('${encodedData}')">${safeName}</h3>
-                <p class="text-xs text-slate-500 mb-3 line-clamp-2 flex-1">${safeDesc}</p>
+                <h3 class="font-bold text-[#342C27] dark:text-[#F2EDE3] text-base leading-tight mb-1 cursor-pointer hover:text-[#A05B3A] transition" onclick="viewProductDetails('${encodedData}')">${safeName}</h3>
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-3 line-clamp-2 flex-1">${safeDesc}</p>
                 <div class="mb-3">
-                    <p class="text-xl font-black text-slate-900 font-mono">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
-                    <span class="text-[11px] text-blue-600 font-semibold">No-Cost EMI from ₹${emi12.toLocaleString('en-IN')}/mo</span>
+                    <p class="text-xl font-black text-[#342C27] dark:text-[#F2EDE3] font-mono">₹${Number(p.price || 0).toLocaleString('en-IN')}</p>
+                    <span class="text-[11px] text-[#A05B3A] dark:text-[#E4C99A] font-semibold">No-Cost EMI from ₹${emi12.toLocaleString('en-IN')}/mo</span>
                 </div>
                 <div class="flex items-center gap-2 mt-auto flex-wrap">
-                    <button onclick="openModal('${encodedData}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl font-bold transition text-xs shadow-sm">
+                    <button onclick="openModal('${encodedData}')" class="flex-1 bg-[#A05B3A] hover:bg-[#944E2E] text-white px-3 py-2 rounded-xl font-bold transition text-xs shadow-xs">
                         Enquire Now
                     </button>
-                    <button onclick="viewProductDetails('${encodedData}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl font-bold transition text-xs">
+                    <button onclick="viewProductDetails('${encodedData}')" class="bg-[#E6DFD3]/60 dark:bg-[#342C27] hover:bg-[#E6DFD3] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/40 px-3 py-2 rounded-xl font-bold transition text-xs">
                         Specs
                     </button>
-                    <button id="cmp-${escapeHtml(p.id)}" onclick="toggleCompare('${escapeHtml(p.id)}', '${encodedData}')" class="compare-btn">
+                    <button id="cmp-${escapeHtml(p.id)}" onclick="toggleCompare('${escapeHtml(p.id)}', '${encodedData}')" class="compare-btn text-xs font-semibold px-2.5 py-1.5 rounded-xl border border-[#B8AA98]/40 text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] transition">
                         ⚖ Compare
                     </button>
                 </div>
@@ -212,6 +216,13 @@ function renderProducts(productsArray) {
             if (btn) btn.classList.add('selected');
         }
     });
+
+    if (typeof gsap !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.fromTo(productGrid.children, 
+            { opacity: 0, y: 22, scale: 0.96 }, 
+            { opacity: 1, y: 0, scale: 1, stagger: 0.04, duration: 0.45, ease: 'power2.out' }
+        );
+    }
 }
 
 // ------ FILTER, SEARCH, SORT ------ //
@@ -294,12 +305,12 @@ function filterCategory(cat, btnElement) {
     // Styling toggle
     const buttons = document.querySelectorAll('.cat-btn');
     buttons.forEach(btn => {
-        btn.classList.remove('bg-white', 'text-blue-600', 'shadow-md', 'scale-105');
-        btn.classList.add('bg-blue-500', 'text-white', 'shadow-inner', 'border', 'border-blue-400');
+        btn.classList.remove('active', 'bg-[#A05B3A]', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-[#E6DFD3]/60', 'text-[#655448]', 'border', 'border-[#B8AA98]/40');
     });
 
-    btnElement.classList.add('bg-white', 'text-blue-600', 'shadow-md', 'scale-105');
-    btnElement.classList.remove('bg-blue-500', 'text-white', 'shadow-inner', 'border', 'border-blue-400');
+    btnElement.classList.add('active', 'bg-[#A05B3A]', 'text-white', 'shadow-xs');
+    btnElement.classList.remove('bg-[#E6DFD3]/60', 'text-[#655448]');
 
     // Implementation
     activeCategory = cat;
@@ -326,15 +337,15 @@ function clearFilters() {
 
     const categoryBtns = document.querySelectorAll('.cat-btn');
     categoryBtns.forEach(btn => {
-        btn.classList.remove('bg-white', 'text-blue-600', 'shadow-md', 'scale-105');
-        btn.classList.add('bg-blue-500', 'text-white', 'shadow-inner', 'border', 'border-blue-400');
+        btn.classList.remove('active', 'bg-[#A05B3A]', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-[#E6DFD3]/60', 'text-[#655448]', 'border', 'border-[#B8AA98]/40');
     });
 
     // Restore the all button styles as active
     const allBtn = [...categoryBtns].find(btn => btn.textContent.includes('All Items'));
     if (allBtn) {
-        allBtn.classList.add('bg-white', 'text-blue-600', 'shadow-md', 'scale-105');
-        allBtn.classList.remove('bg-blue-500', 'text-white', 'shadow-inner', 'border', 'border-blue-400');
+        allBtn.classList.add('active', 'bg-[#A05B3A]', 'text-white', 'shadow-xs');
+        allBtn.classList.remove('bg-[#E6DFD3]/60', 'text-[#655448]');
     }
 
     renderProducts(allProducts);
@@ -493,18 +504,18 @@ window.viewProductDetails = function(encodedData) {
 
         const modalDiv = document.createElement('div');
         modalDiv.id = 'productDetailModal';
-        modalDiv.className = 'fixed inset-0 bg-slate-900/75 backdrop-blur-md z-[120] flex items-center justify-center p-4 transition-opacity duration-300';
+        modalDiv.className = 'fixed inset-0 bg-[#27211D]/75 backdrop-blur-md z-[120] flex items-center justify-center p-4 transition-opacity duration-300';
         modalDiv.innerHTML = `
-            <div class="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 overflow-y-auto max-h-[92vh] relative">
-                <button type="button" onclick="document.getElementById('productDetailModal').remove()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 font-black text-2xl w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-100 transition">✕</button>
+            <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 overflow-y-auto max-h-[92vh] relative">
+                <button type="button" onclick="document.getElementById('productDetailModal').remove()" class="absolute top-5 right-5 text-[#655448] hover:text-[#342C27] font-black text-2xl w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#E6DFD3] transition">✕</button>
 
                 <!-- Top Two-Column Grid: LEFT Image / RIGHT Info -->
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-8">
                     <!-- LEFT: Image Preview -->
-                    <div class="md:col-span-6 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col items-center justify-center relative">
+                    <div class="md:col-span-6 bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/30 rounded-2xl p-6 flex flex-col items-center justify-center relative">
                         <img src="${safeImg}" alt="${safeName}" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80'" class="max-h-72 object-contain rounded-xl">
-                        <div class="flex items-center gap-2 mt-4 text-xs font-semibold text-slate-500">
-                            <span class="text-emerald-600 font-bold">✓ 100% Genuine</span>
+                        <div class="flex items-center gap-2 mt-4 text-xs font-semibold text-[#655448] dark:text-[#B8AA98]">
+                            <span class="text-[#77B89A] font-bold">✓ 100% Genuine</span>
                             <span>•</span>
                             <span>Hologram Verified</span>
                         </div>
@@ -513,45 +524,45 @@ window.viewProductDetails = function(encodedData) {
                     <!-- RIGHT: Details & Pricing -->
                     <div class="md:col-span-6 flex flex-col justify-between">
                         <div>
-                            <span class="text-[11px] font-extrabold uppercase tracking-widest text-blue-600 mb-1 block">${catTitle}</span>
-                            <h2 class="text-2xl font-black text-slate-900 leading-snug mb-2">${safeName}</h2>
+                            <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#A05B3A] dark:text-[#E4C99A] mb-1 block">${catTitle}</span>
+                            <h2 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] leading-snug mb-2">${safeName}</h2>
                             <div class="flex items-center gap-2 mb-4">
                                 <span class="text-amber-400 text-sm">★★★★★</span>
-                                <span class="text-xs font-bold text-slate-500">4.9 / 5.0 (Verified Customers)</span>
+                                <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">4.9 / 5.0 (Verified Customers)</span>
                             </div>
 
-                            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-4">
+                            <div class="bg-[#E6DFD3]/40 dark:bg-[#1F1916] rounded-2xl p-4 border border-[#B8AA98]/30 mb-4">
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-3xl font-black text-slate-900 font-mono">₹${priceFormatted}</span>
-                                    <span class="text-xs text-slate-500 line-through">₹${(Number(p.price || 0) * 1.25).toFixed(0)}</span>
-                                    <span class="text-xs font-black text-emerald-600">Save 20%</span>
+                                    <span class="text-3xl font-black text-[#342C27] dark:text-[#F2EDE3] font-mono">₹${priceFormatted}</span>
+                                    <span class="text-xs text-[#655448] dark:text-[#B8AA98] line-through">₹${(Number(p.price || 0) * 1.25).toFixed(0)}</span>
+                                    <span class="text-xs font-black text-[#77B89A]">Save 20%</span>
                                 </div>
-                                <p class="text-xs text-blue-600 font-bold mt-1">Or pay ₹${emi12}/mo with 0% No-Cost EMI</p>
+                                <p class="text-xs text-[#A05B3A] dark:text-[#E4C99A] font-bold mt-1">Or pay ₹${emi12}/mo with 0% No-Cost EMI</p>
                             </div>
 
-                            <div class="space-y-2 text-xs font-medium text-slate-600 mb-6">
-                                <div class="flex justify-between border-b border-slate-100 py-1.5">
-                                    <span class="text-slate-400">Availability:</span>
-                                    <span class="font-bold ${inStock ? 'text-emerald-600' : 'text-rose-600'}">${inStock ? 'In Stock (Ready for Dispatch)' : 'Out of Stock'}</span>
+                            <div class="space-y-2 text-xs font-medium text-[#655448] dark:text-[#B8AA98] mb-6">
+                                <div class="flex justify-between border-b border-[#B8AA98]/20 py-1.5">
+                                    <span class="text-[#655448]/80 dark:text-[#B8AA98]/80">Availability:</span>
+                                    <span class="font-bold ${inStock ? 'text-[#77B89A]' : 'text-[#A6382E]'}">${inStock ? 'In Stock (Ready for Dispatch)' : 'Out of Stock'}</span>
                                 </div>
-                                <div class="flex justify-between border-b border-slate-100 py-1.5">
-                                    <span class="text-slate-400">Installation Support:</span>
-                                    <span class="font-bold text-slate-800">Doorstep Standard Fitting Available</span>
+                                <div class="flex justify-between border-b border-[#B8AA98]/20 py-1.5">
+                                    <span class="text-[#655448]/80 dark:text-[#B8AA98]/80">Installation Support:</span>
+                                    <span class="font-bold text-[#342C27] dark:text-[#F2EDE3]">Doorstep Standard Fitting Available</span>
                                 </div>
-                                <div class="flex justify-between border-b border-slate-100 py-1.5">
-                                    <span class="text-slate-400">Warranty Coverage:</span>
-                                    <span class="font-bold text-slate-800">1 Year Comprehensive Warranty</span>
+                                <div class="flex justify-between border-b border-[#B8AA98]/20 py-1.5">
+                                    <span class="text-[#655448]/80 dark:text-[#B8AA98]/80">Warranty Coverage:</span>
+                                    <span class="font-bold text-[#342C27] dark:text-[#F2EDE3]">1 Year Comprehensive Warranty</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="flex gap-3">
-                            <button onclick="document.getElementById('productDetailModal').remove(); openModal('${encodedData}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl text-xs shadow-md transition text-center flex items-center justify-center gap-2">
+                            <button onclick="document.getElementById('productDetailModal').remove(); openModal('${encodedData}')" class="flex-1 bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-3.5 px-6 rounded-xl text-xs shadow-md transition text-center flex items-center justify-center gap-2">
                                 <span>Enquire / Book Delivery</span>
                                 <span>&rarr;</span>
                             </button>
-                            <a href="tel:+917977805245" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-5 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                            <a href="tel:+917977805245" class="bg-[#E6DFD3]/60 hover:bg-[#E6DFD3] text-[#342C27] dark:text-[#F2EDE3] font-bold py-3.5 px-5 rounded-xl text-xs transition flex items-center justify-center gap-1.5 border border-[#B8AA98]/40">
                                 <span>📞</span>
                                 <span>Call Expert</span>
                             </a>
@@ -560,22 +571,22 @@ window.viewProductDetails = function(encodedData) {
                 </div>
 
                 <!-- Bottom Tabs & Specifications -->
-                <div class="border-t border-slate-100 pt-6">
-                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Product Description &amp; Technical Highlights</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium mb-6">${safeDesc}</p>
+                <div class="border-t border-[#B8AA98]/30 pt-6">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-[#655448] dark:text-[#B8AA98] mb-3">Product Description &amp; Technical Highlights</h4>
+                    <p class="text-sm text-[#655448] dark:text-[#B8AA98] leading-relaxed font-medium mb-6">${safeDesc}</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                            <span class="font-bold text-slate-900 block mb-1">⚡ Inverter Technology</span>
-                            <span class="text-slate-500">Optimizes power draw dynamically for lower power bills.</span>
+                        <div class="p-4 rounded-xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/30">
+                            <span class="font-bold text-[#342C27] dark:text-[#F2EDE3] block mb-1">⚡ Inverter Technology</span>
+                            <span class="text-[#655448] dark:text-[#B8AA98]">Optimizes power draw dynamically for lower power bills.</span>
                         </div>
-                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                            <span class="font-bold text-slate-900 block mb-1">🛡️ Anti-Corrosive Coating</span>
-                            <span class="text-slate-500">Blue-fin condenser protects against coastal humidity.</span>
+                        <div class="p-4 rounded-xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/30">
+                            <span class="font-bold text-[#342C27] dark:text-[#F2EDE3] block mb-1">🛡️ Anti-Corrosive Coating</span>
+                            <span class="text-[#655448] dark:text-[#B8AA98]">Blue-fin condenser protects against coastal humidity.</span>
                         </div>
-                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                            <span class="font-bold text-slate-900 block mb-1">🛠️ AMC Protection Eligible</span>
-                            <span class="text-slate-500">Save 40% on future servicing with our AMC plans.</span>
+                        <div class="p-4 rounded-xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/30">
+                            <span class="font-bold text-[#342C27] dark:text-[#F2EDE3] block mb-1">🛠️ AMC Protection Eligible</span>
+                            <span class="text-[#655448] dark:text-[#B8AA98]">Save 40% on future servicing with our AMC plans.</span>
                         </div>
                     </div>
                 </div>

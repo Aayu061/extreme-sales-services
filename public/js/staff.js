@@ -63,20 +63,48 @@ function switchTab(tabId, btnElement) {
         tab.classList.add('hidden');
     });
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = 'tab-btn text-slate-600 hover:text-slate-900 font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-100 transition flex items-center gap-2 whitespace-nowrap';
+        btn.className = 'tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#342C27] transition flex items-center gap-2 whitespace-nowrap cursor-pointer';
     });
 
     const target = document.getElementById(tabId);
     if (target) {
         target.classList.remove('hidden');
         target.classList.add('block');
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(target,
+                { opacity: 0, y: 12 },
+                { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+            );
+        }
     }
 
     if (btnElement) {
-        btnElement.className = 'tab-btn active bg-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap';
+        btnElement.className = 'tab-btn active bg-[#A05B3A] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-[0_2px_8px_rgba(160,91,58,0.3)] transition flex items-center gap-2 whitespace-nowrap cursor-pointer';
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(btnElement, { scale: 0.95 }, { scale: 1, duration: 0.2, ease: 'back.out(2)' });
+        }
     }
 
     if (tabId === 'tab-enquiries') fetchEnquiries();
+}
+
+function animateStaffCounter(elementId, targetVal) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const num = Number(targetVal) || 0;
+    if (typeof gsap !== 'undefined') {
+        const counter = { val: 0 };
+        gsap.to(counter, {
+            val: num,
+            duration: 0.75,
+            ease: 'power2.out',
+            onUpdate: () => {
+                el.innerText = Math.round(counter.val);
+            }
+        });
+    } else {
+        el.innerText = num;
+    }
 }
 
 async function loadTechnicians() {
@@ -110,10 +138,10 @@ async function fetchRequests(silent = false) {
             const progress = currentRequests.filter(r => r.status === 'In Progress').length;
             const completed = currentRequests.filter(r => r.status === 'Completed').length;
 
-            document.getElementById('statPending').innerText = pending;
-            document.getElementById('statAssigned').innerText = assigned;
-            document.getElementById('statProgress').innerText = progress;
-            document.getElementById('statCompleted').innerText = completed;
+            animateStaffCounter('statPending', pending);
+            animateStaffCounter('statAssigned', assigned);
+            animateStaffCounter('statProgress', progress);
+            animateStaffCounter('statCompleted', completed);
 
             const badgeCount = document.getElementById('badgeServiceCount');
             if (badgeCount) badgeCount.innerText = pending + assigned + progress;
@@ -133,10 +161,10 @@ async function fetchRequests(silent = false) {
 function filterStatus(status, btnElement) {
     activeStatusFilter = status;
     document.querySelectorAll('.filter-pill').forEach(btn => {
-        btn.className = 'filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition';
+        btn.className = 'filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer';
     });
     if (btnElement) {
-        btnElement.className = 'filter-pill active bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition';
+        btnElement.className = 'filter-pill active bg-[#342C27] text-white dark:bg-[#F2EDE3] dark:text-[#342C27] text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs cursor-pointer';
     }
     renderTable();
 }
@@ -170,7 +198,7 @@ function renderTable() {
     if (filtered.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="px-6 py-10 text-center text-slate-400">
+                <td colspan="6" class="px-6 py-10 text-center text-[#655448] dark:text-[#B8AA98] font-medium">
                     No requests matching the selected filter.
                 </td>
             </tr>
@@ -180,7 +208,7 @@ function renderTable() {
 
     filtered.forEach(req => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-emerald-50/40 transition border-b border-slate-100";
+        tr.className = "hover:bg-[#E6DFD3]/30 dark:hover:bg-[#342C27]/40 transition border-b border-[#B8AA98]/20";
 
         const statusConfig = {
             'Pending': { class: 'badge-pending', dot: 'bg-amber-500' },
@@ -203,39 +231,39 @@ function renderTable() {
 
         tr.innerHTML = `
             <td class="px-5 py-4">
-                <div class="font-extrabold text-slate-900 dark:text-white">${escapeHtml(req.name)}</div>
-                <div class="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">📞 ${escapeHtml(req.phone)}</div>
-                <div class="text-slate-500 dark:text-slate-400 text-[11px] truncate max-w-xs mt-0.5">📍 ${escapeHtml(req.address)}</div>
-                <div class="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded w-max mt-1 font-bold border border-emerald-100 dark:border-emerald-800/40">
+                <div class="font-extrabold text-[#342C27] dark:text-[#F2EDE3]">${escapeHtml(req.name)}</div>
+                <div class="text-[#655448] dark:text-[#B8AA98] text-[11px] mt-0.5">📞 ${escapeHtml(req.phone)}</div>
+                <div class="text-[#655448] dark:text-[#B8AA98] text-[11px] truncate max-w-xs mt-0.5">📍 ${escapeHtml(req.address)}</div>
+                <div class="text-[10px] font-mono text-[#A05B3A] dark:text-[#E4C99A] bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 px-1.5 py-0.5 rounded w-max mt-1 font-bold border border-[#A05B3A]/30">
                     ${escapeHtml(req.request_id)}
                 </div>
             </td>
             <td class="px-5 py-4">
-                <div class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(serviceClean)}</div>
-                ${isAmc ? '<span class="inline-block bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 border border-emerald-200 dark:border-emerald-700/50">★ COVERED BY AMC</span>' : ''}
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 italic mt-0.5 max-w-xs truncate">"${escapeHtml(req.issue_description || 'General inspection')}"</div>
+                <div class="font-bold text-[#342C27] dark:text-[#F2EDE3]">${escapeHtml(serviceClean)}</div>
+                ${isAmc ? '<span class="inline-block bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 border border-[#77B89A]/30">★ COVERED BY AMC</span>' : ''}
+                <div class="text-[11px] text-[#655448] dark:text-[#B8AA98] italic mt-0.5 max-w-xs truncate">"${escapeHtml(req.issue_description || 'General inspection')}"</div>
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
                 <span class="badge-status ${stConf.class}">
                     <span class="w-1.5 h-1.5 rounded-full ${stConf.dot}"></span>
                     <span>${escapeHtml(req.status)}</span>
                 </span>
-                ${req.technician_name ? `<div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">🧑‍🔧 ${escapeHtml(req.technician_name.split(' ')[0])}</div>` : ''}
-                ${req.dispatch_score ? `<div class="text-[9px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40 w-max mt-0.5">⚡ ${escapeHtml(req.dispatch_score)}% Match</div>` : ''}
+                ${req.technician_name ? `<div class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1 font-medium">🧑‍🔧 ${escapeHtml(req.technician_name.split(' ')[0])}</div>` : ''}
+                ${req.dispatch_score ? `<div class="text-[9px] text-[#A05B3A] dark:text-[#E4C99A] font-bold bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 px-1 py-0.5 rounded border border-[#A05B3A]/30 w-max mt-0.5">⚡ ${escapeHtml(req.dispatch_score)}% Match</div>` : ''}
             </td>
             <td class="px-5 py-4">
-                <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full min-w-[145px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-medium">
+                <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full min-w-[145px] bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3] rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none font-medium">
                     ${techOpts}
                 </select>
                 ${req.status === 'Pending' ? `
-                <button type="button" onclick="triggerAlgorithmicAutoDispatch('${req.request_id}')" class="mt-1.5 w-full bg-gradient-to-r from-amber-500/10 via-emerald-500/15 to-teal-500/10 hover:from-emerald-600 hover:to-teal-600 text-emerald-800 dark:text-emerald-300 hover:text-white border border-emerald-300/80 dark:border-emerald-700/60 font-black py-1 px-2 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Compute optimal technician using MOW-GDM algorithm">
+                <button type="button" onclick="triggerAlgorithmicAutoDispatch('${req.request_id}')" class="mt-1.5 w-full bg-[#A05B3A]/15 hover:bg-[#A05B3A] text-[#A05B3A] dark:text-[#E4C99A] hover:text-white border border-[#A05B3A]/30 font-black py-1 px-2 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Compute optimal technician using MOW-GDM algorithm">
                     <span>⚡</span>
                     <span>Auto-Match AI</span>
                 </button>
                 ` : ''}
             </td>
             <td class="px-5 py-4">
-                <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full min-w-[130px] bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
+                <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full min-w-[130px] bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3] rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
                     <option value="Pending" ${req.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                     <option value="Assigned" ${req.status === 'Assigned' ? 'selected' : ''}>🧑‍🔧 Assigned</option>
                     <option value="In Progress" ${req.status === 'In Progress' ? 'selected' : ''}>🛠️ In Progress</option>
@@ -243,7 +271,7 @@ function renderTable() {
                 </select>
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
-                <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20Extreme%20AC%20Service%20coordinator%20here%20regarding%20request%20${req.request_id}." target="_blank" class="bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-600 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-700/50 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 w-max">
+                <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20Extreme%20AC%20Service%20coordinator%20here%20regarding%20request%20${req.request_id}." target="_blank" class="bg-[#77B89A]/15 hover:bg-[#77B89A] text-[#2E6B52] dark:text-[#77B89A] hover:text-[#1A1412] dark:hover:text-[#1A1412] border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 w-max">
                     <span>💬</span>
                     <span>WhatsApp</span>
                 </a>
@@ -296,17 +324,17 @@ async function fetchEnquiries() {
             tbody.innerHTML = '';
             data.enquiries.forEach(enq => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.className = "hover:bg-[#E6DFD3]/30 dark:hover:bg-[#342C27]/40 transition border-b border-[#B8AA98]/20";
                 tr.innerHTML = `
-                    <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(enq.created_at).toLocaleDateString()}</td>
+                    <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98]">${new Date(enq.created_at).toLocaleDateString()}</td>
                     <td class="px-5 py-3.5">
-                        <div class="font-extrabold text-slate-900">${escapeHtml(enq.name)}</div>
-                        <div class="text-xs text-slate-500">📞 ${escapeHtml(enq.phone)}</div>
+                        <div class="font-extrabold text-[#342C27] dark:text-[#F2EDE3]">${escapeHtml(enq.name)}</div>
+                        <div class="text-xs text-[#655448] dark:text-[#B8AA98]">📞 ${escapeHtml(enq.phone)}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-bold text-emerald-700">${escapeHtml(enq.product_name)}</td>
-                    <td class="px-5 py-3.5 text-xs text-slate-600 italic">"${escapeHtml(enq.message)}"</td>
+                    <td class="px-5 py-3.5 font-bold text-[#A05B3A] dark:text-[#E4C99A]">${escapeHtml(enq.product_name)}</td>
+                    <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98] italic">"${escapeHtml(enq.message)}"</td>
                     <td class="px-5 py-3.5">
-                        <a href="https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20regarding%20your%20enquiry%20with%20Extreme%20Sales%20%26%20Services" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-3 py-1 rounded-lg text-xs font-bold transition">
+                        <a href="https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20regarding%20your%20enquiry%20with%20Extreme%20Sales%20%26%20Services" target="_blank" class="bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-[#1A1412] dark:hover:text-[#1A1412] border border-[#77B89A]/30 px-3 py-1 rounded-lg text-xs font-bold transition">
                             💬 Follow Up
                         </a>
                     </td>

@@ -5,47 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enterprise Portal Login | Extreme Sales &amp; Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .split-hero-bg {
-            background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%);
+            background: linear-gradient(145deg, #1A1412 0%, #27211D 50%, #342C27 100%);
         }
         .portal-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 40px rgba(52, 44, 39, 0.08);
         }
-        html.dark .portal-card {
-            background: #111827 !important;
-            border-color: #1f2937 !important;
+        html.dark #loginForm input {
+            background-color: #1F1916 !important;
+            border-color: rgba(184, 170, 152, 0.25) !important;
+            color: #F2EDE3 !important;
+        }
+        html.dark #loginForm input:focus {
+            background-color: #27211D !important;
+            border-color: #A05B3A !important;
         }
     </style>
-    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <!-- Anti-flicker: apply dark class BEFORE first paint if saved -->
     <script>
       (function(){
         try {
           var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch(e){}
       })();
     </script>
 </head>
-<body class="role-admin min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 font-sans antialiased flex flex-col justify-between">
+<body class="role-admin min-h-screen bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] font-sans antialiased flex flex-col justify-between selection:bg-[#A05B3A] selection:text-white">
 
     <!-- Theme Toggle Floating Button -->
     <div class="fixed top-4 right-4 z-50">
         <button
           type="button"
-          class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-sm"
+          class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2.5 rounded-xl bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-md border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm cursor-pointer"
           aria-label="Toggle Theme"
         >
           <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
           </svg>
-          <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="theme-icon-sun w-5 h-5 hidden text-[#E4C99A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
           </svg>
         </button>
@@ -53,110 +61,110 @@
 
     <!-- MAIN SPLIT CONTAINER -->
     <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-12">
-        <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 rounded-3xl overflow-hidden portal-card bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xl">
 
             <!-- LEFT COLUMN: Brand Showcase & Value Proposition (Visible on lg+) -->
-            <div class="lg:col-span-5 split-hero-bg p-8 sm:p-12 text-white flex flex-col justify-between relative overflow-hidden">
-                <div class="absolute inset-0 bg-blue-600/10 pointer-events-none"></div>
+            <div class="lg:col-span-5 split-hero-bg p-8 sm:p-12 text-[#F2EDE3] flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-[#B8AA98]/20">
+                <div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#A05B3A]/10 blur-3xl pointer-events-none"></div>
                 <div class="relative z-10 space-y-8">
                     <!-- Brand -->
                     <a href="index.html" class="inline-flex items-center gap-3 group">
-                        <span class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg shadow-md group-hover:scale-105 transition">ES</span>
+                        <span class="bg-[#A05B3A] text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg shadow-sm group-hover:scale-105 transition">ES</span>
                         <div>
-                            <span class="text-2xl font-black tracking-tight text-white">Extreme <span class="text-blue-400">S&amp;S</span></span>
-                            <span class="block text-[10px] uppercase font-bold tracking-widest text-slate-400">Operations Control</span>
+                            <span class="text-2xl font-black tracking-tight text-[#F2EDE3]">Extreme <span class="text-[#E4C99A]">S&amp;S</span></span>
+                            <span class="block text-[10px] uppercase font-bold tracking-widest text-[#B8AA98]">Operations Control</span>
                         </div>
                     </a>
 
                     <!-- Pitch -->
                     <div>
-                        <span class="inline-block px-3 py-1 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 mb-3">
+                        <span class="inline-block px-3 py-1 rounded-full text-[11px] font-bold bg-[#3D342F] text-[#E4C99A] border border-[#B8AA98]/30 mb-3 backdrop-blur-sm">
                             HVAC Enterprise Platform
                         </span>
-                        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
+                        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#F2EDE3] leading-tight">
                             Reliable Climate Control &amp; Doorstep Field Operations
                         </h2>
-                        <p class="text-slate-300 text-xs sm:text-sm mt-3 leading-relaxed">
-                            Single pane of glass for real-time dispatch, inventory telemetry, algorithmic technician routing, and AMC contract lifecycle.
+                        <p class="text-[#B8AA98] text-xs sm:text-sm mt-3 leading-relaxed">
+                            Unified portal for real-time dispatch, inventory telemetry, automated technician routing, and AMC contract lifecycle.
                         </p>
                     </div>
 
                     <!-- Feature Pillars -->
                     <div class="space-y-4 pt-2">
                         <div class="flex items-start gap-3">
-                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">01</div>
+                            <div class="w-7 h-7 rounded-lg bg-[#3D342F] text-[#E4C99A] border border-[#B8AA98]/20 flex items-center justify-center text-xs font-bold shrink-0">01</div>
                             <div>
-                                <p class="text-xs font-bold text-white">Automated Dispatch Engine</p>
-                                <p class="text-[11px] text-slate-400">Skill-based technician matching with live GPS milestone tracking.</p>
+                                <p class="text-xs font-bold text-[#F2EDE3]">Automated Dispatch Engine</p>
+                                <p class="text-[11px] text-[#B8AA98]">Skill-based technician matching with live milestone tracking.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">02</div>
+                            <div class="w-7 h-7 rounded-lg bg-[#3D342F] text-[#E4C99A] border border-[#B8AA98]/20 flex items-center justify-center text-xs font-bold shrink-0">02</div>
                             <div>
-                                <p class="text-xs font-bold text-white">Inventory &amp; Parts Logistics</p>
-                                <p class="text-[11px] text-slate-400">OEM compressors, sensors, and refrigerant stock control with audit logs.</p>
+                                <p class="text-xs font-bold text-[#F2EDE3]">Inventory &amp; Parts Logistics</p>
+                                <p class="text-[11px] text-[#B8AA98]">OEM compressors, sensors, and refrigerant stock control with audit logs.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">03</div>
+                            <div class="w-7 h-7 rounded-lg bg-[#3D342F] text-[#E4C99A] border border-[#B8AA98]/20 flex items-center justify-center text-xs font-bold shrink-0">03</div>
                             <div>
-                                <p class="text-xs font-bold text-white">Multi-Role Governance</p>
-                                <p class="text-[11px] text-slate-400">Strict RBAC with dedicated consoles for Administrators, Staff, and Techs.</p>
+                                <p class="text-xs font-bold text-[#F2EDE3]">Multi-Role Governance</p>
+                                <p class="text-[11px] text-[#B8AA98]">Strict RBAC with dedicated consoles for Administrators, Staff, and Techs.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="relative z-10 pt-8 mt-8 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                    <span>Final Year Engineering Demo</span>
-                    <span>v2.4.0</span>
+                <div class="relative z-10 pt-8 mt-8 border-t border-[#B8AA98]/20 flex items-center justify-between text-xs text-[#B8AA98]">
+                    <span>Operations &amp; Security Console</span>
+                    <span class="font-mono text-[#E4C99A]">v2.4.0</span>
                 </div>
             </div>
 
             <!-- RIGHT COLUMN: Role-Based Authentication Card -->
-            <div class="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-white dark:bg-slate-900">
+            <div class="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-[#FDFBF7] dark:bg-[#27211D]">
                 <div class="max-w-md w-full mx-auto space-y-6">
 
                     <!-- Header -->
                     <div>
-                        <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Access Authentication</p>
-                        <h1 id="portalTitle" class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Admin Control Center</h1>
-                        <p id="portalSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage fleet dispatch, analytics, catalog &amp; AMC contracts.</p>
+                        <p class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-wider mb-1">Access Authentication</p>
+                        <h1 id="portalTitle" class="text-2xl font-bold text-[#342C27] dark:text-[#F2EDE3] tracking-tight">Admin Control Center</h1>
+                        <p id="portalSubtitle" class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1">Manage fleet dispatch, analytics, catalog &amp; AMC contracts.</p>
                     </div>
 
                     <!-- Role Switcher Tabs -->
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Select Portal Role</label>
-                            <span id="roleBadge" class="bg-blue-100 text-blue-800 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">Admin</span>
+                            <label class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Select Portal Role</label>
+                            <span id="roleBadge" class="bg-[#A05B3A]/15 text-[#A05B3A] border border-[#A05B3A]/30 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">Admin</span>
                         </div>
-                        <div class="grid grid-cols-3 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                            <button type="button" onclick="setRole('admin', this)" class="role-tab active py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-xs">
+                        <div class="grid grid-cols-3 gap-2 p-1.5 bg-[#E6DFD3]/50 dark:bg-[#1F1916] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+                            <button type="button" onclick="setRole('admin', this)" class="role-tab active py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 bg-[#A05B3A] text-white shadow-xs cursor-pointer">
                                 <span>🛡️</span> Admin
                             </button>
-                            <button type="button" onclick="setRole('staff', this)" class="role-tab py-2 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
+                            <button type="button" onclick="setRole('staff', this)" class="role-tab py-2 text-xs font-bold rounded-lg text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] transition flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>📋</span> Staff
                             </button>
-                            <button type="button" onclick="setRole('technician', this)" class="role-tab py-2 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
+                            <button type="button" onclick="setRole('technician', this)" class="role-tab py-2 text-xs font-bold rounded-lg text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] transition flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>🧑‍🔧</span> Field Tech
                             </button>
                         </div>
                     </div>
 
                     <!-- Quick Demo Autofill Helpers -->
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                    <div class="p-3 bg-[#E6DFD3]/40 dark:bg-[#1F1916] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Demo Quick Fill</span>
-                            <span class="text-[10px] text-slate-400">Click to load test account</span>
+                            <span class="text-[10px] font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider">Demo Quick Fill</span>
+                            <span class="text-[10px] text-[#B8AA98] dark:text-[#655448]">Click to load test account</span>
                         </div>
                         <div class="flex flex-wrap gap-1.5">
-                            <button type="button" onclick="fillCreds('admin@extremess.com', 'admin123', 'admin')" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-500 transition">
+                            <button type="button" onclick="fillCreds('admin@extremess.com', 'admin123', 'admin')" class="px-2.5 py-1 rounded-md bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 text-[11px] font-semibold text-[#342C27] dark:text-[#F2EDE3] hover:border-[#A05B3A] hover:text-[#A05B3A] transition shadow-2xs cursor-pointer">
                                 Admin Demo
                             </button>
-                            <button type="button" onclick="fillCreds('staff@extremess.com', 'staff123', 'staff')" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:border-emerald-500 transition">
+                            <button type="button" onclick="fillCreds('staff@extremess.com', 'staff123', 'staff')" class="px-2.5 py-1 rounded-md bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 text-[11px] font-semibold text-[#342C27] dark:text-[#F2EDE3] hover:border-[#77B89A] hover:text-[#2E6B52] dark:hover:text-[#77B89A] transition shadow-2xs cursor-pointer">
                                 Staff Demo
                             </button>
-                            <button type="button" onclick="fillCreds('tech@extremess.com', 'tech123', 'technician')" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:border-amber-500 transition">
+                            <button type="button" onclick="fillCreds('tech@extremess.com', 'tech123', 'technician')" class="px-2.5 py-1 rounded-md bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 text-[11px] font-semibold text-[#342C27] dark:text-[#F2EDE3] hover:border-[#D97706] hover:text-[#D97706] transition shadow-2xs cursor-pointer">
                                 Tech Demo
                             </button>
                         </div>
@@ -173,36 +181,38 @@
                                 required
                                 autocomplete="username"
                                 placeholder=" "
+                                class="bg-[#FDFBF7] dark:!bg-[#1F1916] dark:!text-[#F2EDE3] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 rounded-xl"
                             >
                             <label for="email">Official Email Address *</label>
                         </div>
 
-                        <div class="form-field">
+                        <div class="form-field relative">
                             <input
                                 type="password"
                                 id="password"
                                 required
                                 autocomplete="current-password"
                                 placeholder=" "
+                                class="bg-[#FDFBF7] dark:!bg-[#1F1916] dark:!text-[#F2EDE3] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 rounded-xl"
                             >
                             <label for="password">Password *</label>
                             <button
                                 type="button"
                                 onclick="togglePasswordVisibility()"
-                                class="absolute right-3 top-3 text-xs text-slate-400 hover:text-blue-600 font-semibold"
+                                class="absolute right-3 top-3.5 text-xs text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] font-semibold z-10 cursor-pointer"
                             >
                                 Show
                             </button>
                         </div>
 
                         <!-- Error Message Banner -->
-                        <div id="errorMessage" class="hidden bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 p-3 rounded-xl text-xs font-semibold"></div>
+                        <div id="errorMessage" class="hidden bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 p-3 rounded-xl text-xs font-semibold"></div>
 
                         <!-- Submit Button -->
                         <button
                             type="submit"
                             id="loginBtn"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition flex items-center justify-center gap-2"
+                            class="w-full bg-[#A05B3A] hover:bg-[#8D4B2D] text-white font-bold py-3.5 rounded-xl shadow-[0_4px_14px_rgba(160,91,58,0.35)] transition flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <span>Sign In to Portal</span>
                             <span>&rarr;</span>
@@ -210,9 +220,9 @@
                     </form>
 
                     <!-- Links -->
-                    <div class="pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                        <a href="index.html" class="hover:text-slate-900 dark:hover:text-white transition font-medium">&larr; Return to Home</a>
-                        <a href="status.html" class="text-blue-600 hover:underline font-semibold">Track a Service Request</a>
+                    <div class="pt-2 flex items-center justify-between text-xs text-[#655448] dark:text-[#B8AA98]">
+                        <a href="index.html" class="hover:text-[#342C27] dark:hover:text-white transition font-medium">&larr; Return to Home</a>
+                        <a href="status.html" class="text-[#A05B3A] dark:text-[#E4C99A] hover:underline font-semibold">Track a Service Request</a>
                     </div>
                 </div>
             </div>
@@ -221,7 +231,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="py-4 text-center text-xs text-slate-400 dark:text-slate-500">
+    <footer class="py-4 text-center text-xs text-[#655448] dark:text-[#B8AA98]">
         &copy; 2026 Extreme Sales &amp; Services • Secure Enterprise Authentication (JWT + RBAC)
     </footer>
 
@@ -241,6 +251,10 @@
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
+    <!-- GSAP 3.12.5 Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/login.js"></script>
 </body>

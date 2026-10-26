@@ -11,9 +11,9 @@ const roleMeta = {
         title: 'Admin Control Center',
         subtitle: 'Manage full fleet, analytics, inventory & AMCs',
         bodyClass: 'role-admin',
-        btnBg: 'bg-blue-600',
-        hoverBtnBg: 'hover:bg-blue-700',
-        badgeClass: 'bg-blue-100 text-blue-800',
+        btnBg: 'bg-[#A05B3A]',
+        hoverBtnBg: 'hover:bg-[#8D4B2D]',
+        badgeClass: 'bg-[#A05B3A]/15 text-[#A05B3A] border border-[#A05B3A]/30',
         redirect: 'admin.html'
     },
     staff: {
@@ -21,9 +21,9 @@ const roleMeta = {
         title: 'Staff Operations Console',
         subtitle: 'Coordinate service jobs, dispatch technicians & enquiries',
         bodyClass: 'role-staff',
-        btnBg: 'bg-emerald-600',
-        hoverBtnBg: 'hover:bg-emerald-700',
-        badgeClass: 'bg-emerald-100 text-emerald-800',
+        btnBg: 'bg-[#77B89A]',
+        hoverBtnBg: 'hover:bg-[#639D83]',
+        badgeClass: 'bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] border border-[#77B89A]/30',
         redirect: 'staff.html'
     },
     technician: {
@@ -31,9 +31,9 @@ const roleMeta = {
         title: 'Technician Mobile Portal',
         subtitle: 'Access daily schedules, on-site jobs & status updates',
         bodyClass: 'role-technician',
-        btnBg: 'bg-amber-600',
-        hoverBtnBg: 'hover:bg-amber-700',
-        badgeClass: 'bg-amber-100 text-amber-800',
+        btnBg: 'bg-[#D97706]',
+        hoverBtnBg: 'hover:bg-[#B45309]',
+        badgeClass: 'bg-[#D97706]/15 text-[#D97706] dark:text-[#E4C99A] border border-[#D97706]/30',
         redirect: 'technician.html'
     }
 };
@@ -44,16 +44,17 @@ function setRole(role, btnElement) {
 
     document.getElementById('selectedRole').value = role;
 
-    // Update body theme
-    document.body.className = `flex items-center justify-center min-h-screen p-4 sm:p-6 text-gray-900 font-sans antialiased relative overflow-hidden ${meta.bodyClass}`;
+    // Update body theme safely without destroying layout classes
+    document.body.classList.remove('role-admin', 'role-staff', 'role-technician');
+    document.body.classList.add(meta.bodyClass);
 
     // Update role tabs
     document.querySelectorAll('.role-tab').forEach(b => {
-        b.className = 'role-tab flex-1 py-2 text-xs font-bold rounded-lg text-gray-600 hover:text-gray-900 transition flex items-center justify-center gap-1.5';
+        b.className = 'role-tab flex-1 py-2 text-xs font-bold rounded-lg text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] transition flex items-center justify-center gap-1.5 cursor-pointer';
     });
 
     if (btnElement) {
-        btnElement.className = `role-tab active flex-1 py-2 text-xs font-bold rounded-lg text-white transition flex items-center justify-center gap-1.5 ${meta.btnBg} shadow-sm`;
+        btnElement.className = `role-tab active flex-1 py-2 text-xs font-bold rounded-lg text-white transition flex items-center justify-center gap-1.5 ${meta.btnBg} shadow-sm cursor-pointer`;
     }
 
     // Update titles and badge
@@ -63,9 +64,14 @@ function setRole(role, btnElement) {
     badge.textContent = meta.label;
     badge.className = `${meta.badgeClass} text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full`;
 
+    if (typeof gsap !== 'undefined') {
+        if (btnElement) gsap.fromTo(btnElement, { scale: 0.93 }, { scale: 1, duration: 0.22, ease: 'back.out(2)' });
+        if (badge) gsap.fromTo(badge, { scale: 0.85, opacity: 0.6 }, { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(2)' });
+    }
+
     // Update main submit button color
     const loginBtn = document.getElementById('loginBtn');
-    loginBtn.className = `w-full ${meta.btnBg} ${meta.hoverBtnBg} text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-[0.98] flex items-center justify-center gap-2`;
+    loginBtn.className = `w-full ${meta.btnBg} ${meta.hoverBtnBg} text-white font-bold py-3.5 rounded-xl shadow-[0_4px_14px_rgba(52,44,39,0.15)] transition transform active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer`;
 }
 
 function togglePasswordVisibility() {
@@ -123,15 +129,42 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             errorMsg.innerText = '❌ ' + (data.message || 'Invalid credentials.');
             errorMsg.classList.remove('hidden');
             if (window.showToast) window.showToast(data.message || 'Login failed', 'error');
+
+            const loginCard = document.getElementById('loginForm')?.parentElement;
+            if (typeof gsap !== 'undefined' && loginCard) {
+                gsap.fromTo(loginCard, 
+                    { x: -14 }, 
+                    { x: 0, duration: 0.45, ease: 'elastic.out(1, 0.3)', clearProps: 'x' }
+                );
+            }
         }
 
     } catch (err) {
         errorMsg.innerText = '⚠️ Network error — Could not connect to backend server. Ensure server.js is running.';
         errorMsg.classList.remove('hidden');
         if (window.showToast) window.showToast('Server connection failed', 'error');
+
+        const loginCard = document.getElementById('loginForm')?.parentElement;
+        if (typeof gsap !== 'undefined' && loginCard) {
+            gsap.fromTo(loginCard, 
+                { x: -14 }, 
+                { x: 0, duration: 0.45, ease: 'elastic.out(1, 0.3)', clearProps: 'x' }
+            );
+        }
     } finally {
         const meta = roleMeta[role];
         loginBtn.innerHTML = `<span>Sign In to Portal</span><span>→</span>`;
         loginBtn.disabled = false;
+    }
+});
+
+// Card entrance animation
+window.addEventListener('DOMContentLoaded', () => {
+    const card = document.getElementById('loginForm')?.parentElement;
+    if (typeof gsap !== 'undefined' && card) {
+        gsap.fromTo(card,
+            { opacity: 0, y: 20, scale: 0.98 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'power2.out' }
+        );
     }
 });

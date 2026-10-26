@@ -5,61 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dispatch Operations | Extreme Sales &amp; Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <!-- Anti-flicker: apply dark class ONLY if explicitly saved as dark -->
     <script>
       (function(){
         try {
           var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch(e){}
       })();
-    </script>  </head>
-  <body class="bg-slate-100 text-slate-900 min-h-screen font-sans antialiased">
+    </script>
+  </head>
+  <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] min-h-screen font-sans antialiased selection:bg-[#B86E4B] selection:text-white transition-colors duration-200">
 
     <!-- TOP NAVIGATION BAR -->
-    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-xl border-b border-slate-800">
+    <header class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+            <div class="w-9 h-9 bg-[#A05B3A] text-white rounded-xl flex items-center justify-center shadow-[0_2px_8px_rgba(160,91,58,0.35)]">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             </div>
             <div>
-              <span class="text-lg font-black tracking-tight">Extreme S&amp;S <span class="text-emerald-400 font-bold text-xs bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800">Staff Dispatch</span></span>
-              <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-lg font-black tracking-tight text-white">Extreme S&amp;S <span class="text-[#E4C99A] font-bold text-xs bg-[#E4C99A]/15 px-2.5 py-0.5 rounded-full border border-[#E4C99A]/30">Staff Dispatch</span></span>
+              <div class="flex items-center gap-1.5 text-[11px] text-[#B8AA98]">
+                <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
                 <span>Active Coordinator Console</span>
               </div>
             </div>
           </div>
 
           <div class="flex gap-2.5 items-center">
-            <a href="index.html" target="_blank" class="hidden sm:inline-flex text-slate-400 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-800 transition items-center gap-1">
+            <a href="index.html" target="_blank" class="hidden sm:inline-flex text-[#B8AA98] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-white/10 transition items-center gap-1">
               <span>View Site</span>
               <span class="text-xs">↗</span>
             </a>
             <button
               type="button"
-              class="theme-toggle-btn text-slate-300 hover:text-white transition p-2 rounded-lg hover:bg-slate-800"
+              class="theme-toggle-btn text-[#B8AA98] hover:text-white transition p-2 rounded-lg hover:bg-white/10"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="theme-icon-sun w-5 h-5 hidden text-[#E4C99A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
-            <button type="button" id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5">
+            <button type="button" id="refreshBtn" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-[0_2px_10px_rgba(160,91,58,0.3)] transition flex items-center gap-1.5 cursor-pointer">
               <span id="refreshIcon" class="inline-block transition">↻</span>
               <span>Sync Queue</span>
             </button>
-            <button type="button" onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-lg font-bold text-xs transition">
+            <button type="button" onclick="handleLogout()" class="bg-[#A05B3A]/20 hover:bg-[#A05B3A] text-[#E4C99A] hover:text-white border border-[#A05B3A]/40 px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer">
               Logout
             </button>
           </div>
@@ -72,12 +77,12 @@
       <!-- PAGE TITLE & KPI BAR -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-3xl font-black text-slate-900 tracking-tight">Dispatch Operations</h1>
-          <p class="text-slate-500 text-sm mt-0.5">Real-time coordinator queue: Assign field technicians &amp; follow up on client enquiries</p>
+          <h1 class="text-3xl font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight">Dispatch Operations</h1>
+          <p class="text-[#655448] dark:text-[#B8AA98] text-sm mt-0.5">Real-time coordinator queue: Assign field technicians &amp; follow up on client enquiries</p>
         </div>
         <div class="flex items-center gap-2">
-          <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] border border-[#77B89A]/40 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
             <span>Live Auto-Sync Active</span>
           </span>
         </div>
@@ -85,50 +90,69 @@
 
       <!-- KPI METRIC CARDS -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="kpi-card shadow-sm border-l-4 border-l-amber-500">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Requires Assignment</span>
+        <!-- Requires Assignment (Pending) -->
+        <div class="kpi-card shadow-[0_4px_20px_rgba(52,44,39,0.06)] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-5 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-[#D97706]"></div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Requires Assignment</span>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="statPending" class="text-3xl font-black text-amber-600">--</span>
-            <span class="text-xs font-bold text-slate-400">Pending Jobs</span>
+            <span id="statPending" class="text-3xl font-black text-[#D97706]">--</span>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Pending Jobs</span>
+          </div>
+          <div class="stat-fill-bar bg-[#E6DFD3] dark:bg-[#342C27] h-1 rounded-full mt-3 overflow-hidden">
+            <div id="fillPending" class="stat-fill-bar-inner bg-[#D97706] h-full" style="width: 0%"></div>
           </div>
         </div>
 
-        <div class="kpi-card shadow-sm border-l-4 border-l-purple-500">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Dispatched / Assigned</span>
+        <!-- Dispatched / Assigned -->
+        <div class="kpi-card shadow-[0_4px_20px_rgba(52,44,39,0.06)] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-5 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-[#8B5CF6]"></div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Dispatched / Assigned</span>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="statAssigned" class="text-3xl font-black text-purple-600">--</span>
-            <span class="text-xs font-bold text-slate-400">Awaiting Service</span>
+            <span id="statAssigned" class="text-3xl font-black text-[#8B5CF6]">--</span>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Awaiting Service</span>
+          </div>
+          <div class="stat-fill-bar bg-[#E6DFD3] dark:bg-[#342C27] h-1 rounded-full mt-3 overflow-hidden">
+            <div id="fillAssigned" class="stat-fill-bar-inner bg-[#8B5CF6] h-full" style="width: 0%"></div>
           </div>
         </div>
 
-        <div class="kpi-card shadow-sm border-l-4 border-l-blue-500">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">On-Site Servicing</span>
+        <!-- On-Site Servicing (In Progress) -->
+        <div class="kpi-card shadow-[0_4px_20px_rgba(52,44,39,0.06)] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-5 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-[#0284C7]"></div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">On-Site Servicing</span>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="statProgress" class="text-3xl font-black text-blue-600">--</span>
-            <span class="text-xs font-bold text-slate-400">In Progress</span>
+            <span id="statProgress" class="text-3xl font-black text-[#0284C7]">--</span>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">In Progress</span>
+          </div>
+          <div class="stat-fill-bar bg-[#E6DFD3] dark:bg-[#342C27] h-1 rounded-full mt-3 overflow-hidden">
+            <div id="fillProgress" class="stat-fill-bar-inner bg-[#0284C7] h-full" style="width: 0%"></div>
           </div>
         </div>
 
-        <div class="kpi-card shadow-sm border-l-4 border-l-emerald-500">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Resolved Today</span>
+        <!-- Resolved Today (Completed) -->
+        <div class="kpi-card shadow-[0_4px_20px_rgba(52,44,39,0.06)] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-5 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-[#77B89A]"></div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Resolved Today</span>
           <div class="flex items-baseline gap-2 mt-1">
-            <span id="statCompleted" class="text-3xl font-black text-emerald-600">--</span>
-            <span class="text-xs font-bold text-slate-400">Completed</span>
+            <span id="statCompleted" class="text-3xl font-black text-[#2E6B52] dark:text-[#77B89A]">--</span>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Completed</span>
+          </div>
+          <div class="stat-fill-bar bg-[#E6DFD3] dark:bg-[#342C27] h-1 rounded-full mt-3 overflow-hidden">
+            <div id="fillCompleted" class="stat-fill-bar-inner bg-[#77B89A] h-full" style="width: 0%"></div>
           </div>
         </div>
-
       </div>
 
       <!-- TABS CONTAINER -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-[0_6px_24px_rgba(52,44,39,0.06)] overflow-hidden">
         <!-- Tab Navigation -->
-        <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/75 dark:bg-slate-900/90 px-4 overflow-x-auto gap-2 py-2">
-          <button type="button" onclick="switchTab('tab-services', this)" class="tab-btn active bg-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap">
+        <div class="flex border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-[#E6DFD3]/40 dark:bg-[#1F1916] px-4 overflow-x-auto gap-2 py-2.5">
+          <button type="button" onclick="switchTab('tab-services', this)" class="tab-btn active bg-[#A05B3A] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-[0_2px_8px_rgba(160,91,58,0.3)] transition flex items-center gap-2 whitespace-nowrap cursor-pointer">
             <span>🛠️</span>
             <span>Service Request Queue</span>
-            <span id="badgeServiceCount" class="bg-emerald-800 text-emerald-100 text-[10px] px-1.5 py-0.2 rounded-full font-black">--</span>
+            <span id="badgeServiceCount" class="bg-[#27211D]/80 text-[#E4C99A] text-[10px] px-2 py-0.5 rounded-full font-black border border-[#E4C99A]/30">--</span>
           </button>
-          <button type="button" onclick="switchTab('tab-enquiries', this)" class="tab-btn text-slate-600 hover:text-slate-900 font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-100 transition flex items-center gap-2 whitespace-nowrap">
+          <button type="button" onclick="switchTab('tab-enquiries', this)" class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#342C27] transition flex items-center gap-2 whitespace-nowrap cursor-pointer">
             <span>💬</span>
             <span>Customer Sales Enquiries</span>
           </button>
@@ -136,14 +160,14 @@
 
         <!-- 1. SERVICE QUEUE TAB -->
         <div id="tab-services" class="tab-content p-6 block">
-          <!-- Filters &amp; Search Toolbar -->
+          <!-- Filters & Search Toolbar -->
           <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
-            <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-              <button type="button" onclick="filterStatus('All', this)" class="filter-pill active bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">All</button>
-              <button type="button" onclick="filterStatus('Pending', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">⏳ Pending</button>
-              <button type="button" onclick="filterStatus('Assigned', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">🧑‍🔧 Assigned</button>
-              <button type="button" onclick="filterStatus('In Progress', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">🛠️ In Progress</button>
-              <button type="button" onclick="filterStatus('Completed', this)" class="filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">✅ Completed</button>
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              <button type="button" onclick="filterStatus('All', this)" class="filter-pill active bg-[#342C27] text-white dark:bg-[#F2EDE3] dark:text-[#342C27] text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs cursor-pointer">All</button>
+              <button type="button" onclick="filterStatus('Pending', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">⏳ Pending</button>
+              <button type="button" onclick="filterStatus('Assigned', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">🧑‍🔧 Assigned</button>
+              <button type="button" onclick="filterStatus('In Progress', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">🛠️ In Progress</button>
+              <button type="button" onclick="filterStatus('Completed', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">✅ Completed</button>
             </div>
 
             <div class="flex items-center gap-3">
@@ -151,7 +175,7 @@
                 type="button"
                 id="btnAutoDispatchHeader"
                 onclick="triggerAlgorithmicAutoDispatch()"
-                class="px-4 py-2 bg-gradient-to-r from-amber-500 via-emerald-600 to-teal-600 hover:from-amber-600 hover:to-emerald-700 text-white text-xs font-black rounded-xl shadow-md transition flex items-center gap-2 shrink-0 border border-white/20 active:scale-95 cursor-pointer"
+                class="px-4 py-2.5 bg-[#A05B3A] hover:bg-[#944E2E] text-white text-xs font-black rounded-xl shadow-[0_2px_12px_rgba(160,91,58,0.3)] transition flex items-center gap-2 shrink-0 active:scale-95 cursor-pointer"
                 title="Run Multi-Objective Weighted Greedy Dispatch Model across MMR grid"
               >
                 <span>⚡</span>
@@ -163,16 +187,16 @@
                   id="searchRequestInput"
                   oninput="handleSearch(this.value)"
                   placeholder="Search name, phone, ID..."
-                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition"
+                  class="w-full bg-[#E6DFD3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-[#FDFBF7] dark:focus:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] placeholder-[#879581] outline-none transition"
                 >
               </div>
             </div>
           </div>
 
           <!-- Queue Table -->
-          <div class="overflow-x-auto rounded-xl border border-slate-200">
-            <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
-              <thead class="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider">
+          <div class="overflow-x-auto rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <table class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs">
+              <thead class="bg-[#E6DFD3]/70 dark:bg-[#1F1916] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th class="px-5 py-3.5">Customer &amp; Location</th>
                   <th class="px-5 py-3.5">Service Details</th>
@@ -182,7 +206,7 @@
                   <th class="px-5 py-3.5">Contact Customer</th>
                 </tr>
               </thead>
-              <tbody id="requestTableBody" class="divide-y divide-slate-100 bg-white font-medium"></tbody>
+              <tbody id="requestTableBody" class="divide-y divide-[#B8AA98]/20 dark:divide-[#B8AA98]/15 bg-[#FDFBF7] dark:bg-[#27211D] font-medium"></tbody>
             </table>
           </div>
 
@@ -191,13 +215,13 @@
         <!-- 2. ENQUIRIES TAB -->
         <div id="tab-enquiries" class="tab-content p-6 hidden">
           <div class="mb-4">
-            <h3 class="text-base font-extrabold text-slate-900">Commercial &amp; Product Enquiries</h3>
-            <p class="text-xs text-slate-500">Direct client questions regarding inventory, installation, and quotes</p>
+            <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#F2EDE3]">Commercial &amp; Product Enquiries</h3>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Direct client questions regarding inventory, installation, and quotes</p>
           </div>
 
-          <div class="overflow-x-auto rounded-xl border border-slate-200">
-            <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
-              <thead class="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider">
+          <div class="overflow-x-auto rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <table class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs">
+              <thead class="bg-[#E6DFD3]/70 dark:bg-[#1F1916] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th class="px-5 py-3.5">Received Date</th>
                   <th class="px-5 py-3.5">Customer Details</th>
@@ -206,7 +230,7 @@
                   <th class="px-5 py-3.5">Action</th>
                 </tr>
               </thead>
-              <tbody id="enquiryTableBody" class="divide-y divide-slate-100 bg-white font-medium"></tbody>
+              <tbody id="enquiryTableBody" class="divide-y divide-[#B8AA98]/20 dark:divide-[#B8AA98]/15 bg-[#FDFBF7] dark:bg-[#27211D] font-medium"></tbody>
             </table>
           </div>
         </div>
@@ -216,90 +240,90 @@
     </main>
 
     <!-- ALGORITHM MODAL: MULTI-OBJECTIVE WEIGHTED GREEDY DISPATCH (MOW-GDM) -->
-    <div id="algoModal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div id="algoModal" class="fixed inset-0 z-50 hidden bg-[#1A1412]/75 backdrop-blur-md flex items-center justify-center p-4">
+      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl max-w-2xl w-full border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white p-6 border-b border-emerald-900/50 flex justify-between items-start">
+        <div class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white p-6 border-b border-[#B8AA98]/30 flex justify-between items-start">
           <div>
             <div class="flex items-center gap-2">
-              <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+              <span class="bg-[#77B89A]/20 text-[#77B89A] border border-[#77B89A]/40 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
                 Real-Time Execution: &lt;1ms
               </span>
-              <span class="text-xs text-slate-400 font-mono" id="algoTimestamp">2026-10-02</span>
+              <span class="text-xs text-[#B8AA98] font-mono" id="algoTimestamp">2026-10-02</span>
             </div>
             <h2 class="text-lg font-black mt-2 text-white flex items-center gap-2">
               <span>⚡ MOW-GDM Optimization Dispatch</span>
             </h2>
-            <p class="text-xs text-slate-300 mt-0.5">Multi-Objective Weighted Greedy Dispatch Model (Spatial + Capacity + Skill + Rating)</p>
+            <p class="text-xs text-[#B8AA98] mt-0.5">Multi-Objective Weighted Greedy Dispatch Model (Spatial + Capacity + Skill + Rating)</p>
           </div>
-          <button type="button" onclick="closeAlgoModal()" class="text-slate-400 hover:text-white text-lg p-1 font-bold leading-none cursor-pointer">&times;</button>
+          <button type="button" onclick="closeAlgoModal()" class="text-[#B8AA98] hover:text-white text-2xl p-1 font-bold leading-none cursor-pointer" aria-label="Close modal">&times;</button>
         </div>
 
         <!-- Body -->
         <div class="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
           <!-- Job Details -->
-          <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/60 flex flex-wrap justify-between items-center gap-3">
+          <div class="bg-[#E6DFD3]/40 dark:bg-[#1F1916] rounded-2xl p-4 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 flex flex-wrap justify-between items-center gap-3">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Assigned Job</span>
-              <div class="text-sm font-black text-slate-900 dark:text-white" id="algoJobId">AC-1003</div>
-              <div class="text-xs text-slate-600 dark:text-slate-300" id="algoCustomer">Customer Name</div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Assigned Job</span>
+              <div class="text-sm font-black text-[#342C27] dark:text-[#F2EDE3]" id="algoJobId">AC-1003</div>
+              <div class="text-xs text-[#655448] dark:text-[#B8AA98]" id="algoCustomer">Customer Name</div>
             </div>
             <div class="text-right">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Detected Spatial Zone</span>
-              <div class="text-xs font-black text-emerald-600 dark:text-emerald-400" id="algoZone">Western Suburbs (MMR)</div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Detected Spatial Zone</span>
+              <div class="text-xs font-black text-[#2E6B52] dark:text-[#77B89A]" id="algoZone">Western Suburbs (MMR)</div>
             </div>
           </div>
 
           <!-- Winner Card -->
-          <div class="bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-5">
+          <div class="bg-[#77B89A]/15 border border-[#77B89A]/40 rounded-2xl p-5">
             <div class="flex items-center justify-between">
               <div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">🏆 Top Recommended Technician</span>
-                <h3 class="text-base font-black text-slate-900 dark:text-white mt-0.5" id="algoTechName">Suresh Kumar</h3>
-                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 italic" id="algoRationale">Optimal match based on proximity and skill</p>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#2E6B52] dark:text-[#77B89A]">🏆 Top Recommended Technician</span>
+                <h3 class="text-base font-black text-[#342C27] dark:text-[#F2EDE3] mt-0.5" id="algoTechName">Suresh Kumar</h3>
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1 italic" id="algoRationale">Optimal match based on proximity and skill</p>
               </div>
               <div class="text-right">
-                <span class="text-3xl font-black text-emerald-600 dark:text-emerald-400" id="algoScore">94.2%</span>
-                <div class="text-[10px] font-bold text-slate-400 uppercase">Composite Score</div>
+                <span class="text-3xl font-black text-[#2E6B52] dark:text-[#77B89A]" id="algoScore">94.2%</span>
+                <div class="text-[10px] font-bold text-[#655448] dark:text-[#B8AA98] uppercase">Composite Score</div>
               </div>
             </div>
 
             <!-- Score breakdown grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-4 border-t border-emerald-500/20 text-center">
-              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
-                <div class="text-[10px] text-slate-500 font-bold">📍 Geo-Proximity (35%)</div>
-                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoGeoScore">--</div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-4 border-t border-[#77B89A]/30 text-center">
+              <div class="bg-[#FDFBF7] dark:bg-[#27211D] p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+                <div class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-bold">📍 Geo-Proximity (35%)</div>
+                <div class="text-xs font-black text-[#342C27] dark:text-[#F2EDE3] mt-0.5" id="algoGeoScore">--</div>
               </div>
-              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
-                <div class="text-[10px] text-slate-500 font-bold">⚖️ Capacity (30%)</div>
-                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoWorkloadScore">--</div>
+              <div class="bg-[#FDFBF7] dark:bg-[#27211D] p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+                <div class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-bold">⚖️ Capacity (30%)</div>
+                <div class="text-xs font-black text-[#342C27] dark:text-[#F2EDE3] mt-0.5" id="algoWorkloadScore">--</div>
               </div>
-              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
-                <div class="text-[10px] text-slate-500 font-bold">🛠️ Skill Affinity (20%)</div>
-                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoSkillScore">--</div>
+              <div class="bg-[#FDFBF7] dark:bg-[#27211D] p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+                <div class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-bold">🛠️ Skill Affinity (20%)</div>
+                <div class="text-xs font-black text-[#342C27] dark:text-[#F2EDE3] mt-0.5" id="algoSkillScore">--</div>
               </div>
-              <div class="bg-white/70 dark:bg-slate-800/80 p-2 rounded-xl">
-                <div class="text-[10px] text-slate-500 font-bold">⭐ QA Rating (15%)</div>
-                <div class="text-xs font-black text-slate-900 dark:text-white mt-0.5" id="algoRatingScore">--</div>
+              <div class="bg-[#FDFBF7] dark:bg-[#27211D] p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+                <div class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-bold">⭐ QA Rating (15%)</div>
+                <div class="text-xs font-black text-[#342C27] dark:text-[#F2EDE3] mt-0.5" id="algoRatingScore">--</div>
               </div>
             </div>
 
             <!-- Dynamic ETA Banner -->
-            <div class="mt-3 flex items-center justify-between bg-emerald-600 text-white rounded-xl px-3.5 py-2 text-xs font-bold shadow-sm">
+            <div class="mt-3 flex items-center justify-between bg-[#2E6B52] dark:bg-[#1F4938] text-white rounded-xl px-4 py-2.5 text-xs font-bold shadow-sm">
               <span class="flex items-center gap-1.5">
                 <span>⏱️ Real-time Dynamic ETA:</span>
-                <span id="algoETA" class="font-extrabold text-amber-200">--</span>
+                <span id="algoETA" class="font-extrabold text-[#E4C99A]">--</span>
               </span>
-              <span id="algoTraffic" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold">Moderate Traffic</span>
+              <span id="algoTraffic" class="text-[10px] bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">Moderate Traffic</span>
             </div>
           </div>
 
           <!-- Leaderboard Table -->
           <div>
-            <h4 class="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2">Fleet Candidate Evaluation Matrix</h4>
-            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-              <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 text-[10px] font-black uppercase">
+            <h4 class="text-xs font-extrabold text-[#342C27] dark:text-[#F2EDE3] uppercase tracking-wider mb-2">Fleet Candidate Evaluation Matrix</h4>
+            <div class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+              <table class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs">
+                <thead class="bg-[#E6DFD3]/70 dark:bg-[#1F1916] text-[#655448] dark:text-[#B8AA98] text-[10px] font-black uppercase">
                   <tr>
                     <th class="px-3.5 py-2">Rank</th>
                     <th class="px-3.5 py-2">Technician</th>
@@ -309,15 +333,15 @@
                     <th class="px-3.5 py-2">Score</th>
                   </tr>
                 </thead>
-                <tbody id="algoLeaderboardBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium"></tbody>
+                <tbody id="algoLeaderboardBody" class="divide-y divide-[#B8AA98]/20 dark:divide-[#B8AA98]/15 font-medium bg-[#FDFBF7] dark:bg-[#27211D]"></tbody>
               </table>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-          <button type="button" onclick="closeAlgoModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition cursor-pointer">
+        <div class="p-4 bg-[#E6DFD3]/50 dark:bg-[#1F1916] border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 flex justify-end gap-2">
+          <button type="button" onclick="closeAlgoModal()" class="px-4 py-2 bg-[#A05B3A] hover:bg-[#944E2E] text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer">
             Close &amp; View Queue
           </button>
         </div>
@@ -326,6 +350,10 @@
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
+    <!-- GSAP 3.12.5 Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/staff.js"></script>
   </body>

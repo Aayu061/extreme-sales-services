@@ -6,52 +6,56 @@
     <title>Track Service Status | Extreme Sales &amp; Services</title>
     <meta name="description" content="Track your HVAC and AC service request status in real time with live technician milestones and dispatch updates.">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <!-- Anti-flicker: apply dark class BEFORE first paint if saved -->
     <script>
       (function(){
         try {
           var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch(e){}
       })();
     </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 font-sans flex flex-col min-h-screen antialiased">
+  <body class="bg-[#F2EDE3] text-[#342C27] font-sans flex flex-col min-h-screen antialiased">
 
     <!-- NAVBAR -->
-    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 py-3">
+    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 bg-[#F2EDE3]/90 backdrop-blur-md shadow-xs">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl px-6 py-2.5 flex justify-between items-center border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex justify-between items-center">
           <div class="flex-shrink-0 flex items-center">
-            <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition flex items-center gap-2.5">
-              <span class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-sm">ES</span>
-              <span>Extreme <span class="text-blue-600 font-normal">S&amp;S</span></span>
+            <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] hover:opacity-90 transition flex items-center gap-2.5">
+              <span class="bg-[#342C27] text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-xs">ES</span>
+              <span>Extreme <span class="text-[#A05B3A]">S&amp;S</span></span>
             </a>
           </div>
           <div class="hidden md:flex space-x-7 items-center">
-            <a href="index.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Home</a>
-            <a href="products.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Products</a>
-            <a href="status.html" class="nav-link active font-bold text-sm">Track Service</a>
-            <a href="amc.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">AMC Plans</a>
-            <a href="contact.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Contact Us</a>
-            <a href="service.html" class="btn-accent text-xs px-5 py-2.5 font-bold">Book Service</a>
+            <a href="index.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Home</a>
+            <a href="products.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Products</a>
+            <a href="status.html" class="nav-link active text-[#A05B3A] font-bold text-sm">Track Service</a>
+            <a href="amc.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">AMC Plans</a>
+            <a href="contact.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Contact Us</a>
+            <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs px-5 py-2.5 font-bold rounded-xl shadow-sm transition">Book Service</a>
 
             <!-- Theme Toggle Button -->
             <button
               type="button"
-              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 border border-[#B8AA98]/50"
               aria-label="Toggle Theme"
             >
-              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg class="theme-icon-sun w-4 h-4 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
           </div>
@@ -60,46 +64,45 @@
             <!-- Theme Toggle for Mobile -->
             <button
               type="button"
-              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
-            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 transition p-2">
+            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-[#655448] hover:text-[#342C27] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
             </button>
           </div>
         </div>
       </div>
-      <div id="mobileMenu" class="hidden absolute top-20 left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold">
-        <a href="index.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Home</a>
-        <a href="products.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Products</a>
-        <a href="status.html" class="text-blue-600 py-2">Track Service</a>
-        <a href="amc.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">AMC Plans</a>
-        <a href="contact.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Contact Us</a>
-        <a href="service.html" class="btn-accent py-3 rounded-xl text-white">Book Service</a>
+      <div id="mobileMenu" class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold mt-2">
+        <a href="index.html" class="text-[#655448] hover:text-[#342C27] py-2">Home</a>
+        <a href="products.html" class="text-[#655448] hover:text-[#342C27] py-2">Products</a>
+        <a href="status.html" class="text-[#A05B3A] py-2">Track Service</a>
+        <a href="amc.html" class="text-[#655448] hover:text-[#342C27] py-2">AMC Plans</a>
+        <a href="contact.html" class="text-[#655448] hover:text-[#342C27] py-2">Contact Us</a>
+        <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] py-3 rounded-xl text-[#F2EDE3] font-bold shadow-sm">Book Service</a>
       </div>
     </nav>
 
     <!-- HERO HEADER -->
-    <header class="bg-slate-900 pt-32 pb-16 text-center relative overflow-hidden border-b border-slate-800">
-      <div class="absolute inset-0 bg-radial-at-c from-blue-900/20 via-slate-900 to-slate-900 pointer-events-none"></div>
+    <header class="pt-32 pb-14 text-center relative overflow-hidden border-b border-[#B8AA98]/40 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3]">
       <div class="max-w-3xl mx-auto px-4 relative z-10">
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live GPS Dispatch &amp; Telemetry
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 backdrop-blur-sm text-[#A05B3A] border border-[#B8AA98]/50 shadow-xs mb-4">
+          <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span> Live Dispatch &amp; Telemetry
         </span>
-        <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-3 tracking-tight">
-          Track Your <span class="text-blue-400">Service Status</span>
+        <h1 class="text-3xl md:text-5xl font-black text-[#342C27] leading-tight mb-3 tracking-tight">
+          Track Your <span class="text-[#A05B3A]">Service Status</span>
         </h1>
-        <p class="text-slate-300 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-          Real-time milestones, dynamic dispatch algorithm ETA, and direct field coordination for your HVAC appointment.
+        <p class="text-[#655448] text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
+          Real-time milestones, verified technician ETA, and direct field coordination for your HVAC appointment.
         </p>
       </div>
     </header>
@@ -109,16 +112,16 @@
       <div class="max-w-2xl mx-auto space-y-8 relative z-10">
 
         <!-- Tracking Form Card -->
-        <div id="trackingFormCard" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8">
-          <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
-            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/40 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">
+        <div id="trackingFormCard" class="bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl shadow-sm p-6 sm:p-8">
+          <div class="flex items-center gap-4 mb-6 pb-6 border-b border-[#B8AA98]/40">
+            <div class="w-12 h-12 bg-[#A05B3A]/15 rounded-xl flex items-center justify-center text-[#A05B3A] font-bold shrink-0">
                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
                </svg>
             </div>
             <div>
-              <h2 class="text-lg font-bold text-slate-900 dark:text-white">Lookup Service Request</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Enter your Request ID and registered mobile number.</p>
+              <h2 class="text-lg font-bold text-[#342C27]">Lookup Service Request</h2>
+              <p class="text-xs text-[#655448] mt-0.5">Enter your Request ID and registered mobile number.</p>
             </div>
           </div>
 
@@ -131,7 +134,7 @@
               <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder=" ">
               <label for="phone">10-Digit Phone Number *</label>
             </div>
-            <button type="submit" class="btn-primary w-full py-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm">
+            <button type="submit" class="w-full bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition active:scale-[0.99]">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
@@ -141,13 +144,13 @@
         </div>
 
         <!-- Progress Tracking Results Card -->
-        <div id="trackingResultsCard" class="hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8">
-          <div class="flex justify-between items-center mb-6 pb-5 border-b border-slate-100 dark:border-slate-800">
+        <div id="trackingResultsCard" class="hidden bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl shadow-sm p-6 sm:p-8">
+          <div class="flex justify-between items-center mb-6 pb-5 border-b border-[#B8AA98]/40">
             <div>
-              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-1">Live Request Milestones</p>
-              <h2 class="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">ID: <span id="displayId" class="text-blue-600 dark:text-blue-400">AC-XXXX</span></h2>
+              <p class="text-[11px] text-[#A05B3A] font-bold uppercase tracking-wider mb-1">Live Request Milestones</p>
+              <h2 class="text-2xl font-black text-[#342C27] font-mono tracking-tight">ID: <span id="displayId" class="text-[#A05B3A]">AC-XXXX</span></h2>
             </div>
-            <button type="button" onclick="location.reload()" class="bg-slate-100 dark:bg-slate-800 font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition">Reset</button>
+            <button type="button" onclick="location.reload()" class="bg-[#F2EDE3] border border-[#B8AA98]/40 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-xl text-[#655448] hover:text-[#342C27] hover:bg-[#EAE3D6] transition">Reset</button>
           </div>
 
           <!-- This will be populated by status.js into timelineContent -->
@@ -155,35 +158,39 @@
         </div>
 
         <!-- Help Tooltip -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 bg-amber-50 dark:bg-amber-950/40 rounded-xl flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-400">
+        <div class="bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
+          <div class="w-10 h-10 bg-[#E4C99A]/30 rounded-xl flex items-center justify-center shrink-0 text-[#8B4D2F]">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
           </div>
           <div class="flex-1">
-            <p class="text-sm font-bold text-slate-900 dark:text-white">Looking for your Booking ID?</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Your tracking code (e.g. AC-XXXX) was displayed upon booking confirmation. Need immediate help? <a href="service.html" class="text-blue-600 font-semibold underline hover:text-blue-700">Book new service &rarr;</a></p>
+            <p class="text-sm font-bold text-[#342C27]">Looking for your Booking ID?</p>
+            <p class="text-xs text-[#655448] mt-0.5">Your tracking code (e.g. AC-XXXX) was displayed upon booking confirmation. Need immediate help? <a href="service.html" class="text-[#A05B3A] font-semibold underline hover:text-[#8B4D2F]">Book new service &rarr;</a></p>
           </div>
         </div>
       </div>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-slate-900 text-slate-400 text-center py-8 border-t border-slate-800 mt-auto">
+    <footer class="bg-[#FDFBF7] text-[#655448] text-center py-8 border-t border-[#B8AA98]/40 mt-auto">
       <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-        <p>&copy; 2026 Extreme Sales &amp; Services. All rights reserved.</p>
+        <p>&copy; 2026 Extreme Sales &amp; Services • Verified Live Tracking</p>
         <div class="flex gap-4">
-          <a href="index.html" class="hover:text-white transition">Home</a>
-          <a href="service.html" class="hover:text-white transition">Book Service</a>
-          <a href="contact.html" class="hover:text-white transition">Contact</a>
+          <a href="index.html" class="hover:text-[#A05B3A] transition">Home</a>
+          <a href="service.html" class="hover:text-[#A05B3A] transition">Book Service</a>
+          <a href="contact.html" class="hover:text-[#A05B3A] transition">Contact</a>
         </div>
       </div>
     </footer>
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
-    <script src="js/status.js"></script>
+    <!-- GSAP 3.12.5 Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/status.js"></script>
   </body>
 </html>

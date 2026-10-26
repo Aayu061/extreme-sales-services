@@ -93,10 +93,18 @@ async function fetchJobs(silent = false) {
             document.getElementById('jobCountLabel').innerText = `${myJobs.length} jobs on schedule`;
 
             renderJobs();
+            renderEarningsStrip();
+            updateProgressRing();
             if (!silent && window.showToast) window.showToast("Schedule synchronized with dispatch", "info", 1800);
+        } else {
+            console.warn("Tech jobs fetch note:", data.message || "Failed to load schedule");
+            handleFetchError(data.message);
+            if (!silent && window.showToast) window.showToast(data.message || "Unable to sync schedule", "error");
         }
     } catch(err) {
         console.warn("Tech jobs fetch note:", err.message);
+        handleFetchError(err.message);
+        if (!silent && window.showToast) window.showToast("Network error syncing schedule", "error");
     } finally {
         if (refreshIcon) {
             setTimeout(() => refreshIcon.classList.remove('rotate-180'), 400);
@@ -104,13 +112,35 @@ async function fetchJobs(silent = false) {
     }
 }
 
+function handleFetchError(errorMsg) {
+    if (!myJobs || myJobs.length === 0) {
+        const earningsEl = document.getElementById('earningsStrip');
+        if (earningsEl) {
+            earningsEl.innerHTML = `
+                <div class="flex items-center justify-between w-full">
+                    <div>
+                        <div class="text-[10px] font-extrabold text-[#E4C99A] uppercase tracking-widest">Today's Earnings</div>
+                        <div class="text-[#E4C99A] text-xs font-semibold mt-0.5">Earnings unavailable (Sync failed)</div>
+                    </div>
+                    <button type="button" onclick="fetchJobs(false)" class="text-[11px] font-bold text-[#E4C99A] hover:underline cursor-pointer border border-[#E4C99A]/40 px-2.5 py-1 rounded-lg">↻ Retry</button>
+                </div>
+            `;
+        }
+        const valEl = document.getElementById('progressRingVal');
+        if (valEl) valEl.textContent = '--/--';
+
+        const jobCountLabel = document.getElementById('jobCountLabel');
+        if (jobCountLabel) jobCountLabel.innerText = 'Sync failed — tap ↻ to retry';
+    }
+}
+
 function filterTechJobs(filterType, btnElement) {
     activeFilter = filterType;
     document.querySelectorAll('.tech-filter').forEach(b => {
-        b.className = 'tech-filter text-slate-600 hover:text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg transition';
+        b.className = 'tech-filter text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-bold text-xs px-3.5 py-1.5 rounded-lg transition cursor-pointer';
     });
     if (btnElement) {
-        btnElement.className = 'tech-filter active bg-slate-900 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition';
+        btnElement.className = 'tech-filter active bg-[#342C27] text-white dark:bg-[#F2EDE3] dark:text-[#342C27] font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-xs transition cursor-pointer';
     }
     renderJobs();
 }
@@ -130,10 +160,10 @@ function renderJobs() {
 
     if (filtered.length === 0) {
         list.innerHTML = `
-            <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl p-8 text-center border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
                 <div class="text-3xl mb-2">🎉</div>
-                <h3 class="font-extrabold text-slate-900 text-base">No pending jobs in this view</h3>
-                <p class="text-xs text-slate-500 mt-1">All set! Dispatch will assign upcoming tickets as they arrive.</p>
+                <h3 class="font-extrabold text-[#342C27] dark:text-[#F2EDE3] text-base">No pending jobs in this view</h3>
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1">All set! Dispatch will assign upcoming tickets as they arrive.</p>
             </div>
         `;
         return;
@@ -141,7 +171,7 @@ function renderJobs() {
 
     filtered.forEach(job => {
         const card = document.createElement('div');
-        card.className = "bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-4";
+        card.className = "bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl p-5 sm:p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-[0_4px_16px_rgba(52,44,39,0.06)] hover:shadow-md transition flex flex-col justify-between gap-4";
 
         const isAmc = job.service_type && job.service_type.includes('[✅ AMC Covered]');
         const serviceClean = (job.service_type || '').replace('[✅ AMC Covered]', '');
@@ -159,31 +189,31 @@ function renderJobs() {
             'Assigned': 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-600/40',
             'In Progress': 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-600/40',
             'Completed': 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-600/40'
-        }[job.status] || 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200';
+        }[job.status] || 'bg-[#E6DFD3]/60 text-[#342C27] dark:bg-[#1F1916] dark:text-[#F2EDE3]';
 
         // Action Buttons according to state
         let actionSection = '';
         if (job.status === 'Assigned') {
             actionSection = `
-                <button onclick="startJob('${safeReqId}')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-blue-500/25 transition flex items-center justify-center gap-1.5">
+                <button onclick="startJob('${safeReqId}')" class="w-full sm:w-auto bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-[0_4px_14px_rgba(160,91,58,0.35)] transition flex items-center justify-center gap-1.5 cursor-pointer">
                     <span>🚀</span>
                     <span>Start Service (Arrived On-Site)</span>
                 </button>
             `;
         } else if (job.status === 'In Progress') {
             actionSection = `
-                <button onclick="openCompletionModal('${safeReqId}', '${encodeURIComponent(job.name || '')}')" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-emerald-500/25 transition flex items-center justify-center gap-1.5">
+                <button onclick="openCompletionModal('${safeReqId}', '${encodeURIComponent(job.name || '')}')" class="w-full sm:w-auto bg-[#77B89A] hover:bg-[#68A589] text-[#1A1412] font-black py-2.5 px-5 rounded-xl text-xs shadow-[0_4px_14px_rgba(119,184,154,0.35)] transition flex items-center justify-center gap-1.5 cursor-pointer">
                     <span>✓</span>
                     <span>Complete Job &amp; Sign Off</span>
                 </button>
             `;
         } else if (job.status === 'Completed') {
             actionSection = `
-                <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700/50 rounded-xl p-3 text-xs text-emerald-900 dark:text-emerald-200 flex-1">
-                    <div class="font-extrabold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+                <div class="bg-[#77B89A]/15 border border-[#77B89A]/40 rounded-xl p-3 text-xs text-[#2E6B52] dark:text-[#77B89A] flex-1">
+                    <div class="font-extrabold flex items-center gap-1.5 text-[#2E6B52] dark:text-[#77B89A]">
                         <span>✅</span> Service Successfully Completed
                     </div>
-                    <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 italic">
+                    <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-1 italic">
                         <strong>Sign-Off:</strong> "${safeNotes}"
                     </p>
                 </div>
@@ -195,10 +225,10 @@ function renderJobs() {
                 <!-- Top Badge Line -->
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-800/50">
+                        <span class="text-xs font-mono font-black text-[#A05B3A] dark:text-[#E4C99A] bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 px-2.5 py-0.5 rounded-lg border border-[#A05B3A]/30">
                             ${safeReqId}
                         </span>
-                        ${isAmc ? '<span class="bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-700/50">★ AMC CONTRACT</span>' : ''}
+                        ${isAmc ? '<span class="bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-[#77B89A]/30">★ AMC CONTRACT</span>' : ''}
                     </div>
                     <span class="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border ${statusPillClass}">
                         ${safeStatus}
@@ -206,37 +236,37 @@ function renderJobs() {
                 </div>
 
                 <!-- Customer Details -->
-                <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">${safeName}</h3>
-                <div class="font-bold text-xs text-blue-700 dark:text-blue-400 mt-0.5">${safeCleanService}</div>
+                <h3 class="text-lg font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight">${safeName}</h3>
+                <div class="font-bold text-xs text-[#A05B3A] dark:text-[#E4C99A] mt-0.5">${safeCleanService}</div>
 
-                <p class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mt-2.5 leading-relaxed">
-                    <strong class="text-slate-800 dark:text-slate-100">Issue:</strong> ${safeDesc}
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] bg-[#E6DFD3]/40 dark:bg-[#1F1916] p-3.5 rounded-2xl border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 mt-2.5 leading-relaxed">
+                    <strong class="text-[#342C27] dark:text-[#F2EDE3]">Issue:</strong> ${safeDesc}
                 </p>
 
-                <div class="mt-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                <div class="mt-3 text-xs text-[#655448] dark:text-[#B8AA98] space-y-1">
                     <div class="flex items-start gap-1.5">
                         <span>📍</span>
-                        <span class="font-medium text-slate-700 dark:text-slate-200">${safeAddr}</span>
+                        <span class="font-medium text-[#342C27] dark:text-[#F2EDE3]">${safeAddr}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <span>📞</span>
-                        <span class="font-bold text-slate-800 dark:text-slate-100">${safePhone}</span>
+                        <span class="font-bold text-[#342C27] dark:text-[#F2EDE3]">${safePhone}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Bottom Actions -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="pt-3 border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <a href="tel:${String(job.phone || '').replace(/[^0-9+]/g, '')}" class="flex-1 sm:flex-none text-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700">
+                    <a href="tel:${String(job.phone || '').replace(/[^0-9+]/g, '')}" class="flex-1 sm:flex-none text-center bg-[#E6DFD3]/60 hover:bg-[#E6DFD3] dark:bg-[#1F1916] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
                         <span>📞</span>
                         <span>Call</span>
                     </a>
-                    <a href="https://wa.me/91${String(job.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(job.name || '')},%20this%20is%20Extreme%20AC%20Technician%20regarding%20request%20${encodeURIComponent(job.request_id || '')}." target="_blank" class="flex-1 sm:flex-none text-center bg-emerald-50 hover:bg-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-600 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="https://wa.me/91${String(job.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(job.name || '')},%20this%20is%20Extreme%20AC%20Technician%20regarding%20request%20${encodeURIComponent(job.request_id || '')}." target="_blank" class="flex-1 sm:flex-none text-center bg-[#77B89A]/15 hover:bg-[#77B89A] dark:bg-[#77B89A]/20 text-[#2E6B52] hover:text-[#1A1412] dark:text-[#77B89A] dark:hover:text-[#1A1412] border border-[#77B89A]/40 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         <span>💬</span>
                         <span>WhatsApp</span>
                     </a>
-                    <a href="https://maps.google.com/?q=${encodeURIComponent((job.address || '') + ', Mumbai')}" target="_blank" class="flex-1 sm:flex-none text-center bg-blue-50 hover:bg-blue-600 dark:bg-blue-950/40 dark:hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white border border-blue-200 dark:border-blue-700/50 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                    <a href="https://maps.google.com/?q=${encodeURIComponent((job.address || '') + ', Mumbai')}" target="_blank" class="flex-1 sm:flex-none text-center bg-[#E6DFD3]/60 hover:bg-[#E6DFD3] dark:bg-[#1F1916] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
                         <span>📍</span>
                         <span>Map</span>
                     </a>
@@ -355,7 +385,12 @@ function calculateTechBill() {
     const total = Math.round((subtotal + gst) * 100) / 100;
 
     const totalEl = document.getElementById('techBillTotal');
-    if (totalEl) totalEl.innerText = `₹${Math.round(total).toLocaleString('en-IN')}`;
+    if (totalEl) {
+        totalEl.innerText = `₹${Math.round(total).toLocaleString('en-IN')}`;
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(totalEl, { scale: 1.14 }, { scale: 1, duration: 0.22, ease: 'back.out(2)' });
+        }
+    }
 
     return { baseLabor, partsTotal, gst, total, parts: partsList };
 }
@@ -370,7 +405,12 @@ function openCompletionModal(requestId, customerName) {
     calculateTechBill();
     clearSignatureCanvas();
 
-    document.getElementById('completionModal').classList.remove('hidden');
+    const modal = document.getElementById('completionModal');
+    if (typeof window.openGsapModal === 'function') {
+        window.openGsapModal(modal);
+    } else {
+        modal.classList.remove('hidden');
+    }
 
     if (!sigCanvas) {
         initSignaturePad();
@@ -378,7 +418,12 @@ function openCompletionModal(requestId, customerName) {
 }
 
 function closeCompletionModal() {
-    document.getElementById('completionModal').classList.add('hidden');
+    const modal = document.getElementById('completionModal');
+    if (typeof window.closeGsapModal === 'function') {
+        window.closeGsapModal(modal);
+    } else {
+        modal.classList.add('hidden');
+    }
 }
 
 function showReceipt(job, bill, notes) {
@@ -428,12 +473,21 @@ function showReceipt(job, bill, notes) {
         sigImg.src = sourceCanvas.toDataURL('image/png');
     }
 
-    modal.classList.remove('hidden');
+    if (typeof window.openGsapModal === 'function') {
+        window.openGsapModal(modal);
+    } else {
+        modal.classList.remove('hidden');
+    }
 }
 
 function closeReceiptModal() {
     const modal = document.getElementById('receiptModal');
-    if (modal) modal.classList.add('hidden');
+    if (!modal) return;
+    if (typeof window.closeGsapModal === 'function') {
+        window.closeGsapModal(modal);
+    } else {
+        modal.classList.add('hidden');
+    }
 }
 
 // Make functions globally accessible for inline HTML onclick handlers
@@ -519,15 +573,15 @@ window.openJobChecklist = function(requestId) {
     const stored = JSON.parse(localStorage.getItem(`ess_checklist_${requestId}`) || '{}');
 
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4';
+    modal.className = 'fixed inset-0 bg-[#1A1412]/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
+        <div class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#655448]/50 rounded-3xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-5">
                 <div>
-                    <h3 class="font-black text-slate-900 text-base">Service Checklist</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Job ${escapeHtml(requestId)}</p>
+                    <h3 class="font-black text-[#342C27] dark:text-[#F2EDE3] text-base">Service Checklist</h3>
+                    <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Job ${escapeHtml(requestId)}</p>
                 </div>
-                <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+                <button onclick="this.closest('.fixed').remove()" class="text-[#879581] hover:text-[#342C27] dark:hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <div id="checklistBody" class="space-y-1 mb-5">
                 ${CHECKLIST_ITEMS.map((item, idx) => {
@@ -535,15 +589,15 @@ window.openJobChecklist = function(requestId) {
                     return `<label class="checklist-item ${isChecked ? 'checked' : ''}">
                         <input type="checkbox" data-idx="${idx}" ${isChecked ? 'checked' : ''}
                             onchange="updateChecklist('${requestId}', ${idx}, this.checked, this.closest('label'))">
-                        <span class="text-sm text-slate-700">${item}</span>
+                        <span class="text-sm font-medium text-[#342C27] dark:text-[#F2EDE3]">${item}</span>
                     </label>`;
                 }).join('')}
             </div>
-            <div class="flex justify-between items-center">
-                <span id="checklistCount_${requestId}" class="text-xs font-bold text-slate-500">
+            <div class="flex justify-between items-center pt-2 border-t border-[#B8AA98]/20">
+                <span id="checklistCount_${requestId}" class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">
                     ${Object.values(stored).filter(Boolean).length}/${CHECKLIST_ITEMS.length} completed
                 </span>
-                <button onclick="this.closest('.fixed').remove()" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-blue-500 transition">
+                <button onclick="this.closest('.fixed').remove()" class="bg-[#A05B3A] hover:bg-[#8D4B2D] text-white font-bold px-5 py-2 rounded-xl text-sm transition shadow-sm cursor-pointer">
                     Done ✓
                 </button>
             </div>
@@ -577,14 +631,14 @@ function renderEarningsStrip() {
     const jobs = myJobs.filter(j => j.status === 'Completed').length;
     el.innerHTML = `
         <div>
-            <div class="text-[10px] font-extrabold text-emerald-300 uppercase tracking-widest">Today's Earnings</div>
-            <div class="text-white font-black text-xl">₹${earnings.toLocaleString('en-IN')}</div>
-            <div class="text-emerald-300 text-xs">${jobs} job(s) completed × ₹350</div>
+            <div class="text-[10px] font-extrabold text-[#E4C99A] uppercase tracking-widest">Today's Earnings</div>
+            <div class="text-[#F2EDE3] font-black text-xl">₹${earnings.toLocaleString('en-IN')}</div>
+            <div class="text-[#B8AA98] text-xs font-medium">${jobs} job(s) completed × ₹350</div>
         </div>
         <div class="text-right">
-            <div class="text-[10px] font-extrabold text-emerald-300 uppercase tracking-widest">Weekly Target</div>
-            <div class="text-white font-black text-xl">₹${(1750).toLocaleString('en-IN')}</div>
-            <div class="text-emerald-200 text-xs">${Math.min(100, Math.round(earnings / 1750 * 100))}% achieved</div>
+            <div class="text-[10px] font-extrabold text-[#E4C99A] uppercase tracking-widest">Weekly Target</div>
+            <div class="text-[#F2EDE3] font-black text-xl">₹${(1750).toLocaleString('en-IN')}</div>
+            <div class="text-[#77B89A] text-xs font-bold">${Math.min(100, Math.round(earnings / 1750 * 100))}% achieved</div>
         </div>`;
 }
 
@@ -594,9 +648,9 @@ function updateProgressRing() {
     const valEl  = document.getElementById('progressRingVal');
     if (!ring || !valEl) return;
 
-    const total     = myJobs.length || 1;
+    const total     = myJobs.length;
     const completed = myJobs.filter(j => j.status === 'Completed').length;
-    const pct       = Math.round(completed / total * 100);
+    const pct       = total > 0 ? Math.round(completed / total * 100) : 0;
     const circumference = 2 * Math.PI * 22;
     const offset    = circumference - (pct / 100 * circumference);
 
@@ -605,13 +659,9 @@ function updateProgressRing() {
     valEl.textContent = `${completed}/${total}`;
 }
 
-// Hook into fetchJobs to also update earnings and ring
-const _techOrigFetch = fetchJobs;
-fetchJobs = async function(silent = false) {
-    await _techOrigFetch(silent);
-    renderEarningsStrip();
-    updateProgressRing();
-};
+// Expose helpers globally for testing and inline interactions
+window.renderEarningsStrip = renderEarningsStrip;
+window.updateProgressRing = updateProgressRing;
 
 // ─── Google Maps Direction Link ──────────────────────────
 window.getDirections = function(address, customerName) {
@@ -629,18 +679,18 @@ window.openNoteModal = function(requestId) {
     const note = localStorage.getItem(key) || '';
 
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4';
+    modal.className = 'fixed inset-0 bg-[#1A1412]/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
+        <div class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#655448]/50 rounded-3xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-black text-slate-900">Job Note — ${escapeHtml(requestId)}</h3>
-                <button onclick="this.closest('.fixed').remove()" class="text-slate-400 font-bold text-lg">✕</button>
+                <h3 class="font-black text-[#342C27] dark:text-[#F2EDE3]">Job Note — ${escapeHtml(requestId)}</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-[#879581] hover:text-[#342C27] dark:hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <textarea id="noteInput_${requestId}" rows="4" placeholder="Add field notes, parts used, issues found..."
-                class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-400 resize-none mb-4">${note}</textarea>
+                class="w-full bg-[#F2EDE3]/40 dark:bg-[#1A1412]/50 border border-[#B8AA98]/60 dark:border-[#655448]/60 rounded-xl px-3 py-2 text-sm font-medium text-[#342C27] dark:text-[#F2EDE3] outline-none focus:ring-2 focus:ring-[#A05B3A] resize-none mb-4">${note}</textarea>
             <div class="flex justify-end gap-2">
-                <button onclick="this.closest('.fixed').remove()" class="text-slate-500 font-bold px-4 py-2 rounded-xl text-sm hover:bg-slate-100 transition">Cancel</button>
-                <button onclick="saveNote('${requestId}')" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-blue-500 transition">Save Note</button>
+                <button onclick="this.closest('.fixed').remove()" class="text-[#655448] dark:text-[#B8AA98] font-bold px-4 py-2 rounded-xl text-sm hover:bg-[#B8AA98]/20 transition cursor-pointer">Cancel</button>
+                <button onclick="saveNote('${requestId}')" class="bg-[#A05B3A] hover:bg-[#8D4B2D] text-white font-bold px-5 py-2 rounded-xl text-sm transition shadow-sm cursor-pointer">Save Note</button>
             </div>
         </div>`;
     document.body.appendChild(modal);
@@ -752,24 +802,34 @@ const TECH_GUIDE_DATA = {
 window.openTechDiagnosticGuide = function() {
     const modal = document.getElementById('techDiagnosticModal');
     if (modal) {
-        modal.classList.remove('hidden');
+        if (typeof window.openGsapModal === 'function') {
+            window.openGsapModal(modal);
+        } else {
+            modal.classList.remove('hidden');
+        }
         window.loadTechGuide('mcb');
     }
 };
 
 window.closeTechDiagnosticGuide = function() {
     const modal = document.getElementById('techDiagnosticModal');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+        if (typeof window.closeGsapModal === 'function') {
+            window.closeGsapModal(modal);
+        } else {
+            modal.classList.add('hidden');
+        }
+    }
 };
 
 window.loadTechGuide = function(key, btnEl) {
     if (btnEl) {
         document.querySelectorAll('.tech-guide-chip').forEach(c => {
-            c.classList.remove('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
-            c.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-700');
+            c.classList.remove('active', 'border-[#A05B3A]', 'bg-[#A05B3A]', 'text-white', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+            c.classList.add('border-[#B8AA98]/40', 'bg-[#E6DFD3]/40', 'dark:bg-[#1F1916]', 'text-[#342C27]', 'dark:text-[#F2EDE3]');
         });
-        btnEl.classList.add('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
-        btnEl.classList.remove('border-slate-200', 'bg-slate-50', 'text-slate-700');
+        btnEl.classList.add('active', 'border-[#A05B3A]', 'bg-[#A05B3A]', 'text-white');
+        btnEl.classList.remove('border-[#B8AA98]/40', 'bg-[#E6DFD3]/40', 'dark:bg-[#1F1916]', 'text-[#342C27]', 'dark:text-[#F2EDE3]');
     }
 
     const data = TECH_GUIDE_DATA[key] || TECH_GUIDE_DATA.mcb;
@@ -777,19 +837,19 @@ window.loadTechGuide = function(key, btnEl) {
     if (!contentEl) return;
 
     contentEl.innerHTML = `
-        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
-            <h4 class="font-black text-slate-900 text-sm">${data.title}</h4>
-            <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${data.severity.includes('CRITICAL') ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${data.severity}</span>
+        <div class="flex items-center justify-between pb-2 border-b border-[#B8AA98]/30">
+            <h4 class="font-black text-[#342C27] dark:text-[#F2EDE3] text-sm">${data.title}</h4>
+            <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${data.severity.includes('CRITICAL') ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30' : 'bg-[#E4C99A]/30 text-[#8D4B2D] dark:text-[#E4C99A] border border-[#E4C99A]/50'}">${data.severity}</span>
         </div>
         <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Standard Field Verification Checklist:</span>
-            <ul class="space-y-1.5 text-xs text-slate-700 font-medium">
-                ${data.steps.map(s => `<li class="flex items-start gap-1.5"><span class="text-blue-600 font-bold shrink-0">→</span><span>${s}</span></li>`).join('')}
+            <span class="text-[10px] uppercase font-bold text-[#655448] dark:text-[#B8AA98] block mb-1">Standard Field Verification Checklist:</span>
+            <ul class="space-y-1.5 text-xs text-[#342C27] dark:text-[#F2EDE3] font-medium">
+                ${data.steps.map(s => `<li class="flex items-start gap-1.5"><span class="text-[#A05B3A] font-bold shrink-0">→</span><span>${s}</span></li>`).join('')}
             </ul>
         </div>
-        <div class="pt-2 border-t border-slate-200 text-xs">
-            <span class="font-bold text-slate-500">Recommended Spares:</span>
-            <span class="font-bold text-blue-700 ml-1">${data.parts}</span>
+        <div class="pt-2 border-t border-[#B8AA98]/30 text-xs flex items-center justify-between">
+            <span class="font-bold text-[#655448] dark:text-[#B8AA98]">Recommended Spares:</span>
+            <span class="font-bold text-[#A05B3A] dark:text-[#E4C99A] ml-1">${data.parts}</span>
         </div>
     `;
 };
