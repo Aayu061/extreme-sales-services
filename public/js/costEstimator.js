@@ -18,7 +18,7 @@
     types: {
       split: { multiplier: 1.0, label: 'Split Inverter AC' },
       window: { multiplier: 0.85, label: 'Window AC Unit' },
-      cassette: { multiplier: 1.4, label: 'Commercial Cassette AC' }
+      cassette: { multiplier: 1.45, label: 'Commercial Cassette AC' }
     },
     tonnage: {
       '1.0': { multiplier: 0.9, label: '1.0 Ton' },
