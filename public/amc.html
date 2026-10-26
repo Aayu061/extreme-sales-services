@@ -9,52 +9,56 @@
       content="Annual Maintenance Contracts for your AC — priority service, free visits, and peace of mind all year long. Choose a plan today."
     >
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <!-- Anti-flicker: apply dark class BEFORE first paint if saved -->
     <script>
       (function(){
         try {
           var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch(e){}
       })();
     </script>
   </head>
-  <body class="bg-slate-50 font-sans antialiased text-slate-900 flex flex-col min-h-screen">
+  <body class="bg-[#F2EDE3] font-sans antialiased text-[#342C27] flex flex-col min-h-screen">
 
     <!-- NAVBAR -->
-    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 py-3">
+    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 bg-[#F2EDE3]/90 backdrop-blur-md shadow-xs">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl px-6 py-2.5 flex justify-between items-center border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex justify-between items-center">
           <div class="flex-shrink-0 flex items-center">
-            <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-90 transition flex items-center gap-2.5">
-              <span class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-sm">ES</span>
-              <span>Extreme <span class="text-blue-600 font-normal">S&amp;S</span></span>
+            <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] hover:opacity-90 transition flex items-center gap-2.5">
+              <span class="bg-[#342C27] text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-xs">ES</span>
+              <span>Extreme <span class="text-[#A05B3A]">S&amp;S</span></span>
             </a>
           </div>
           <div class="hidden md:flex space-x-7 items-center">
-            <a href="index.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Home</a>
-            <a href="products.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Products</a>
-            <a href="status.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Track Service</a>
-            <a href="amc.html" class="nav-link active font-bold text-sm">AMC Plans</a>
-            <a href="contact.html" class="nav-link text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold text-sm transition">Contact Us</a>
-            <a href="service.html" class="btn-accent text-xs px-5 py-2.5 font-bold">Book Service</a>
+            <a href="index.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Home</a>
+            <a href="products.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Products</a>
+            <a href="status.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Track Service</a>
+            <a href="amc.html" class="nav-link active text-[#A05B3A] font-bold text-sm">AMC Plans</a>
+            <a href="contact.html" class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition">Contact Us</a>
+            <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs px-5 py-2.5 font-bold rounded-xl shadow-sm transition">Book Service</a>
 
             <!-- Theme Toggle Button -->
             <button
               type="button"
-              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 border border-[#B8AA98]/50"
               aria-label="Toggle Theme"
             >
-              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg class="theme-icon-sun w-4 h-4 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
           </div>
@@ -63,45 +67,44 @@
             <!-- Theme Toggle for Mobile -->
             <button
               type="button"
-              class="theme-toggle-btn text-slate-600 dark:text-slate-300 hover:text-blue-600 transition p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
-            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 transition p-2">
+            <button type="button" id="mobileMenuBtn" aria-label="Toggle mobile menu" class="text-[#655448] hover:text-[#342C27] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
             </button>
           </div>
         </div>
       </div>
-      <div id="mobileMenu" class="hidden absolute top-20 left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold">
-        <a href="index.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Home</a>
-        <a href="products.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Products</a>
-        <a href="status.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Track Service</a>
-        <a href="amc.html" class="text-blue-600 py-2">AMC Plans</a>
-        <a href="contact.html" class="text-slate-700 dark:text-slate-200 hover:text-blue-600 py-2">Contact Us</a>
-        <a href="service.html" class="btn-accent py-3 rounded-xl text-white">Book Service</a>
+      <div id="mobileMenu" class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold mt-2">
+        <a href="index.html" class="text-[#655448] hover:text-[#342C27] py-2">Home</a>
+        <a href="products.html" class="text-[#655448] hover:text-[#342C27] py-2">Products</a>
+        <a href="status.html" class="text-[#655448] hover:text-[#342C27] py-2">Track Service</a>
+        <a href="amc.html" class="text-[#A05B3A] py-2">AMC Plans</a>
+        <a href="contact.html" class="text-[#655448] hover:text-[#342C27] py-2">Contact Us</a>
+        <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] py-3 rounded-xl text-[#F2EDE3] font-bold shadow-sm">Book Service</a>
       </div>
     </nav>
 
     <!-- HERO HEADER -->
-    <header class="bg-slate-900 pt-32 pb-24 px-4 text-center relative overflow-hidden border-b border-slate-800">
-      <div class="absolute inset-0 bg-radial-at-c from-blue-900/20 via-slate-900 to-slate-900 pointer-events-none"></div>
+    <header class="pt-32 pb-14 px-4 text-center relative overflow-hidden border-b border-[#B8AA98]/40 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3]">
       <div class="relative z-10 max-w-3xl mx-auto">
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
-          ⭐ Guaranteed Zero Breakdown Support
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 backdrop-blur-sm text-[#A05B3A] border border-[#B8AA98]/50 shadow-xs mb-4">
+          <span class="w-2 h-2 rounded-full bg-[#77B89A]"></span> Guaranteed Zero Breakdown Support
         </span>
-        <h1 class="text-3xl md:text-5xl font-black text-white mb-4 leading-tight tracking-tight">
-          Annual Maintenance <span class="text-blue-400">Contracts (AMC)</span>
+        <h1 class="text-3xl md:text-5xl font-black text-[#342C27] mb-4 leading-tight tracking-tight">
+          Annual Maintenance <span class="text-[#A05B3A]">Contracts (AMC)</span>
         </h1>
-        <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+        <p class="text-[#655448] text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-medium">
           Full-season peace of mind for residential and commercial ACs. Priority dispatch, routine jet wash maintenance, and zero labor charges.
         </p>
       </div>
@@ -109,28 +112,28 @@
 
     <!-- PRICING CONTROLS & GRIDS -->
     <main class="flex-grow py-12 px-4">
-      <div class="max-w-7xl mx-auto -mt-16 pb-16 relative z-10">
+      <div class="max-w-7xl mx-auto -mt-6 pb-16 relative z-10">
 
         <!-- Billing Toggle + AC Count Selector -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div class="bg-[#FDFBF7] rounded-2xl shadow-sm border border-[#B8AA98]/40 p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-5">
           <!-- Annual / Monthly toggle -->
           <div class="flex items-center gap-3">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Monthly</span>
+            <span class="text-xs font-bold text-[#655448] uppercase tracking-wider">Monthly</span>
             <div id="amcToggleTrack" class="amc-toggle-track on" onclick="toggleAmcBilling()">
               <div class="amc-toggle-thumb"></div>
             </div>
-            <span id="amcBillingLabel" class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Annual Billing</span>
-            <span class="savings-badge">💰 Save 20%</span>
+            <span id="amcBillingLabel" class="text-xs font-bold text-[#342C27] uppercase tracking-wider">Annual Billing</span>
+            <span class="savings-badge bg-[#77B89A]/15 text-[#1D3D2B] border border-[#77B89A]/40 px-2 py-0.5 rounded-full text-[11px] font-bold">💰 Save 20%</span>
           </div>
           <!-- AC Unit Count -->
           <div class="flex items-center gap-3">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">AC Units:</span>
+            <span class="text-xs font-bold text-[#655448] uppercase tracking-wider">AC Units:</span>
             <div class="flex gap-2">
-              <button type="button" onclick="setAcCount(1,this)" class="ac-count-btn bg-blue-600 text-white text-xs font-bold w-9 h-9 rounded-xl transition">1</button>
-              <button type="button" onclick="setAcCount(2,this)" class="ac-count-btn bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold w-9 h-9 rounded-xl transition">2</button>
-              <button type="button" onclick="setAcCount(3,this)" class="ac-count-btn bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold w-9 h-9 rounded-xl transition">3+</button>
+              <button type="button" onclick="setAcCount(1,this)" class="ac-count-btn bg-[#A05B3A] text-[#F2EDE3] text-xs font-bold w-9 h-9 rounded-xl transition shadow-xs">1</button>
+              <button type="button" onclick="setAcCount(2,this)" class="ac-count-btn bg-[#F2EDE3] border border-[#B8AA98]/40 text-[#655448] hover:text-[#342C27] text-xs font-bold w-9 h-9 rounded-xl transition">2</button>
+              <button type="button" onclick="setAcCount(3,this)" class="ac-count-btn bg-[#F2EDE3] border border-[#B8AA98]/40 text-[#655448] hover:text-[#342C27] text-xs font-bold w-9 h-9 rounded-xl transition">3+</button>
             </div>
-            <span class="text-xs text-slate-400 font-medium hidden md:inline">Tiered volume discount</span>
+            <span class="text-xs text-[#655448] font-medium hidden md:inline">Tiered volume discount</span>
           </div>
         </div>
 
@@ -142,10 +145,10 @@
           <!-- Loading state placeholder -->
           <div class="col-span-full py-20 text-center">
             <div class="flex flex-col items-center gap-3">
-              <svg class="w-10 h-10 text-blue-500 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-10 h-10 text-[#A05B3A] animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
-              <p class="font-bold text-slate-400 uppercase tracking-wider text-xs">
+              <p class="font-bold text-[#655448] uppercase tracking-wider text-xs">
                 Loading Protection Packages...
               </p>
             </div>
@@ -154,29 +157,29 @@
       </div>
 
       <!-- INTERACTIVE THERMODYNAMIC ROI & ELECTRICITY SAVINGS CALCULATOR -->
-      <section class="py-16 bg-slate-900 text-white rounded-3xl mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-12 p-6 sm:p-12 shadow-2xl border border-slate-800">
+      <section class="py-16 bg-[#27211D] text-[#F2EDE3] rounded-3xl mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-12 p-6 sm:p-12 shadow-xl border border-[#B8AA98]/20">
         <div class="max-w-4xl mx-auto text-center mb-10">
-          <div class="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-3">
+          <div class="inline-flex items-center gap-2 bg-[#342C27] text-[#E4C99A] border border-[#B8AA98]/30 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
             <span>⚡</span> Thermodynamic Energy Efficiency Algorithm
           </div>
-          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight mb-2">
+          <h2 class="text-2xl sm:text-4xl font-black text-[#F2EDE3] tracking-tight mb-2">
             Calculate Your Annual Power &amp; Repair Savings
           </h2>
-          <p class="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto">
+          <p class="text-[#B8AA98] text-xs sm:text-sm max-w-xl mx-auto">
             Scaled, unwashed condenser coils force compressors to draw 18–25% excess electricity. See your projected savings with certified preventive maintenance.
           </p>
         </div>
 
         <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <!-- Sliders -->
-          <div class="lg:col-span-6 bg-slate-800/80 p-6 sm:p-8 rounded-2xl border border-slate-700/80 space-y-6">
+          <div class="lg:col-span-6 bg-[#342C27] p-6 sm:p-8 rounded-2xl border border-[#B8AA98]/20 space-y-6">
             <div>
               <div class="flex justify-between items-center text-xs font-bold mb-2">
-                <span class="text-slate-300">Total AC Units to Protect</span>
-                <span id="roiAcDisplay" class="text-blue-400 font-mono text-base font-black">2 Units</span>
+                <span class="text-[#E6DFD3]">Total AC Units to Protect</span>
+                <span id="roiAcDisplay" class="text-[#E4C99A] font-mono text-base font-black">2 Units</span>
               </div>
-              <input type="range" id="roiAcSlider" min="1" max="10" value="2" class="roi-slider" oninput="onRoiSliderChange()">
-              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+              <input type="range" id="roiAcSlider" min="1" max="10" value="2" class="roi-slider w-full accent-[#A05B3A]" oninput="onRoiSliderChange()">
+              <div class="flex justify-between text-[10px] text-[#B8AA98] font-mono mt-1">
                 <span>1 Unit</span>
                 <span>5 Units</span>
                 <span>10+ Commercial</span>
@@ -185,11 +188,11 @@
 
             <div>
               <div class="flex justify-between items-center text-xs font-bold mb-2">
-                <span class="text-slate-300">Daily Running Hours per AC</span>
-                <span id="roiHoursDisplay" class="text-blue-400 font-mono text-base font-black">8 Hours/Day</span>
+                <span class="text-[#E6DFD3]">Daily Running Hours per AC</span>
+                <span id="roiHoursDisplay" class="text-[#E4C99A] font-mono text-base font-black">8 Hours/Day</span>
               </div>
-              <input type="range" id="roiHoursSlider" min="2" max="18" value="8" class="roi-slider" oninput="onRoiSliderChange()">
-              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+              <input type="range" id="roiHoursSlider" min="2" max="18" value="8" class="roi-slider w-full accent-[#A05B3A]" oninput="onRoiSliderChange()">
+              <div class="flex justify-between text-[10px] text-[#B8AA98] font-mono mt-1">
                 <span>2 hrs (Night only)</span>
                 <span>8 hrs (Standard)</span>
                 <span>18 hrs (24x7 / Office)</span>
@@ -199,83 +202,83 @@
 
           <!-- Dynamic Output Grid -->
           <div class="lg:col-span-6 grid grid-cols-2 gap-4">
-            <div class="bg-gradient-to-br from-emerald-900/40 to-slate-800/80 p-5 rounded-2xl border border-emerald-500/30">
-              <span class="text-[10px] uppercase font-mono text-emerald-400 font-bold block mb-1">Net Annual Savings</span>
-              <span id="roiAnnualSavings" class="text-2xl sm:text-3xl font-black text-white font-mono">₹4,200</span>
-              <span class="text-[11px] text-emerald-300 block mt-1 font-semibold">Repairs + power bills saved</span>
+            <div class="bg-[#342C27]/90 p-5 rounded-2xl border border-[#B8AA98]/20">
+              <span class="text-[10px] uppercase font-mono text-[#77B89A] font-bold block mb-1">Net Annual Savings</span>
+              <span id="roiAnnualSavings" class="text-2xl sm:text-3xl font-black text-[#F2EDE3] font-mono">₹4,200</span>
+              <span class="text-[11px] text-[#77B89A] block mt-1 font-semibold">Repairs + power bills saved</span>
             </div>
-            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700/80">
-              <span class="text-[10px] uppercase font-mono text-blue-400 font-bold block mb-1">Electricity Saved</span>
-              <span id="roiKwhSaved" class="text-2xl sm:text-3xl font-black text-white font-mono">458 kWh</span>
-              <span class="text-[11px] text-slate-400 block mt-1">Units saved via clean heat exchange</span>
+            <div class="bg-[#342C27]/90 p-5 rounded-2xl border border-[#B8AA98]/20">
+              <span class="text-[10px] uppercase font-mono text-[#E4C99A] font-bold block mb-1">Electricity Saved</span>
+              <span id="roiKwhSaved" class="text-2xl sm:text-3xl font-black text-[#F2EDE3] font-mono">458 kWh</span>
+              <span class="text-[11px] text-[#B8AA98] block mt-1">Units saved via clean heat exchange</span>
             </div>
-            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700/80">
-              <span class="text-[10px] uppercase font-mono text-amber-400 font-bold block mb-1">Customer Investment ROI</span>
-              <span id="roiPercent" class="text-2xl sm:text-3xl font-black text-white font-mono">168%</span>
-              <span class="text-[11px] text-slate-400 block mt-1">Net positive returns on AMC cost</span>
+            <div class="bg-[#342C27]/90 p-5 rounded-2xl border border-[#B8AA98]/20">
+              <span class="text-[10px] uppercase font-mono text-[#E4C99A] font-bold block mb-1">Customer Investment ROI</span>
+              <span id="roiPercent" class="text-2xl sm:text-3xl font-black text-[#F2EDE3] font-mono">168%</span>
+              <span class="text-[11px] text-[#B8AA98] block mt-1">Net positive returns on AMC cost</span>
             </div>
-            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700/80">
-              <span class="text-[10px] uppercase font-mono text-teal-400 font-bold block mb-1">Carbon Offset</span>
-              <span id="roiCo2Saved" class="text-2xl sm:text-3xl font-black text-white font-mono">375 kg</span>
-              <span class="text-[11px] text-teal-300 block mt-1">CO₂ emissions prevented</span>
+            <div class="bg-[#342C27]/90 p-5 rounded-2xl border border-[#B8AA98]/20">
+              <span class="text-[10px] uppercase font-mono text-[#77B89A] font-bold block mb-1">Carbon Offset</span>
+              <span id="roiCo2Saved" class="text-2xl sm:text-3xl font-black text-[#F2EDE3] font-mono">375 kg</span>
+              <span class="text-[11px] text-[#77B89A] block mt-1">CO₂ emissions prevented</span>
             </div>
           </div>
         </div>
       </section>
 
       <!-- WHY AMC SECTION -->
-      <section class="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+      <section class="py-16 bg-[#FDFBF7] border-t border-[#B8AA98]/40">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#342C27] tracking-tight mb-2">
               Why Subscribe to an Annual Contract?
             </h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+            <p class="text-sm text-[#655448] max-w-xl mx-auto leading-relaxed">
               Eliminate emergency breakdown surges during peak summer temperatures.
             </p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             <!-- Standard One-Time Repairs -->
-            <div class="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-2xl border border-slate-200 dark:border-slate-700/60">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2.5">
-                <span class="w-8 h-8 bg-red-100 dark:bg-red-950/60 text-red-600 rounded-lg flex items-center justify-center text-sm font-black">✕</span>
+            <div class="bg-[#F2EDE3] p-8 rounded-2xl border border-[#B8AA98]/40">
+              <h3 class="text-lg font-bold text-[#342C27] mb-6 flex items-center gap-2.5">
+                <span class="w-8 h-8 bg-[#A05B3A]/15 text-[#A05B3A] rounded-lg flex items-center justify-center text-sm font-black">✕</span>
                 One-Time Ad-Hoc Calls
               </h3>
-              <ul class="space-y-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <ul class="space-y-4 text-xs font-semibold text-[#655448]">
                 <li class="flex items-center gap-3">
-                  <span class="text-red-400">✕</span> High doorstep visiting fees on every single call
+                  <span class="text-[#A05B3A]">✕</span> High doorstep visiting fees on every single call
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="text-red-400">✕</span> 24–48hr wait times during peak heatwaves
+                  <span class="text-[#A05B3A]">✕</span> 24–48hr wait times during peak heatwaves
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="text-red-400">✕</span> No scheduled preventive coil and filter cleaning
+                  <span class="text-[#A05B3A]">✕</span> No scheduled preventive coil and filter cleaning
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="text-red-400">✕</span> Unpredictable repair bills and diagnostic charges
+                  <span class="text-[#A05B3A]">✕</span> Unpredictable repair bills and diagnostic charges
                 </li>
               </ul>
             </div>
 
             <!-- AMC Subscription -->
-            <div class="bg-blue-600 text-white p-8 rounded-2xl shadow-sm border border-blue-500">
-              <h3 class="text-lg font-bold mb-6 flex items-center gap-2.5 text-white">
-                <span class="w-8 h-8 bg-white/20 text-white rounded-lg flex items-center justify-center text-sm font-black">✓</span>
+            <div class="bg-[#27211D] text-[#F2EDE3] p-8 rounded-2xl shadow-md border border-[#A05B3A]/40">
+              <h3 class="text-lg font-bold mb-6 flex items-center gap-2.5 text-[#F2EDE3]">
+                <span class="w-8 h-8 bg-[#A05B3A] text-[#F2EDE3] rounded-lg flex items-center justify-center text-sm font-black">✓</span>
                 Extreme AMC Subscription
               </h3>
-              <ul class="space-y-4 text-xs font-bold text-blue-50">
+              <ul class="space-y-4 text-xs font-bold text-[#E6DFD3]">
                 <li class="flex items-center gap-3">
-                  <span class="text-emerald-300">✓</span> Zero visiting and zero labor fees throughout the contract
+                  <span class="text-[#77B89A]">✓</span> Zero visiting and zero labor fees throughout the contract
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="text-emerald-300">✓</span> Guaranteed priority same-day dispatch commitment
+                  <span class="text-[#77B89A]">✓</span> Guaranteed priority same-day dispatch commitment
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="text-emerald-300">✓</span> Scheduled deep high-pressure chemical wash visits
+                  <span class="text-[#77B89A]">✓</span> Scheduled deep high-pressure chemical wash visits
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="text-emerald-300">✓</span> 15% flat discount on genuine OEM replacement parts
+                  <span class="text-[#77B89A]">✓</span> 15% flat discount on genuine OEM replacement parts
                 </li>
               </ul>
             </div>
@@ -285,14 +288,14 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-slate-900 text-slate-400 text-center py-8 border-t border-slate-800 mt-auto">
+    <footer class="bg-[#FDFBF7] text-[#655448] text-center py-8 border-t border-[#B8AA98]/40 mt-auto">
       <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-        <p>&copy; 2026 Extreme Sales &amp; Services. All rights reserved.</p>
+        <p>&copy; 2026 Extreme Sales &amp; Services • Verified Preventative AMC Plans</p>
         <div class="flex gap-4">
-          <a href="index.html" class="hover:text-white transition">Home</a>
-          <a href="service.html" class="hover:text-white transition">Book Service</a>
-          <a href="status.html" class="hover:text-white transition">Track Status</a>
-          <a href="contact.html" class="hover:text-white transition">Contact</a>
+          <a href="index.html" class="hover:text-[#A05B3A] transition">Home</a>
+          <a href="service.html" class="hover:text-[#A05B3A] transition">Book Service</a>
+          <a href="status.html" class="hover:text-[#A05B3A] transition">Track Status</a>
+          <a href="contact.html" class="hover:text-[#A05B3A] transition">Contact</a>
         </div>
       </div>
     </footer>
@@ -300,39 +303,39 @@
     <!-- AMC BOOKING MODAL -->
     <div
       id="amcModal"
-      class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-[100] flex items-center justify-center hidden opacity-0 transition-all duration-300 p-4"
+      class="fixed inset-0 bg-[#342C27]/60 backdrop-blur-md z-[100] flex items-center justify-center hidden opacity-0 transition-all duration-300 p-4"
     >
       <div
-        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 transition-all duration-300"
+        class="bg-[#FDFBF7] rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 transition-all duration-300 border border-[#B8AA98]/50"
         id="amcModalContent"
       >
-        <div class="bg-slate-900 p-6 flex justify-between items-center border-b border-slate-800">
+        <div class="bg-gradient-to-r from-[#27211D] to-[#342C27] p-6 flex justify-between items-center text-[#F2EDE3] border-b border-[#A05B3A]/30">
           <div>
-            <h3 class="font-bold text-white text-lg tracking-tight">
+            <h3 class="font-bold text-[#F2EDE3] text-lg tracking-tight">
               Subscribe to AMC
             </h3>
-            <p class="text-slate-400 text-xs mt-0.5">
+            <p class="text-[#B8AA98] text-xs mt-0.5">
               Annual AC Maintenance &amp; Care
             </p>
           </div>
           <button
             type="button"
             onclick="closeAmcModal()"
-            class="text-slate-400 hover:text-white transition text-2xl font-bold leading-none p-1"
+            class="text-[#F2EDE3]/80 hover:text-[#F2EDE3] transition text-2xl font-bold leading-none p-1"
           >
             &times;
           </button>
         </div>
 
         <div class="p-6">
-          <div class="bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-4 text-center mb-6">
+          <div class="bg-[#F2EDE3] border border-[#B8AA98]/40 rounded-2xl p-4 text-center mb-6">
             <p
               id="modalPlanName"
-              class="text-xl font-bold text-slate-900 dark:text-white mb-1"
+              class="text-xl font-bold text-[#342C27] mb-1"
             >
               Plan Name
             </p>
-            <p id="modalPlanPrice" class="text-lg text-blue-600 dark:text-blue-400 font-extrabold font-mono">
+            <p id="modalPlanPrice" class="text-lg text-[#A05B3A] font-extrabold font-mono">
               ₹0 / yr
             </p>
           </div>
@@ -354,16 +357,16 @@
 
             <button
               type="submit"
-              class="btn-primary w-full py-3.5 rounded-xl text-sm font-bold shadow-sm"
+              class="w-full bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-3.5 rounded-xl text-sm font-bold shadow-md transition active:scale-[0.99]"
             >
               Submit Activation Request &rarr;
             </button>
             <div
               id="successMsg"
-              class="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 text-center hidden"
+              class="bg-[#77B89A]/15 text-[#1D3D2B] border border-[#77B89A]/40 rounded-xl p-4 text-center hidden"
             >
               <p class="font-bold text-sm">Request Received Successfully!</p>
-              <p class="text-xs mt-1 text-emerald-600 dark:text-emerald-400 font-medium">
+              <p class="text-xs mt-1 text-[#2D5A43] font-medium">
                 Our service manager will call you within 2 hours to confirm scheduling.
               </p>
             </div>
@@ -374,8 +377,12 @@
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
-    <script src="js/amc.js"></script>
+    <!-- GSAP 3.12.5 Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/amc.js"></script>
   </body>
 </html>
 

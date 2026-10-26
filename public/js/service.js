@@ -109,24 +109,35 @@ form.addEventListener('submit', async (e) => {
                 trackBtn.href = `status.html?id=${encodeURIComponent(data.requestId)}&phone=${encodeURIComponent(formData.phone)}`;
             }
             modal.classList.remove('hidden');
-            modal.style.display = 'flex'; // Force display if hidden class isn't enough
-            
-            // Trigger visual transitions after a micro delay
-            setTimeout(() => {
+            modal.style.display = 'flex';
+            if (window.openGsapModal) {
+                window.openGsapModal(modal);
+            } else if (typeof gsap !== 'undefined') {
+                gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+                const card = modal.querySelector('div');
+                if (card) gsap.fromTo(card, { scale: 0.9, y: 20 }, { scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.5)' });
+            } else {
                 modal.classList.remove('opacity-0');
                 modal.classList.add('opacity-100');
-                const successIcon = document.getElementById('successIcon');
-                if (successIcon) {
-                    successIcon.classList.remove('scale-0');
-                    successIcon.classList.add('scale-100');
-                }
-            }, 50);
+            }
+            const successIcon = document.getElementById('successIcon');
+            if (successIcon && typeof gsap !== 'undefined') {
+                gsap.fromTo(successIcon, { scale: 0, rotate: -45 }, { scale: 1, rotate: 0, duration: 0.5, ease: 'back.out(2)' });
+            } else if (successIcon) {
+                successIcon.classList.remove('scale-0');
+                successIcon.classList.add('scale-100');
+            }
+            lastCreatedRequestId = data.requestId;
         } else {
-            alert("Booking failed: " + (data.message || "Please check the details entered."));
+            const errMsg = "Booking failed: " + (data.message || "Please check the details entered.");
+            if (window.showToast) window.showToast(errMsg, 'error');
+            else alert(errMsg);
         }
     } catch (error) {
         console.error("Connection Error:", error);
-        alert("Connecting to live dispatch server... If this is the first request, the cloud server may be waking up. Please retry in a few seconds.");
+        const netMsg = "Connecting to live dispatch server... If this is the first request, the server may be initializing. Please retry in a moment.";
+        if (window.showToast) window.showToast(netMsg, 'warning');
+        else alert(netMsg);
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -135,9 +146,15 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
+let lastCreatedRequestId = '';
+
 closeModalBtn.addEventListener('click', () => {
     modal.classList.add('hidden');
-    window.location.href = 'index.html';
+    if (lastCreatedRequestId) {
+        window.location.href = `status.html?id=${encodeURIComponent(lastCreatedRequestId)}`;
+    } else {
+        window.location.href = 'status.html';
+    }
 });
 
 // ------ ASYNCHRONOUS DYNAMIC AMC LOOKUP ------ //
@@ -158,8 +175,12 @@ if (phoneInput && amcBanner && amcDetails) {
                 if (data.success && data.active) {
                     amcDetails.innerText = `Plan Tier: "${data.planName}" (${data.remainingServices} free servicing visits remaining). This request will be fully covered at zero cost!`;
                     amcBanner.classList.remove('hidden');
-                    amcBanner.style.transform = 'scale(1.02)';
-                    setTimeout(() => amcBanner.style.transform = 'scale(1)', 200);
+                    if (typeof gsap !== 'undefined') {
+                        gsap.fromTo(amcBanner, 
+                            { y: -15, opacity: 0, scale: 0.95 }, 
+                            { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }
+                        );
+                    }
                 } else {
                     amcBanner.classList.add('hidden');
                 }

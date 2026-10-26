@@ -1793,12 +1793,8 @@ app.get('/api/track/live', (req, res) => {
             })}\n\n`);
         } else {
             res.write(`data: ${JSON.stringify({
-                success: true,
-                requestId: id || 'AC-1001',
-                name: 'Valued Customer',
-                status: 'In Progress',
-                technician_name: 'Suresh Kumar',
-                service_type: 'AC Repair & Diagnostics'
+                success: false,
+                message: 'No service request matching this ID was found.'
             })}\n\n`);
         }
     };

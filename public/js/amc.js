@@ -35,69 +35,86 @@ async function loadPlans() {
 }
 
 function renderPlans(plans) {
+    rawPlans = plans;
     amcGrid.innerHTML = '';
     
-    if (plans.length === 0) {
+    if (!plans || plans.length === 0) {
         amcGrid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12 font-medium">Currently updating our Maintenance Plans. Check back soon!</div>`;
         return;
     }
 
     plans.forEach((plan, index) => {
-        const isPopular = index === 1 || plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('premium');
+        const isPopular = index === 1 || (plan.name && (plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('comprehensive') || plan.name.toLowerCase().includes('premium')));
         
         const card = document.createElement('div');
-        card.className = `relative flex flex-col rounded-2xl transition-all duration-300 overflow-hidden ${
+        card.className = `amc-plan-card relative flex flex-col rounded-2xl transition-all duration-300 overflow-hidden ${
             isPopular 
-            ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 md:-translate-y-5 scale-105 z-10' 
-            : 'glass-panel shadow-lg hover:shadow-xl hover:-translate-y-1'
+            ? 'bg-[#27211D] text-[#F2EDE3] shadow-xl md:-translate-y-3 z-10 border-2 border-[#A05B3A]' 
+            : 'bg-[#FDFBF7] text-[#342C27] border border-[#B8AA98]/40 shadow-sm hover:shadow-md hover:-translate-y-1'
         }`;
 
         const badge = isPopular 
-            ? `<span class="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow">Most Popular</span>` 
+            ? `<span class="absolute top-4 right-4 bg-[#E4C99A] text-[#27211D] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">★ Most Popular</span>` 
             : '';
 
         const encodedData = encodeURIComponent(JSON.stringify(plan));
-        const textMuted = isPopular ? 'text-blue-200' : 'text-gray-500';
-        const textMain = isPopular ? 'text-white' : 'text-gray-900';
-        const textFeature = isPopular ? 'text-blue-100' : 'text-gray-600';
-        const checkColor = isPopular ? 'text-green-300' : 'text-green-500';
-        const badgeClass = isPopular ? 'bg-white/20 text-white border-white/20' : 'bg-blue-50 text-blue-700 border-blue-200';
-        const btnClass = isPopular 
-            ? 'bg-white text-blue-700 hover:bg-blue-50 font-black' 
-            : 'bg-blue-600 text-white hover:bg-blue-700 font-black';
+        const textMuted = isPopular ? 'text-[#B8AA98]' : 'text-[#655448]';
+        const textMain = isPopular ? 'text-[#F2EDE3]' : 'text-[#342C27]';
+        const textFeature = isPopular ? 'text-[#E6DFD3]' : 'text-[#655448]';
+        const checkColor = 'text-[#77B89A]';
+        const badgeClass = isPopular ? 'bg-[#342C27] text-[#E4C99A] border-[#B8AA98]/40' : 'bg-[#77B89A]/15 text-[#1D3D2B] border-[#77B89A]/40';
+        const btnClass = 'bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] font-bold shadow-md';
 
         const safePlanName = escapeHtml(plan.name || '');
         const safePlanDesc = escapeHtml(plan.description || 'Full part inspection & cleaning');
+        const ppvSavings = Math.round((Number(plan.price) || 2999) * 0.35);
 
         card.innerHTML = `
             ${badge}
-            <div class="p-8 text-center border-b ${isPopular ? 'border-white/20' : 'border-gray-100'}">
-                <p class="${textMuted} text-xs font-bold uppercase tracking-widest mb-2">${isPopular ? '⭐ Recommended' : 'AC Protection Plan'}</p>
-                <h3 class="text-2xl font-extrabold ${textMain} mb-4">${safePlanName}</h3>
-                <div class="flex items-end justify-center gap-1 mb-4">
+            <div class="p-8 text-center border-b ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30'}">
+                <p class="${textMuted} text-xs font-bold uppercase tracking-widest mb-2">${isPopular ? 'Recommended Choice' : 'Annual AC Care'}</p>
+                <h3 class="text-2xl font-black ${textMain} mb-4">${safePlanName}</h3>
+                <div class="flex items-end justify-center gap-1 mb-2">
                     <span class="text-2xl font-bold ${textMuted}">₹</span>
-                    <span class="text-5xl font-black ${textMain} tracking-tighter">${Number(plan.price) || 0}</span>
-                    <span class="text-sm font-bold ${textMuted} mb-1">/year</span>
+                    <span id="plan-price-${index}" class="text-5xl font-black ${textMain} tracking-tighter">${Number(plan.price) || 0}</span>
+                    <span id="plan-suffix-${index}" class="text-sm font-bold ${textMuted} mb-1">/yr</span>
                 </div>
-                <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${Number(plan.services_per_year) || 3} Free Services Included</span>
+                <p id="plan-savings-${index}" class="text-xs font-bold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B]'} mb-3 min-h-[1.2rem]"></p>
+                <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${Number(plan.services_per_year) || 3} Free Visits Included</span>
             </div>
             
             <div class="p-8 flex flex-col flex-grow">
-                <ul class="space-y-3 mb-8 text-sm flex-grow">
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Priority Emergency Support</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Gas Level Checks Included</li>
+                <ul class="space-y-3 mb-6 text-sm flex-grow">
+                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Priority Emergency Response</li>
+                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Gas Level & Leakage Check Included</li>
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> ${safePlanDesc}</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Automated service tracking</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> 1-Year Contract, Upfront Pricing</li>
+                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Automated Periodic Reminders</li>
+                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Upfront Genuine Spares Discount</li>
                 </ul>
+                <div class="${isPopular ? 'bg-[#342C27]' : 'bg-[#77B89A]/10'} rounded-xl p-3 mb-4 text-center">
+                    <span class="text-xs font-extrabold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B]'}">
+                        💰 Save ~₹${ppvSavings.toLocaleString('en-IN')} vs Pay-Per-Visit
+                    </span>
+                </div>
                 <button onclick="openAmcModal('${encodedData}')" class="w-full py-4 rounded-xl shadow-md transition-all text-sm uppercase tracking-wider ${btnClass}">
-                    Choose This Plan →
+                    Select This Plan →
                 </button>
             </div>
         `;
         
         amcGrid.appendChild(card);
     });
+
+    if (typeof gsap !== 'undefined' && amcGrid.children.length > 0) {
+        gsap.fromTo(amcGrid.children,
+            { opacity: 0, y: 24, scale: 0.96 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08, ease: 'power2.out' }
+        );
+    }
+
+    if (typeof updateAllPlanCards === 'function') {
+        updateAllPlanCards();
+    }
 }
 
 // ------ BOOKING MODAL LOGIC ------ //
@@ -113,22 +130,32 @@ function openAmcModal(encodedData) {
     document.getElementById('modalPlanPrice').innerText = `₹${plan.price} / year`;
     document.getElementById('successMsg').classList.add('hidden'); 
     
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        modalContent.classList.remove('scale-95');
-    }, 10);
+    if (typeof window.openGsapModal === 'function') {
+        window.openGsapModal(modal);
+    } else {
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+        }, 10);
+    }
     
     setTimeout(() => document.getElementById('custName').focus(), 150);
 }
 
 function closeAmcModal() {
-    modal.classList.add('opacity-0');
-    modalContent.classList.add('scale-95');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        form.reset(); 
-    }, 300);
+    if (typeof window.closeGsapModal === 'function') {
+        window.closeGsapModal(modal, () => {
+            form.reset();
+        });
+    } else {
+        modal.classList.add('opacity-0');
+        modalContent.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            form.reset(); 
+        }, 300);
+    }
 }
 
 form.addEventListener('submit', async (e) => {
@@ -196,14 +223,12 @@ window.toggleAmcBilling = function() {
 window.setAcCount = function(n, btn) {
     acCount = n;
     document.querySelectorAll('.ac-count-btn').forEach(b => {
-        b.classList.toggle('bg-blue-600', false);
-        b.classList.toggle('text-white', false);
-        b.classList.toggle('bg-slate-100', true);
-        b.classList.toggle('text-slate-700', true);
+        b.classList.remove('bg-[#A05B3A]', 'text-[#F2EDE3]', 'bg-blue-600', 'text-white', 'shadow-xs');
+        b.classList.add('bg-[#F2EDE3]', 'text-[#655448]');
     });
     if (btn) {
-        btn.classList.add('bg-blue-600','text-white');
-        btn.classList.remove('bg-slate-100','text-slate-700');
+        btn.classList.add('bg-[#A05B3A]', 'text-[#F2EDE3]', 'shadow-xs');
+        btn.classList.remove('bg-[#F2EDE3]', 'text-[#655448]', 'bg-slate-100', 'text-slate-700');
     }
     updatePricingDisplay();
 };
@@ -220,7 +245,12 @@ function updatePricingDisplay() {
         const suffixEl  = document.getElementById(`plan-suffix-${idx}`);
         const savingsEl = document.getElementById(`plan-savings-${idx}`);
 
-        if (priceEl)   priceEl.textContent   = final.toLocaleString('en-IN');
+        if (priceEl) {
+            priceEl.textContent = final.toLocaleString('en-IN');
+            if (typeof gsap !== 'undefined') {
+                gsap.fromTo(priceEl, { scale: 1.12 }, { scale: 1, duration: 0.25, ease: 'back.out(2)' });
+            }
+        }
         if (suffixEl)  suffixEl.textContent  = suffix;
         if (savingsEl) {
             savingsEl.textContent = isAnnual && savings > 0
@@ -230,82 +260,20 @@ function updatePricingDisplay() {
     });
 }
 
-// Override renderPlans to capture rawPlans and add IDs for dynamic pricing
-const _origRenderPlans = renderPlans;
-renderPlans = function(plans) {
-    rawPlans = plans;
-    amcGrid.innerHTML = '';
-
-    if (!plans.length) {
-        amcGrid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12 font-medium">Currently updating our Maintenance Plans. Check back soon!</div>`;
-        return;
-    }
-
-    plans.forEach((plan, index) => {
-        const isPopular = index === 1 || plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('premium');
-        const card = document.createElement('div');
-        card.className = `amc-plan-card relative flex flex-col rounded-2xl transition-all duration-300 overflow-hidden ${
-            isPopular
-            ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 md:-translate-y-5 scale-105 z-10'
-            : 'glass-panel shadow-lg'
-        }`;
-
-        const badge      = isPopular ? `<span class="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow animate-pulse">Most Popular</span>` : '';
-        const encodedData = encodeURIComponent(JSON.stringify(plan));
-        const textMuted   = isPopular ? 'text-blue-200' : 'text-gray-500';
-        const textMain    = isPopular ? 'text-white' : 'text-gray-900';
-        const textFeature = isPopular ? 'text-blue-100' : 'text-gray-600';
-        const checkColor  = isPopular ? 'text-green-300' : 'text-green-500';
-        const badgeClass  = isPopular ? 'bg-white/20 text-white border-white/20' : 'bg-blue-50 text-blue-700 border-blue-200';
-        const btnClass    = isPopular ? 'bg-white text-blue-700 hover:bg-blue-50 font-black' : 'bg-blue-600 text-white hover:bg-blue-700 font-black';
-
-        const ppvSavings = Math.round(plan.price * 0.35); // vs pay-per-visit
-
-        card.innerHTML = `
-            ${badge}
-            <div class="p-8 text-center border-b ${isPopular ? 'border-white/20' : 'border-gray-100'}">
-                <p class="${textMuted} text-xs font-bold uppercase tracking-widest mb-2">${isPopular ? '⭐ Recommended' : 'AC Protection Plan'}</p>
-                <h3 class="text-2xl font-extrabold ${textMain} mb-4">${plan.name}</h3>
-                <div class="flex items-end justify-center gap-1 mb-2">
-                    <span class="text-2xl font-bold ${textMuted}">₹</span>
-                    <span id="plan-price-${index}" class="text-5xl font-black ${textMain} tracking-tighter">${plan.price}</span>
-                    <span id="plan-suffix-${index}" class="text-sm font-bold ${textMuted} mb-1">/yr</span>
-                </div>
-                <p id="plan-savings-${index}" class="text-xs font-bold ${isPopular ? 'text-yellow-300' : 'text-emerald-600'} mb-3 min-h-[1.2rem]"></p>
-                <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${plan.services_per_year} Free Services Included</span>
-            </div>
-            <div class="p-8 flex flex-col flex-grow">
-                <ul class="space-y-3 mb-4 text-sm flex-grow">
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Priority Emergency Support</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Gas Level Checks Included</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> ${plan.description || 'Full part inspection & cleaning'}</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Automated service tracking</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> 1-Year Contract, Upfront Pricing</li>
-                </ul>
-                <div class="${isPopular ? 'bg-white/10' : 'bg-emerald-50'} rounded-xl p-3 mb-4 text-center">
-                    <span class="text-xs font-extrabold ${isPopular ? 'text-yellow-300' : 'text-emerald-700'}">
-                        💰 Save ₹${ppvSavings.toLocaleString('en-IN')} vs Pay-Per-Visit
-                    </span>
-                </div>
-                <button onclick="openAmcModal('${encodedData}')" class="w-full py-4 rounded-xl shadow-md transition-all text-sm uppercase tracking-wider ${btnClass}">
-                    Choose This Plan →
-                </button>
-                <a href="service.html?plan=${encodeURIComponent(plan.name)}" class="text-center text-xs ${isPopular ? 'text-blue-200' : 'text-slate-400'} hover:underline mt-3 block">
-                    Or book a demo service first
-                </a>
-            </div>
-        `;
-        amcGrid.appendChild(card);
-    });
-
-    // Init display
-    setTimeout(updatePricingDisplay, 100);
-};
+// Trigger initial dynamic pricing calculation
+setTimeout(updatePricingDisplay, 100);
 
 // Init
 loadPlans();
 
 // ─── Thermodynamic ROI & Energy Savings Calculator ─────────
+let currentRoiState = {
+    savings: 4200,
+    kwh: 458,
+    roi: 168,
+    co2: 375
+};
+
 window.onRoiSliderChange = function() {
     const acSlider = document.getElementById('roiAcSlider');
     const hoursSlider = document.getElementById('roiHoursSlider');
@@ -339,10 +307,33 @@ function renderRoiValues(data) {
     const roiEl = document.getElementById('roiPercent');
     const co2El = document.getElementById('roiCo2Saved');
 
-    if (savingsEl) savingsEl.textContent = `₹${data.annualBreakdown.netAnnualSavings.toLocaleString('en-IN')}`;
-    if (kwhEl) kwhEl.textContent = `${data.environmentalImpact.kwhSavedPerYear.toLocaleString('en-IN')} kWh`;
-    if (roiEl) roiEl.textContent = data.annualBreakdown.roiPercentage;
-    if (co2El) co2El.textContent = `${data.environmentalImpact.co2ReductionKg.toLocaleString('en-IN')} kg`;
+    const targetSavings = Number(data.annualBreakdown?.netAnnualSavings) || 0;
+    const targetKwh = Number(data.environmentalImpact?.kwhSavedPerYear) || 0;
+    const targetRoi = parseInt(String(data.annualBreakdown?.roiPercentage || '0').replace('%', ''), 10) || 0;
+    const targetCo2 = Number(data.environmentalImpact?.co2ReductionKg) || 0;
+
+    if (typeof gsap !== 'undefined') {
+        gsap.to(currentRoiState, {
+            savings: targetSavings,
+            kwh: targetKwh,
+            roi: targetRoi,
+            co2: targetCo2,
+            duration: 0.35,
+            ease: 'power2.out',
+            overwrite: 'auto',
+            onUpdate: () => {
+                if (savingsEl) savingsEl.textContent = `₹${Math.round(currentRoiState.savings).toLocaleString('en-IN')}`;
+                if (kwhEl) kwhEl.textContent = `${Math.round(currentRoiState.kwh).toLocaleString('en-IN')} kWh`;
+                if (roiEl) roiEl.textContent = `${Math.round(currentRoiState.roi)}%`;
+                if (co2El) co2El.textContent = `${Math.round(currentRoiState.co2).toLocaleString('en-IN')} kg`;
+            }
+        });
+    } else {
+        if (savingsEl) savingsEl.textContent = `₹${targetSavings.toLocaleString('en-IN')}`;
+        if (kwhEl) kwhEl.textContent = `${targetKwh.toLocaleString('en-IN')} kWh`;
+        if (roiEl) roiEl.textContent = `${targetRoi}%`;
+        if (co2El) co2El.textContent = `${targetCo2.toLocaleString('en-IN')} kg`;
+    }
 }
 
 function calculateLocalRoi(count, hours) {

@@ -9,89 +9,94 @@
       content="Shop New ACs, 2nd Hand units, and genuine spare parts at Extreme Sales &amp; Services. Best prices, fast delivery."
     >
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <!-- Anti-flicker: apply dark class BEFORE first paint if saved -->
     <script>
       (function(){
         try {
           var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch(e){}
       })();
-    </script>  </head>
+    </script>
+  </head>
   <body
-    class="bg-slate-50 text-slate-900 font-sans flex flex-col min-h-screen antialiased"
+    class="bg-[#F2EDE3] text-[#342C27] dark:bg-[#1A1412] dark:text-[#F2EDE3] font-sans flex flex-col min-h-screen antialiased selection:bg-[#A05B3A] selection:text-white"
   >
     <!-- NAVBAR -->
     <nav
       id="mainNav"
-      class="fixed w-full z-50 top-0 transition-all duration-300 bg-slate-900/85 backdrop-blur-md py-3.5 border-b border-slate-800/80 shadow-lg"
+      class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3 border-b border-[#B8AA98]/30 shadow-2xs"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
           <div class="flex-shrink-0 flex items-center">
             <a
               href="index.html"
-              class="text-xl md:text-2xl font-black tracking-tight text-white hover:opacity-90 transition flex items-center gap-2.5"
+              class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5"
             >
               <span
-                class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-md shadow-blue-500/30"
+                class="bg-[#A05B3A] text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-xs"
                 >ES</span
               >
-              <span>Extreme <span class="text-blue-400">S&amp;S</span></span>
+              <span>Extreme <span class="text-[#A05B3A]">S&amp;S</span></span>
             </a>
           </div>
 
           <div class="hidden md:flex space-x-7 items-center">
             <a
               href="index.html"
-              class="nav-link text-slate-300 hover:text-white font-bold text-sm transition"
+              class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
               >Home</a
             >
             <a
               href="index.html#services"
-              class="nav-link text-slate-300 hover:text-white font-bold text-sm transition"
+              class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
               >Services</a
             >
             <a
               href="products.html"
-              class="nav-link active text-white font-bold text-sm"
+              class="nav-link active text-[#A05B3A] dark:text-[#E4C99A] font-black text-sm"
               >Products</a
             >
             <a
               href="status.html"
-              class="nav-link text-slate-300 hover:text-white font-bold text-sm transition"
+              class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
               >Track Status</a
             >
             <a
               href="amc.html"
-              class="nav-link text-slate-300 hover:text-white font-bold text-sm transition"
+              class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
               >AMC Plans</a
             >
             <a
               href="contact.html"
-              class="nav-link text-slate-300 hover:text-white font-bold text-sm transition"
+              class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
               >Contact Us</a
             >
             <a
               href="service.html"
-              class="btn-accent !py-2.5 !px-5 !text-xs"
+              class="bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-[0_4px_14px_rgba(160,91,58,0.3)] transition"
               >Book Service</a
             >
             <!-- Theme Toggle Button -->
             <button
               type="button"
-              class="theme-toggle-btn text-slate-300 hover:text-white transition p-2 rounded-xl hover:bg-slate-800 border border-slate-700/60"
+              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/50 border border-[#B8AA98]/40"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-4 h-4 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="theme-icon-sun w-4 h-4 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
@@ -101,13 +106,13 @@
             <!-- Theme Toggle for Mobile -->
             <button
               type="button"
-              class="theme-toggle-btn text-slate-300 hover:text-white transition p-2 rounded-xl hover:bg-slate-800"
+              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/50 border border-[#B8AA98]/40"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
@@ -115,7 +120,7 @@
               type="button"
               id="mobileMenuBtn"
               aria-label="Toggle mobile menu"
-              class="text-slate-300 hover:text-white transition p-2 rounded-xl hover:bg-slate-800"
+              class="text-[#655448] hover:text-[#342C27] dark:text-[#B8AA98] transition p-2 rounded-xl hover:bg-[#E6DFD3]/50"
             >
               <svg
                 class="h-6 w-6"
@@ -138,15 +143,15 @@
       <!-- Mobile Menu -->
       <div
         id="mobileMenu"
-        class="hidden absolute top-full left-4 right-4 bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/80 p-6 md:hidden text-white mt-2"
+        class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 p-6 md:hidden text-[#342C27] dark:text-[#F2EDE3] mt-2"
       >
         <div class="flex flex-col space-y-3.5 text-center">
-          <a href="index.html" class="text-slate-300 hover:text-white font-bold py-2">Home</a>
-          <a href="products.html" class="text-blue-400 font-bold py-2">Products</a>
-          <a href="status.html" class="text-slate-300 hover:text-white font-bold py-2">Track Status</a>
-          <a href="amc.html" class="text-slate-300 hover:text-white font-bold py-2">AMC Plans</a>
-          <a href="contact.html" class="text-slate-300 hover:text-white font-bold py-2">Contact Us</a>
-          <a href="service.html" class="btn-accent py-3 rounded-xl mt-2 font-bold block"
+          <a href="index.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] font-bold py-2">Home</a>
+          <a href="products.html" class="text-[#A05B3A] dark:text-[#E4C99A] font-extrabold py-2">Products</a>
+          <a href="status.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] font-bold py-2">Track Status</a>
+          <a href="amc.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] font-bold py-2">AMC Plans</a>
+          <a href="contact.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] font-bold py-2">Contact Us</a>
+          <a href="service.html" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white py-3 rounded-xl mt-2 font-bold block shadow-[0_4px_14px_rgba(160,91,58,0.3)]"
             >Book Service</a
           >
         </div>
@@ -154,53 +159,52 @@
     </nav>
 
     <!-- HERO HEADER & FILTERS -->
-    <div class="hero-bg pt-36 pb-24 px-4 text-center relative overflow-hidden">
-      <div id="particleContainer"></div>
+    <div class="hero-bg pt-32 pb-20 px-4 text-center relative overflow-hidden">
       <div class="max-w-4xl mx-auto relative z-10 fade-up">
-        <div class="inline-flex items-center gap-2 bose-telemetry-badge mb-4">
-          <span class="bose-telemetry-pulse"></span>
-          <span class="text-xs font-mono text-slate-300">100% GENUINE MULTI-BRAND CATALOG</span>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] shadow-2xs mb-4">
+          <span class="w-2 h-2 rounded-full bg-[#77B89A]"></span>
+          <span class="tracking-wide">100% GENUINE MULTI-BRAND CATALOG</span>
         </div>
         <h1
-          class="text-4xl md:text-6xl font-black text-white leading-tight mb-4 tracking-tight"
+          class="text-3xl md:text-5xl font-black text-[#342C27] dark:text-[#F2EDE3] leading-tight mb-4 tracking-tight"
         >
-          AC Marketplace &amp; <span class="text-gradient-cyan">Spare Parts</span>
+          AC Marketplace &amp; <span class="text-[#A05B3A]">Spare Parts</span>
         </h1>
-        <p class="text-slate-300 text-sm md:text-base max-w-xl mx-auto mb-8 font-medium">
-          Brand-new energy-efficient inverter units, factory-certified refurbished systems, and genuine OEM components.
+        <p class="text-[#655448] dark:text-[#B8AA98] text-sm md:text-base max-w-xl mx-auto mb-8 font-medium">
+          Brand-new energy-efficient inverter units, certified refurbished systems, and genuine OEM components.
         </p>
 
         <!-- Filter Bar -->
         <div
-          class="glass-panel rounded-3xl p-5 lg:p-6 space-y-4 shadow-2xl border border-white/15"
+          class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl p-5 lg:p-6 space-y-4 shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
         >
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div id="categoryFilters" class="flex flex-wrap gap-2">
               <button
                 type="button"
                 onclick="filterCategory('all', this)"
-                class="cat-btn active bg-blue-600 text-white px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider shadow-md transition-all"
+                class="cat-btn active bg-[#A05B3A] text-white px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider shadow-xs transition-all"
               >
                 All Items
               </button>
               <button
                 type="button"
                 onclick="filterCategory('new_ac', this)"
-                class="cat-btn bg-white/10 text-white/80 hover:bg-white/20 px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all"
+                class="cat-btn bg-[#E6DFD3]/60 dark:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white border border-[#B8AA98]/40 px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all"
               >
                 New ACs
               </button>
               <button
                 type="button"
                 onclick="filterCategory('used_ac', this)"
-                class="cat-btn bg-white/10 text-white/80 hover:bg-white/20 px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all"
+                class="cat-btn bg-[#E6DFD3]/60 dark:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white border border-[#B8AA98]/40 px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all"
               >
                 Refurbished
               </button>
               <button
                 type="button"
                 onclick="filterCategory('spare_part', this)"
-                class="cat-btn bg-white/10 text-white/80 hover:bg-white/20 px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all"
+                class="cat-btn bg-[#E6DFD3]/60 dark:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white border border-[#B8AA98]/40 px-5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all"
               >
                 Spare Parts
               </button>
@@ -212,13 +216,13 @@
                   id="productSearch"
                   type="search"
                   placeholder="Search brand or part..."
-                  class="w-full lg:w-56 px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-semibold focus:bg-white focus:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-white/50"
+                  class="w-full lg:w-56 px-4 py-2 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1F1916] border border-[#B8AA98]/50 text-[#342C27] dark:text-[#F2EDE3] text-xs font-semibold focus:bg-white dark:focus:bg-[#1F1916] focus:border-[#A05B3A] focus:outline-none focus:ring-1 focus:ring-[#A05B3A] transition-all placeholder:text-[#655448]/60"
                 >
               </div>
               <select
                 id="productSort"
                 aria-label="Sort options"
-                class="px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider focus:bg-white focus:text-slate-900 focus:outline-none transition-all cursor-pointer"
+                class="px-3.5 py-2 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1F1916] border border-[#B8AA98]/50 text-[#342C27] dark:text-[#F2EDE3] text-xs font-bold uppercase tracking-wider focus:bg-white dark:focus:bg-[#1F1916] focus:border-[#A05B3A] focus:outline-none transition-all cursor-pointer"
               >
                 <option value="default">Sort By</option>
                 <option value="price_asc">Price: Low → High</option>
@@ -228,12 +232,12 @@
           </div>
 
           <div
-            class="flex flex-wrap items-center gap-6 text-[11px] font-bold text-slate-300 uppercase tracking-wider pt-4 border-t border-white/10"
+            class="flex flex-wrap items-center gap-6 text-[11px] font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider pt-4 border-t border-[#B8AA98]/30"
           >
             <div class="flex items-center gap-3">
               <span
                 >Min Price:
-                <span id="minPriceValue" class="text-white font-mono">₹0</span></span
+                <span id="minPriceValue" class="text-[#342C27] dark:text-[#F2EDE3] font-mono">₹0</span></span
               >
               <input
                 id="minPrice"
@@ -242,13 +246,13 @@
                 max="100000"
                 step="500"
                 value="0"
-                class="h-1 w-24 bg-white/10 rounded-full accent-blue-400"
+                class="h-1.5 w-24 bg-[#E6DFD3] dark:bg-[#3D342F] rounded-full accent-[#A05B3A]"
               >
             </div>
             <div class="flex items-center gap-3">
               <span
                 >Max Price:
-                <span id="maxPriceValue" class="text-white"
+                <span id="maxPriceValue" class="text-[#342C27] dark:text-[#F2EDE3] font-mono"
                   >₹1,00,000</span
                 ></span
               >
@@ -259,16 +263,16 @@
                 max="100000"
                 step="500"
                 value="100000"
-                class="h-1 w-24 bg-white/10 rounded-full accent-blue-400"
+                class="h-1.5 w-24 bg-[#E6DFD3] dark:bg-[#3D342F] rounded-full accent-[#A05B3A]"
               >
             </div>
             <label class="flex items-center gap-2 cursor-pointer group">
               <input
                 id="inStockOnly"
                 type="checkbox"
-                class="w-4 h-4 rounded bg-white/10 border-white/20 text-blue-600 focus:ring-offset-0 focus:ring-0"
+                class="w-4 h-4 rounded border-[#B8AA98]/60 text-[#A05B3A] accent-[#A05B3A] focus:ring-0"
               >
-              <span class="group-hover:text-white transition"
+              <span class="group-hover:text-[#342C27] dark:group-hover:text-[#F2EDE3] transition"
                 >In-stock only</span
               >
             </label>
@@ -276,7 +280,7 @@
               id="clearFilters"
               type="button"
               onclick="clearFilters()"
-              class="ml-auto text-white/40 hover:text-red-400 transition uppercase tracking-widest"
+              class="ml-auto text-[#655448] hover:text-[#A6382E] transition uppercase tracking-widest text-xs font-semibold"
             >
               ✕ Clear All
             </button>
@@ -286,7 +290,7 @@
     </div>
 
     <!-- PRODUCT GRID -->
-    <main class="flex-grow mesh-bg pb-32">
+    <main class="flex-grow bg-[#F2EDE3] dark:bg-[#1A1412] pb-32">
       <div class="max-w-7xl mx-auto px-4 -mt-16">
         <!-- Sticky Quick Filter Pills + result count -->
         <div class="product-filter-bar mb-6 -mx-4 px-4 flex flex-wrap items-center gap-2 justify-between">
@@ -296,7 +300,7 @@
             <button type="button" onclick="setPillFilter('used_ac',this)" class="filter-pill">♻️ Refurbished</button>
             <button type="button" onclick="setPillFilter('spare_part',this)" class="filter-pill">🔧 Spare Parts</button>
           </div>
-          <span id="resultCount" class="text-xs font-bold text-slate-500">Loading...</span>
+          <span id="resultCount" class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Loading...</span>
         </div>
 
         <div
@@ -305,14 +309,14 @@
         >
           <!-- Loading Skeletons -->
           <div class="card-3d glass-panel p-6 rounded-[2rem] animate-pulse">
-            <div class="h-48 bg-gray-200 rounded-2xl mb-4"></div>
-            <div class="h-4 bg-gray-200 w-3/4 rounded mb-2"></div>
-            <div class="h-4 bg-gray-200 w-1/2 rounded"></div>
+            <div class="h-48 bg-[#E6DFD3] dark:bg-[#342C27] rounded-2xl mb-4"></div>
+            <div class="h-4 bg-[#E6DFD3] dark:bg-[#342C27] w-3/4 rounded mb-2"></div>
+            <div class="h-4 bg-[#E6DFD3] dark:bg-[#342C27] w-1/2 rounded"></div>
           </div>
           <div class="card-3d glass-panel p-6 rounded-[2rem] animate-pulse">
-            <div class="h-48 bg-gray-200 rounded-2xl mb-4"></div>
-            <div class="h-4 bg-gray-200 w-3/4 rounded mb-2"></div>
-            <div class="h-4 bg-gray-200 w-1/2 rounded"></div>
+            <div class="h-48 bg-[#E6DFD3] dark:bg-[#342C27] rounded-2xl mb-4"></div>
+            <div class="h-4 bg-[#E6DFD3] dark:bg-[#342C27] w-3/4 rounded mb-2"></div>
+            <div class="h-4 bg-[#E6DFD3] dark:bg-[#342C27] w-1/2 rounded"></div>
           </div>
         </div>
       </div>
@@ -321,82 +325,83 @@
     <!-- ENQUIRY MODAL -->
     <div
       id="enquiryModal"
-      class="fixed inset-0 bg-gray-950/90 backdrop-blur-2xl z-[100] flex items-center justify-center hidden opacity-0 transition-all duration-500 p-4"
+      class="fixed inset-0 bg-[#27211D]/75 backdrop-blur-md z-[100] flex items-center justify-center hidden opacity-0 transition-all duration-300 p-4"
     >
       <div
-        class="glass-panel rounded-[3rem] shadow-2xl max-w-md w-full overflow-hidden transform scale-75 transition-all duration-500"
+        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 transition-all duration-300 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
         id="modalContent"
       >
         <div
-          class="bg-gradient-to-br from-blue-700 to-blue-600 p-10 flex justify-between items-center relative overflow-hidden"
+          class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] p-8 flex justify-between items-center relative overflow-hidden border-b border-[#B8AA98]/30"
         >
           <div class="relative z-10">
-            <h3 class="font-black text-white text-3xl tracking-tight">
+            <h3 class="font-black text-white text-2xl tracking-tight">
               Express Enquiry
             </h3>
             <p
-              class="text-blue-100 font-bold text-xs mt-1 uppercase tracking-widest"
+              class="text-[#E4C99A] font-bold text-xs mt-1 uppercase tracking-wider"
             >
-              Get availability in 2 mins
+              Get quick availability &amp; pricing
             </p>
           </div>
           <button
             onclick="closeModal()"
             type="button"
-            class="text-white hover:rotate-90 transition-transform duration-300 font-black text-4xl leading-none"
+            class="text-[#B8AA98] hover:text-white transition font-black text-3xl leading-none"
+            aria-label="Close modal"
           >
             &times;
           </button>
         </div>
 
-        <div class="p-10">
+        <div class="p-8 space-y-6">
           <div
-            class="flex items-center gap-6 mb-10 p-4 bg-blue-50 border border-blue-100 rounded-[2rem]"
+            class="flex items-center gap-4 p-4 bg-[#E6DFD3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/40 rounded-2xl"
           >
             <img
               id="modalImage"
               src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-              class="w-20 h-20 object-cover rounded-2xl shadow-xl bg-white border border-white"
+              class="w-16 h-16 object-contain rounded-xl bg-white dark:bg-[#27211D] border border-[#B8AA98]/30 p-1"
               alt=""
             >
             <div>
               <p
                 id="modalProductName"
-                class="font-black text-blue-900 text-lg leading-tight"
+                class="font-bold text-[#342C27] dark:text-[#F2EDE3] text-base leading-tight"
               >
                 Product Name
               </p>
-              <p id="modalProductPrice" class="font-black text-blue-600 mt-1">
+              <p id="modalProductPrice" class="font-extrabold text-[#A05B3A] mt-1 text-lg">
                 ₹0
               </p>
             </div>
           </div>
 
-          <form id="enquiryForm" class="space-y-6">
+          <form id="enquiryForm" class="space-y-4">
             <input type="hidden" id="modalProductId">
             <div class="form-field">
               <input type="text" id="enqName" required placeholder=" ">
-              <label for="enqName">Your Name</label>
+              <label for="enqName">Your Full Name *</label>
             </div>
             <div class="form-field">
               <input type="tel" id="enqPhone" required placeholder=" ">
-              <label for="enqPhone">Phone Number</label>
+              <label for="enqPhone">Phone Number *</label>
             </div>
             <div class="form-field">
               <textarea id="enqMessage" rows="2" placeholder=" "></textarea>
-              <label for="enqMessage">Message (Is this available?)</label>
+              <label for="enqMessage">Message / Specific Requirements</label>
             </div>
             <button
               type="submit"
-              class="btn-glow w-full py-5 rounded-3xl text-xl shadow-xl shadow-blue-500/30"
+              class="w-full bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-3.5 rounded-xl shadow-[0_4px_14px_rgba(160,91,58,0.35)] transition"
             >
               Submit Enquiry
             </button>
             <p
               id="enqSuccessMsg"
-              class="text-green-600 text-center font-black text-sm hidden uppercase tracking-widest mt-4"
+              class="text-[#77B89A] text-center font-bold text-xs hidden uppercase tracking-wider mt-3"
             >
-              ✅ We'll call you right back!
+              ✅ Enquiry received! Our team will contact you shortly.
             </p>
           </form>
         </div>
@@ -405,23 +410,27 @@
 
     <!-- FOOTER -->
     <footer
-      class="bg-gray-950 text-white py-12 text-center border-t border-white/5"
+      class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] py-10 text-center border-t border-[#B8AA98]/30 mt-auto"
     >
       <p
-        class="text-gray-500 font-bold text-xs uppercase tracking-widest mb-10"
+        class="font-semibold text-xs tracking-wide mb-3"
       >
-        &copy; 2026 Extreme S&amp;S. All Rights Reserved.
+        &copy; 2026 Extreme Sales &amp; Services • Verified Multi-Brand HVAC Sales &amp; Certified Spares
       </p>
       <a
         href="index.html"
-        class="text-gray-700 hover:text-white transition font-black text-[10px] uppercase tracking-widest"
-        >Back to base level</a
+        class="text-[#A05B3A] hover:underline font-bold text-xs"
+        >&larr; Return to Homepage</a
       >
     </footer>
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
-    <script src="js/products.js"></script>
+    <!-- GSAP 3.12.5 Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/products.js"></script>
   </body>
 </html>

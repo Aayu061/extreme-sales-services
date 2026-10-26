@@ -76,17 +76,26 @@ function switchTab(tabId, btnElement) {
         tab.classList.add('hidden');
     });
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = 'tab-btn text-slate-600 hover:text-slate-900 font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-slate-100 transition flex items-center gap-2 whitespace-nowrap';
+        btn.className = 'tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap';
     });
 
     const targetTab = document.getElementById(tabId);
     if (targetTab) {
         targetTab.classList.remove('hidden');
         targetTab.classList.add('block');
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(targetTab,
+                { opacity: 0, y: 12 },
+                { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+            );
+        }
     }
 
     if (btnElement) {
-        btnElement.className = 'tab-btn active bg-blue-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap';
+        btnElement.className = 'tab-btn active bg-[#A05B3A] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap';
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(btnElement, { scale: 0.95 }, { scale: 1, duration: 0.2, ease: 'back.out(2)' });
+        }
     }
 
     if (tabId === 'tab-products') fetchProducts();
@@ -94,6 +103,25 @@ function switchTab(tabId, btnElement) {
     if (tabId === 'tab-amc') fetchAmcData();
     if (tabId === 'tab-users') loadTechnicians();
     if (tabId === 'tab-analytics') initAnalyticsTab();
+}
+
+function animateAdminCounter(elementId, targetVal, prefix = '', suffix = '') {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const num = Number(targetVal) || 0;
+    if (typeof gsap !== 'undefined') {
+        const counter = { val: 0 };
+        gsap.to(counter, {
+            val: num,
+            duration: 0.75,
+            ease: 'power2.out',
+            onUpdate: () => {
+                el.innerText = `${prefix}${Math.round(counter.val).toLocaleString('en-IN')}${suffix}`;
+            }
+        });
+    } else {
+        el.innerText = `${prefix}${num.toLocaleString('en-IN')}${suffix}`;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -105,12 +133,12 @@ async function fetchAnalytics() {
         const data = await response.json();
 
         if (data.success) {
-            // Update KPI Cards
+            // Update KPI Cards with GSAP counters
             const activeJobs = (data.statusCounts.Pending || 0) + (data.statusCounts.Assigned || 0) + (data.statusCounts['In Progress'] || 0);
-            document.getElementById('kpiActiveJobs').innerText = activeJobs;
-            document.getElementById('kpiActiveAmc').innerText = data.financials.activeAmcCount || 0;
-            document.getElementById('kpiFleetSize').innerText = data.technicianWorkload.labels.length || 0;
-            document.getElementById('kpiRevenue').innerText = '₹' + (data.financials.totalRevenue || 0).toLocaleString('en-IN');
+            animateAdminCounter('kpiActiveJobs', activeJobs);
+            animateAdminCounter('kpiActiveAmc', data.financials.activeAmcCount || 0);
+            animateAdminCounter('kpiFleetSize', data.technicianWorkload.labels.length || 0);
+            animateAdminCounter('kpiRevenue', data.financials.totalRevenue || 0, '₹');
 
             const queueBadge = document.getElementById('badgeQueueCount');
             if (queueBadge) queueBadge.innerText = activeJobs;
@@ -169,10 +197,10 @@ async function fetchRequests(silent = false) {
 function filterStatus(status, btnElement) {
     activeStatusFilter = status;
     document.querySelectorAll('.filter-pill').forEach(btn => {
-        btn.className = 'filter-pill bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg transition';
+        btn.className = 'filter-pill bg-white dark:bg-[#1A1412] hover:bg-[#F2EDE3] dark:hover:bg-white/5 text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 dark:border-white/10 text-xs font-bold px-3 py-1.5 rounded-lg transition';
     });
     if (btnElement) {
-        btnElement.className = 'filter-pill active bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition';
+        btnElement.className = 'filter-pill active bg-[#342C27] dark:bg-[#A05B3A] text-white border border-transparent text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-xs';
     }
     renderTable();
 }
@@ -205,7 +233,7 @@ function renderTable() {
     if (filtered.length === 0) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" class="px-6 py-10 text-center text-slate-400">
+                <td colspan="6" class="px-6 py-10 text-center text-[#655448]/70 dark:text-[#B8AA98]/70 text-xs font-medium">
                     No requests matching the selected filter or search term.
                 </td>
             </tr>
@@ -215,7 +243,7 @@ function renderTable() {
 
     filtered.forEach(req => {
         const row = document.createElement('tr');
-        row.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        row.className = "hover:bg-[#F2EDE3]/50 dark:hover:bg-white/[0.03] transition border-b border-[#B8AA98]/15 dark:border-white/5";
 
         // Status badge configuration
         const statusConfig = {
@@ -245,33 +273,33 @@ function renderTable() {
 
         row.innerHTML = `
             <td class="px-5 py-4">
-                <div class="font-extrabold text-slate-900">${safeName}</div>
-                <div class="text-slate-500 text-[11px] flex items-center gap-1 mt-0.5">
+                <div class="font-extrabold text-[#342C27] dark:text-[#FDFBF7] text-sm">${safeName}</div>
+                <div class="text-[#655448] dark:text-[#B8AA98] text-[11px] flex items-center gap-1 mt-0.5 font-medium">
                     <span>📞</span> ${safePhone}
                 </div>
-                <div class="text-[10px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded w-max mt-1 font-bold">
+                <div class="text-[10px] font-mono text-[#A05B3A] dark:text-[#E4C99A] bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 border border-[#A05B3A]/20 px-1.5 py-0.5 rounded w-max mt-1 font-bold">
                     ${safeReqId}
                 </div>
             </td>
             <td class="px-5 py-4">
-                <div class="font-bold text-slate-800">${escapeHtml(serviceClean)}</div>
-                ${isAmc ? '<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full mt-1">★ AMC COVERED</span>' : ''}
-                <div class="text-[11px] text-slate-500 truncate max-w-xs mt-0.5 italic">"${safeDesc}"</div>
+                <div class="font-bold text-[#342C27] dark:text-[#FDFBF7] text-xs">${escapeHtml(serviceClean)}</div>
+                ${isAmc ? '<span class="inline-block bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30 text-[10px] font-black px-2 py-0.5 rounded-full mt-1">★ AMC COVERED</span>' : ''}
+                <div class="text-[11px] text-[#655448] dark:text-[#B8AA98] truncate max-w-xs mt-0.5 italic">"${safeDesc}"</div>
             </td>
             <td class="px-5 py-4">
                 <span class="badge-status ${stConf.class}">
                     <span class="w-1.5 h-1.5 rounded-full ${stConf.dot}"></span>
                     <span>${escapeHtml(req.status || 'Pending')}</span>
                 </span>
-                ${safeTechName ? `<div class="text-[10px] text-slate-500 mt-1 font-medium">🧑‍🔧 ${safeTechName}</div>` : ''}
+                ${safeTechName ? `<div class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1 font-medium">🧑‍🔧 ${safeTechName}</div>` : ''}
             </td>
             <td class="px-5 py-4">
-                <select onchange="assignTechnician('${safeReqId}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none font-medium">
+                <select onchange="assignTechnician('${safeReqId}', this.value)" class="w-full bg-[#FDFBF7] dark:bg-[#1A1412] border border-[#B8AA98]/30 dark:border-white/10 text-[#342C27] dark:text-[#FDFBF7] rounded-lg py-1.5 px-2 text-xs focus:ring-1 focus:ring-[#A05B3A] outline-none font-medium transition">
                     ${techOptions}
                 </select>
             </td>
             <td class="px-5 py-4">
-                <select onchange="updateRequestStatus('${safeReqId}', this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
+                <select onchange="updateRequestStatus('${safeReqId}', this.value)" class="w-full bg-[#FDFBF7] dark:bg-[#1A1412] border border-[#B8AA98]/30 dark:border-white/10 text-[#342C27] dark:text-[#FDFBF7] rounded-lg py-1.5 px-2 text-xs font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none transition">
                     <option value="Pending" ${req.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                     <option value="Assigned" ${req.status === 'Assigned' ? 'selected' : ''}>🧑‍🔧 Assigned</option>
                     <option value="In Progress" ${req.status === 'In Progress' ? 'selected' : ''}>🛠️ In Progress</option>
@@ -280,7 +308,7 @@ function renderTable() {
             </td>
             <td class="px-5 py-4">
                 <div class="flex items-center gap-1.5">
-                    <a href="https://wa.me/91${String(req.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name || '')},%20regarding%20your%20Extreme%20AC%20service%20request%20${encodeURIComponent(req.request_id || '')}" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded text-xs font-bold transition">
+                    <a href="https://wa.me/91${String(req.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name || '')},%20regarding%20your%20Extreme%20AC%20service%20request%20${encodeURIComponent(req.request_id || '')}" target="_blank" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition">
                         💬 WhatsApp
                     </a>
                 </div>
@@ -332,26 +360,26 @@ function renderTechniciansGrid() {
     grid.innerHTML = '';
     availableTechnicians.forEach(t => {
         const card = document.createElement('div');
-        card.className = "bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:shadow-md transition flex flex-col justify-between";
+        card.className = "bg-white dark:bg-[#27211D] border border-[#B8AA98]/20 dark:border-white/10 rounded-xl p-4 shadow-2xs hover:shadow-md transition flex flex-col justify-between";
         const safeName = escapeHtml(t.name || 'Technician');
         const safeInitial = safeName.charAt(0) || 'T';
         card.innerHTML = `
             <div>
                 <div class="flex items-start justify-between mb-2">
-                    <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-lg bg-[#A05B3A]/15 dark:bg-[#A05B3A]/25 text-[#A05B3A] dark:text-[#E4C99A] font-black text-sm flex items-center justify-center border border-[#A05B3A]/30">
                         ${safeInitial}
                     </div>
-                    <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${t.active_jobs > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                    <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${t.active_jobs > 0 ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30' : 'bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30'}">
                         ${t.active_jobs > 0 ? `${t.active_jobs} Active Jobs` : 'Available / Free'}
                     </span>
                 </div>
-                <h4 class="font-extrabold text-slate-900 text-sm">${safeName}</h4>
-                <p class="text-xs text-slate-500 font-mono mt-0.5">${escapeHtml(t.phone || 'Field Certified')}</p>
-                <p class="text-xs text-slate-400 truncate mt-0.5">${escapeHtml(t.email || '')}</p>
+                <h4 class="font-extrabold text-[#342C27] dark:text-[#FDFBF7] text-sm">${safeName}</h4>
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] font-mono mt-0.5">${escapeHtml(t.phone || 'Field Certified')}</p>
+                <p class="text-xs text-[#655448]/80 dark:text-[#B8AA98]/80 truncate mt-0.5">${escapeHtml(t.email || '')}</p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
+            <div class="mt-4 pt-3 border-t border-[#B8AA98]/15 dark:border-white/5 flex items-center justify-between text-xs font-bold text-[#655448] dark:text-[#B8AA98]">
                 <span>Completed: ${Number(t.completed_jobs || 0)}</span>
-                <span class="text-emerald-600 font-extrabold">Rating: 4.9 ★</span>
+                <span class="text-[#77B89A] font-extrabold">Rating: 4.9 ★</span>
             </div>
         `;
         grid.appendChild(card);
@@ -402,10 +430,10 @@ async function fetchProducts() {
             grid.innerHTML = '';
             data.products.forEach(p => {
                 const card = document.createElement('div');
-                card.className = "bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition flex flex-col justify-between";
+                card.className = "bg-white dark:bg-[#27211D] border border-[#B8AA98]/20 dark:border-white/10 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition flex flex-col justify-between";
                 
                 const catLabels = { new_ac: 'Brand New AC', used_ac: 'Certified 2nd Hand', spare_part: 'Genuine Spare' };
-                const catColors = { new_ac: 'bg-blue-600', used_ac: 'bg-slate-700', spare_part: 'bg-amber-600' };
+                const catColors = { new_ac: 'bg-[#A05B3A]', used_ac: 'bg-[#655448]', spare_part: 'bg-[#879581]' };
 
                 const safeImg = escapeHtml(sanitizeProductImage(p.image_url || ''));
                 const safeName = escapeHtml(p.name || '');
@@ -414,27 +442,27 @@ async function fetchProducts() {
                 const safeId = escapeHtml(p.id || '');
 
                 card.innerHTML = `
-                    <div class="relative h-36 bg-slate-100 overflow-hidden">
+                    <div class="relative h-36 bg-[#F2EDE3] dark:bg-[#1A1412] overflow-hidden">
                         <img src="${safeImg}" alt="${safeName}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80';">
-                        <span class="absolute top-2 left-2 ${catColors[p.category] || 'bg-slate-800'} text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow">
+                        <span class="absolute top-2 left-2 ${catColors[p.category] || 'bg-[#342C27]'} text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-xs">
                             ${catLabels[p.category] || safeCat}
                         </span>
-                        <span class="absolute top-2 right-2 bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                        <span class="absolute top-2 right-2 bg-white/90 dark:bg-[#1A1412]/90 backdrop-blur-md text-[#342C27] dark:text-[#FDFBF7] border border-[#B8AA98]/20 dark:border-white/10 text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
                             Stock: ${p.stock !== undefined ? p.stock : 5}
                         </span>
                     </div>
                     <div class="p-4 flex flex-col justify-between flex-1">
                         <div>
-                            <h4 class="font-extrabold text-slate-900 text-sm leading-snug">${safeName}</h4>
-                            <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">${safeDesc}</p>
+                            <h4 class="font-extrabold text-[#342C27] dark:text-[#FDFBF7] text-sm leading-snug">${safeName}</h4>
+                            <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-1 line-clamp-2">${safeDesc}</p>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-base font-black text-blue-700">₹${(Number(p.price) || 0).toLocaleString('en-IN')}</span>
+                        <div class="mt-4 pt-3 border-t border-[#B8AA98]/15 dark:border-white/5 flex items-center justify-between">
+                            <span class="text-base font-black text-[#A05B3A] dark:text-[#E4C99A]">₹${(Number(p.price) || 0).toLocaleString('en-IN')}</span>
                             <div class="flex items-center gap-1.5">
-                                <button onclick="openEditProductModal('${safeId}')" class="text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 text-xs font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                                <button onclick="openEditProductModal('${safeId}')" class="text-[#A05B3A] hover:text-[#884728] border border-[#A05B3A]/30 hover:bg-[#A05B3A]/10 text-xs font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1">
                                     <span>✏️</span> Edit
                                 </button>
-                                <button onclick="deleteProduct('${safeId}')" class="text-red-500 hover:text-red-700 border border-red-200 hover:bg-red-50 text-xs font-bold px-2.5 py-1 rounded-lg transition">
+                                <button onclick="deleteProduct('${safeId}')" class="text-red-500 hover:text-red-700 border border-red-300/40 hover:bg-red-500/10 text-xs font-bold px-2.5 py-1 rounded-lg transition">
                                     Delete
                                 </button>
                             </div>
@@ -546,20 +574,20 @@ async function fetchAmcData() {
             plansGrid.innerHTML = '';
             pData.plans.forEach(p => {
                 const div = document.createElement('div');
-                div.className = "bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm relative flex flex-col justify-between";
+                div.className = "bg-white dark:bg-[#27211D] border border-[#B8AA98]/20 dark:border-white/10 rounded-2xl p-5 text-center shadow-xs relative flex flex-col justify-between";
                 const safeName = escapeHtml(p.name || '');
                 const safeDesc = escapeHtml(p.description || '');
                 const safeId = escapeHtml(p.id || '');
                 div.innerHTML = `
                     <div>
-                        <h4 class="font-black text-slate-900 text-base">${safeName}</h4>
-                        <div class="text-2xl font-black text-blue-600 mt-2">₹${Number(p.price) || 0}<span class="text-xs text-slate-400 font-normal">/yr</span></div>
-                        <span class="inline-block mt-2 bg-blue-50 text-blue-700 text-xs font-extrabold px-3 py-1 rounded-full">
+                        <h4 class="font-black text-[#342C27] dark:text-[#FDFBF7] text-base">${safeName}</h4>
+                        <div class="text-2xl font-black text-[#A05B3A] dark:text-[#E4C99A] mt-2">₹${Number(p.price) || 0}<span class="text-xs text-[#655448] dark:text-[#B8AA98] font-normal">/yr</span></div>
+                        <span class="inline-block mt-2 bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30 text-xs font-extrabold px-3 py-1 rounded-full">
                             ${Number(p.services_per_year) || 3} Free Services/Year
                         </span>
-                        <p class="text-xs text-slate-500 mt-3 italic">${safeDesc}</p>
+                        <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-3 italic">${safeDesc}</p>
                     </div>
-                    <button onclick="deleteAmcPlan('${safeId}')" class="mt-4 text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wider">
+                    <button onclick="deleteAmcPlan('${safeId}')" class="mt-4 text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wider transition">
                         Delete Tier
                     </button>
                 `;
@@ -575,6 +603,7 @@ async function fetchAmcData() {
             amcTable.innerHTML = '';
             sData.subscriptions.forEach(sub => {
                 const tr = document.createElement('tr');
+                tr.className = "hover:bg-[#F2EDE3]/50 dark:hover:bg-white/[0.03] transition border-b border-[#B8AA98]/15 dark:border-white/5";
                 const isPending = sub.status === 'Pending';
                 const safeSubId = escapeHtml(sub.id || '');
                 const safeCustName = escapeHtml(sub.customer_name || '');
@@ -582,18 +611,18 @@ async function fetchAmcData() {
                 const safePlanName = escapeHtml(sub.plan_name || '');
 
                 let action = isPending
-                    ? `<button onclick="activateAmc('${safeSubId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-xs transition">
+                    ? `<button onclick="activateAmc('${safeSubId}')" class="bg-[#77B89A] hover:bg-[#629d82] text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-xs transition">
                          Approve &amp; Activate
                        </button>`
-                    : `<span class="text-xs text-slate-400 font-mono">Active till ${new Date(sub.end_date).toLocaleDateString()}</span>`;
+                    : `<span class="text-xs text-[#655448] dark:text-[#B8AA98] font-mono">Active till ${new Date(sub.end_date).toLocaleDateString()}</span>`;
 
                 tr.innerHTML = `
-                    <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(sub.created_at).toLocaleDateString()}</td>
+                    <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98]">${new Date(sub.created_at).toLocaleDateString()}</td>
                     <td class="px-5 py-3.5">
-                        <div class="font-extrabold text-slate-900">${safeCustName}</div>
-                        <div class="text-xs text-slate-500">📞 ${safePhone}</div>
+                        <div class="font-extrabold text-[#342C27] dark:text-[#FDFBF7]">${safeCustName}</div>
+                        <div class="text-xs text-[#655448] dark:text-[#B8AA98]">📞 ${safePhone}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-bold text-blue-700">${safePlanName}</td>
+                    <td class="px-5 py-3.5 font-bold text-[#A05B3A] dark:text-[#E4C99A]">${safePlanName}</td>
                     <td class="px-5 py-3.5">
                         <span class="badge-status ${isPending ? 'badge-pending' : 'badge-completed'}">
                             ${escapeHtml(sub.status || '')} ${!isPending ? `(${sub.remaining_services} visits left)` : ''}
@@ -659,21 +688,21 @@ async function fetchEnquiries() {
             table.innerHTML = '';
             data.enquiries.forEach(enq => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.className = "hover:bg-[#F2EDE3]/50 dark:hover:bg-white/[0.03] transition border-b border-[#B8AA98]/15 dark:border-white/5";
                 const safeName = escapeHtml(enq.name || '');
                 const safePhone = escapeHtml(enq.phone || '');
                 const safeProd = escapeHtml(enq.product_name || '');
                 const safeMsg = escapeHtml(enq.message || '');
                 tr.innerHTML = `
-                    <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(enq.created_at).toLocaleDateString()}</td>
+                    <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98]">${new Date(enq.created_at).toLocaleDateString()}</td>
                     <td class="px-5 py-3.5">
-                        <div class="font-extrabold text-slate-900">${safeName}</div>
-                        <div class="text-xs text-slate-500">📞 ${safePhone}</div>
+                        <div class="font-extrabold text-[#342C27] dark:text-[#FDFBF7] text-sm">${safeName}</div>
+                        <div class="text-xs text-[#655448] dark:text-[#B8AA98]">📞 ${safePhone}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-bold text-blue-700">${safeProd}</td>
-                    <td class="px-5 py-3.5 text-xs text-slate-600 italic">"${safeMsg}"</td>
+                    <td class="px-5 py-3.5 font-bold text-[#A05B3A] dark:text-[#E4C99A] text-xs">${safeProd}</td>
+                    <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98] italic">"${safeMsg}"</td>
                     <td class="px-5 py-3.5">
-                        <a href="https://wa.me/91${String(enq.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name || '')},%20regarding%20your%20enquiry%20for%20${encodeURIComponent(enq.product_name || '')}" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-3 py-1 rounded-lg text-xs font-bold transition">
+                        <a href="https://wa.me/91${String(enq.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name || '')},%20regarding%20your%20enquiry%20for%20${encodeURIComponent(enq.product_name || '')}" target="_blank" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-3 py-1 rounded-lg text-xs font-bold transition">
                             💬 Message
                         </a>
                     </td>
@@ -753,13 +782,13 @@ function renderActivityFeed(requests) {
             <div class="activity-feed-item">
                 <span class="activity-dot ${color}"></span>
                 <div class="flex-1">
-                    <p class="text-xs text-slate-700 leading-snug">${tmpl(r)}</p>
-                    <span class="text-[10px] text-slate-400 font-medium">${mins}m ago</span>
+                    <p class="text-xs text-[#342C27] dark:text-[#FDFBF7] leading-snug font-medium">${tmpl(r)}</p>
+                    <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium">${mins}m ago</span>
                 </div>
             </div>`;
     }).join('');
 
-    feed.innerHTML = items || '<p class="text-xs text-slate-400 py-4 text-center">No recent activity</p>';
+    feed.innerHTML = items || '<p class="text-xs text-[#655448] dark:text-[#B8AA98] py-4 text-center">No recent activity</p>';
 }
 
 // Hook into fetchRequests to also update activity feed and today strip
@@ -785,24 +814,24 @@ function renderTodayStrip() {
 
     strip.innerHTML = `
         <div class="today-stat">
-            <div class="text-white font-black text-xl">${completed}</div>
-            <div class="text-blue-300 text-[10px] font-bold uppercase tracking-widest">Completed Today</div>
+            <div class="text-[#FDFBF7] font-black text-xl">${completed}</div>
+            <div class="text-[#E4C99A] text-[10px] font-bold uppercase tracking-widest">Completed Today</div>
         </div>
         <div class="today-stat">
-            <div class="text-amber-300 font-black text-xl">${pending}</div>
-            <div class="text-blue-300 text-[10px] font-bold uppercase tracking-widest">Pending Queue</div>
+            <div class="text-[#E4C99A] font-black text-xl">${pending}</div>
+            <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">Pending Queue</div>
         </div>
         <div class="today-stat">
-            <div class="text-blue-300 font-black text-xl">${active}</div>
-            <div class="text-blue-300 text-[10px] font-bold uppercase tracking-widest">On-Site Now</div>
+            <div class="text-[#77B89A] font-black text-xl">${active}</div>
+            <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">On-Site Now</div>
         </div>
         <div class="today-stat">
-            <div class="text-emerald-300 font-black text-xl">₹${totalEst.toLocaleString('en-IN')}</div>
-            <div class="text-blue-300 text-[10px] font-bold uppercase tracking-widest">Est. Revenue</div>
+            <div class="text-[#77B89A] font-black text-xl">₹${totalEst.toLocaleString('en-IN')}</div>
+            <div class="text-[#E4C99A] text-[10px] font-bold uppercase tracking-widest">Est. Revenue</div>
         </div>
         <div class="today-stat">
-            <div class="text-white font-black text-xl">${availableTechnicians.length}</div>
-            <div class="text-blue-300 text-[10px] font-bold uppercase tracking-widest">Engineers Active</div>
+            <div class="text-[#FDFBF7] font-black text-xl">${availableTechnicians.length}</div>
+            <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">Engineers Active</div>
         </div>`;
 }
 
@@ -914,8 +943,8 @@ function renderTechnicianLeaderboard() {
             rating: '4.9',
             sla: '98%',
             badge: '🏆 Top Performer',
-            badgeClass: 'bg-amber-100 text-amber-800 border-amber-300',
-            avatarBg: 'bg-amber-500'
+            badgeClass: 'bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] border-[#A05B3A]/30',
+            avatarBg: 'bg-[#A05B3A]'
         },
         {
             name: 'Rajesh Verma',
@@ -924,8 +953,8 @@ function renderTechnicianLeaderboard() {
             rating: '4.8',
             sla: '94%',
             badge: '⚡ Speed Demon',
-            badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
-            avatarBg: 'bg-blue-600'
+            badgeClass: 'bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border-[#77B89A]/30',
+            avatarBg: 'bg-[#77B89A]'
         },
         {
             name: 'Amit Singh',
@@ -934,43 +963,43 @@ function renderTechnicianLeaderboard() {
             rating: '4.7',
             sla: '92%',
             badge: '🌟 Customer Favorite',
-            badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
-            avatarBg: 'bg-purple-600'
+            badgeClass: 'bg-[#E4C99A]/20 text-[#655448] dark:text-[#E4C99A] border-[#E4C99A]/40',
+            avatarBg: 'bg-[#655448]'
         }
     ];
 
     container.innerHTML = techStats.map((t, idx) => `
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+        <div class="bg-white dark:bg-[#27211D] rounded-2xl p-5 border border-[#B8AA98]/20 dark:border-white/10 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <span class="text-xs font-black uppercase px-2.5 py-0.5 rounded-full border ${t.badgeClass}">
                         ${t.badge}
                     </span>
-                    <span class="text-xs font-mono font-bold text-slate-400">#${idx + 1}</span>
+                    <span class="text-xs font-mono font-bold text-[#655448] dark:text-[#B8AA98]">#${idx + 1}</span>
                 </div>
                 <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-xl ${t.avatarBg} text-white font-black flex items-center justify-center text-sm shadow-sm">
+                    <div class="w-10 h-10 rounded-xl ${t.avatarBg} text-white font-black flex items-center justify-center text-sm shadow-xs">
                         ${t.name.split(' ').map(n=>n[0]).join('')}
                     </div>
                     <div>
-                        <h4 class="font-black text-slate-900 text-sm leading-tight">${t.name}</h4>
-                        <p class="text-[11px] text-slate-500 font-medium">${t.role}</p>
+                        <h4 class="font-black text-[#342C27] dark:text-[#FDFBF7] text-sm leading-tight">${t.name}</h4>
+                        <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-medium">${t.role}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-center">
+            <div class="grid grid-cols-3 gap-2 bg-[#F2EDE3]/50 dark:bg-[#1A1412] p-2.5 rounded-xl border border-[#B8AA98]/20 dark:border-white/10 text-center">
                 <div>
-                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Jobs</span>
-                    <span class="text-sm font-black text-slate-900 font-mono">${t.completed}</span>
+                    <span class="text-[9px] uppercase font-bold text-[#655448] dark:text-[#B8AA98] block">Jobs</span>
+                    <span class="text-sm font-black text-[#342C27] dark:text-[#FDFBF7] font-mono">${t.completed}</span>
                 </div>
                 <div>
-                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Rating</span>
+                    <span class="text-[9px] uppercase font-bold text-[#655448] dark:text-[#B8AA98] block">Rating</span>
                     <span class="text-sm font-black text-amber-500 font-mono">★ ${t.rating}</span>
                 </div>
                 <div>
-                    <span class="text-[9px] uppercase font-bold text-slate-400 block">On-Time</span>
-                    <span class="text-sm font-black text-emerald-600 font-mono">${t.sla}</span>
+                    <span class="text-[9px] uppercase font-bold text-[#655448] dark:text-[#B8AA98] block">On-Time</span>
+                    <span class="text-sm font-black text-[#77B89A] font-mono">${t.sla}</span>
                 </div>
             </div>
         </div>
@@ -1009,11 +1038,11 @@ function renderServiceDemandBreakdown() {
     const calculatedTotal = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
 
     const colors = [
-        'bg-blue-600',
-        'bg-emerald-500',
-        'bg-cyan-500',
-        'bg-purple-600',
-        'bg-amber-500'
+        'bg-[#A05B3A]',
+        'bg-[#77B89A]',
+        'bg-[#E4C99A]',
+        'bg-[#655448]',
+        'bg-[#879581]'
     ];
 
     container.innerHTML = Object.entries(counts).map(([cat, cnt], idx) => {
@@ -1022,10 +1051,10 @@ function renderServiceDemandBreakdown() {
         return `
             <div>
                 <div class="flex justify-between items-center text-xs font-bold mb-1.5">
-                    <span class="text-slate-800">${cat}</span>
-                    <span class="text-slate-500 font-mono">${cnt} jobs (${pct}%)</span>
+                    <span class="text-[#342C27] dark:text-[#FDFBF7]">${cat}</span>
+                    <span class="text-[#655448] dark:text-[#B8AA98] font-mono">${cnt} jobs (${pct}%)</span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div class="w-full bg-[#B8AA98]/20 dark:bg-white/10 rounded-full h-2.5 overflow-hidden">
                     <div class="${barColor} h-2.5 rounded-full transition-all duration-700" style="width: ${pct}%"></div>
                 </div>
             </div>

@@ -5,37 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Technician Field Portal | Extreme Sales &amp; Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Anti-flicker: apply dark class BEFORE first paint -->
+    <!-- Anti-flicker: apply dark class ONLY if explicitly saved as dark -->
     <script>
       (function(){
         try {
           var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
           }
         } catch(e){}
       })();
-    </script>  </head>
-  <body class="bg-slate-100 text-slate-900 min-h-screen font-sans antialiased pb-12">
+    </script>
+  </head>
+  <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] min-h-screen font-sans antialiased pb-12 selection:bg-[#B86E4B] selection:text-white transition-colors duration-200">
 
     <!-- TOP HEADER -->
-    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-xl border-b border-slate-800">
+    <header class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 backdrop-blur-md">
       <div class="max-w-4xl mx-auto px-4 sm:px-6">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-amber-500 text-slate-950 rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-amber-500/30">
+            <div class="w-9 h-9 bg-[#A05B3A] text-white rounded-xl flex items-center justify-center font-black text-base shadow-[0_2px_8px_rgba(160,91,58,0.35)]">
               ⚡
             </div>
             <div>
-              <span class="text-base font-black tracking-tight">Extreme S&amp;S <span class="text-amber-400 font-bold text-xs bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-800">Field Tech</span></span>
-              <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
-                <span id="techNameBadge" class="font-bold text-amber-400">Suresh Kumar</span>
-                <span class="text-slate-600">•</span>
-                <span class="text-emerald-400 flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online
+              <span class="text-base font-black tracking-tight text-white">Extreme S&amp;S <span class="text-[#E4C99A] font-bold text-xs bg-[#E4C99A]/15 px-2.5 py-0.5 rounded-full border border-[#E4C99A]/30">Field Tech</span></span>
+              <div class="flex items-center gap-1.5 text-[11px] text-[#B8AA98]">
+                <span id="techNameBadge" class="font-bold text-[#E4C99A]">Suresh Kumar</span>
+                <span class="text-[#655448]">•</span>
+                <span class="text-[#77B89A] flex items-center gap-1 font-semibold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#77B89A] animate-pulse"></span> Online
                 </span>
               </div>
             </div>
@@ -44,21 +49,21 @@
           <div class="flex gap-2 items-center">
             <button
               type="button"
-              class="theme-toggle-btn text-slate-300 hover:text-white transition p-2 rounded-lg hover:bg-slate-800"
+              class="theme-toggle-btn text-[#B8AA98] hover:text-white transition p-2 rounded-lg hover:bg-white/10"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="theme-icon-sun w-5 h-5 hidden text-[#E4C99A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
-            <button type="button" id="refreshBtn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs transition flex items-center gap-1">
+            <button type="button" id="refreshBtn" class="bg-[#342C27] hover:bg-[#433932] text-white border border-[#B8AA98]/40 px-3 py-1.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 cursor-pointer">
               <span id="refreshIcon">↻</span>
               <span class="hidden sm:inline">Refresh</span>
             </button>
-            <button type="button" onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-lg font-bold text-xs transition">
+            <button type="button" onclick="handleLogout()" class="bg-[#A05B3A]/20 hover:bg-[#A05B3A] text-[#E4C99A] hover:text-white border border-[#A05B3A]/40 px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer">
               Logout
             </button>
           </div>
@@ -70,67 +75,67 @@
 
       <!-- DAILY PERFORMANCE STRIP -->
       <div class="grid grid-cols-3 gap-3">
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs text-center">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Assigned</span>
-          <div id="statAssigned" class="text-2xl sm:text-3xl font-black text-purple-600 mt-0.5">--</div>
-          <span class="text-[10px] text-slate-500 font-medium">To visit</span>
+        <div class="neuro-card bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-4 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-[0_4px_16px_rgba(52,44,39,0.05)] text-center transition hover:-translate-y-0.5">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Assigned</span>
+          <div id="statAssigned" class="text-2xl sm:text-3xl font-black text-[#8B5CF6] mt-0.5">--</div>
+          <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium">To visit</span>
         </div>
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs text-center">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">In Progress</span>
-          <div id="statProgress" class="text-2xl sm:text-3xl font-black text-blue-600 mt-0.5">--</div>
-          <span class="text-[10px] text-slate-500 font-medium">On-site now</span>
+        <div class="neuro-card bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-4 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-[0_4px_16px_rgba(52,44,39,0.05)] text-center transition hover:-translate-y-0.5">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">In Progress</span>
+          <div id="statProgress" class="text-2xl sm:text-3xl font-black text-[#0284C7] mt-0.5">--</div>
+          <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium">On-site now</span>
         </div>
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs text-center">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Completed</span>
-          <div id="statCompleted" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-0.5">--</div>
-          <span class="text-[10px] text-slate-500 font-medium">Resolved</span>
+        <div class="neuro-card bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-4 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-[0_4px_16px_rgba(52,44,39,0.05)] text-center transition hover:-translate-y-0.5">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Completed</span>
+          <div id="statCompleted" class="text-2xl sm:text-3xl font-black text-[#2E6B52] dark:text-[#77B89A] mt-0.5">--</div>
+          <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium">Resolved</span>
         </div>
       </div>
 
       <!-- PROGRESS RING + EARNINGS STRIP -->
-      <div class="flex gap-4">
+      <div class="flex flex-col sm:flex-row gap-4">
         <!-- Progress Ring -->
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-3 flex-shrink-0">
+        <div class="neuro-card bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-4 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm flex items-center gap-3 flex-shrink-0">
           <div class="progress-ring-wrap">
             <svg width="64" height="64" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="22" fill="none" stroke="#e2e8f0" stroke-width="5"/>
-              <circle id="progressRing" cx="32" cy="32" r="22" fill="none" stroke="#10b981" stroke-width="5"
+              <circle cx="32" cy="32" r="22" fill="none" stroke="#E6DFD3" class="dark:stroke-[#342C27]" stroke-width="5"/>
+              <circle id="progressRing" cx="32" cy="32" r="22" fill="none" stroke="#77B89A" stroke-width="5"
                 stroke-linecap="round" style="stroke-dasharray:138; stroke-dashoffset:138; transition:stroke-dashoffset 0.8s ease;"/>
             </svg>
-            <div id="progressRingVal" class="progress-ring-val">0/0</div>
+            <div id="progressRingVal" class="progress-ring-val text-[#342C27] dark:text-[#F2EDE3]">0/0</div>
           </div>
           <div>
-            <div class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Jobs Done</div>
-            <div class="text-sm font-black text-slate-900">Today's Progress</div>
+            <div class="text-[10px] font-extrabold uppercase tracking-widest text-[#655448] dark:text-[#B8AA98]">Jobs Done</div>
+            <div class="text-sm font-black text-[#342C27] dark:text-[#F2EDE3]">Today's Progress</div>
           </div>
         </div>
         <!-- Earnings Strip -->
-        <div id="earningsStrip" class="earnings-strip flex-1">
-          <div class="text-emerald-200 text-xs">Loading earnings...</div>
+        <div id="earningsStrip" class="earnings-strip flex-1 rounded-2xl bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white border border-[#B8AA98]/30 shadow-[0_4px_16px_rgba(52,44,39,0.12)] p-4 flex items-center justify-between">
+          <div class="text-[#E4C99A] text-xs">Loading earnings...</div>
         </div>
       </div>
 
       <!-- QUICK ACTIONS: SOS & DIAGNOSTIC GUIDE -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="triggerSOS()" class="sos-btn">
+          <button type="button" onclick="triggerSOS()" class="bg-[#C2410C] hover:bg-[#9A3412] text-white font-extrabold text-xs py-2.5 px-4 rounded-xl shadow-[0_3px_12px_rgba(194,65,12,0.35)] transition flex items-center gap-2 cursor-pointer active:scale-95">
             🆘 Emergency SOS
           </button>
-          <button type="button" onclick="openTechDiagnosticGuide()" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer">
+          <button type="button" onclick="openTechDiagnosticGuide()" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white font-extrabold text-xs py-2.5 px-4 rounded-xl shadow-[0_3px_12px_rgba(160,91,58,0.3)] transition flex items-center gap-2 cursor-pointer active:scale-95">
             <span>🔧</span> Field Diagnostics &amp; Multimeter Guide
           </button>
         </div>
-        <span class="text-xs text-slate-400 font-medium">Quick reference &amp; component checklists</span>
+        <span class="text-xs text-[#655448] dark:text-[#B8AA98] font-medium">Quick reference &amp; component checklists</span>
       </div>
 
       <!-- FILTER TABS -->
       <div class="flex items-center justify-between">
-        <div class="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
-          <button type="button" onclick="filterTechJobs('all', this)" class="tech-filter active bg-slate-900 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition">All My Jobs</button>
-          <button type="button" onclick="filterTechJobs('active', this)" class="tech-filter text-slate-600 hover:text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg transition">Active Only</button>
-          <button type="button" onclick="filterTechJobs('completed', this)" class="tech-filter text-slate-600 hover:text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg transition">Completed</button>
+        <div class="flex gap-1 bg-[#E6DFD3]/60 dark:bg-[#1F1916] p-1 rounded-xl border border-[#B8AA98]/30 shadow-2xs">
+          <button type="button" onclick="filterTechJobs('all', this)" class="tech-filter active bg-[#342C27] text-white dark:bg-[#F2EDE3] dark:text-[#342C27] font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-xs transition cursor-pointer">All My Jobs</button>
+          <button type="button" onclick="filterTechJobs('active', this)" class="tech-filter text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-bold text-xs px-3.5 py-1.5 rounded-lg transition cursor-pointer">Active Only</button>
+          <button type="button" onclick="filterTechJobs('completed', this)" class="tech-filter text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-bold text-xs px-3.5 py-1.5 rounded-lg transition cursor-pointer">Completed</button>
         </div>
-        <span id="jobCountLabel" class="text-xs font-bold text-slate-500">Loading assignments...</span>
+        <span id="jobCountLabel" class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Loading assignments...</span>
       </div>
 
       <!-- JOBS LIST CONTAINER -->
@@ -141,14 +146,14 @@
     </main>
 
     <!-- JOB COMPLETION MODAL -->
-    <div id="completionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
-        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+    <div id="completionModal" class="fixed inset-0 bg-[#1A1412]/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-[#B8AA98]/30">
           <div>
-            <h3 class="text-lg font-black text-slate-900">Sign Off &amp; Complete Service</h3>
-            <p id="modalReqId" class="text-xs text-blue-600 font-mono font-bold mt-0.5">Request #--</p>
+            <h3 class="text-lg font-black text-[#342C27] dark:text-[#F2EDE3]">Sign Off &amp; Complete Service</h3>
+            <p id="modalReqId" class="text-xs text-[#A05B3A] dark:text-[#E4C99A] font-mono font-bold mt-0.5">Request #--</p>
           </div>
-          <button type="button" onclick="closeCompletionModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+          <button type="button" onclick="closeCompletionModal()" class="text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xl cursor-pointer" aria-label="Close modal">✕</button>
         </div>
 
         <form id="completionForm" class="space-y-4">
@@ -157,73 +162,73 @@
           <input type="hidden" id="modalServiceType">
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Work Done &amp; Diagnostics Notes</label>
+            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Work Done &amp; Diagnostics Notes</label>
             <textarea
               id="completionNotes"
               required
               rows="2"
               placeholder="e.g. Capacitor 45uF replaced, copper coil cleaned with jet spray, cooling restored to 16°C."
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none"
+              class="w-full bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl p-3 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-[#FDFBF7] dark:focus:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] outline-none"
             ></textarea>
           </div>
 
           <!-- Interactive Spare Parts & Billing Calculator -->
-          <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2.5">
+          <div class="bg-[#E6DFD3]/40 dark:bg-[#1F1916] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 space-y-3">
             <div class="flex justify-between items-center">
-              <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5">
                 <span>🔩</span> Spare Parts &amp; Labor Breakdown
               </span>
-              <span class="text-[10px] text-slate-400 font-mono">GST Registered (18%)</span>
+              <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-mono">GST Registered (18%)</span>
             </div>
 
             <div class="grid grid-cols-2 gap-2 text-xs">
-              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
-                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="45uF Motor Capacitor" data-price="650" onchange="calculateTechBill()">
-                <span class="text-[11px] font-medium text-slate-800">Capacitor (₹650)</span>
+              <label class="flex items-center gap-2 p-2.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 cursor-pointer hover:border-[#A05B3A] transition">
+                <input type="checkbox" class="part-item-cb rounded accent-[#A05B3A] focus:ring-0" data-name="45uF Motor Capacitor" data-price="650" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-[#342C27] dark:text-[#F2EDE3]">Capacitor (₹650)</span>
               </label>
-              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
-                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="R32/R410A Gas Top-Up" data-price="1800" onchange="calculateTechBill()">
-                <span class="text-[11px] font-medium text-slate-800">Gas Top-Up (₹1,800)</span>
+              <label class="flex items-center gap-2 p-2.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 cursor-pointer hover:border-[#A05B3A] transition">
+                <input type="checkbox" class="part-item-cb rounded accent-[#A05B3A] focus:ring-0" data-name="R32/R410A Gas Top-Up" data-price="1800" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-[#342C27] dark:text-[#F2EDE3]">Gas Top-Up (₹1,800)</span>
               </label>
-              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
-                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="Copper Flare Brazing" data-price="850" onchange="calculateTechBill()">
-                <span class="text-[11px] font-medium text-slate-800">Copper Brazing (₹850)</span>
+              <label class="flex items-center gap-2 p-2.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 cursor-pointer hover:border-[#A05B3A] transition">
+                <input type="checkbox" class="part-item-cb rounded accent-[#A05B3A] focus:ring-0" data-name="Copper Flare Brazing" data-price="850" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-[#342C27] dark:text-[#F2EDE3]">Copper Brazing (₹850)</span>
               </label>
-              <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300">
-                <input type="checkbox" class="part-item-cb rounded text-emerald-600 focus:ring-0" data-name="Chemical Jet Foam Clean" data-price="799" onchange="calculateTechBill()">
-                <span class="text-[11px] font-medium text-slate-800">Foam Clean (₹799)</span>
+              <label class="flex items-center gap-2 p-2.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 cursor-pointer hover:border-[#A05B3A] transition">
+                <input type="checkbox" class="part-item-cb rounded accent-[#A05B3A] focus:ring-0" data-name="Chemical Jet Foam Clean" data-price="799" onchange="calculateTechBill()">
+                <span class="text-[11px] font-medium text-[#342C27] dark:text-[#F2EDE3]">Foam Clean (₹799)</span>
               </label>
             </div>
 
             <!-- Live Bill Total Display -->
-            <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-xs font-bold text-slate-800">
-              <span class="text-slate-500 font-medium">Labor (₹499) + Parts + 18% GST:</span>
-              <span id="techBillTotal" class="text-emerald-700 font-mono text-sm">₹589</span>
+            <div class="flex justify-between items-center pt-2.5 border-t border-[#B8AA98]/30 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3]">
+              <span class="text-[#655448] dark:text-[#B8AA98] font-medium">Labor (₹499) + Parts + 18% GST:</span>
+              <span id="techBillTotal" class="text-[#2E6B52] dark:text-[#77B89A] font-mono text-sm font-extrabold">₹589</span>
             </div>
           </div>
 
           <!-- Customer Digital Signature Pad -->
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold text-slate-700 uppercase">Customer Sign-off Signature</label>
-              <button type="button" onclick="clearSignatureCanvas()" class="text-[11px] text-blue-600 hover:text-blue-800 font-bold">Clear Signature</button>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase">Customer Sign-off Signature</label>
+              <button type="button" onclick="clearSignatureCanvas()" class="text-[11px] text-[#A05B3A] dark:text-[#E4C99A] hover:underline font-bold cursor-pointer">Clear Signature</button>
             </div>
-            <div class="border border-slate-300 rounded-xl overflow-hidden bg-white keep-white relative">
+            <div class="border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl overflow-hidden bg-white keep-white relative shadow-inner">
               <canvas id="signatureCanvas" width="460" height="120" class="w-full h-28 block touch-none cursor-crosshair bg-white keep-white"></canvas>
-              <div id="sigPlaceholder" class="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs font-medium">
+              <div id="sigPlaceholder" class="absolute inset-0 flex items-center justify-center pointer-events-none text-[#B8AA98] text-xs font-medium">
                 Customer signs with finger or stylus here
               </div>
             </div>
           </div>
 
-          <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-[11px] flex items-center gap-2">
+          <div class="p-3 bg-[#77B89A]/15 rounded-xl border border-[#77B89A]/40 text-[#2E6B52] dark:text-[#77B89A] text-[11px] flex items-center gap-2">
             <span>✅</span>
             <span>Generates an official digital invoice receipt and updates customer live GPS tracker instantly.</span>
           </div>
 
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="closeCompletionModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Cancel</button>
-            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/30 transition flex items-center gap-1.5">
+          <div class="flex justify-end gap-2.5 pt-2">
+            <button type="button" onclick="closeCompletionModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#E6DFD3]/60 dark:hover:bg-[#342C27] transition cursor-pointer">Cancel</button>
+            <button type="submit" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-[0_3px_12px_rgba(160,91,58,0.3)] transition flex items-center gap-1.5 cursor-pointer">
               <span>✓ Sign Off &amp; Generate Invoice</span>
             </button>
           </div>
@@ -232,78 +237,78 @@
     </div>
 
     <!-- DIGITAL INVOICE RECEIPT MODAL -->
-    <div id="receiptModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 print:m-0 print:p-0 print:border-none keep-white receipt-paper">
-      <!-- Header -->
-        <div class="flex justify-between items-start pb-4 border-b border-slate-200 mb-4">
+    <div id="receiptModal" class="fixed inset-0 bg-[#1A1412]/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#B8AA98]/40 print:m-0 print:p-0 print:border-none keep-white receipt-paper text-[#342C27]">
+        <!-- Header -->
+        <div class="flex justify-between items-start pb-4 border-b border-[#B8AA98]/30 mb-4">
           <div>
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xs">E</div>
-              <span class="font-black text-base text-slate-900">Extreme Sales &amp; Services</span>
+              <div class="w-7 h-7 bg-[#A05B3A] rounded-lg flex items-center justify-center text-white font-black text-xs">E</div>
+              <span class="font-black text-base text-[#342C27]">Extreme Sales &amp; Services</span>
             </div>
-            <p class="text-[10px] text-slate-500 mt-1 font-mono">Tax Invoice • GSTIN: 27AABCE1234F1Z5</p>
+            <p class="text-[10px] text-[#655448] mt-1 font-mono">Tax Invoice • GSTIN: 27AABCE1234F1Z5</p>
           </div>
           <div class="text-right">
-            <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">PAID / RESOLVED</span>
-            <p id="receiptDate" class="text-[10px] text-slate-400 mt-1 font-mono"></p>
+            <span class="text-xs font-bold text-[#2E6B52] bg-[#77B89A]/20 px-2.5 py-0.5 rounded-md border border-[#77B89A]/40">PAID / RESOLVED</span>
+            <p id="receiptDate" class="text-[10px] text-[#655448] mt-1 font-mono"></p>
           </div>
         </div>
 
         <!-- Job Details -->
-        <div class="grid grid-cols-2 gap-3 text-xs mb-4 p-3 bg-slate-50 rounded-xl">
+        <div class="grid grid-cols-2 gap-3 text-xs mb-4 p-3 bg-[#F2EDE3]/60 rounded-xl border border-[#B8AA98]/30">
           <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block">Job Request ID</span>
-            <span id="receiptReqId" class="font-mono font-bold text-slate-900">AC-XXXX</span>
+            <span class="text-[10px] uppercase font-bold text-[#655448] block">Job Request ID</span>
+            <span id="receiptReqId" class="font-mono font-bold text-[#A05B3A]">AC-XXXX</span>
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block">Field Engineer</span>
-            <span id="receiptTechName" class="font-bold text-slate-900">Suresh Kumar</span>
+            <span class="text-[10px] uppercase font-bold text-[#655448] block">Field Engineer</span>
+            <span id="receiptTechName" class="font-bold text-[#342C27]">Suresh Kumar</span>
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block">Customer</span>
-            <span id="receiptCustName" class="font-bold text-slate-900">Rahul Sharma</span>
+            <span class="text-[10px] uppercase font-bold text-[#655448] block">Customer</span>
+            <span id="receiptCustName" class="font-bold text-[#342C27]">Rahul Sharma</span>
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block">Service Type</span>
-            <span id="receiptServiceType" class="font-bold text-blue-600">AC Repair</span>
+            <span class="text-[10px] uppercase font-bold text-[#655448] block">Service Type</span>
+            <span id="receiptServiceType" class="font-bold text-[#A05B3A]">AC Repair</span>
           </div>
         </div>
 
         <!-- Notes & Parts -->
         <div class="mb-4">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Technician Notes &amp; Action</span>
-          <p id="receiptNotes" class="text-xs text-slate-700 bg-white border border-slate-200 p-2.5 rounded-xl leading-relaxed font-medium"></p>
+          <span class="text-[10px] font-bold uppercase text-[#655448] block mb-1">Technician Notes &amp; Action</span>
+          <p id="receiptNotes" class="text-xs text-[#342C27] bg-[#FDFBF7] border border-[#B8AA98]/30 p-3 rounded-xl leading-relaxed font-medium"></p>
         </div>
 
         <!-- Itemized Breakdown -->
-        <div class="space-y-1.5 text-xs border-t border-slate-200 pt-3 mb-4">
-          <div class="flex justify-between text-slate-600">
+        <div class="space-y-1.5 text-xs border-t border-[#B8AA98]/30 pt-3 mb-4">
+          <div class="flex justify-between text-[#655448]">
             <span>Standard Field Service &amp; Diagnostics</span>
-            <span class="font-mono">₹499.00</span>
+            <span class="font-mono text-[#342C27]">₹499.00</span>
           </div>
-          <div id="receiptPartsList" class="space-y-1 text-slate-600"></div>
-          <div class="flex justify-between text-slate-600">
+          <div id="receiptPartsList" class="space-y-1 text-[#655448]"></div>
+          <div class="flex justify-between text-[#655448]">
             <span>GST (18%)</span>
-            <span id="receiptGst" class="font-mono">₹89.82</span>
+            <span id="receiptGst" class="font-mono text-[#342C27]">₹89.82</span>
           </div>
-          <div class="flex justify-between text-slate-900 font-extrabold text-sm pt-2 border-t border-slate-200">
+          <div class="flex justify-between text-[#342C27] font-extrabold text-sm pt-2 border-t border-[#B8AA98]/30">
             <span>Net Total Paid</span>
-            <span id="receiptTotalAmount" class="font-mono text-emerald-700 text-base">₹588.82</span>
+            <span id="receiptTotalAmount" class="font-mono text-[#2E6B52] text-base font-black">₹588.82</span>
           </div>
         </div>
 
         <!-- Customer Signature Proof -->
-        <div class="border-t border-slate-200 pt-3 mb-6">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block mb-1">Customer Authorization Signature</span>
-          <div class="h-16 w-48 border border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center">
+        <div class="border-t border-[#B8AA98]/30 pt-3 mb-6">
+          <span class="text-[10px] font-bold uppercase text-[#655448] block mb-1">Customer Authorization Signature</span>
+          <div class="h-16 w-48 border border-[#B8AA98]/40 rounded-xl overflow-hidden bg-[#F2EDE3]/50 flex items-center justify-center">
             <img id="receiptSignatureImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" class="h-full object-contain" alt="Customer Signature">
           </div>
         </div>
 
         <!-- Actions -->
         <div class="flex justify-end gap-2.5 print:hidden">
-          <button type="button" onclick="closeReceiptModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Close</button>
-          <button type="button" onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+          <button type="button" onclick="closeReceiptModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-[#655448] hover:bg-[#F2EDE3] transition cursor-pointer">Close</button>
+          <button type="button" onclick="window.print()" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
             <span>🖨️</span> Print / Save Receipt
           </button>
         </div>
@@ -312,61 +317,61 @@
     </div>
 
     <!-- FIELD DIAGNOSTICS & MULTIMETER GUIDE MODAL -->
-    <div id="techDiagnosticModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+    <div id="techDiagnosticModal" class="fixed inset-0 bg-[#1A1412]/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-[#B8AA98]/30">
           <div>
-            <h3 class="text-lg font-black text-slate-900">Field Diagnostics &amp; Multimeter Guide</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Automated HVAC fault tree, multimeter test steps &amp; target pressures</p>
+            <h3 class="text-lg font-black text-[#342C27] dark:text-[#F2EDE3]">Field Diagnostics &amp; Multimeter Guide</h3>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Automated HVAC fault tree, multimeter test steps &amp; target pressures</p>
           </div>
-          <button type="button" onclick="closeTechDiagnosticGuide()" class="text-slate-400 hover:text-slate-600 font-bold text-xl cursor-pointer">✕</button>
+          <button type="button" onclick="closeTechDiagnosticGuide()" class="text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xl cursor-pointer" aria-label="Close modal">✕</button>
         </div>
 
         <div class="space-y-4">
           <!-- Quick Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Select Primary Observed Symptom</label>
+            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-2">Select Primary Observed Symptom</label>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <button type="button" onclick="loadTechGuide('mcb', this)" class="tech-guide-chip active p-2.5 rounded-xl border border-blue-500 bg-blue-50 text-blue-700 font-bold text-xs text-left cursor-pointer">
+              <button type="button" onclick="loadTechGuide('mcb', this)" class="tech-guide-chip active p-2.5 rounded-xl border border-[#A05B3A] bg-[#A05B3A] text-white font-bold text-xs text-left cursor-pointer transition">
                 ⚡ MCB Tripping
               </button>
-              <button type="button" onclick="loadTechGuide('ice', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+              <button type="button" onclick="loadTechGuide('ice', this)" class="tech-guide-chip p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#E6DFD3]/40 dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3] font-bold text-xs text-left cursor-pointer transition hover:border-[#A05B3A]">
                 ❄️ Suction Frosting
               </button>
-              <button type="button" onclick="loadTechGuide('warm', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+              <button type="button" onclick="loadTechGuide('warm', this)" class="tech-guide-chip p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#E6DFD3]/40 dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3] font-bold text-xs text-left cursor-pointer transition hover:border-[#A05B3A]">
                 🔥 No Cooling / Stalled
               </button>
-              <button type="button" onclick="loadTechGuide('water', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+              <button type="button" onclick="loadTechGuide('water', this)" class="tech-guide-chip p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#E6DFD3]/40 dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3] font-bold text-xs text-left cursor-pointer transition hover:border-[#A05B3A]">
                 💧 Water Dripping
               </button>
-              <button type="button" onclick="loadTechGuide('error', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+              <button type="button" onclick="loadTechGuide('error', this)" class="tech-guide-chip p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#E6DFD3]/40 dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3] font-bold text-xs text-left cursor-pointer transition hover:border-[#A05B3A]">
                 ⚠️ Error Code (E1-E6)
               </button>
-              <button type="button" onclick="loadTechGuide('noise', this)" class="tech-guide-chip p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold text-xs text-left cursor-pointer">
+              <button type="button" onclick="loadTechGuide('noise', this)" class="tech-guide-chip p-2.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#E6DFD3]/40 dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3] font-bold text-xs text-left cursor-pointer transition hover:border-[#A05B3A]">
                 📢 Severe Vibration
               </button>
             </div>
           </div>
 
           <!-- Guide Card -->
-          <div id="techGuideContent" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          <div id="techGuideContent" class="bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-4 space-y-3">
             <!-- Dynamically populated -->
           </div>
 
           <!-- Target Telemetry Reference -->
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900">
-            <span class="font-bold block mb-1">Standard Field Reference Values:</span>
-            <div class="grid grid-cols-2 gap-2 text-[11px]">
-              <div>• <strong>R32 Running:</strong> 115 - 135 PSI</div>
-              <div>• <strong>R410A Running:</strong> 110 - 130 PSI</div>
-              <div>• <strong>Delta T (Supply vs Return):</strong> 8°C - 12°C</div>
-              <div>• <strong>Capacitor Tolerance:</strong> &plusmn;5% rated &mu;F</div>
+          <div class="bg-[#E4C99A]/15 border border-[#E4C99A]/40 rounded-2xl p-4 text-xs text-[#342C27] dark:text-[#F2EDE3]">
+            <span class="font-extrabold block mb-1.5 text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-wider text-[10px]">Standard Field Reference Values:</span>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-[#655448] dark:text-[#B8AA98]">
+              <div>• <strong class="text-[#342C27] dark:text-[#F2EDE3]">R32 Running:</strong> 115 - 135 PSI</div>
+              <div>• <strong class="text-[#342C27] dark:text-[#F2EDE3]">R410A Running:</strong> 110 - 130 PSI</div>
+              <div>• <strong class="text-[#342C27] dark:text-[#F2EDE3]">Delta T (Supply vs Return):</strong> 8°C - 12°C</div>
+              <div>• <strong class="text-[#342C27] dark:text-[#F2EDE3]">Capacitor Tolerance:</strong> &plusmn;5% rated &mu;F</div>
             </div>
           </div>
         </div>
 
-        <div class="mt-5 pt-3 border-t border-slate-100 flex justify-end">
-          <button type="button" onclick="closeTechDiagnosticGuide()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition cursor-pointer">
+        <div class="mt-5 pt-3 border-t border-[#B8AA98]/30 flex justify-end">
+          <button type="button" onclick="closeTechDiagnosticGuide()" class="px-5 py-2.5 bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
             Close Guide
           </button>
         </div>
@@ -375,6 +380,10 @@
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
+    <!-- GSAP 3.12.5 Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/technician.js"></script>
   </body>
