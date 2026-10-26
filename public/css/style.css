@@ -199,69 +199,83 @@ body > .page-content {
 ═══════════════════════════════════════════════════════════ */
 html.dark {
   color-scheme: dark;
-  --theme-bg:             #090d16;
-  --theme-surface:        #131c2e;
-  --theme-surface-hover:  #1e293b;
-  --theme-text-primary:   #f8fafc;
-  --theme-text-secondary: #94a3b8;
-  --theme-text-muted:     #64748b;
-  --theme-border:         rgba(148, 163, 184, 0.16);
-  --theme-border-subtle:  rgba(148, 163, 184, 0.08);
+  --theme-bg:             #1A1412;
+  --theme-surface:        #27211D;
+  --theme-surface-hover:  #342C27;
+  --theme-text-primary:   #F2EDE3;
+  --theme-text-secondary: #B8AA98;
+  --theme-text-muted:     #879581;
+  --theme-border:         rgba(184, 170, 152, 0.22);
+  --theme-border-subtle:  rgba(184, 170, 152, 0.12);
 
-  --bose-black:        #131c2e;
-  --bose-obsidian:     #090d16;
-  --bose-charcoal:     #1e293b;
-  --bose-surface:      rgba(19, 28, 46, 0.88);
+  --bose-black:        #27211D;
+  --bose-obsidian:     #1A1412;
+  --bose-charcoal:     #342C27;
+  --bose-surface:      rgba(39, 33, 29, 0.92);
 }
 
 html.dark body {
-  background-color: var(--theme-bg);
-  color: var(--theme-text-primary);
+  background-color: #1A1412 !important;
+  color: #F2EDE3 !important;
 }
 
-/* Dark mode systemic overrides (exempting receipt & signature canvas) */
-html.dark .bg-white:not(.keep-white):not(#signatureCanvas):not(.receipt-paper):not(.receipt-paper *) {
-  background-color: #131c2e !important;
-}
-html.dark .bg-gray-50:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .bg-slate-50:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  background-color: #0b1120 !important;
-}
-html.dark .bg-gray-100:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .bg-slate-100:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  background-color: #1e293b !important;
-}
-html.dark .text-gray-900:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .text-slate-900:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  color: #f8fafc !important;
-}
-html.dark .text-gray-800:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .text-slate-800:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  color: #f1f5f9 !important;
-}
-html.dark .text-gray-700:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .text-slate-700:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  color: #cbd5e1 !important;
-}
-html.dark .text-gray-600:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .text-slate-600:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  color: #94a3b8 !important;
-}
-html.dark .border-gray-100:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .border-slate-100:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .border-gray-200:not(.keep-white):not(.receipt-paper):not(.receipt-paper *),
-html.dark .border-slate-200:not(.keep-white):not(.receipt-paper):not(.receipt-paper *) {
-  border-color: rgba(148, 163, 184, 0.16) !important;
+/* Systemic dark-mode harmonization for Mineral Architecture */
+html.dark header.bg-gradient-to-b,
+html.dark [class*="from-[#EAE3D6]"],
+html.dark [class*="to-[#F2EDE3]"] {
+  background: linear-gradient(180deg, #1A1412 0%, #27211D 100%) !important;
+  border-color: rgba(184, 170, 152, 0.2) !important;
 }
 
-html.dark input, html.dark select, html.dark textarea {
-  background-color: #0b1120;
-  color: #f8fafc;
-  border-color: rgba(148, 163, 184, 0.24);
+html.dark .bg-\[\#FDFBF7\],
+html.dark [class*="bg-[#FDFBF7]"]:not(.keep-white):not(#signatureCanvas):not(.receipt-paper):not(.receipt-paper *) {
+  background-color: #27211D !important;
+  border-color: rgba(184, 170, 152, 0.2) !important;
 }
-html.dark input:focus, html.dark select:focus, html.dark textarea:focus {
-  border-color: var(--mineral-copper-btn, #A05B3A);
-  box-shadow: 0 0 0 3px rgba(160, 91, 58, 0.25);
+
+html.dark .bg-\[\#F2EDE3\],
+html.dark [class*="bg-[#F2EDE3]"]:not(.keep-white):not(#signatureCanvas):not(.receipt-paper):not(.receipt-paper *) {
+  background-color: #1A1412 !important;
+  border-color: rgba(184, 170, 152, 0.2) !important;
+}
+
+html.dark footer[class*="bg-[#FDFBF7]"],
+html.dark footer[class*="bg-[#F2EDE3]"] {
+  background-color: #1A1412 !important;
+  border-color: rgba(184, 170, 152, 0.2) !important;
+  color: #B8AA98 !important;
+}
+
+html.dark .text-\[\#342C27\],
+html.dark [class*="text-[#342C27]"]:not(.keep-dark) {
+  color: #F2EDE3 !important;
+}
+
+html.dark .text-\[\#655448\],
+html.dark [class*="text-[#655448]"]:not(.keep-dark) {
+  color: #B8AA98 !important;
+}
+
+html.dark .border-\[\#B8AA98\]\/40,
+html.dark .border-\[\#B8AA98\]\/50,
+html.dark [class*="border-[#B8AA98]"] {
+  border-color: rgba(184, 170, 152, 0.2) !important;
+}
+
+/* Form inputs & controls in Dark Mode */
+html.dark input, 
+html.dark select, 
+html.dark textarea {
+  background-color: #1F1916 !important;
+  color: #F2EDE3 !important;
+  border-color: rgba(184, 170, 152, 0.3) !important;
+}
+
+html.dark input:focus, 
+html.dark select:focus, 
+html.dark textarea:focus {
+  border-color: var(--mineral-copper-btn, #A05B3A) !important;
+  box-shadow: 0 0 0 3px rgba(160, 91, 58, 0.25) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2839,17 +2853,17 @@ html.dark [class*="divide-gray"] > :not([hidden]) ~ :not([hidden]) {
 
 /* Progress Stepper Dark Mode */
 html.dark .stepper-step::before {
-  background: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(184, 170, 152, 0.2) !important;
 }
 
 html.dark .stepper-dot {
-  background-color: #1e293b !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: #94a3b8 !important;
+  background-color: #27211D !important;
+  border-color: rgba(184, 170, 152, 0.25) !important;
+  color: #B8AA98 !important;
 }
 
 html.dark .stepper-step.done .stepper-label {
-  color: #f1f5f9 !important;
+  color: #F2EDE3 !important;
 }
 
 html.dark .stepper-step.active .stepper-label {
@@ -2857,7 +2871,7 @@ html.dark .stepper-step.active .stepper-label {
 }
 
 html.dark .stepper-step:not(.done):not(.active) .stepper-label {
-  color: #94a3b8 !important;
+  color: #B8AA98 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════

@@ -28,50 +28,50 @@
       })();
     </script>
   </head>
-  <body class="bg-[#F2EDE3] text-[#342C27] font-sans flex flex-col min-h-screen antialiased">
+  <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] font-sans flex flex-col min-h-screen antialiased">
     <!-- NAVBAR -->
     <nav
       id="mainNav"
-      class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 bg-[#F2EDE3]/90 backdrop-blur-md shadow-xs"
+      class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#F2EDE3]/90 dark:bg-[#1A1412]/90 backdrop-blur-md shadow-xs"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
           <div class="flex-shrink-0 flex items-center">
             <a
               href="index.html"
-              class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] hover:opacity-90 transition flex items-center gap-2.5"
+              class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5"
             >
               <span
-                class="bg-[#342C27] text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-xs"
+                class="bg-[#342C27] dark:bg-[#27211D] border border-transparent dark:border-[#B8AA98]/20 text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-xs"
                 >ES</span
               >
-              <span>Extreme <span class="text-[#A05B3A]">S&amp;S</span></span>
+              <span>Extreme <span class="text-[#A05B3A] dark:text-[#E4C99A]">S&amp;S</span></span>
             </a>
           </div>
           <div class="hidden md:flex space-x-7 items-center">
             <a
               href="index.html"
-              class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition"
+              class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition"
               >Home</a
             >
             <a
               href="products.html"
-              class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition"
+              class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition"
               >Products</a
             >
             <a
               href="status.html"
-              class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition"
+              class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition"
               >Track Service</a
             >
             <a
               href="amc.html"
-              class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition"
+              class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition"
               >AMC Plans</a
             >
             <a
               href="contact.html"
-              class="nav-link text-[#655448] hover:text-[#A05B3A] font-semibold text-sm transition"
+              class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition"
               >Contact Us</a
             >
             <a
@@ -82,7 +82,7 @@
             <!-- Theme Toggle Button -->
             <button
               type="button"
-              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 border border-[#B8AA98]/50"
+              class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@
             <!-- Theme Toggle for Mobile -->
             <button
               type="button"
-              class="theme-toggle-btn text-[#655448] hover:text-[#A05B3A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60"
+              class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D]"
               aria-label="Toggle Theme"
             >
               <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@
               type="button"
               id="mobileMenuBtn"
               aria-label="Toggle mobile menu"
-              class="text-[#655448] hover:text-[#342C27] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60"
+              class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D]"
             >
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
@@ -122,35 +122,35 @@
       </div>
       <div
         id="mobileMenu"
-        class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 p-5 md:hidden text-center flex flex-col space-y-3 mt-2"
+        class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 md:hidden text-center flex flex-col space-y-3 mt-2"
       >
-        <a href="index.html" class="text-[#655448] hover:text-[#342C27] font-semibold py-2">Home</a>
-        <a href="products.html" class="text-[#655448] hover:text-[#342C27] font-semibold py-2">Products</a>
-        <a href="status.html" class="text-[#655448] hover:text-[#342C27] font-semibold py-2">Track Service</a>
-        <a href="amc.html" class="text-[#655448] hover:text-[#342C27] font-semibold py-2">AMC Plans</a>
-        <a href="contact.html" class="text-[#655448] hover:text-[#342C27] font-semibold py-2">Contact Us</a>
+        <a href="index.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-semibold py-2">Home</a>
+        <a href="products.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-semibold py-2">Products</a>
+        <a href="status.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-semibold py-2">Track Service</a>
+        <a href="amc.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-semibold py-2">AMC Plans</a>
+        <a href="contact.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] font-semibold py-2">Contact Us</a>
         <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-3 rounded-xl font-bold shadow-sm">Book Service</a>
       </div>
     </nav>
 
     <!-- HERO HEADER -->
-    <header class="pt-32 pb-14 px-4 text-center relative overflow-hidden border-b border-[#B8AA98]/40 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3]">
+    <header class="pt-32 pb-14 px-4 text-center relative overflow-hidden border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3] dark:from-[#1A1412] dark:to-[#27211D]">
       <div class="relative z-10 max-w-3xl mx-auto">
-        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 backdrop-blur-sm text-[#A05B3A] border border-[#B8AA98]/50 shadow-xs mb-4">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-sm text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-xs mb-4">
           <span class="w-2 h-2 rounded-full bg-[#77B89A]"></span> Certified Doorstep Dispatch
         </span>
-        <h1 class="text-3xl md:text-5xl font-black text-[#342C27] mb-4 tracking-tight">
-          Book an <span class="text-[#A05B3A]">HVAC Service</span>
+        <h1 class="text-3xl md:text-5xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-4 tracking-tight">
+          Book an <span class="text-[#A05B3A] dark:text-[#E4C99A]">HVAC Service</span>
         </h1>
-        <p class="text-[#655448] text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
+        <p class="text-[#655448] dark:text-[#B8AA98] text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
           Fast, certified, and right at your doorstep. Get an instant live tracking ID the moment you book.
         </p>
       </div>
     </header>
 
     <!-- TRUST STRIP -->
-    <div class="bg-[#FDFBF7] border-b border-[#B8AA98]/40 shadow-xs relative z-10">
-      <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap justify-center gap-6 sm:gap-10 text-xs font-bold text-[#655448]">
+    <div class="bg-[#FDFBF7] dark:bg-[#27211D] border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs relative z-10">
+      <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap justify-center gap-6 sm:gap-10 text-xs font-bold text-[#655448] dark:text-[#B8AA98]">
         <span class="flex items-center gap-2">
           <svg class="w-4 h-4 text-[#77B89A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -169,7 +169,7 @@
           </svg>
           Certified Technicians
         </span>
-        <span class="flex items-center gap-2 text-[#A05B3A]">
+        <span class="flex items-center gap-2 text-[#A05B3A] dark:text-[#E4C99A]">
           <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-ping"></span> Live GPS Dispatch
         </span>
       </div>
@@ -181,11 +181,11 @@
 
         <!-- SIDEBAR -->
         <div class="space-y-6 lg:sticky lg:top-28">
-          <div class="bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl p-6 shadow-sm">
-            <h3 class="font-bold text-[#342C27] text-base mb-2">
+          <div class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+            <h3 class="font-bold text-[#342C27] dark:text-[#F2EDE3] text-base mb-2">
               Need Direct Assistance?
             </h3>
-            <p class="text-xs text-[#655448] mb-5 leading-relaxed">
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-5 leading-relaxed">
               Our service coordinators are on standby for commercial inquiries or urgent emergency breakdowns.
             </p>
             <div class="space-y-3">
@@ -212,21 +212,21 @@
             </div>
           </div>
 
-          <div class="bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl p-6 shadow-sm">
-            <h3 class="font-bold text-[#342C27] text-base mb-4">
+          <div class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+            <h3 class="font-bold text-[#342C27] dark:text-[#F2EDE3] text-base mb-4">
               Service Guarantees
             </h3>
-            <ul class="space-y-3.5 text-xs text-[#655448]">
+            <ul class="space-y-3.5 text-xs text-[#655448] dark:text-[#B8AA98]">
               <li class="flex items-start gap-2.5">
-                <span class="w-5 h-5 rounded-md bg-[#77B89A]/20 text-[#1D3D2B] flex items-center justify-center font-bold text-xs mt-0.5">✓</span>
+                <span class="w-5 h-5 rounded-md bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] flex items-center justify-center font-bold text-xs mt-0.5">✓</span>
                 <span><strong>Fixed Quotes:</strong> Transparent estimate prior to work commencing.</span>
               </li>
               <li class="flex items-start gap-2.5">
-                <span class="w-5 h-5 rounded-md bg-[#77B89A]/20 text-[#1D3D2B] flex items-center justify-center font-bold text-xs mt-0.5">✓</span>
+                <span class="w-5 h-5 rounded-md bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] flex items-center justify-center font-bold text-xs mt-0.5">✓</span>
                 <span><strong>Live Dispatch:</strong> Real-time status milestones from assignment to completion.</span>
               </li>
               <li class="flex items-start gap-2.5">
-                <span class="w-5 h-5 rounded-md bg-[#77B89A]/20 text-[#1D3D2B] flex items-center justify-center font-bold text-xs mt-0.5">✓</span>
+                <span class="w-5 h-5 rounded-md bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] flex items-center justify-center font-bold text-xs mt-0.5">✓</span>
                 <span><strong>Genuine Parts:</strong> Authorized OEM spares backed by 30-day warranty.</span>
               </li>
             </ul>
@@ -234,40 +234,40 @@
         </div>
 
         <!-- BOOKING FORM CARD -->
-        <div class="lg:col-span-2 bg-[#FDFBF7] border border-[#B8AA98]/40 rounded-2xl shadow-sm overflow-hidden">
+        <div class="lg:col-span-2 bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl shadow-sm overflow-hidden">
 
           <!-- Card Header & Progress Bar -->
-          <div class="border-b border-[#B8AA98]/40 px-6 sm:px-8 pt-8 pb-6">
+          <div class="border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 px-6 sm:px-8 pt-8 pb-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
-                <h2 class="text-xl sm:text-2xl font-bold text-[#342C27]">
+                <h2 class="text-xl sm:text-2xl font-bold text-[#342C27] dark:text-[#F2EDE3]">
                   Schedule Service Appointment
                 </h2>
-                <p class="text-xs text-[#655448] mt-1">
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1">
                   Complete the request below to trigger immediate technician triage.
                 </p>
               </div>
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#77B89A]/15 text-[#1D3D2B] border border-[#77B89A]/40 self-start sm:self-auto">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40 dark:border-[#77B89A]/30 self-start sm:self-auto">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#77B89A] animate-pulse"></span> Slots Available Today
               </span>
             </div>
 
             <!-- Visual Progress Stepper -->
-            <div class="grid grid-cols-4 gap-2 text-center text-xs font-semibold text-[#655448]">
-              <div class="flex flex-col items-center gap-1.5 text-[#A05B3A]">
+            <div class="grid grid-cols-4 gap-2 text-center text-xs font-semibold text-[#655448] dark:text-[#B8AA98]">
+              <div class="flex flex-col items-center gap-1.5 text-[#A05B3A] dark:text-[#E4C99A]">
                 <div class="w-7 h-7 rounded-full bg-[#A05B3A] text-[#F2EDE3] flex items-center justify-center text-xs font-bold shadow-xs">1</div>
                 <span class="font-bold">Service</span>
               </div>
-              <div class="flex flex-col items-center gap-1.5 text-[#655448]">
-                <div class="w-7 h-7 rounded-full bg-[#EAE3D6] border border-[#B8AA98]/40 text-[#655448] flex items-center justify-center text-xs font-bold">2</div>
+              <div class="flex flex-col items-center gap-1.5 text-[#655448] dark:text-[#B8AA98]">
+                <div class="w-7 h-7 rounded-full bg-[#EAE3D6] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] flex items-center justify-center text-xs font-bold">2</div>
                 <span>Details</span>
               </div>
-              <div class="flex flex-col items-center gap-1.5 text-[#655448]">
-                <div class="w-7 h-7 rounded-full bg-[#F2EDE3] border border-[#B8AA98]/40 text-[#655448] flex items-center justify-center text-xs font-bold">3</div>
+              <div class="flex flex-col items-center gap-1.5 text-[#655448] dark:text-[#B8AA98]">
+                <div class="w-7 h-7 rounded-full bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] flex items-center justify-center text-xs font-bold">3</div>
                 <span>Address</span>
               </div>
-              <div class="flex flex-col items-center gap-1.5 text-[#655448]">
-                <div class="w-7 h-7 rounded-full bg-[#F2EDE3] border border-[#B8AA98]/40 text-[#655448] flex items-center justify-center text-xs font-bold">4</div>
+              <div class="flex flex-col items-center gap-1.5 text-[#655448] dark:text-[#B8AA98]">
+                <div class="w-7 h-7 rounded-full bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] flex items-center justify-center text-xs font-bold">4</div>
                 <span>Track</span>
               </div>
             </div>
@@ -369,11 +369,11 @@
       class="hidden fixed inset-0 bg-[#342C27]/60 backdrop-blur-md z-[60] flex items-center justify-center px-4 transition-all opacity-0 duration-300"
     >
       <div
-        class="bg-[#FDFBF7] border border-[#B8AA98]/50 rounded-3xl p-8 max-w-md w-full text-center relative shadow-2xl overflow-hidden"
+        class="bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 rounded-3xl p-8 max-w-md w-full text-center relative shadow-2xl overflow-hidden"
       >
         <div class="absolute inset-x-0 top-0 h-1.5 bg-[#A05B3A]"></div>
         <div
-          class="w-16 h-16 bg-[#77B89A]/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-[#1D3D2B] scale-0 transition-transform duration-300"
+          class="w-16 h-16 bg-[#77B89A]/20 dark:bg-[#77B89A]/25 rounded-2xl flex items-center justify-center mx-auto mb-5 text-[#1D3D2B] dark:text-[#77B89A] scale-0 transition-transform duration-300"
           id="successIcon"
         >
           <svg
@@ -390,22 +390,22 @@
             />
           </svg>
         </div>
-        <h2 class="text-2xl font-bold text-[#342C27] mb-2 tracking-tight">
+        <h2 class="text-2xl font-bold text-[#342C27] dark:text-[#F2EDE3] mb-2 tracking-tight">
           Booking Confirmed!
         </h2>
-        <p class="text-[#655448] text-xs mb-6 leading-relaxed">
+        <p class="text-[#655448] dark:text-[#B8AA98] text-xs mb-6 leading-relaxed">
           We have registered your service request in our dispatch queue. Our nearest available certified technician will be assigned shortly.
         </p>
 
-        <div class="bg-[#F2EDE3] border border-[#B8AA98]/40 rounded-2xl p-5 mb-6">
+        <div class="bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-5 mb-6">
           <p
-            class="text-[11px] text-[#A05B3A] font-bold uppercase tracking-wider mb-1"
+            class="text-[11px] text-[#A05B3A] dark:text-[#E4C99A] font-bold uppercase tracking-wider mb-1"
           >
             Your Service Tracking ID
           </p>
           <p
             id="trackingIdDisplay"
-            class="text-3xl font-black text-[#342C27] font-mono tracking-tight"
+            class="text-3xl font-black text-[#342C27] dark:text-[#F2EDE3] font-mono tracking-tight"
           >
             AC-XXXX
           </p>
@@ -421,7 +421,7 @@
           <button
             type="button"
             id="closeModalBtn"
-            class="text-xs font-semibold text-[#655448] hover:text-[#342C27] transition py-2"
+            class="text-xs font-semibold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] transition py-2"
           >
             Return to Homepage
           </button>

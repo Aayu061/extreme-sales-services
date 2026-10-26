@@ -50,7 +50,7 @@ function renderPlans(plans) {
         card.className = `amc-plan-card relative flex flex-col rounded-2xl transition-all duration-300 overflow-hidden ${
             isPopular 
             ? 'bg-[#27211D] text-[#F2EDE3] shadow-xl md:-translate-y-3 z-10 border-2 border-[#A05B3A]' 
-            : 'bg-[#FDFBF7] text-[#342C27] border border-[#B8AA98]/40 shadow-sm hover:shadow-md hover:-translate-y-1'
+            : 'bg-[#FDFBF7] dark:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm hover:shadow-md hover:-translate-y-1'
         }`;
 
         const badge = isPopular 
@@ -58,11 +58,11 @@ function renderPlans(plans) {
             : '';
 
         const encodedData = encodeURIComponent(JSON.stringify(plan));
-        const textMuted = isPopular ? 'text-[#B8AA98]' : 'text-[#655448]';
-        const textMain = isPopular ? 'text-[#F2EDE3]' : 'text-[#342C27]';
-        const textFeature = isPopular ? 'text-[#E6DFD3]' : 'text-[#655448]';
+        const textMuted = isPopular ? 'text-[#B8AA98]' : 'text-[#655448] dark:text-[#B8AA98]';
+        const textMain = isPopular ? 'text-[#F2EDE3]' : 'text-[#342C27] dark:text-[#F2EDE3]';
+        const textFeature = isPopular ? 'text-[#E6DFD3]' : 'text-[#655448] dark:text-[#B8AA98]';
         const checkColor = 'text-[#77B89A]';
-        const badgeClass = isPopular ? 'bg-[#342C27] text-[#E4C99A] border-[#B8AA98]/40' : 'bg-[#77B89A]/15 text-[#1D3D2B] border-[#77B89A]/40';
+        const badgeClass = isPopular ? 'bg-[#342C27] text-[#E4C99A] border-[#B8AA98]/40' : 'bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border-[#77B89A]/40 dark:border-[#77B89A]/30';
         const btnClass = 'bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] font-bold shadow-md';
 
         const safePlanName = escapeHtml(plan.name || '');
@@ -71,7 +71,7 @@ function renderPlans(plans) {
 
         card.innerHTML = `
             ${badge}
-            <div class="p-8 text-center border-b ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30'}">
+            <div class="p-8 text-center border-b ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
                 <p class="${textMuted} text-xs font-bold uppercase tracking-widest mb-2">${isPopular ? 'Recommended Choice' : 'Annual AC Care'}</p>
                 <h3 class="text-2xl font-black ${textMain} mb-4">${safePlanName}</h3>
                 <div class="flex items-end justify-center gap-1 mb-2">
@@ -79,7 +79,7 @@ function renderPlans(plans) {
                     <span id="plan-price-${index}" class="text-5xl font-black ${textMain} tracking-tighter">${Number(plan.price) || 0}</span>
                     <span id="plan-suffix-${index}" class="text-sm font-bold ${textMuted} mb-1">/yr</span>
                 </div>
-                <p id="plan-savings-${index}" class="text-xs font-bold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B]'} mb-3 min-h-[1.2rem]"></p>
+                <p id="plan-savings-${index}" class="text-xs font-bold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B] dark:text-[#77B89A]'} mb-3 min-h-[1.2rem]"></p>
                 <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${Number(plan.services_per_year) || 3} Free Visits Included</span>
             </div>
             
@@ -91,8 +91,8 @@ function renderPlans(plans) {
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Automated Periodic Reminders</li>
                     <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Upfront Genuine Spares Discount</li>
                 </ul>
-                <div class="${isPopular ? 'bg-[#342C27]' : 'bg-[#77B89A]/10'} rounded-xl p-3 mb-4 text-center">
-                    <span class="text-xs font-extrabold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B]'}">
+                <div class="${isPopular ? 'bg-[#342C27]' : 'bg-[#77B89A]/10 dark:bg-[#77B89A]/20'} rounded-xl p-3 mb-4 text-center">
+                    <span class="text-xs font-extrabold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B] dark:text-[#77B89A]'}">
                         💰 Save ~₹${ppvSavings.toLocaleString('en-IN')} vs Pay-Per-Visit
                     </span>
                 </div>
