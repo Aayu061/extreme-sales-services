@@ -26,6 +26,7 @@ let pollInterval   = null;
 let etaInterval    = null;
 let etaMinutes     = 0;
 let lastStatus     = null;
+let lastRenderedKey = null;
 
 // ─── URL Auto-fill ──────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -51,6 +52,9 @@ function startTracking(id, phone) {
     if (trackingSource) trackingSource.close();
     if (pollInterval) clearInterval(pollInterval);
     if (etaInterval)  clearInterval(etaInterval);
+
+    lastRenderedKey = null;
+    lastStatus      = null;
 
     displayId.innerText = id;
     
@@ -107,8 +111,14 @@ async function fetchStatus(id, phone) {
 
 // ─── Master Render ───────────────────────────────────────────────
 function renderAll(status, techName, serviceType, customerName) {
+    const stateKey = `${status}|${techName}|${serviceType}|${customerName}`;
+    if (stateKey === lastRenderedKey) {
+        // Data has not changed — do NOT re-render DOM or restart animations!
+        return;
+    }
     const changed = status !== lastStatus;
-    lastStatus    = status;
+    lastStatus      = status;
+    lastRenderedKey = stateKey;
 
     renderStepper(status);
     renderTimeline(status, techName, serviceType, customerName);
@@ -116,8 +126,8 @@ function renderAll(status, techName, serviceType, customerName) {
     const oldEta = document.getElementById('etaCard');
     if (oldEta) oldEta.remove();
 
-    if (status === 'Completed') {
-        if (changed) launchConfetti();
+    if (status === 'Completed' && changed) {
+        launchConfetti();
         renderRatingWidget();
     }
 }
@@ -233,14 +243,14 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
     const currentIndex = stages.findIndex(s => s.key === currentStatus);
 
     let html = `
-        <div class="mb-6 p-4 bg-[#F2EDE3] rounded-2xl border border-[#B8AA98]/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div class="mb-6 p-4 bg-[#F2EDE3] dark:bg-[#1A1412] rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#A05B3A]">Active Service Details</span>
-                <div class="text-sm font-black text-[#342C27]">${safeService}</div>
-                ${customerName ? `<div class="text-xs text-[#655448]">Customer: <strong>${safeCustomer}</strong></div>` : ''}
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#A05B3A] dark:text-[#E4C99A]">Active Service Details</span>
+                <div class="text-sm font-black text-[#342C27] dark:text-[#F2EDE3]">${safeService}</div>
+                ${customerName ? `<div class="text-xs text-[#655448] dark:text-[#B8AA98]">Customer: <strong class="text-[#342C27] dark:text-[#F2EDE3]">${safeCustomer}</strong></div>` : ''}
             </div>
             ${techName && techName !== 'Pending Assignment' ? `
-                <div class="bg-[#FDFBF7] px-3 py-1.5 rounded-xl border border-[#B8AA98]/40 text-xs font-bold text-[#342C27] flex items-center gap-1.5 shadow-xs">
+                <div class="bg-[#FDFBF7] dark:bg-[#27211D] px-3 py-1.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5 shadow-xs">
                     <span>🧑‍🔧</span><span>${safeTech}</span>
                 </div>` : ''}
         </div>`;
@@ -252,14 +262,14 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
 
         if (isPast) {
             dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#77B89A] text-[#1D3D2B] flex items-center justify-center font-black text-xs shadow-md">✓</div>`;
-            textClass = 'text-[#342C27] font-bold';
+            textClass = 'text-[#342C27] dark:text-[#F2EDE3] font-bold';
         } else if (isCurrent) {
             dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#A05B3A] text-[#F2EDE3] flex items-center justify-center font-black text-xs shadow-lg relative"><span class="w-full h-full rounded-full bg-[#A05B3A] animate-ping absolute opacity-75"></span><span class="relative z-10">●</span></div>`;
-            textClass = 'text-[#A05B3A] font-extrabold';
-            badge     = `<span class="bg-[#A05B3A]/15 text-[#A05B3A] border border-[#A05B3A]/30 text-[10px] font-black uppercase px-2 py-0.5 rounded-full ml-2">Active Stage</span>`;
+            textClass = 'text-[#A05B3A] dark:text-[#E4C99A] font-extrabold';
+            badge     = `<span class="bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] border border-[#A05B3A]/30 text-[10px] font-black uppercase px-2 py-0.5 rounded-full ml-2">Active Stage</span>`;
         } else {
-            dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#F2EDE3] border border-[#B8AA98]/40 text-[#655448] flex items-center justify-center font-bold text-xs">○</div>`;
-            textClass = 'text-[#655448]';
+            dotHtml   = `<div class="w-8 h-8 rounded-full bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] flex items-center justify-center font-bold text-xs">○</div>`;
+            textClass = 'text-[#655448] dark:text-[#B8AA98]';
         }
 
         html += `
@@ -270,7 +280,7 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
                         <h4 class="text-sm ${textClass}">${stage.title}</h4>
                         ${badge}
                     </div>
-                    <p class="text-xs text-[#655448] mt-1 leading-relaxed">${stage.desc}</p>
+                    <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1 leading-relaxed">${stage.desc}</p>
                 </div>
             </div>`;
     });
