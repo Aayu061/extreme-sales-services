@@ -231,14 +231,21 @@ function renderEtaCard(status, techName, serverEta = null, zone = null) {
             ? `Engineer ${safeTechName} dispatched${zoneInfo}${trafficInfo}`
             : 'Engineer is working on-site';
 
+        const arrivalBadge = (serverEta && serverEta.estimatedArrival)
+            ? `<span class="text-xs font-semibold text-[#E4C99A] ml-2.5">(Est. Arrival: ${escapeHtml(serverEta.estimatedArrival)})</span>`
+            : '';
+
         el.innerHTML = `
             <div class="text-2xl">⏱️</div>
             <div class="flex-1">
                 <div class="text-[#E4C99A] text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5">
                     <span>Algorithm Dynamic ETA</span>
-                    ${serverEta ? '<span class="bg-[#A05B3A]/20 text-[#E4C99A] px-1 rounded text-[9px]">MOW-GDM</span>' : ''}
+                    ${serverEta ? '<span class="bg-[#A05B3A]/20 text-[#E4C99A] px-1.5 py-0.5 rounded text-[9px]">MOW-GDM Queuing Model</span>' : ''}
                 </div>
-                <div class="eta-time-display text-[#F2EDE3] font-mono text-2xl font-black">${display}</div>
+                <div class="eta-time-display text-[#F2EDE3] font-mono text-2xl font-black flex items-baseline flex-wrap">
+                    <span>${display}</span>
+                    ${arrivalBadge}
+                </div>
                 <div class="text-[#B8AA98] text-xs font-medium">${statusMsg}</div>
             </div>
             <div class="text-right">
