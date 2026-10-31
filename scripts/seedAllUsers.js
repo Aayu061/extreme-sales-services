@@ -32,10 +32,10 @@ const USERS_TO_SEED = [
   {
     docId: 'usr-super-admin',
     name: "Super Admin",
-    email: "ess0121@gmail.com",
+    email: process.env.ADMIN_SEED_EMAIL || "ess0121@gmail.com",
     phone: "7977805245",
     role: "admin",
-    password: "***REMOVED***"
+    password: process.env.ADMIN_SEED_PASSWORD || "***REMOVED***"
   },
   {
     docId: 'usr-admin',
