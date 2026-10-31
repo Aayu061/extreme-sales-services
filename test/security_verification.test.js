@@ -565,4 +565,247 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
             }
         } catch(_) {}
     });
+
+    test('GET /api/admin/analytics rejects staff role with 403 Forbidden', async () => {
+        const staffToken = jwt.sign(
+            { id: 'staff-1', role: 'staff', email: 'staff@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+
+        const res = await fetch(`${baseUrl}/api/admin/analytics`, {
+            headers: { Authorization: `Bearer ${staffToken}` }
+        });
+        assert.equal(res.status, 403);
+        const data = await res.json();
+        assert.equal(data.success, false);
+    });
+
+    test('PUT /api/admin/products/:id returns 404 for non-existent product', async () => {
+        const adminToken = jwt.sign(
+            { id: 'admin-1', role: 'admin', email: 'admin@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+
+        const res = await fetch(`${baseUrl}/api/admin/products/non-existent-product-id-99999`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ price: 4999 })
+        });
+        assert.equal(res.status, 404);
+        const data = await res.json();
+        assert.equal(data.success, false);
+        assert.match(data.message, /not found/i);
+    });
+
+    test('PATCH /api/admin/assign-technician rejects assigning non-technician and terminal tickets', async () => {
+        const adminToken = jwt.sign(
+            { id: 'admin-1', role: 'admin', email: 'admin@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+
+        // 1. Create a service request
+        const bookRes = await fetch(`${baseUrl}/api/services`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: 'Test Assignee Customer',
+                phone: '9876543211',
+                service_type: 'AC Repair',
+                address: 'Andheri West, Mumbai'
+            })
+        });
+        const bookData = await bookRes.json();
+        assert.equal(bookData.success, true);
+        const targetRequestId = bookData.requestId;
+
+        try {
+            // 2. Attempt to assign usr-staff (who is NOT a technician)
+            const invalidTechRes = await fetch(`${baseUrl}/api/admin/assign-technician`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requestId: targetRequestId,
+                    technicianId: 'usr-staff' // staff, not technician
+                })
+            });
+            assert.equal(invalidTechRes.status, 400);
+            const invalidTechData = await invalidTechRes.json();
+            assert.equal(invalidTechData.success, false);
+            assert.match(invalidTechData.message, /Target user is not an active technician/i);
+
+            // 3. Update status to 'Cancelled'
+            await fetch(`${baseUrl}/api/admin/update-status`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requestId: targetRequestId,
+                    status: 'Cancelled'
+                })
+            });
+
+            // 4. Attempt to assign technician to the cancelled ticket
+            const assignCancelledRes = await fetch(`${baseUrl}/api/admin/assign-technician`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requestId: targetRequestId,
+                    technicianId: 'usr-tech-1'
+                })
+            });
+            assert.equal(assignCancelledRes.status, 400);
+            const cancelData = await assignCancelledRes.json();
+            assert.equal(cancelData.success, false);
+            assert.match(cancelData.message, /Cannot assign technician to a cancelled request/i);
+
+            // 5. Attempt auto-dispatch on the cancelled ticket
+            const autoDispatchRes = await fetch(`${baseUrl}/api/admin/auto-dispatch`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requestId: targetRequestId
+                })
+            });
+            assert.equal(autoDispatchRes.status, 400);
+            const autoData = await autoDispatchRes.json();
+            assert.equal(autoData.success, false);
+            assert.match(autoData.message, /Only pending requests can be auto-dispatched/i);
+        } finally {
+            // Firestore cleanup
+            try {
+                const admin = require('firebase-admin');
+                if (admin.apps.length > 0) {
+                    const db = admin.firestore();
+                    const snap = await db.collection('service_requests').where('request_id', '==', targetRequestId).get();
+                    const batch = db.batch();
+                    snap.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+                }
+            } catch (_) {}
+        }
+    });
+
+    test('AMC Integrity: Quota refunded on cancellation and expired contracts rejected', async () => {
+        const testPhone = '9999900001';
+        const adminToken = jwt.sign(
+            { id: 'admin-1', role: 'admin', email: 'admin@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+
+        let createdAmcDocId = null;
+        let createdRequestId = null;
+
+        try {
+            const admin = require('firebase-admin');
+            const hasFirestore = admin.apps.length > 0;
+
+            if (hasFirestore) {
+                const db = admin.firestore();
+                // Create an active AMC contract with 2 remaining visits
+                const amcRef = await db.collection('customer_amc').add({
+                    customer_name: 'Test AMC Customer',
+                    phone: testPhone,
+                    plan_name: 'Comfort Standard Plan',
+                    status: 'Active',
+                    remaining_services: 2,
+                    end_date: new Date(Date.now() + 365 * 86400000).toISOString(),
+                    created_at: new Date().toISOString()
+                });
+                createdAmcDocId = amcRef.id;
+            }
+
+            // 1. Verify AMC check returns active
+            const checkRes = await fetch(`${baseUrl}/api/amc/check?phone=${testPhone}`);
+            const checkData = await checkRes.json();
+            if (hasFirestore) {
+                assert.equal(checkData.active, true);
+                assert.equal(checkData.remainingServices, 2);
+            }
+
+            // 2. Book a service which consumes 1 AMC visit
+            const bookRes = await fetch(`${baseUrl}/api/services`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: 'Test AMC Customer',
+                    phone: testPhone,
+                    service_type: 'AC General Service',
+                    address: 'Juhu Tara Road, Mumbai'
+                })
+            });
+            const bookData = await bookRes.json();
+            assert.equal(bookData.success, true);
+            createdRequestId = bookData.requestId;
+
+            if (hasFirestore) {
+                const db = admin.firestore();
+                const afterBookSnap = await db.collection('customer_amc').doc(createdAmcDocId).get();
+                assert.equal(afterBookSnap.data().remaining_services, 1);
+            }
+
+            // 3. Cancel the service request -> verify remaining_services increments back to 2!
+            const cancelRes = await fetch(`${baseUrl}/api/admin/update-status`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    requestId: createdRequestId,
+                    status: 'Cancelled'
+                })
+            });
+            const cancelData = await cancelRes.json();
+            assert.equal(cancelData.success, true);
+
+            if (hasFirestore) {
+                const db = admin.firestore();
+                const afterCancelSnap = await db.collection('customer_amc').doc(createdAmcDocId).get();
+                assert.equal(afterCancelSnap.data().remaining_services, 2, 'AMC visit must be refunded upon cancellation');
+
+                // 4. Update end_date to the past to test contract expiration
+                await db.collection('customer_amc').doc(createdAmcDocId).update({
+                    end_date: new Date(Date.now() - 86400000).toISOString() // Expired yesterday
+                });
+
+                const expiredCheckRes = await fetch(`${baseUrl}/api/amc/check?phone=${testPhone}`);
+                const expiredCheckData = await expiredCheckRes.json();
+                assert.equal(expiredCheckData.active, false);
+                assert.equal(expiredCheckData.expired, true);
+            }
+        } finally {
+            // Clean up test Firestore documents completely
+            try {
+                const admin = require('firebase-admin');
+                if (admin.apps.length > 0) {
+                    const db = admin.firestore();
+                    if (createdAmcDocId) await db.collection('customer_amc').doc(createdAmcDocId).delete();
+                    if (createdRequestId) {
+                        const snap = await db.collection('service_requests').where('request_id', '==', createdRequestId).get();
+                        const batch = db.batch();
+                        snap.forEach(d => batch.delete(d.ref));
+                        await batch.commit();
+                    }
+                }
+            } catch (_) {}
+        }
+    });
 });
