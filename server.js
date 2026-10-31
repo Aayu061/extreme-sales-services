@@ -131,7 +131,30 @@ if (!isFirebaseMode) {
 // 2. IN-MEMORY DATA STORE (FOR LOCAL DEVELOPMENT & TESTING)
 // ═══════════════════════════════════════════════════════════
 let systemUsers = [
-    { id: "usr-super-admin", name: "Super Admin", email: "ess0121@gmail.com", role: "admin", phone: "7977805245" }
+    {
+        id: "usr-super-admin",
+        name: "Super Admin",
+        email: process.env.ADMIN_SEED_EMAIL || "ess0121@gmail.com",
+        role: "admin",
+        phone: "7977805245",
+        password: process.env.ADMIN_SEED_PASSWORD || "@22062006@"
+    },
+    {
+        id: "usr-staff",
+        name: "Staff Dispatcher",
+        email: "staff@extremess.com",
+        role: "staff",
+        phone: "9820011000",
+        password: "staff123"
+    },
+    {
+        id: "usr-tech-1",
+        name: "Field Technician",
+        email: "tech@extremess.com",
+        role: "technician",
+        phone: "9820011223",
+        password: "tech123"
+    }
 ];
 
 let serviceRequests = [];
@@ -221,24 +244,21 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
         }
     }
 
-    // Local Mock Auth (signs an authentic JWT using dev secret)
-    let matchedUser = systemUsers.find(u => u.email.toLowerCase() === lowerEmail);
-    let role = 'admin';
+    // Local Mock Auth (validates credentials and signs authentic JWT using dev secret)
+    const matchedUser = systemUsers.find(u => u.email.toLowerCase() === lowerEmail);
+    if (!matchedUser) {
+        return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+    }
 
-    if (matchedUser) {
-        role = matchedUser.role;
-    } else {
-        if (lowerEmail.includes('staff')) role = 'staff';
-        else if (lowerEmail.includes('tech') || lowerEmail.includes('suresh') || lowerEmail.includes('ramesh')) role = 'technician';
-        else role = 'admin';
+    let isPasswordValid = false;
+    if (matchedUser.password_hash) {
+        isPasswordValid = await bcrypt.compare(password, matchedUser.password_hash);
+    } else if (matchedUser.password) {
+        isPasswordValid = (matchedUser.password === password);
+    }
 
-        matchedUser = {
-            id: role === 'technician' ? 'tech-1' : (role === 'staff' ? 'usr-staff' : 'usr-admin'),
-            name: role.toUpperCase() + " User",
-            email: lowerEmail || `${role}@extremess.com`,
-            role: role,
-            phone: '9820011000'
-        };
+    if (!isPasswordValid) {
+        return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
     const token = jwt.sign(
@@ -247,11 +267,17 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
         { expiresIn: '1d', algorithm: 'HS256' }
     );
 
-    res.json({
+    return res.json({
         success: true,
         token,
-        role: role,
-        user: matchedUser
+        role: matchedUser.role,
+        user: {
+            id: matchedUser.id,
+            name: matchedUser.name,
+            email: matchedUser.email,
+            role: matchedUser.role,
+            phone: matchedUser.phone || ''
+        }
     });
 });
 
