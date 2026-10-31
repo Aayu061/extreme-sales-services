@@ -354,8 +354,9 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
                 if (!amcSnap.empty) {
                     const amcDoc = amcSnap.docs[0];
                     const amcData = amcDoc.data();
+                    const isExpired = amcData.end_date && new Date(amcData.end_date) < new Date();
                     const remaining = Number(amcData.remaining_services) || 0;
-                    if (remaining > 0) {
+                    if (!isExpired && remaining > 0) {
                         transaction.update(amcDoc.ref, {
                             remaining_services: remaining - 1,
                             updated_at: new Date().toISOString()
@@ -406,7 +407,9 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
         // Local Synchronized Store Mode
         let amcNote = "";
         const activeSub = customerAmcSubscriptions.find(s => 
-            (s.phone === formattedPhone || s.phone === phone.trim()) && s.status === 'Active'
+            (s.phone === formattedPhone || s.phone === phone.trim()) &&
+            s.status === 'Active' &&
+            (!s.end_date || new Date(s.end_date) >= new Date())
         );
         if (activeSub && activeSub.remaining_services > 0) {
             activeSub.remaining_services -= 1;
@@ -479,15 +482,28 @@ app.get('/api/admin/requests', authMiddleware(['admin', 'staff']), async (req, r
 app.patch('/api/admin/assign-technician', authMiddleware(['admin', 'staff']), async (req, res) => {
     const { requestId, technicianId } = req.body;
 
+    if (!requestId || !technicianId) {
+        return res.status(400).json({ success: false, message: "requestId and technicianId are required." });
+    }
+
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('service_requests').where('request_id', '==', requestId).get();
             if (snap.empty) return res.status(404).json({ success: false, message: "Request not found" });
 
-            const docId = snap.docs[0].id;
-            let techName = "Assigned Field Engineer";
+            const docSnapshot = snap.docs[0];
+            const docId = docSnapshot.id;
+            const reqData = docSnapshot.data();
+
+            if (reqData.status === 'Completed' || reqData.status === 'Cancelled') {
+                return res.status(400).json({ success: false, message: `Cannot assign technician to a ${reqData.status.toLowerCase()} request.` });
+            }
+
             const techSnap = await db.collection('users').doc(technicianId).get();
-            if (techSnap.exists) techName = techSnap.data().name;
+            if (!techSnap.exists || techSnap.data().role !== 'technician') {
+                return res.status(400).json({ success: false, message: "Target user is not an active technician." });
+            }
+            const techName = techSnap.data().name || "Assigned Field Engineer";
 
             await db.collection('service_requests').doc(docId).update({
                 technician_id: technicianId,
@@ -501,12 +517,19 @@ app.patch('/api/admin/assign-technician', authMiddleware(['admin', 'staff']), as
     }
 
     const reqMatch = serviceRequests.find(r => r.request_id === requestId);
-    const techMatch = systemUsers.find(u => u.id === technicianId);
-
     if (!reqMatch) return res.status(404).json({ success: false, message: "Request not found" });
 
+    if (reqMatch.status === 'Completed' || reqMatch.status === 'Cancelled') {
+        return res.status(400).json({ success: false, message: `Cannot assign technician to a ${reqMatch.status.toLowerCase()} request.` });
+    }
+
+    const techMatch = systemUsers.find(u => u.id === technicianId && u.role === 'technician');
+    if (!techMatch) {
+        return res.status(400).json({ success: false, message: "Target user is not an active technician." });
+    }
+
     reqMatch.technician_id = technicianId;
-    reqMatch.technician_name = techMatch ? techMatch.name : "Assigned Field Engineer";
+    reqMatch.technician_name = techMatch.name;
     reqMatch.status = "Assigned";
 
     res.json({ success: true, message: `Job ${requestId} assigned to ${reqMatch.technician_name}` });
@@ -528,6 +551,9 @@ app.post('/api/admin/auto-dispatch', authMiddleware(['admin', 'staff']), async (
                 const rSnap = await db.collection('service_requests').where('request_id', '==', requestedId).get();
                 if (!rSnap.empty) {
                     targetRequest = { id: rSnap.docs[0].id, ...rSnap.docs[0].data() };
+                    if (targetRequest.status !== 'Pending') {
+                        return res.status(400).json({ success: false, message: `Only pending requests can be auto-dispatched (current status: ${targetRequest.status}).` });
+                    }
                 }
             } else {
                 const rSnap = await db.collection('service_requests').where('status', '==', 'Pending').limit(1).get();
@@ -558,6 +584,9 @@ app.post('/api/admin/auto-dispatch', authMiddleware(['admin', 'staff']), async (
         } else {
             if (requestedId) {
                 targetRequest = serviceRequests.find(r => r.request_id === requestedId || r.id === requestedId);
+                if (targetRequest && targetRequest.status !== 'Pending') {
+                    return res.status(400).json({ success: false, message: `Only pending requests can be auto-dispatched (current status: ${targetRequest.status}).` });
+                }
             } else {
                 targetRequest = serviceRequests.find(r => r.status === 'Pending');
             }
@@ -706,6 +735,39 @@ app.get('/api/admin/auto-dispatch/recommendations', authMiddleware(['admin', 'st
     }
 });
 
+async function refundAmcQuotaIfApplicable(ticketData) {
+    if (!ticketData || !ticketData.service_type || !ticketData.service_type.includes('[✅ AMC Covered]')) {
+        return;
+    }
+    const custPhone = ticketData.phone;
+    if (!custPhone) return;
+
+    if (isFirebaseMode) {
+        try {
+            const amcSnap = await db.collection('customer_amc')
+                .where('phone', '==', custPhone)
+                .where('status', '==', 'Active')
+                .get();
+            if (!amcSnap.empty) {
+                const amcDoc = amcSnap.docs[0];
+                const amcData = amcDoc.data();
+                const currentRemaining = Number(amcData.remaining_services) || 0;
+                await db.collection('customer_amc').doc(amcDoc.id).update({
+                    remaining_services: currentRemaining + 1,
+                    updated_at: new Date().toISOString()
+                });
+            }
+        } catch (err) {
+            console.error('Error restoring AMC quota on cancellation:', err.message);
+        }
+    } else {
+        const sub = customerAmcSubscriptions.find(s => s.phone === custPhone && s.status === 'Active');
+        if (sub) {
+            sub.remaining_services = (sub.remaining_services || 0) + 1;
+        }
+    }
+}
+
 app.patch('/api/admin/update-status', authMiddleware(['admin', 'staff', 'technician']), async (req, res) => {
     const requestId = req.body.requestId || req.body.id;
     const newStatus = req.body.newStatus || req.body.status;
@@ -743,6 +805,10 @@ app.patch('/api/admin/update-status', authMiddleware(['admin', 'staff', 'technic
             if (newStatus === 'Completed') updatePayload.completed_at = new Date().toISOString();
 
             await db.collection('service_requests').doc(docId).update(updatePayload);
+
+            if (newStatus === 'Cancelled') {
+                await refundAmcQuotaIfApplicable(currentData);
+            }
 
             // Phase 8: Asynchronous status update email
             if (currentData.email && emailService) {
@@ -787,6 +853,10 @@ app.patch('/api/admin/update-status', authMiddleware(['admin', 'staff', 'technic
     reqMatch.status = newStatus;
     if (notes) reqMatch.completion_notes = notes;
     if (newStatus === 'Completed' && !reqMatch.completed_at) reqMatch.completed_at = new Date().toISOString();
+
+    if (newStatus === 'Cancelled') {
+        await refundAmcQuotaIfApplicable(reqMatch);
+    }
 
     res.json({ success: true, message: `Status updated to ${newStatus}` });
 });
@@ -836,6 +906,11 @@ app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], authMid
             if (newStatus === 'Completed') updatePayload.completed_at = new Date().toISOString();
 
             await docRef.update(updatePayload);
+
+            if (newStatus === 'Cancelled') {
+                await refundAmcQuotaIfApplicable(currentData);
+            }
+
             return res.json({ success: true, message: `Status updated to ${newStatus}` });
         } catch (e) {
             console.error('Status update error:', e);
@@ -860,6 +935,10 @@ app.patch(['/api/admin/requests/:id/status', '/api/admin/requests/:id'], authMid
     reqMatch.status = newStatus;
     if (notes) reqMatch.completion_notes = notes;
     if (newStatus === 'Completed' && !reqMatch.completed_at) reqMatch.completed_at = new Date().toISOString();
+
+    if (newStatus === 'Cancelled') {
+        await refundAmcQuotaIfApplicable(reqMatch);
+    }
 
     res.json({ success: true, message: `Status updated to ${newStatus}` });
 });
@@ -1168,7 +1247,12 @@ app.put('/api/admin/products/:id', authMiddleware(['admin']), async (req, res) =
 
     if (isFirebaseMode) {
         try {
-            await db.collection('products').doc(id).update(updateData);
+            const docRef = db.collection('products').doc(id);
+            const docSnap = await docRef.get();
+            if (!docSnap.exists) {
+                return res.status(404).json({ success: false, message: "Product not found" });
+            }
+            await docRef.update(updateData);
             fastCache.invalidateTag('products');
             return res.json({ success: true, message: "Product updated successfully" });
         } catch(e) {
@@ -1487,6 +1571,15 @@ app.get('/api/amc/check', async (req, res) => {
             }
 
             const docData = snap.docs[0].data();
+            const isExpired = docData.end_date && new Date(docData.end_date) < new Date();
+            if (isExpired) {
+                return res.json({
+                    success: true,
+                    active: false,
+                    expired: true,
+                    message: "AMC contract has expired."
+                });
+            }
             const remaining = Number(docData.remaining_services) || 0;
             return res.json({
                 success: true,
@@ -1500,13 +1593,24 @@ app.get('/api/amc/check', async (req, res) => {
     }
 
     const sub = customerAmcSubscriptions.find(s => (s.phone === phone || s.phone === rawPhone) && s.status === 'Active');
-    if (sub && sub.remaining_services > 0) {
-        return res.json({
-            success: true,
-            active: true,
-            planName: sub.plan_name,
-            remainingServices: sub.remaining_services
-        });
+    if (sub) {
+        const isExpired = sub.end_date && new Date(sub.end_date) < new Date();
+        if (isExpired) {
+            return res.json({
+                success: true,
+                active: false,
+                expired: true,
+                message: "AMC contract has expired."
+            });
+        }
+        if (sub.remaining_services > 0) {
+            return res.json({
+                success: true,
+                active: true,
+                planName: sub.plan_name,
+                remainingServices: sub.remaining_services
+            });
+        }
     }
     res.json({ success: true, active: false });
 });
@@ -1675,7 +1779,7 @@ app.get('/api/track/live', (req, res) => {
 // ═══════════════════════════════════════════════════════════
 // 9. ANALYTICS — PROTECTED & TRUTHFUL DATA AGGREGATION
 // ═══════════════════════════════════════════════════════════
-app.get('/api/admin/analytics', authMiddleware(['admin', 'staff']), async (req, res) => {
+app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
     let reqs = serviceRequests;
     let amcSubs = customerAmcSubscriptions;
     let techUsers = systemUsers.filter(u => u.role === 'technician');
