@@ -43,6 +43,31 @@ describe('ALGORITHM 1: FMEA Predictive Diagnostics & Equipment Reliability', () 
         assert.ok(season.tempMultiplier >= 1.0);
         assert.ok(season.advisory);
     });
+
+    test('Edge case: Empty or missing description falls back gracefully to General Tune-Up without throwing', () => {
+        const fallbackReport = diagnosticsEngine.predictDiagnosis({});
+        assert.equal(fallbackReport.status, 'success');
+        assert.ok(fallbackReport.detectedDiagnosis);
+        assert.equal(fallbackReport.detectedDiagnosis.category, 'Preventative Maintenance');
+        assert.ok(typeof fallbackReport.latencyMs === 'number' && fallbackReport.latencyMs >= 0);
+    });
+
+    test('Edge case: Extreme 25-year-old equipment handles Weibull decay within bounds', () => {
+        const extremeAc = diagnosticsEngine.calculateEquipmentHealth(25, 'Unknown Brand');
+        assert.ok(extremeAc.healthIndex >= 18, 'Health index must not drop below minimum bound of 18');
+        assert.ok(extremeAc.efficiencyLossPercent <= 42, 'Efficiency loss must cap at maximum bound of 42%');
+        assert.ok(extremeAc.remainingUsefulLifeYears >= 1, 'Remaining useful life must be at least 1 year');
+    });
+
+    test('Identifies water leakage and categorizes as Drainage & Airflow with non-critical severity', () => {
+        const waterReport = diagnosticsEngine.predictDiagnosis({
+            description: 'Water leaking and dripping from indoor unit tray overflow',
+            serviceType: 'AC Repair'
+        });
+        assert.equal(waterReport.status, 'success');
+        assert.equal(waterReport.detectedDiagnosis.category, 'Drainage & Airflow');
+        assert.ok(waterReport.detectedDiagnosis.severity !== 'CRITICAL', 'Water dripping must not be classified as critical electrical hazard');
+    });
 });
 
 describe('ALGORITHM 2: Fleet Dispatch Optimization & Geodesic Distance', () => {
@@ -79,6 +104,17 @@ describe('ALGORITHM 2: Fleet Dispatch Optimization & Geodesic Distance', () => {
         // On urgent request, proximity to Andheri (Western Suburbs) strongly favors tech-near
         assert.equal(urgentDispatch.optimalTechnician.technicianId, 'tech-near');
     });
+
+    test('Edge case: 0 available technicians returns null safely without throwing exceptions', () => {
+        const noTechDispatch = dispatchEngine.findOptimalTechnician({ address: 'Dadar', service_type: 'AC Repair' }, []);
+        assert.equal(noTechDispatch, null);
+    });
+
+    test('Edge case: Unrecognized address defaults safely to Central Mumbai zone', () => {
+        const zone = dispatchEngine.detectZone('Unknown Rural Location 999999');
+        assert.ok(zone);
+        assert.equal(zone.id, 'CENTRAL_MUMBAI', 'Unknown zones must default safely to Central Mumbai hub');
+    });
 });
 
 describe('ALGORITHM 3: Dynamic Pricing & Thermodynamic AMC ROI', () => {
@@ -110,5 +146,24 @@ describe('ALGORITHM 3: Dynamic Pricing & Thermodynamic AMC ROI', () => {
         assert.ok(roi.annualBreakdown.netAnnualSavings > 0);
         assert.ok(roi.environmentalImpact.kwhSavedPerYear > 0);
         assert.ok(roi.environmentalImpact.co2ReductionKg > 0);
+    });
+
+    test('Edge case: Negative or 0 unit count in pricing quote bounds safely to 1 unit', () => {
+        const quote = pricingEngine.calculateQuote({
+            serviceKey: 'unknown_service',
+            units: -5,
+            tonnage: '99'
+        });
+        assert.ok(quote.success);
+        assert.equal(quote.specifications.unitsCount, 1, 'Units must bound to minimum 1');
+        assert.ok(quote.breakdown.totalAmount > 0, 'Total quote must be a positive number');
+    });
+
+    test('Edge case: calculateAmcRoi with extreme 24h usage computes bounded positive return', () => {
+        const roiExtreme = pricingEngine.calculateAmcRoi(1, 24, 'elite');
+        assert.ok(roiExtreme.success);
+        assert.equal(roiExtreme.inputs.avgDailyHours, 24);
+        assert.ok(roiExtreme.annualBreakdown.netAnnualSavings > 0);
+        assert.ok(roiExtreme.environmentalImpact.co2ReductionKg > 0);
     });
 });

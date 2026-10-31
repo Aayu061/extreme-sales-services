@@ -24,11 +24,13 @@ const {
     validateProductInput,
     isValidStatusTransition,
     generateSecureRequestId,
-    VALID_STATUS_TRANSITIONS
+    VALID_STATUS_TRANSITIONS,
+    escapeHtml
 } = require('../server/middleware/security');
 const dispatchEngine = require('../server/services/dispatchEngine');
 const diagnosticsEngine = require('../server/services/diagnosticsEngine');
 const emailService = require('../server/services/emailService');
+const fastCache = require('../server/services/cacheService');
 const app = require('../server');
 
 describe('PHASE 2 & 10: Authentication, Authorization & Secret Security', () => {
@@ -203,16 +205,6 @@ describe('PHASE 4 & 4.1: Input Validation & Sanitization', () => {
     });
 
     test('XSS escaping helper protects against script injection and image onerror', () => {
-        const escapeHtml = (str) => {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        };
-
         const scriptVector = '<script>alert("xss")</script>';
         const imgVector = '<img src=x onerror=alert(1)>';
         const quoteVector = 'Hello " onclick="evil()"';
@@ -220,6 +212,8 @@ describe('PHASE 4 & 4.1: Input Validation & Sanitization', () => {
         assert.equal(escapeHtml(scriptVector), '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
         assert.equal(escapeHtml(imgVector), '&lt;img src=x onerror=alert(1)&gt;');
         assert.equal(escapeHtml(quoteVector), 'Hello &quot; onclick=&quot;evil()&quot;');
+        assert.equal(escapeHtml(null), '');
+        assert.equal(escapeHtml(undefined), '');
     });
 });
 
@@ -308,6 +302,29 @@ describe('PHASE 8: SendGrid Email Integration Resilience', () => {
             status: 'In Progress'
         });
         assert.ok(typeof statusResult === 'object');
+    });
+});
+
+describe('PHASE 9: High-Performance In-Memory Cache & Tag Invalidation', () => {
+    test('Sets and gets values within TTL, and tracks hit/miss telemetry', () => {
+        fastCache.set('test_product_1', { name: 'Split AC' }, 5000, ['products']);
+        const cached = fastCache.get('test_product_1');
+        assert.deepEqual(cached, { name: 'Split AC' });
+
+        const stats = fastCache.getStats();
+        assert.ok(typeof stats.hits === 'number');
+        assert.ok(stats.hits > 0);
+    });
+
+    test('Tag-based invalidation purges all associated keys atomically', () => {
+        fastCache.set('prod_a', { id: 'a' }, 5000, ['products']);
+        fastCache.set('prod_b', { id: 'b' }, 5000, ['products']);
+        assert.ok(fastCache.get('prod_a'));
+        assert.ok(fastCache.get('prod_b'));
+
+        fastCache.invalidateTag('products');
+        assert.equal(fastCache.get('prod_a'), null);
+        assert.equal(fastCache.get('prod_b'), null);
     });
 });
 

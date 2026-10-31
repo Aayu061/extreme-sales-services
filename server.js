@@ -632,6 +632,12 @@ app.get('/api/admin/auto-dispatch/recommendations', authMiddleware(['admin', 'st
         }
 
         const dispatchResult = dispatchEngine.findOptimalTechnician(targetRequest, candidateTechnicians);
+        if (!dispatchResult || !dispatchResult.optimalTechnician) {
+            return res.status(422).json({
+                success: false,
+                message: "No active field technicians currently registered or available for dispatch recommendation."
+            });
+        }
         res.json({
             success: true,
             requestId: targetRequest.request_id,
