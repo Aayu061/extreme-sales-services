@@ -198,7 +198,7 @@ const requireAuth = (roles = []) => authMiddleware(roles);
 // 3. AUTHENTICATION & LOGIN (RATE-LIMITED & SECURED)
 // ═══════════════════════════════════════════════════════════
 app.post('/api/auth/login', loginLimiter, async (req, res) => {
-    const { email, password } = req.body || {};
+    const { email, password, role: requestedRole } = req.body || {};
     if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
         return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
@@ -225,6 +225,19 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
             const isMatch = await bcrypt.compare(password, user.password_hash);
             if (!isMatch) {
                 return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+            }
+
+            // Strict Role-to-Portal Matching Guard
+            if (requestedRole && typeof requestedRole === 'string') {
+                const targetRole = requestedRole.trim().toLowerCase();
+                if (user.role !== targetRole) {
+                    const portalNames = { admin: 'Admin', staff: 'Staff', technician: 'Field Tech' };
+                    const userPortal = portalNames[user.role] || user.role;
+                    return res.status(403).json({
+                        success: false,
+                        message: `Access Denied: This account is registered as '${userPortal}'. Please switch to the '${userPortal}' portal tab to sign in.`
+                    });
+                }
             }
 
             const token = jwt.sign(
@@ -259,6 +272,19 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
 
     if (!isPasswordValid) {
         return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+    }
+
+    // Strict Role-to-Portal Matching Guard
+    if (requestedRole && typeof requestedRole === 'string') {
+        const targetRole = requestedRole.trim().toLowerCase();
+        if (matchedUser.role !== targetRole) {
+            const portalNames = { admin: 'Admin', staff: 'Staff', technician: 'Field Tech' };
+            const userPortal = portalNames[matchedUser.role] || matchedUser.role;
+            return res.status(403).json({
+                success: false,
+                message: `Access Denied: This account is registered as '${userPortal}'. Please switch to the '${userPortal}' portal tab to sign in.`
+            });
+        }
     }
 
     const token = jwt.sign(
@@ -947,15 +973,25 @@ app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
         });
     }
 
-    const assignedRole = ['admin', 'staff', 'technician'].includes(role) ? role : 'technician';
+    if (!role || !['admin', 'staff', 'technician'].includes(role.toLowerCase())) {
+        return res.status(400).json({ success: false, message: "Valid role ('admin', 'staff', or 'technician') is required." });
+    }
+
+    const assignedRole = role.toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
 
     if (isFirebaseMode) {
         try {
+            const existingSnap = await db.collection('users').where('email', '==', cleanEmail).get();
+            if (!existingSnap.empty) {
+                return res.status(409).json({ success: false, message: "A user with this email address already exists." });
+            }
+
             const salt = await bcrypt.genSalt(10);
             const password_hash = await bcrypt.hash(password, salt);
             await db.collection('users').add({
                 name: name.trim(),
-                email: email.trim().toLowerCase(),
+                email: cleanEmail,
                 role: assignedRole,
                 phone: phone ? phone.trim() : '',
                 password_hash,
@@ -966,6 +1002,11 @@ app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
             console.error("Create user error:", e);
             return res.status(500).json({ success: false, message: "Failed to create user in database." });
         }
+    }
+
+    const existingMock = systemUsers.find(u => u.email.toLowerCase() === cleanEmail);
+    if (existingMock) {
+        return res.status(409).json({ success: false, message: "A user with this email address already exists." });
     }
 
     const newUser = {

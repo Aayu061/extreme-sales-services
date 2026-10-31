@@ -479,6 +479,39 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
         assert.equal(data.message, 'Invalid email or password.');
     });
 
+    test('POST /api/auth/login blocks role mismatch when account role does not match selected portal tab', async () => {
+        // Super Admin account attempting to log in on 'staff' portal tab
+        const res = await fetch(`${baseUrl}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: 'ess0121@gmail.com',
+                password: '@22062006@',
+                role: 'staff' // Mismatch!
+            })
+        });
+        assert.equal(res.status, 403);
+        const data = await res.json();
+        assert.equal(data.success, false);
+        assert.match(data.message, /Access Denied.*registered as 'Admin'/i);
+    });
+
+    test('POST /api/auth/login succeeds when role matches selected portal tab', async () => {
+        const res = await fetch(`${baseUrl}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: 'ess0121@gmail.com',
+                password: '@22062006@',
+                role: 'admin' // Match!
+            })
+        });
+        assert.equal(res.status, 200);
+        const data = await res.json();
+        assert.equal(data.success, true);
+        assert.equal(data.role, 'admin');
+    });
+
     test('PATCH /api/admin/update-status blocks illegal state transitions for non-admin roles', async () => {
         // 1. Create a fresh service request to test against
         const bookRes = await fetch(`${baseUrl}/api/services`, {
