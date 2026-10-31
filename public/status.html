@@ -140,17 +140,6 @@
               </svg>
               <span>Track Service Now</span>
             </button>
-            <div class="pt-3 border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 flex items-center justify-between flex-wrap gap-2 text-xs">
-              <span class="text-[#655448] dark:text-[#B8AA98] font-medium">Quick Demo Tickets:</span>
-              <div class="flex gap-2">
-                <button type="button" onclick="document.getElementById('requestId').value='AC-1002'; document.getElementById('phone').value='9822012345'; document.getElementById('trackingForm').dispatchEvent(new Event('submit', {cancelable:true}));" class="px-2.5 py-1 rounded-lg bg-[#A05B3A]/15 dark:bg-[#A05B3A]/25 text-[#A05B3A] dark:text-[#E4C99A] font-bold hover:bg-[#A05B3A]/25 transition text-[11px] flex items-center gap-1">
-                  <span>👷</span> AC-1002 (Assigned)
-                </button>
-                <button type="button" onclick="document.getElementById('requestId').value='AC-1001'; document.getElementById('phone').value='9876543210'; document.getElementById('trackingForm').dispatchEvent(new Event('submit', {cancelable:true}));" class="px-2.5 py-1 rounded-lg bg-[#77B89A]/15 dark:bg-[#77B89A]/25 text-[#77B89A] font-bold hover:bg-[#77B89A]/25 transition text-[11px] flex items-center gap-1">
-                  <span>✅</span> AC-1001 (Completed)
-                </button>
-              </div>
-            </div>
           </form>
         </div>
 
@@ -161,7 +150,7 @@
               <p class="text-[11px] text-[#A05B3A] dark:text-[#E4C99A] font-bold uppercase tracking-wider mb-1">Live Request Milestones</p>
               <h2 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] font-mono tracking-tight">ID: <span id="displayId" class="text-[#A05B3A] dark:text-[#E4C99A]">AC-XXXX</span></h2>
             </div>
-            <button type="button" onclick="location.reload()" class="bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-xl text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] hover:bg-[#EAE3D6] dark:hover:bg-[#342C27] transition">Reset</button>
+            <button type="button" onclick="if(window.resetTracking){window.resetTracking();}else{window.location.href=window.location.pathname;}" class="bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-xl text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] hover:bg-[#EAE3D6] dark:hover:bg-[#342C27] transition">Reset</button>
           </div>
 
           <!-- This will be populated by status.js into timelineContent -->

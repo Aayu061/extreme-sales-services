@@ -18,13 +18,15 @@ Extreme Sales & Services is a comprehensive full-stack enterprise web platform e
 ---
 
 ## 📚 Project Documentation
-Comprehensive Software Engineering (SE) documentation has been generated conforming strictly to IEEE-830 and standard academic/enterprise specifications:
+Comprehensive Software Engineering (SE) documentation has been generated conforming strictly to IEEE-830 and standard academic/enterprise specifications, organized in [docs/](docs/):
 
-- **Microsoft Word Documentation**: [EXTREME_SALES_SERVICES_DOCUMENTATION.docx](EXTREME_SALES_SERVICES_DOCUMENTATION.docx)  
+- **Microsoft Word Documentation**: [docs/EXTREME_SALES_SERVICES_DOCUMENTATION.docx](docs/EXTREME_SALES_SERVICES_DOCUMENTATION.docx)  
   *(Contains all 11 sections, styled tables, metadata, and 20 high-resolution architectural diagrams; ready for export to PDF)*
-- **Markdown Specification**: [EXTREME_SALES_SERVICES_SE_DOCUMENTATION.md](EXTREME_SALES_SERVICES_SE_DOCUMENTATION.md)  
+- **Markdown Specification**: [docs/EXTREME_SALES_SERVICES_SE_DOCUMENTATION.md](docs/EXTREME_SALES_SERVICES_SE_DOCUMENTATION.md)  
   *(Complete documentation containing embedded Mermaid diagrams, data flow models, state charts, sequence diagrams, function point calculations, and test cases)*
-- **Architectural Diagrams (20 High-Res Assets)**: Located in [docs_assets/](docs_assets/)
+- **System Architecture Specification**: [docs/Architecture.md](docs/Architecture.md)
+- **Living Agent Memory & Audit Log**: [docs/Memory.md](docs/Memory.md)
+- **Architectural Diagrams (20 High-Res Assets)**: Located in [docs/assets/](docs/assets/)
 
 ---
 

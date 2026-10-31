@@ -189,10 +189,13 @@ form.addEventListener('submit', async (e) => {
                 btn.classList.remove('hidden');
             }, 3000);
         } else {
-            alert("Something went wrong requesting this subscription.");
+            const data = await res.json().catch(() => ({}));
+            if (window.showToast) window.showToast(data.message || "Something went wrong requesting this subscription.", 'error');
+            else alert(data.message || "Something went wrong requesting this subscription.");
         }
     } catch (e) {
-        alert("Network error.");
+        if (window.showToast) window.showToast("Network error submitting subscription.", 'error');
+        else alert("Network error.");
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;

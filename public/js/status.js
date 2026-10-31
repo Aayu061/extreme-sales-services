@@ -28,7 +28,24 @@ let etaMinutes     = 0;
 let lastStatus     = null;
 let lastRenderedKey = null;
 
-// ─── URL Auto-fill ──────────────────────────────────────────────
+// ─── URL Auto-fill & Clean Reset ──────────────────────────────
+window.resetTracking = function() {
+    if (trackingSource) { trackingSource.close(); trackingSource = null; }
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    if (etaInterval) { clearInterval(etaInterval); etaInterval = null; }
+    lastRenderedKey = null;
+    lastStatus = null;
+    try {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } catch(e) {}
+    const reqInput = document.getElementById('requestId');
+    const phInput = document.getElementById('phone');
+    if (reqInput) reqInput.value = '';
+    if (phInput) phInput.value = '';
+    if (resultsCard) resultsCard.classList.add('hidden');
+    if (formCard) formCard.classList.remove('hidden');
+};
+
 window.addEventListener('DOMContentLoaded', () => {
     const p = new URLSearchParams(window.location.search);
     const idParam    = p.get('id');
@@ -36,7 +53,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (idParam) {
         document.getElementById('requestId').value = idParam;
         if (phoneParam) document.getElementById('phone').value = phoneParam;
-        startTracking(idParam, phoneParam || '9876543210');
+        startTracking(idParam, phoneParam || '');
     }
 });
 
