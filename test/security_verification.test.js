@@ -502,5 +502,17 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
         const data = await res.json();
         assert.equal(data.success, false);
         assert.match(data.message, /Invalid state transition/i);
+
+        // Clean up created test document so database remains 100% clean
+        try {
+            const admin = require('firebase-admin');
+            if (admin.apps.length > 0) {
+                const db = admin.firestore();
+                const snap = await db.collection('service_requests').where('request_id', '==', targetRequestId).get();
+                const batch = db.batch();
+                snap.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+            }
+        } catch(_) {}
     });
 });
