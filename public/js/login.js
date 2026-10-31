@@ -158,7 +158,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Card entrance animation
+// Card entrance animation & URL parameter pre-selection
 window.addEventListener('DOMContentLoaded', () => {
     const card = document.getElementById('loginForm')?.parentElement;
     if (typeof gsap !== 'undefined' && card) {
@@ -166,5 +166,19 @@ window.addEventListener('DOMContentLoaded', () => {
             { opacity: 0, y: 20, scale: 0.98 },
             { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'power2.out' }
         );
+    }
+
+    // Auto-select role tab if specified in URL (e.g. login.html?role=staff)
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetRole = urlParams.get('role');
+    if (targetRole && roleMeta[targetRole]) {
+        const btn = document.querySelector(`button[onclick*="'${targetRole}'"]`);
+        if (btn) setRole(targetRole, btn);
+    }
+
+    if (urlParams.get('expired') === '1') {
+        setTimeout(() => {
+            if (window.showToast) window.showToast('Your session has expired. Please log in again.', 'warning');
+        }, 300);
     }
 });

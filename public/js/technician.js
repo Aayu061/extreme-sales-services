@@ -54,15 +54,27 @@ window.fetch = async function(url, options = {}, extra = {}) {
     return response;
 };
 
-// Strict Real-Auth Guard
+// Strict Real-Auth Guard & Token Expiry Check
 const token = localStorage.getItem('ess_token');
 const role = localStorage.getItem('ess_role');
 
-if (!token || (role !== 'technician' && role !== 'admin') || token.startsWith('demo-') || token.startsWith('mock-')) {
+function isTokenExpired(t) {
+    if (!t) return true;
+    try {
+        const parts = t.split('.');
+        if (parts.length !== 3) return true;
+        const payload = JSON.parse(atob(parts[1]));
+        return payload.exp ? (payload.exp * 1000 < Date.now()) : false;
+    } catch (e) {
+        return true;
+    }
+}
+
+if (!token || role !== 'technician' || isTokenExpired(token) || token.startsWith('demo-') || token.startsWith('mock-')) {
     localStorage.removeItem('ess_token');
     localStorage.removeItem('ess_role');
     localStorage.removeItem('ess_user');
-    window.location.href = 'login.html';
+    window.location.href = 'login.html?role=technician';
 }
 
 
