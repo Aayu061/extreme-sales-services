@@ -151,25 +151,6 @@
                         </div>
                     </div>
 
-                    <!-- Quick Demo Autofill Helpers -->
-                    <div class="p-3 bg-[#E6DFD3]/40 dark:bg-[#1F1916] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider">Demo Quick Fill</span>
-                            <span class="text-[10px] text-[#B8AA98] dark:text-[#655448]">Click to load test account</span>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button type="button" onclick="fillCreds('admin@extremess.com', 'admin123', 'admin')" class="px-2.5 py-1 rounded-md bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 text-[11px] font-semibold text-[#342C27] dark:text-[#F2EDE3] hover:border-[#A05B3A] hover:text-[#A05B3A] transition shadow-2xs cursor-pointer">
-                                Admin Demo
-                            </button>
-                            <button type="button" onclick="fillCreds('staff@extremess.com', 'staff123', 'staff')" class="px-2.5 py-1 rounded-md bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 text-[11px] font-semibold text-[#342C27] dark:text-[#F2EDE3] hover:border-[#77B89A] hover:text-[#2E6B52] dark:hover:text-[#77B89A] transition shadow-2xs cursor-pointer">
-                                Staff Demo
-                            </button>
-                            <button type="button" onclick="fillCreds('tech@extremess.com', 'tech123', 'technician')" class="px-2.5 py-1 rounded-md bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 text-[11px] font-semibold text-[#342C27] dark:text-[#F2EDE3] hover:border-[#D97706] hover:text-[#D97706] transition shadow-2xs cursor-pointer">
-                                Tech Demo
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Login Form -->
                     <form id="loginForm" class="space-y-4">
                         <input type="hidden" id="selectedRole" value="admin">
@@ -234,20 +215,6 @@
     <footer class="py-4 text-center text-xs text-[#655448] dark:text-[#B8AA98]">
         &copy; 2026 Extreme Sales &amp; Services • Secure Enterprise Authentication (JWT + RBAC)
     </footer>
-
-    <!-- HELPER SCRIPT FOR QUICK FILL -->
-    <script>
-        function fillCreds(email, password, role) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
-            const buttons = document.querySelectorAll('.role-tab');
-            buttons.forEach(b => {
-                if (b.innerText.toLowerCase().includes(role === 'technician' ? 'tech' : role)) {
-                    setRole(role, b);
-                }
-            });
-        }
-    </script>
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>

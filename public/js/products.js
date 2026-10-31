@@ -146,10 +146,10 @@ function renderProducts(productsArray) {
     if (productsArray.length === 0) {
         productGrid.innerHTML = `
             <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
-                <div class="text-6xl mb-4">🔍</div>
-                <h3 class="font-black text-[#342C27] dark:text-[#F2EDE3] text-xl mb-2">No Products Found</h3>
-                <p class="text-[#655448] dark:text-[#B8AA98] text-sm mb-6">Try adjusting your filters or search term.</p>
-                <button onclick="clearFilters()" class="bg-[#A05B3A] text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-[#944E2E] transition shadow-xs">Clear Filters</button>
+                <div class="text-6xl mb-4">📦</div>
+                <h3 class="font-black text-[#342C27] dark:text-[#F2EDE3] text-xl mb-2">No Products in Catalog</h3>
+                <p class="text-[#655448] dark:text-[#B8AA98] text-sm mb-6">Inventory is currently clean and empty. Log in to the Admin Portal to add fresh HVAC units.</p>
+                <a href="login.html" class="bg-[#A05B3A] text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-[#944E2E] transition shadow-xs inline-flex items-center gap-2">Admin Portal &rarr;</a>
             </div>`;
         return;
     }
@@ -419,10 +419,13 @@ form.addEventListener('submit', async (e) => {
             document.getElementById('enqSuccessMsg').classList.remove('hidden');
             setTimeout(closeModal, 2000);
         } else {
-            alert("Something went wrong saving the enquiry.");
+            const data = await res.json().catch(() => ({}));
+            if (window.showToast) window.showToast(data.message || "Something went wrong saving the enquiry.", 'error');
+            else alert(data.message || "Something went wrong saving the enquiry.");
         }
     } catch (e) {
-        alert("Network error.");
+        if (window.showToast) window.showToast("Network error submitting enquiry.", 'error');
+        else alert("Network error.");
     } finally {
         btn.innerText = "Submit Enquiry";
         btn.disabled = false;

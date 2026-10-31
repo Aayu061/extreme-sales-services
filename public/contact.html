@@ -830,6 +830,12 @@
                 );
               e.target.reset();
               loadFeedbackStream();
+            } else {
+              if (window.showToast)
+                window.showToast(
+                  data.message || "Failed to submit review.",
+                  "error",
+                );
             }
           } catch (err) {
             if (window.showToast)

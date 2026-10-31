@@ -292,6 +292,9 @@ async function startJob(requestId) {
         if (res.ok) {
             if (window.showToast) window.showToast(`Service started for ${requestId}! Customer notified.`, 'info');
             fetchJobs(true);
+        } else {
+            const data = await res.json().catch(() => ({}));
+            if (window.showToast) window.showToast(data.message || "Failed to update status", "error");
         }
     } catch(e) {
         if (window.showToast) window.showToast("Failed to update status", "error");
@@ -529,7 +532,8 @@ document.getElementById('completionForm')?.addEventListener('submit', async (e) 
             if (window.showToast) window.showToast(`Job ${requestId} signed off as Completed! Invoice generated.`, 'success');
             fetchJobs(true);
         } else {
-            if (window.showToast) window.showToast("Server rejected sign off", "error");
+            const data = await res.json().catch(() => ({}));
+            if (window.showToast) window.showToast(data.message || "Server rejected sign off", "error");
         }
     } catch(err) {
         if (window.showToast) window.showToast("Sign off failed", "error");
