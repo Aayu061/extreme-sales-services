@@ -975,11 +975,23 @@ app.get('/api/admin/users/technicians', authMiddleware(['admin', 'staff']), asyn
             const snap = await db.collection('users').where('role', '==', 'technician').get();
             const technicians = [];
             for (const d of snap.docs) {
+                const dData = d.data();
                 const jSnap = await db.collection('service_requests')
                     .where('technician_id', '==', d.id)
                     .where('status', 'in', ['Assigned', 'In Progress'])
                     .get();
-                technicians.push({ id: d.id, name: d.data().name, email: d.data().email, phone: d.data().phone, active_jobs: jSnap.size });
+                technicians.push({
+                    id: d.id,
+                    name: dData.name,
+                    email: dData.email,
+                    phone: dData.phone || '',
+                    role: 'technician',
+                    zone: dData.zone || 'WESTERN_SUBURBS',
+                    skills: dData.skills || ['Inverter AC', 'Jet Cleaning'],
+                    max_capacity: dData.max_capacity || 4,
+                    rating: dData.rating || 4.8,
+                    active_jobs: jSnap.size
+                });
             }
             return res.json({ success: true, technicians });
         } catch(e) {
@@ -999,7 +1011,12 @@ app.get('/api/admin/users/technicians', authMiddleware(['admin', 'staff']), asyn
             id: t.id,
             name: t.name,
             email: t.email,
-            phone: t.phone,
+            phone: t.phone || '',
+            role: 'technician',
+            zone: t.zone || 'WESTERN_SUBURBS',
+            skills: t.skills || ['Inverter AC', 'Jet Cleaning'],
+            max_capacity: t.max_capacity || 4,
+            rating: t.rating || 4.8,
             active_jobs: activeJobs,
             completed_jobs: completedJobs
         };
@@ -1058,9 +1075,118 @@ app.get('/api/technician/jobs', authMiddleware(['technician', 'admin', 'staff'])
     res.json({ success: true, requests: jobs });
 });
 
-// Phase 2.7: Secure User Creation — Strong password requirement, no default password123
+// Phase 2.7: Algorithmic Team Onboarding & Unified Team Directory
+app.get('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
+    if (isFirebaseMode) {
+        try {
+            const snap = await db.collection('users').get();
+            const users = [];
+            for (const d of snap.docs) {
+                const dData = d.data();
+                let active_jobs = 0;
+                let completed_jobs = 0;
+                if (dData.role === 'technician') {
+                    const jSnap = await db.collection('service_requests')
+                        .where('technician_id', '==', d.id)
+                        .get();
+                    jSnap.docs.forEach(doc => {
+                        const st = doc.data().status;
+                        if (st === 'Assigned' || st === 'In Progress') active_jobs++;
+                        if (st === 'Completed') completed_jobs++;
+                    });
+                }
+                users.push({
+                    id: d.id,
+                    name: dData.name || '',
+                    email: dData.email || '',
+                    role: dData.role || 'technician',
+                    phone: dData.phone || '',
+                    zone: dData.zone || (dData.role === 'technician' ? 'WESTERN_SUBURBS' : null),
+                    skills: dData.skills || (dData.role === 'technician' ? ['Inverter AC', 'Jet Cleaning'] : []),
+                    max_capacity: dData.max_capacity || 4,
+                    rating: dData.rating || 4.8,
+                    department: dData.department || (dData.role === 'staff' ? 'Dispatch Operations' : ''),
+                    created_at: dData.created_at || null,
+                    active_jobs,
+                    completed_jobs
+                });
+            }
+            return res.json({ success: true, users });
+        } catch(e) {
+            console.error("Master users query error:", e.message);
+            return res.status(500).json({ success: false, message: "Error loading team directory." });
+        }
+    }
+
+    const users = systemUsers.map(u => {
+        let active_jobs = 0;
+        let completed_jobs = 0;
+        if (u.role === 'technician') {
+            active_jobs = serviceRequests.filter(r => r.technician_id === u.id && (r.status === 'Assigned' || r.status === 'In Progress')).length;
+            completed_jobs = serviceRequests.filter(r => r.technician_id === u.id && r.status === 'Completed').length;
+        }
+        return {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            phone: u.phone || '',
+            zone: u.zone || (u.role === 'technician' ? 'WESTERN_SUBURBS' : null),
+            skills: u.skills || (u.role === 'technician' ? ['Inverter AC', 'Jet Cleaning'] : []),
+            max_capacity: u.max_capacity || 4,
+            rating: u.rating || 4.8,
+            department: u.department || (u.role === 'staff' ? 'Dispatch Operations' : ''),
+            created_at: u.created_at || null,
+            active_jobs,
+            completed_jobs
+        };
+    });
+    res.json({ success: true, users });
+});
+
+// Phase 2.8: Remove Team Member (Protected against super admin deletion)
+app.delete('/api/admin/users/:id', authMiddleware(['admin']), async (req, res) => {
+    const targetId = req.params.id;
+    if (!targetId) {
+        return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    // Protect super admin / current session
+    if (targetId === 'usr-super-admin' || targetId === req.user.id) {
+        return res.status(403).json({ success: false, message: "Protected account: You cannot remove this administrative account." });
+    }
+
+    if (isFirebaseMode) {
+        try {
+            const userRef = db.collection('users').doc(targetId);
+            const userDoc = await userRef.get();
+            if (!userDoc.exists) {
+                return res.status(404).json({ success: false, message: "User not found." });
+            }
+            if (userDoc.data().email === 'admin@extremess.com') {
+                return res.status(403).json({ success: false, message: "Protected account: Root administrator cannot be removed." });
+            }
+            await userRef.delete();
+            return res.json({ success: true, message: "Team member removed successfully." });
+        } catch(e) {
+            console.error("Delete user error:", e.message);
+            return res.status(500).json({ success: false, message: "Failed to remove user from database." });
+        }
+    }
+
+    const idx = systemUsers.findIndex(u => u.id === targetId);
+    if (idx === -1) {
+        return res.status(404).json({ success: false, message: "User not found." });
+    }
+    if (systemUsers[idx].email === 'admin@extremess.com') {
+        return res.status(403).json({ success: false, message: "Protected account: Root administrator cannot be removed." });
+    }
+    systemUsers.splice(idx, 1);
+    res.json({ success: true, message: "Team member removed successfully." });
+});
+
 app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
-    const { name, email, role, phone, password } = req.body || {};
+    const { name, email, role, phone, password, zone, skills, max_capacity, rating, department } = req.body || {};
 
     if (!validateName(name)) {
         return res.status(400).json({ success: false, message: "Valid full name is required (2–100 characters)." });
@@ -1082,6 +1208,13 @@ app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
     const assignedRole = role.toLowerCase();
     const cleanEmail = email.trim().toLowerCase();
 
+    // Prepare algorithmic technician attributes
+    const techZone = assignedRole === 'technician' ? (zone || 'WESTERN_SUBURBS') : null;
+    const techSkills = assignedRole === 'technician' ? (Array.isArray(skills) && skills.length > 0 ? skills : ['Inverter AC', 'Jet Cleaning']) : [];
+    const techCapacity = assignedRole === 'technician' ? (Math.max(2, Math.min(8, Number(max_capacity) || 4))) : null;
+    const techRating = assignedRole === 'technician' ? (Number(rating) || 4.8) : null;
+    const staffDept = assignedRole === 'staff' ? (department || 'Dispatch Coordination') : '';
+
     if (isFirebaseMode) {
         try {
             const existingSnap = await db.collection('users').where('email', '==', cleanEmail).get();
@@ -1091,15 +1224,24 @@ app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
 
             const salt = await bcrypt.genSalt(10);
             const password_hash = await bcrypt.hash(password, salt);
-            await db.collection('users').add({
+            const docRef = await db.collection('users').add({
                 name: name.trim(),
                 email: cleanEmail,
                 role: assignedRole,
                 phone: phone ? phone.trim() : '',
+                zone: techZone,
+                skills: techSkills,
+                max_capacity: techCapacity,
+                rating: techRating,
+                department: staffDept,
                 password_hash,
                 created_at: new Date().toISOString()
             });
-            return res.status(201).json({ success: true, message: 'User created successfully.' });
+            return res.status(201).json({
+                success: true,
+                message: 'User created successfully.',
+                user: { id: docRef.id, name: name.trim(), email: cleanEmail, role: assignedRole, zone: techZone, skills: techSkills }
+            });
         } catch(e) {
             console.error("Create user error:", e);
             return res.status(500).json({ success: false, message: "Failed to create user in database." });
@@ -1117,6 +1259,11 @@ app.post('/api/admin/users', authMiddleware(['admin']), async (req, res) => {
         email: email.trim().toLowerCase(),
         role: assignedRole,
         phone: phone ? phone.trim() : "",
+        zone: techZone,
+        skills: techSkills,
+        max_capacity: techCapacity,
+        rating: techRating,
+        department: staffDept,
         created_at: new Date().toISOString()
     };
     systemUsers.push(newUser);

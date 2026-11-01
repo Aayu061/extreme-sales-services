@@ -390,7 +390,7 @@
 
         </div>
 
-        <!-- 2. FLEET & USERS TAB -->
+        <!-- 2. FLEET & USERS TAB (Algorithmic Onboarding & Unified Team Directory) -->
         <div id="tab-users" class="tab-content p-6 hidden">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Create User Form -->
@@ -401,40 +401,156 @@
               <form id="createUserForm" class="space-y-3">
                 <div>
                   <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Full Name</label>
-                  <input type="text" id="newUserName" required placeholder="e.g. Ramesh Yadav" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <input type="text" id="newUserName" required placeholder="Enter full legal name" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Email Address</label>
-                  <input type="email" id="newUserEmail" required placeholder="tech@extremess.com" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <input type="email" id="newUserEmail" required placeholder="official@company.com" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Phone Number</label>
-                  <input type="tel" id="newUserPhone" placeholder="9820011223" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <input type="tel" id="newUserPhone" placeholder="10-digit mobile number" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">System Role</label>
-                  <select id="newUserRole" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <select id="newUserRole" onchange="onUserRoleChange()" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                     <option value="technician" selected>Technician (Field App)</option>
                     <option value="staff">Staff (Dispatcher)</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
-                <div>
-                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Password</label>
-                  <input type="password" id="newUserPass" required value="tech123" autocomplete="new-password" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none font-mono text-[#342C27] dark:text-white">
+
+                <!-- TECHNICIAN ALGORITHMIC ONBOARDING FIELDS -->
+                <div id="techAlgoFields" class="space-y-3 pt-2 border-t border-[#B8AA98]/20 dark:border-[#B8AA98]/10">
+                  <div>
+                    <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1 flex items-center justify-between">
+                      <span>MMR Operational Base Zone</span>
+                      <span class="text-[10px] text-[#A05B3A] dark:text-[#E4C99A] font-bold">35% Heuristic</span>
+                    </label>
+                    <select id="newUserZone" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                      <option value="WESTERN_SUBURBS" selected>Western Suburbs (Bandra, Andheri, Borivali)</option>
+                      <option value="CENTRAL_MUMBAI">Central Mumbai (Dadar, Kurla, Chembur)</option>
+                      <option value="SOUTH_MUMBAI">South Mumbai (Colaba, Worli, Lower Parel)</option>
+                      <option value="THANE_ZONE">Thane &amp; Central Belt (Thane, Mulund, Kalyan)</option>
+                      <option value="NAVI_MUMBAI">Navi Mumbai (Vashi, Nerul, Belapur)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1 flex items-center justify-between">
+                      <span>Certified Skill Taxonomy</span>
+                      <span class="text-[10px] text-[#77B89A] font-bold">20% Affinity</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-1.5 text-[11px]" id="techSkillsContainer">
+                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
+                        <input type="checkbox" name="techSkills[]" value="PCB_ELECTRONICS" checked class="rounded text-[#A05B3A] focus:ring-0">
+                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Inverter PCB</span>
+                      </label>
+                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
+                        <input type="checkbox" name="techSkills[]" value="JET_WASH" checked class="rounded text-[#A05B3A] focus:ring-0">
+                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Jet Wash</span>
+                      </label>
+                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
+                        <input type="checkbox" name="techSkills[]" value="REFRIGERATION_GAS" checked class="rounded text-[#A05B3A] focus:ring-0">
+                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Gas Brazing</span>
+                      </label>
+                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
+                        <input type="checkbox" name="techSkills[]" value="SPLIT_INSTALLATION" class="rounded text-[#A05B3A] focus:ring-0">
+                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Installation</span>
+                      </label>
+                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
+                        <input type="checkbox" name="techSkills[]" value="COMMERCIAL_VRV" class="rounded text-[#A05B3A] focus:ring-0">
+                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">VRV Chillers</span>
+                      </label>
+                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
+                        <input type="checkbox" name="techSkills[]" value="GENERAL_HVAC" checked class="rounded text-[#A05B3A] focus:ring-0">
+                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Diagnostics</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Max Daily Load</label>
+                      <input type="number" id="newUserCapacity" min="2" max="8" value="4" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">QA Score Target</label>
+                      <input type="number" id="newUserRating" min="4.0" max="5.0" step="0.1" value="4.8" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                    </div>
+                  </div>
+
+                  <!-- Live Algorithm Preview Card -->
+                  <div class="p-2.5 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1A1412]/70 border border-[#B8AA98]/30 dark:border-[#B8AA98]/15 text-[11px] space-y-1">
+                    <div class="flex items-center justify-between text-[#342C27] dark:text-[#FDFBF7] font-extrabold">
+                      <span class="flex items-center gap-1">
+                        <span class="text-amber-500">⚡</span>
+                        <span>MOW-GDM Heuristic Ready</span>
+                      </span>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] font-bold">Live Heuristic</span>
+                    </div>
+                    <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] leading-tight">
+                      Spatial proximity (35%), load balancing (30%), skill affinity (20%), and QA seniority (15%) are computed automatically.
+                    </p>
+                  </div>
                 </div>
-                <button type="submit" class="w-full bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-2.5 rounded-lg text-xs shadow-sm transition mt-2">
-                  Create Account
+
+                <!-- STAFF FIELDS (Shown only when role === 'staff') -->
+                <div id="staffFields" class="hidden space-y-3 pt-2 border-t border-[#B8AA98]/20 dark:border-[#B8AA98]/10">
+                  <div>
+                    <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Department / Operations Scope</label>
+                    <select id="newUserDept" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                      <option value="Dispatch Coordination" selected>Dispatch Coordination (Service Queue &amp; Auto-Match)</option>
+                      <option value="Commercial &amp; Enquiries">Commercial &amp; Enquiries (Product Catalog &amp; Quotes)</option>
+                      <option value="Operations &amp; Quality">Operations &amp; Quality (SLA &amp; Customer Relations)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Temporary Password</label>
+                  <input type="password" id="newUserPass" required placeholder="Temporary secure password (min 8 chars)" autocomplete="new-password" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none font-mono text-[#342C27] dark:text-white">
+                </div>
+                <button type="submit" id="btnCreateUser" class="w-full bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-2.5 rounded-lg text-xs shadow-sm transition mt-2 flex items-center justify-center gap-1.5">
+                  <span>+</span>
+                  <span>Create Account</span>
                 </button>
               </form>
             </div>
 
-            <!-- Active Fleet List -->
-            <div class="lg:col-span-2">
-              <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-1">Technician Field Fleet</h3>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-4">Availability telemetry and current workloads</p>
+            <!-- Unified Team Directory & Active Fleet List -->
+            <div class="lg:col-span-2 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-0.5">Team Directory &amp; Fleet Telemetry</h3>
+                  <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Active system credentials, geographic dispatch base, and workload telemetry</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="relative">
+                    <input type="text" id="teamSearchInput" oninput="filterTeamDirectory()" placeholder="Filter by name, zone, role..." class="bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl px-3 py-1.5 text-xs text-[#342C27] dark:text-[#FDFBF7] placeholder-[#655448]/60 dark:placeholder-[#B8AA98]/60 focus:ring-1 focus:ring-[#A05B3A] outline-none w-48 sm:w-56">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Directory Filter Tabs -->
+              <div class="flex flex-wrap items-center gap-2 p-1.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/30 dark:border-[#B8AA98]/15">
+                <button type="button" id="tabFilterAll" onclick="setTeamRoleFilter('all', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-black bg-[#A05B3A] text-white shadow-xs transition">
+                  All Team Members (<span id="countTeamAll">0</span>)
+                </button>
+                <button type="button" id="tabFilterTech" onclick="setTeamRoleFilter('technician', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
+                  🧑‍🔧 Field Technicians (<span id="countTeamTech">0</span>)
+                </button>
+                <button type="button" id="tabFilterStaff" onclick="setTeamRoleFilter('staff', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
+                  🎧 Dispatch Staff (<span id="countTeamStaff">0</span>)
+                </button>
+                <button type="button" id="tabFilterAdmin" onclick="setTeamRoleFilter('admin', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
+                  👑 Administrators (<span id="countTeamAdmin">0</span>)
+                </button>
+              </div>
+
+              <!-- Dynamic Team Cards Container -->
               <div id="techniciansGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Dynamically Populated -->
+                <!-- Dynamically Populated with rich user cards -->
               </div>
             </div>
 
@@ -529,36 +645,36 @@
 
         <!-- 6. ANALYTICS & PROFIT SIMULATOR TAB -->
         <div id="tab-analytics" class="tab-content p-6 hidden space-y-8">
-          <!-- 6-Tile Executive Statistical Summary Grid -->
+          <!-- 6-Tile Executive Statistical Summary Grid (Mineral Architecture Palette) -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
               <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Total Volume</span>
               <span id="statStatTotalVolume" class="text-xl sm:text-2xl font-black font-mono text-[#342C27] dark:text-[#FDFBF7] block mt-0.5">0</span>
-              <span class="text-[9px] text-[#77B89A] font-bold">100% Live DB</span>
+              <span class="text-[9px] text-[#2E6B52] dark:text-[#77B89A] font-bold">100% Live DB</span>
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
               <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Mean MTTR</span>
               <span id="statStatMttr" class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5">--</span>
               <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Turnaround Mins</span>
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
               <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">SLA Compliance</span>
-              <span id="statStatSla" class="text-xl sm:text-2xl font-black font-mono text-[#77B89A] block mt-0.5">--%</span>
-              <span class="text-[9px] text-[#77B89A] font-bold">&lt;45m Target</span>
+              <span id="statStatSla" class="text-xl sm:text-2xl font-black font-mono text-[#2E6B52] dark:text-[#77B89A] block mt-0.5">--%</span>
+              <span class="text-[9px] text-[#2E6B52] dark:text-[#77B89A] font-bold">&lt;45m Target</span>
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
               <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">First-Time Fix</span>
               <span id="statStatFtfr" class="text-xl sm:text-2xl font-black font-mono text-[#0284C7] dark:text-sky-400 block mt-0.5">--%</span>
               <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Single Visit Rate</span>
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
               <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Avg Ticket Rev</span>
               <span id="statStatArpt" class="text-xl sm:text-2xl font-black font-mono text-[#C27A23] dark:text-amber-400 block mt-0.5">₹0</span>
               <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Blended Realized</span>
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
               <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Fleet Capacity</span>
-              <span id="statStatFleetUtil" class="text-xl sm:text-2xl font-black font-mono text-[#8B5CF6] block mt-0.5">--</span>
+              <span id="statStatFleetUtil" class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5">--</span>
               <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Active Engineers</span>
             </div>
           </div>

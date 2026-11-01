@@ -808,4 +808,107 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
             } catch (_) {}
         }
     });
+
+    test('Algorithmic Team Onboarding & Unified Directory RBAC & Protected Deletion', async () => {
+        const adminToken = jwt.sign(
+            { id: 'usr-admin-test', role: 'admin', email: 'admin@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+        const techToken = jwt.sign(
+            { id: 'tech-test', role: 'technician', email: 'tech@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+        const staffToken = jwt.sign(
+            { id: 'staff-test', role: 'staff', email: 'staff@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+
+        // 1. GET /api/admin/users rejects unauthenticated and non-admin
+        const unauthRes = await fetch(`${baseUrl}/api/admin/users`);
+        assert.equal(unauthRes.status, 401);
+
+        const techRes = await fetch(`${baseUrl}/api/admin/users`, {
+            headers: { Authorization: `Bearer ${techToken}` }
+        });
+        assert.equal(techRes.status, 403);
+
+        const staffRes = await fetch(`${baseUrl}/api/admin/users`, {
+            headers: { Authorization: `Bearer ${staffToken}` }
+        });
+        assert.equal(staffRes.status, 403);
+
+        // 2. Admin successfully retrieves users list without passwords
+        const adminUsersRes = await fetch(`${baseUrl}/api/admin/users`, {
+            headers: { Authorization: `Bearer ${adminToken}` }
+        });
+        assert.equal(adminUsersRes.status, 200);
+        const adminUsersData = await adminUsersRes.json();
+        assert.equal(adminUsersData.success, true);
+        assert.ok(Array.isArray(adminUsersData.users));
+        adminUsersData.users.forEach(u => {
+            assert.equal(u.password_hash, undefined, 'Password hash must never be leaked');
+            assert.equal(u.password, undefined);
+        });
+
+        // 3. Admin creates new technician with MOW-GDM algorithmic attributes
+        const testEmail = `tech_algo_${Date.now()}@test.extremess.com`;
+        let createdUserId = null;
+        try {
+            const createRes = await fetch(`${baseUrl}/api/admin/users`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: 'Test Algo Tech',
+                    email: testEmail,
+                    role: 'technician',
+                    phone: '9820099999',
+                    password: 'SecurePassword123!',
+                    zone: 'WESTERN_SUBURBS',
+                    skills: ['PCB_ELECTRONICS', 'JET_WASH'],
+                    max_capacity: 5,
+                    rating: 4.9
+                })
+            });
+            assert.equal(createRes.status, 201);
+            const createData = await createRes.json();
+            assert.equal(createData.success, true);
+            createdUserId = createData.user?.id;
+
+            // 4. Protection test: DELETE /api/admin/users/:id blocks deleting super admin
+            const deleteSuperRes = await fetch(`${baseUrl}/api/admin/users/usr-super-admin`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${adminToken}` }
+            });
+            assert.equal(deleteSuperRes.status, 403);
+
+            // 5. Successful deletion of created test user
+            if (createdUserId) {
+                const deleteRes = await fetch(`${baseUrl}/api/admin/users/${createdUserId}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${adminToken}` }
+                });
+                assert.equal(deleteRes.status, 200);
+                const deleteData = await deleteRes.json();
+                assert.equal(deleteData.success, true);
+                createdUserId = null; // Marked deleted
+            }
+        } finally {
+            // Guarantee cleanup
+            if (createdUserId) {
+                try {
+                    const admin = require('firebase-admin');
+                    if (admin.apps.length > 0) {
+                        const db = admin.firestore();
+                        await db.collection('users').doc(createdUserId).delete();
+                    }
+                } catch (_) {}
+            }
+        }
+    });
 });
