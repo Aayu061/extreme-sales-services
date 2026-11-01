@@ -439,6 +439,27 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
     }
 });
 
+function enrichRequestWithDiagnostics(r) {
+    let fmea = null;
+    try {
+        const diag = diagnosticsEngine.predictDiagnosis({
+            description: r.issue_description || '',
+            serviceType: r.service_type || ''
+        });
+        if (diag && diag.fmea) {
+            fmea = {
+                rpn: diag.fmea.rpn,
+                severity: diag.fmea.severity,
+                classification: diag.fmea.classification,
+                rootCause: diag.primaryIssue ? diag.primaryIssue.rootCause : 'General Inspection',
+                category: diag.primaryIssue ? diag.primaryIssue.category : 'General HVAC',
+                estimatedMinutes: diag.primaryIssue ? diag.primaryIssue.estimatedMinutes : 45
+            };
+        }
+    } catch (_) {}
+    return { ...r, fmea };
+}
+
 app.get('/api/admin/requests', authMiddleware(['admin', 'staff']), async (req, res) => {
     const statusFilter = req.query.status;
     const search = (req.query.search || '').toLowerCase().trim();
@@ -458,7 +479,8 @@ app.get('/api/admin/requests', authMiddleware(['admin', 'staff']), async (req, r
                     (r.phone && r.phone.includes(search))
                 );
             }
-            return res.json({ success: true, requests });
+            const enriched = requests.map(enrichRequestWithDiagnostics);
+            return res.json({ success: true, requests: enriched });
         } catch (e) {
             return res.status(500).json({ success: false, message: "Fetch error" });
         }
@@ -476,7 +498,8 @@ app.get('/api/admin/requests', authMiddleware(['admin', 'staff']), async (req, r
         );
     }
 
-    res.json({ success: true, requests: filtered });
+    const enriched = filtered.map(enrichRequestWithDiagnostics);
+    res.json({ success: true, requests: enriched });
 });
 
 app.patch('/api/admin/assign-technician', authMiddleware(['admin', 'staff']), async (req, res) => {
