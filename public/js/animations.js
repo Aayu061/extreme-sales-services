@@ -1220,5 +1220,20 @@ document.addEventListener('DOMContentLoaded', () => {
       dismiss();
     });
   });
+
+  // Hero Quick Ticket Tracker handler
+  document.addEventListener('DOMContentLoaded', () => {
+    const heroTrackForm = document.getElementById('heroQuickTrackForm');
+    if (heroTrackForm) {
+      heroTrackForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('heroTrackInput');
+        const query = (input?.value || '').trim();
+        if (query) {
+          window.location.href = `status.html?id=${encodeURIComponent(query)}`;
+        }
+      });
+    }
+  });
 })();
 

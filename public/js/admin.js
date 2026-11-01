@@ -194,6 +194,7 @@ async function fetchRequests(silent = false) {
         if (data.success) {
             currentRequests = data.requests;
             renderTable();
+            renderZoneHeatmap(currentRequests);
             fetchAnalytics();
             if (!silent && window.showToast) window.showToast('Telemetry and queue synchronized', 'info', 2000);
         }
@@ -319,7 +320,10 @@ function renderTable() {
                 </select>
             </td>
             <td class="px-5 py-4">
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onclick="openAdminInvoice('${safeReqId}')" class="bg-[#342C27] hover:bg-[#433932] dark:bg-white/10 dark:hover:bg-white/20 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer" title="Generate Work Order / Tax Invoice">
+                        <span>📄</span> Invoice
+                    </button>
                     <a href="https://wa.me/91${String(req.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name || '')},%20regarding%20your%20Extreme%20AC%20service%20request%20${encodeURIComponent(req.request_id || '')}" target="_blank" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition">
                         💬 WhatsApp
                     </a>
@@ -329,6 +333,124 @@ function renderTable() {
         tableBody.appendChild(row);
     });
 }
+
+function renderZoneHeatmap(requests) {
+    const grid = document.getElementById('zoneDensityGrid');
+    const summary = document.getElementById('zoneActiveSummary');
+    if (!grid) return;
+
+    const zones = {
+        'South Mumbai': { count: 0, keywords: ['colaba', 'nariman', 'churchgate', 'marine', 'fort', 'malabar', 'cuffe', 'girgaon'] },
+        'Western Suburbs': { count: 0, keywords: ['bandra', 'khar', 'santacruz', 'juhu', 'andheri', 'goregaon', 'malad', 'kandivali', 'borivali', 'dahisar', 'mira'] },
+        'Eastern Suburbs': { count: 0, keywords: ['kurla', 'ghatkopar', 'vikhroli', 'bhandup', 'mulund', 'chembur', 'govandi', 'mankhurd'] },
+        'Central Mumbai': { count: 0, keywords: ['dadar', 'parel', 'worli', 'byculla', 'sion', 'matunga', 'wadala', 'lower parel', 'prabhadevi'] },
+        'Thane & Navi Mumbai': { count: 0, keywords: ['thane', 'vashi', 'nerul', 'belapur', 'panvel', 'airoli', 'kopar khairane', 'kharghar', 'ghansoli'] }
+    };
+
+    (requests || []).forEach(r => {
+        const addr = (r.address || '').toLowerCase();
+        let matched = false;
+        for (const [zName, zObj] of Object.entries(zones)) {
+            if (zObj.keywords.some(k => addr.includes(k))) {
+                zObj.count++;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            zones['Central Mumbai'].count++;
+        }
+    });
+
+    const totalActive = (requests || []).filter(r => r.status !== 'Cancelled').length;
+    if (summary) summary.innerText = `${totalActive} active tickets across 5 service zones`;
+
+    grid.innerHTML = '';
+    for (const [zName, zObj] of Object.entries(zones)) {
+        const pill = document.createElement('div');
+        pill.className = "p-2.5 rounded-xl bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-white/10 flex items-center justify-between";
+        const dotColor = zObj.count > 0 ? 'bg-[#A05B3A] animate-pulse' : 'bg-slate-300 dark:bg-slate-600';
+        pill.innerHTML = `
+            <div class="truncate mr-1">
+                <div class="text-[11px] font-bold text-[#342C27] dark:text-[#FDFBF7] truncate">${escapeHtml(zName)}</div>
+                <div class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-mono">${zObj.count} ${zObj.count === 1 ? 'ticket' : 'tickets'}</div>
+            </div>
+            <span class="w-2 h-2 rounded-full ${dotColor} shrink-0"></span>
+        `;
+        grid.appendChild(pill);
+    }
+}
+
+function openAdminInvoice(requestId) {
+    const req = currentRequests.find(r => r.request_id === requestId);
+    if (!req) return;
+
+    document.getElementById('invNumber').innerText = `INV-${req.request_id}`;
+    document.getElementById('invDate').innerText = new Date(req.created_at || Date.now()).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric'
+    });
+    document.getElementById('invCustName').innerText = req.name || 'Valued Client';
+    document.getElementById('invCustPhone').innerText = `📞 +91 ${req.phone || ''}`;
+    document.getElementById('invCustAddr').innerText = req.address || 'Mumbai, Maharashtra';
+    document.getElementById('invServiceType').innerText = (req.service_type || 'AC Repair & Service').replace('[✅ AMC Covered]', '');
+    document.getElementById('invTechName').innerText = `Field Engineer: ${req.technician_name || 'Pending Assignment'}`;
+    document.getElementById('invTicketId').innerText = `Ticket: ${req.request_id}`;
+
+    const baseLabor = 499;
+    let partsAmount = 0;
+    const lineItemsTbody = document.getElementById('invLineItems');
+    if (lineItemsTbody) {
+        lineItemsTbody.innerHTML = `
+            <tr>
+                <td class="p-3 font-medium text-slate-800">${escapeHtml(req.service_type || 'AC Doorstep Diagnostic & General Tune-Up')}</td>
+                <td class="p-3 text-center font-mono text-slate-500">998714</td>
+                <td class="p-3 text-center">1</td>
+                <td class="p-3 text-right font-mono">₹${baseLabor.toFixed(2)}</td>
+                <td class="p-3 text-right font-mono font-bold">₹${baseLabor.toFixed(2)}</td>
+            </tr>
+        `;
+
+        if (req.completion_notes && req.completion_notes.includes('Total: ₹')) {
+            const match = req.completion_notes.match(/Total:\s*₹([0-9,]+)/);
+            if (match) {
+                const totalCharged = parseFloat(match[1].replace(/,/g, ''));
+                if (totalCharged > baseLabor) {
+                    partsAmount = Math.max(0, (totalCharged / 1.18) - baseLabor);
+                    lineItemsTbody.innerHTML += `
+                        <tr>
+                            <td class="p-3 font-medium text-slate-800">OEM Replacement Hardware &amp; Consumables (Per Field Log)</td>
+                            <td class="p-3 text-center font-mono text-slate-500">841590</td>
+                            <td class="p-3 text-center">1</td>
+                            <td class="p-3 text-right font-mono">₹${partsAmount.toFixed(2)}</td>
+                            <td class="p-3 text-right font-mono font-bold">₹${partsAmount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+    }
+
+    const subtotal = baseLabor + partsAmount;
+    const cgst = Math.round(subtotal * 0.09 * 100) / 100;
+    const sgst = Math.round(subtotal * 0.09 * 100) / 100;
+    const grandTotal = Math.round((subtotal + cgst + sgst) * 100) / 100;
+
+    document.getElementById('invSubtotal').innerText = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('invCgst').innerText = `₹${cgst.toFixed(2)}`;
+    document.getElementById('invSgst').innerText = `₹${sgst.toFixed(2)}`;
+    document.getElementById('invTotal').innerText = `₹${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
+    const modal = document.getElementById('adminInvoiceModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeAdminInvoiceModal() {
+    const modal = document.getElementById('adminInvoiceModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+window.openAdminInvoice = openAdminInvoice;
+window.closeAdminInvoiceModal = closeAdminInvoiceModal;
 
 async function updateRequestStatus(requestId, newStatus) {
     try {
@@ -453,14 +575,17 @@ async function fetchProducts() {
                 const safeDesc = escapeHtml(p.description || '');
                 const safeId = escapeHtml(p.id || '');
 
+                const stockCount = p.stock !== undefined ? Number(p.stock) : 5;
+                const isLowStock = stockCount <= 3;
+
                 card.innerHTML = `
                     <div class="relative h-36 bg-[#F2EDE3] dark:bg-[#1A1412] overflow-hidden">
                         <img src="${safeImg}" alt="${safeName}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80';">
                         <span class="absolute top-2 left-2 ${catColors[p.category] || 'bg-[#342C27]'} text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-xs">
                             ${catLabels[p.category] || safeCat}
                         </span>
-                        <span class="absolute top-2 right-2 bg-white/90 dark:bg-[#1A1412]/90 backdrop-blur-md text-[#342C27] dark:text-[#FDFBF7] border border-[#B8AA98]/20 dark:border-white/10 text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
-                            Stock: ${p.stock !== undefined ? p.stock : 5}
+                        <span class="absolute top-2 right-2 ${isLowStock ? 'bg-amber-600 text-white animate-pulse' : 'bg-white/90 dark:bg-[#1A1412]/90 text-[#342C27] dark:text-[#FDFBF7]'} backdrop-blur-md border border-[#B8AA98]/20 dark:border-white/10 text-[10px] font-extrabold px-2 py-0.5 rounded shadow-xs">
+                            ${isLowStock ? '⚠️ Low: ' : 'Stock: '}${stockCount}
                         </span>
                     </div>
                     <div class="p-4 flex flex-col justify-between flex-1">

@@ -110,6 +110,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         if (data.success) {
             // Save session
+            const rememberCheckbox = document.getElementById('rememberEmail');
+            if (rememberCheckbox && rememberCheckbox.checked) {
+                localStorage.setItem('ess_remembered_email', email);
+            } else {
+                localStorage.removeItem('ess_remembered_email');
+            }
             localStorage.setItem('ess_token', data.token);
             localStorage.setItem('ess_role', data.role);
             if (data.user) {
@@ -176,9 +182,50 @@ window.addEventListener('DOMContentLoaded', () => {
         if (btn) setRole(targetRole, btn);
     }
 
+    // Restore Remembered Email
+    const rememberedEmail = localStorage.getItem('ess_remembered_email');
+    const emailInput = document.getElementById('email');
+    const rememberCheckbox = document.getElementById('rememberEmail');
+    if (rememberedEmail && emailInput && rememberCheckbox) {
+        emailInput.value = rememberedEmail;
+        rememberCheckbox.checked = true;
+    }
+
+    // Caps Lock Warning
+    const passwordInput = document.getElementById('password');
+    const capsWarning = document.getElementById('capsLockWarning');
+    if (passwordInput && capsWarning) {
+        const checkCaps = (e) => {
+            if (e.getModifierState && e.getModifierState('CapsLock')) {
+                capsWarning.classList.remove('hidden');
+            } else {
+                capsWarning.classList.add('hidden');
+            }
+        };
+        passwordInput.addEventListener('keydown', checkCaps);
+        passwordInput.addEventListener('keyup', checkCaps);
+    }
+
     if (urlParams.get('expired') === '1') {
         setTimeout(() => {
             if (window.showToast) window.showToast('Your session has expired. Please log in again.', 'warning');
         }, 300);
     }
 });
+
+window.fillVivaDemo = function() {
+    const currentRole = document.getElementById('selectedRole')?.value || 'admin';
+    const emailEl = document.getElementById('email');
+    const passEl = document.getElementById('password');
+    if (currentRole === 'admin') {
+        if (emailEl) emailEl.value = 'ess0121@gmail.com';
+        if (passEl) passEl.value = '@22062006@';
+    } else if (currentRole === 'staff') {
+        if (emailEl) emailEl.value = 'staff@extremess.com';
+        if (passEl) passEl.value = 'staff123';
+    } else if (currentRole === 'technician') {
+        if (emailEl) emailEl.value = 'tech@extremess.com';
+        if (passEl) passEl.value = 'tech123';
+    }
+    if (window.showToast) window.showToast(`Pre-filled demo credentials for ${currentRole.toUpperCase()}`, 'info');
+};

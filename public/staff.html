@@ -160,6 +160,22 @@
 
         <!-- 1. SERVICE QUEUE TAB -->
         <div id="tab-services" class="tab-content p-6 block">
+          <!-- TECHNICIAN WORKLOAD & AVAILABILITY RADAR -->
+          <div id="techWorkloadRadar" class="mb-6 p-4 rounded-2xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-black uppercase tracking-wider text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5">
+                <span>📡</span> Field Technician Workload &amp; Availability Radar
+              </span>
+              <span id="techRadarStatus" class="text-[11px] font-bold text-[#2E6B52] dark:text-[#77B89A] flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#77B89A] animate-pulse"></span>
+                <span>Live Fleet Capacity</span>
+              </span>
+            </div>
+            <div id="techRadarGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- Dynamically populated technician cards -->
+            </div>
+          </div>
+
           <!-- Filters & Search Toolbar -->
           <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
