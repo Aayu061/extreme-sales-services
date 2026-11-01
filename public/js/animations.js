@@ -1006,10 +1006,10 @@ function renderSavedPincodeChip(code) {
   const hour = new Date().getHours();
   let greeting = '';
   let icon = '';
-  if (hour >= 5 && hour < 12)  { greeting = 'Good Morning'; icon = '☀️'; }
-  else if (hour < 17)           { greeting = 'Good Afternoon'; icon = '🌤️'; }
-  else if (hour < 20)           { greeting = 'Good Evening'; icon = '🌅'; }
-  else                          { greeting = 'Good Night'; icon = '🌙'; }
+  if (hour >= 5 && hour < 12)       { greeting = 'Good Morning'; icon = '☀️'; }
+  else if (hour >= 12 && hour < 17) { greeting = 'Good Afternoon'; icon = '🌤️'; }
+  else if (hour >= 17 && hour < 22) { greeting = 'Good Evening'; icon = '🌅'; }
+  else                              { greeting = 'Good Night'; icon = '🌙'; }
 
   const month = new Date().getMonth(); // 0-indexed
   let seasonNote = '';
