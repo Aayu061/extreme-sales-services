@@ -1731,7 +1731,6 @@ function openExecutiveReport() {
         elNet.className = `font-black text-sm sm:text-base font-mono block mt-0.5 ${netProfit >= 0 ? 'text-emerald-600' : 'text-rose-500'}`;
     }
     if (elMargin) elMargin.innerText = `${marginPct}%`;
-}
 
 // Tech Ranking Table
     const repTechGrid = document.getElementById('repTechRanking');
