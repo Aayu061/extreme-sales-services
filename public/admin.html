@@ -697,22 +697,22 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
                 <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Avg Ticket Price (₹)</label>
-                <input type="number" id="simTicketPrice" value="1850" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <input type="number" id="simTicketPrice" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
                 <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Labor + parts billed</span>
               </div>
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
                 <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Parts COGS / Job (₹)</label>
-                <input type="number" id="simPartsCogs" value="580" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <input type="number" id="simPartsCogs" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
                 <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Gas, capacitor, copper</span>
               </div>
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
                 <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Tech Incentive / Job (₹)</label>
-                <input type="number" id="simTechPayout" value="350" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <input type="number" id="simTechPayout" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
                 <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Per-job completion bonus</span>
               </div>
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
                 <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Monthly Overhead (₹)</label>
-                <input type="number" id="simOverhead" value="15000" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <input type="number" id="simOverhead" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
                 <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Shop rent &amp; utilities</span>
               </div>
             </div>
@@ -943,7 +943,7 @@
           </div>
           <div>
             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">First-Time Fix</span>
-            <span id="repFtfr" class="text-lg font-black font-mono text-blue-600 block mt-0.5">98%</span>
+            <span id="repFtfr" class="text-lg font-black font-mono text-blue-600 block mt-0.5">--%</span>
           </div>
           <div>
             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Est. Revenue</span>

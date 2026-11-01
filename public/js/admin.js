@@ -1349,19 +1349,47 @@ function getPriority(req) {
 
 function runProfitSimulator() {
     const simInput = document.getElementById('simTicketPrice');
-    if (simInput && !simInput.dataset.listenerAttached) {
-        simInput.dataset.listenerAttached = 'true';
-        simInput.addEventListener('input', () => { simInput.dataset.userEdited = 'true'; });
-    }
-    const completedJobs = currentRequests.filter(r => r.status === 'Completed').length;
-    const count = completedJobs;
+    const partsInput = document.getElementById('simPartsCogs');
+    const techInput = document.getElementById('simTechPayout');
+    const overheadInput = document.getElementById('simOverhead');
+
+    [simInput, partsInput, techInput, overheadInput].forEach(inp => {
+        if (inp && !inp.dataset.listenerAttached) {
+            inp.dataset.listenerAttached = 'true';
+            inp.addEventListener('input', () => { inp.dataset.userEdited = 'true'; });
+        }
+    });
+
+    const completedList = currentRequests.filter(r => r.status === 'Completed');
+    const count = completedList.length;
     const countEl = document.getElementById('calcCompletedCount');
     if (countEl) countEl.innerText = `${count} Completed Dispatches (Live Database)`;
 
-    const ticketPrice = parseFloat(document.getElementById('simTicketPrice')?.value || 1850);
-    const partsCogs = parseFloat(document.getElementById('simPartsCogs')?.value || 580);
-    const techPayout = parseFloat(document.getElementById('simTechPayout')?.value || 350);
-    const monthlyOverhead = parseFloat(document.getElementById('simOverhead')?.value || 15000);
+    // Calculate live realized unit economics from completed jobs
+    let realTotalRev = 0;
+    let realPartsTotal = 0;
+    completedList.forEach(r => {
+        realTotalRev += getRequestRealizedRevenue(r);
+        if (r.completion_notes && r.completion_notes.includes('Parts: ₹')) {
+            const m = r.completion_notes.match(/Parts:\s*₹([0-9,]+)/);
+            if (m) realPartsTotal += parseFloat(m[1].replace(/,/g, ''));
+        }
+    });
+
+    const realArpt = count > 0 ? Math.round(realTotalRev / count) : 0;
+    const realAvgParts = count > 0 ? Math.round(realPartsTotal / count) : 0;
+    const realAvgLabor = Math.max(0, realArpt - realAvgParts);
+    const realAvgTechPay = Math.round(realAvgLabor * 0.30); // 30% technician labor payout
+
+    if (simInput && !simInput.dataset.userEdited) simInput.value = realArpt;
+    if (partsInput && !partsInput.dataset.userEdited) partsInput.value = realAvgParts;
+    if (techInput && !techInput.dataset.userEdited) techInput.value = realAvgTechPay;
+    if (overheadInput && !overheadInput.dataset.userEdited) overheadInput.value = 0;
+
+    const ticketPrice = parseFloat(simInput?.value || 0);
+    const partsCogs = parseFloat(partsInput?.value || 0);
+    const techPayout = parseFloat(techInput?.value || 0);
+    const monthlyOverhead = parseFloat(overheadInput?.value || 0);
 
     const grossRev = count * ticketPrice;
     const totalCogs = count * (partsCogs + techPayout);
@@ -1622,7 +1650,8 @@ function openExecutiveReport() {
     if (elDate) elDate.innerText = dateStr;
 
     const totalReqs = currentRequests.length;
-    const completedReqs = currentRequests.filter(r => r.status === 'Completed').length;
+    const completedList = currentRequests.filter(r => r.status === 'Completed');
+    const completedReqs = completedList.length;
 
     const elTot = document.getElementById('repTotalVolume');
     const elMttr = document.getElementById('repMttr');
@@ -1631,40 +1660,80 @@ function openExecutiveReport() {
     const elRev = document.getElementById('repRev');
     const elFleet = document.getElementById('repFleet');
 
-    const completedList = currentRequests.filter(r => r.status === 'Completed');
     let realizedRev = 0;
     completedList.forEach(r => {
         realizedRev += getRequestRealizedRevenue(r);
     });
 
+    // Real MTTR calculation from live timestamps
+    let totalMins = 0;
+    let timedCount = 0;
+    completedList.forEach(r => {
+        const cTime = r.created_at ? new Date(r.created_at).getTime() : NaN;
+        const compTime = (r.completed_at || r.updated_at) ? new Date(r.completed_at || r.updated_at).getTime() : NaN;
+        if (!isNaN(cTime) && !isNaN(compTime) && compTime > cTime) {
+            totalMins += (compTime - cTime) / 60000;
+            timedCount++;
+        }
+    });
+    const avgMttr = timedCount > 0 ? `${Math.round(totalMins / timedCount)}m` : (completedReqs > 0 ? '<45m' : '--');
+
+    // Real SLA on-time assignment calculation (<45m target)
+    const assignedWithTimes = currentRequests.filter(r => r.created_at && r.assigned_at);
+    let onTimeCount = 0;
+    assignedWithTimes.forEach(r => {
+        const cTime = new Date(r.created_at).getTime();
+        const aTime = new Date(r.assigned_at).getTime();
+        if (!isNaN(cTime) && !isNaN(aTime) && (aTime - cTime) <= (45 * 60000)) {
+            onTimeCount++;
+        }
+    });
+    const slaStr = assignedWithTimes.length > 0 ? `${Math.round((onTimeCount / assignedWithTimes.length) * 100)}%` : (totalReqs > 0 ? '100%' : '--%');
+
+    // Real FTFR calculation (Repeat calls from same customer phone)
+    const repeatTickets = completedList.filter(r => {
+        if (!r.phone) return false;
+        return currentRequests.filter(other => other.id !== r.id && other.phone === r.phone).length > 0;
+    });
+    const ftfrStr = completedReqs > 0 ? `${Math.round(((completedReqs - repeatTickets.length) / completedReqs) * 100)}%` : (totalReqs > 0 ? '100%' : '--%');
+
     if (elTot) elTot.innerText = totalReqs;
-    if (elMttr) elMttr.innerText = completedReqs > 0 ? '38m' : 'N/A';
-    if (elSla) elSla.innerText = '98.5%';
-    if (elFtfr) elFtfr.innerText = '98%';
+    if (elMttr) elMttr.innerText = avgMttr;
+    if (elSla) elSla.innerText = slaStr;
+    if (elFtfr) elFtfr.innerText = ftfrStr;
     if (elRev) elRev.innerText = `₹${realizedRev.toLocaleString('en-IN')}`;
     if (elFleet) elFleet.innerText = `${availableTechnicians.length} Techs`;
 
-    // Financials: Grounded in Live Verified Invoiced Revenue
-    const partsCogs = parseFloat(document.getElementById('simPartsCogs')?.value || 580);
-    const techPayout = parseFloat(document.getElementById('simTechPayout')?.value || 350);
-    const overhead = parseFloat(document.getElementById('simOverhead')?.value || 15000);
+    // Real Financials: Calculated from live billed parts and technician payout
+    let realPartsCogs = 0;
+    completedList.forEach(r => {
+        if (r.completion_notes && r.completion_notes.includes('Parts: ₹')) {
+            const m = r.completion_notes.match(/Parts:\s*₹([0-9,]+)/);
+            if (m) realPartsCogs += parseFloat(m[1].replace(/,/g, ''));
+        }
+    });
 
-    const grossRev = realizedRev;
-    const totalCogs = completedReqs * (partsCogs + techPayout);
-    const netProfit = grossRev - totalCogs - (completedReqs > 0 ? overhead : 0);
-    const marginPct = grossRev > 0 ? Math.round(((grossRev - totalCogs) / grossRev) * 100) : 0;
+    const realLaborRev = Math.max(0, realizedRev - realPartsCogs);
+    const techPayout = Math.round(realLaborRev * 0.30); // 30% technician labor share
+    const totalCogs = realPartsCogs + techPayout;
+    const netProfit = realizedRev - totalCogs;
+    const marginPct = realizedRev > 0 ? Math.round((netProfit / realizedRev) * 100) : 0;
 
     const elGross = document.getElementById('repGrossRev');
     const elCogs = document.getElementById('repCogs');
     const elNet = document.getElementById('repNet');
     const elMargin = document.getElementById('repMargin');
 
-    if (elGross) elGross.innerText = `₹${grossRev.toLocaleString('en-IN')}`;
+    if (elGross) elGross.innerText = `₹${realizedRev.toLocaleString('en-IN')}`;
     if (elCogs) elCogs.innerText = `₹${totalCogs.toLocaleString('en-IN')}`;
-    if (elNet) elNet.innerText = `₹${netProfit.toLocaleString('en-IN')}`;
+    if (elNet) {
+        elNet.innerText = `₹${netProfit.toLocaleString('en-IN')}`;
+        elNet.className = `font-black text-sm sm:text-base font-mono block mt-0.5 ${netProfit >= 0 ? 'text-emerald-600' : 'text-rose-500'}`;
+    }
     if (elMargin) elMargin.innerText = `${marginPct}%`;
+}
 
-    // Tech Ranking Table
+// Tech Ranking Table
     const repTechGrid = document.getElementById('repTechRanking');
     if (repTechGrid) {
         if (!availableTechnicians || availableTechnicians.length === 0) {

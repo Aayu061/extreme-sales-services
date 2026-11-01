@@ -2068,12 +2068,12 @@ app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
             }
         });
 
-        // Statistical Engine: MTTR, SLA Compliance, FTFR
-        const completedWithTimes = reqs.filter(r => r.status === 'Completed' && r.created_at && r.completed_at);
+        // Statistical Engine: Truthful MTTR, SLA Compliance, FTFR from Live DB
+        const completedWithTimes = reqs.filter(r => r.status === 'Completed' && r.created_at && (r.completed_at || r.updated_at));
         const totalResolutionMins = completedWithTimes.reduce((acc, r) => {
             const cTime = new Date(r.created_at).getTime();
-            const compTime = new Date(r.completed_at).getTime();
-            const diff = (!isNaN(cTime) && !isNaN(compTime) && compTime > cTime) ? (compTime - cTime) / (1000 * 60) : 45;
+            const compTime = new Date(r.completed_at || r.updated_at).getTime();
+            const diff = (!isNaN(cTime) && !isNaN(compTime) && compTime > cTime) ? (compTime - cTime) / (1000 * 60) : 0;
             return acc + diff;
         }, 0);
         const mttrMinutes = completedWithTimes.length > 0 ? Math.round(totalResolutionMins / completedWithTimes.length) : 0;
@@ -2082,11 +2082,18 @@ app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
         const onTimeDispatches = assignedReqs.filter(r => {
             const cTime = new Date(r.created_at).getTime();
             const aTime = new Date(r.assigned_at).getTime();
-            const diffMins = (!isNaN(cTime) && !isNaN(aTime) && aTime >= cTime) ? (aTime - cTime) / (1000 * 60) : 30;
+            const diffMins = (!isNaN(cTime) && !isNaN(aTime) && aTime >= cTime) ? (aTime - cTime) / (1000 * 60) : 0;
             return diffMins <= 45;
         });
-        const slaCompliancePct = assignedReqs.length > 0 ? Math.round((onTimeDispatches.length / assignedReqs.length) * 100) : 100;
-        const ftfrPct = completedWithTimes.length > 0 ? 98 : 100;
+        const slaCompliancePct = assignedReqs.length > 0 ? Math.round((onTimeDispatches.length / assignedReqs.length) * 100) : (reqs.length > 0 ? 100 : 0);
+        
+        // Truthful First Time Fix Rate (FTFR): percentage resolved without repeat callbacks
+        const completedList = reqs.filter(r => r.status === 'Completed');
+        const repeatTickets = completedList.filter(r => {
+            if (!r.phone) return false;
+            return reqs.filter(other => other.id !== r.id && other.phone === r.phone).length > 0;
+        });
+        const ftfrPct = completedList.length > 0 ? Math.round(((completedList.length - repeatTickets.length) / completedList.length) * 100) : (reqs.length > 0 ? 100 : 0);
 
         const techPerformance = techUsers.map(t => {
             return {
@@ -2128,7 +2135,7 @@ app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
         const activeAmcCount = amcSubs.filter(s => s.status === 'Active').length;
         const amcRevenue = amcSubs.filter(s => s.status === 'Active').reduce((sum, s) => sum + (Number(s.price) || 2400), 0);
         const totalRevenue = totalServiceRevenue + amcRevenue;
-        const arpt = completedReqs.length > 0 ? Math.round(totalServiceRevenue / completedReqs.length) : 499;
+        const arpt = completedReqs.length > 0 ? Math.round(totalServiceRevenue / completedReqs.length) : 0;
 
         return res.json({
             success: true,
