@@ -124,17 +124,30 @@ function animateAdminCounter(elementId, targetVal, prefix = '', suffix = '') {
     const el = document.getElementById(elementId);
     if (!el) return;
     const num = Number(targetVal) || 0;
+    const prev = el.dataset.currentVal !== undefined ? Number(el.dataset.currentVal) : null;
+
+    // Zero-flicker: If value hasn't changed, skip animation and DOM write
+    if (prev !== null && prev === num) {
+        return;
+    }
+
     if (typeof gsap !== 'undefined') {
-        const counter = { val: 0 };
+        const startVal = prev === null || isNaN(prev) ? 0 : prev;
+        const counter = { val: startVal };
         gsap.to(counter, {
             val: num,
-            duration: 0.75,
+            duration: 0.6,
             ease: 'power2.out',
             onUpdate: () => {
                 el.innerText = `${prefix}${Math.round(counter.val).toLocaleString('en-IN')}${suffix}`;
+            },
+            onComplete: () => {
+                el.dataset.currentVal = String(num);
+                el.innerText = `${prefix}${num.toLocaleString('en-IN')}${suffix}`;
             }
         });
     } else {
+        el.dataset.currentVal = String(num);
         el.innerText = `${prefix}${num.toLocaleString('en-IN')}${suffix}`;
     }
 }
@@ -142,6 +155,8 @@ function animateAdminCounter(elementId, targetVal, prefix = '', suffix = '') {
 // ═══════════════════════════════════════════════════════════
 // 1. ANALYTICS & METRICS
 // ═══════════════════════════════════════════════════════════
+let lastAdminAnalyticsSig = '';
+
 async function fetchAnalytics() {
     try {
         const response = await fetch(`${API_BASE}/api/admin/analytics`, { headers: authHeaders });
@@ -152,7 +167,7 @@ async function fetchAnalytics() {
         const data = await response.json();
 
         if (data.success) {
-            // Update KPI Cards with GSAP counters
+            // Update KPI Cards with smooth value-diffed counters
             const activeJobs = (data.statusCounts.Pending || 0) + (data.statusCounts.Assigned || 0) + (data.statusCounts['In Progress'] || 0);
             animateAdminCounter('kpiActiveJobs', activeJobs);
             animateAdminCounter('kpiActiveAmc', data.financials.activeAmcCount || 0);
@@ -160,38 +175,48 @@ async function fetchAnalytics() {
             animateAdminCounter('kpiRevenue', data.financials.totalRevenue || 0, '₹');
 
             const queueBadge = document.getElementById('badgeQueueCount');
-            if (queueBadge) queueBadge.innerText = activeJobs;
+            if (queueBadge && queueBadge.innerText !== String(activeJobs)) queueBadge.innerText = activeJobs;
 
-            // Populate 6-Tile Executive Statistical Summary Grid
-            if (data.statisticalMetrics) {
-                const sm = data.statisticalMetrics;
-                const elTot = document.getElementById('statStatTotalVolume');
-                const elMttr = document.getElementById('statStatMttr');
-                const elSla = document.getElementById('statStatSla');
-                const elFtfr = document.getElementById('statStatFtfr');
-                const elArpt = document.getElementById('statStatArpt');
-                const elFleet = document.getElementById('statStatFleetUtil');
+            const analyticsSig = JSON.stringify({
+                counts: data.statusCounts,
+                fin: data.financials,
+                stats: data.statisticalMetrics
+            });
 
-                if (elTot) elTot.innerText = sm.totalVolume || currentRequests.length || 0;
-                if (elMttr) elMttr.innerText = sm.mttrMinutes > 0 ? `${sm.mttrMinutes}m` : '--';
-                if (elSla) elSla.innerText = `${sm.slaCompliancePct}%`;
-                if (elFtfr) elFtfr.innerText = `${sm.ftfrPct}%`;
-                if (elArpt) elArpt.innerText = `₹${(sm.arpt || 0).toLocaleString('en-IN')}`;
-                if (elFleet) elFleet.innerText = `${sm.activeFleetSize || availableTechnicians.length || 0} Techs`;
+            if (analyticsSig !== lastAdminAnalyticsSig) {
+                lastAdminAnalyticsSig = analyticsSig;
+
+                // Populate 6-Tile Executive Statistical Summary Grid
+                if (data.statisticalMetrics) {
+                    const sm = data.statisticalMetrics;
+                    const elTot = document.getElementById('statStatTotalVolume');
+                    const elMttr = document.getElementById('statStatMttr');
+                    const elSla = document.getElementById('statStatSla');
+                    const elFtfr = document.getElementById('statStatFtfr');
+                    const elArpt = document.getElementById('statStatArpt');
+                    const elFleet = document.getElementById('statStatFleetUtil');
+
+                    if (elTot) elTot.innerText = sm.totalVolume || currentRequests.length || 0;
+                    if (elMttr) elMttr.innerText = sm.mttrMinutes > 0 ? `${sm.mttrMinutes}m` : '--';
+                    if (elSla) elSla.innerText = `${sm.slaCompliancePct}%`;
+                    if (elFtfr) elFtfr.innerText = `${sm.ftfrPct}%`;
+                    if (elArpt) elArpt.innerText = `₹${(sm.arpt || 0).toLocaleString('en-IN')}`;
+                    if (elFleet) elFleet.innerText = `${sm.activeFleetSize || availableTechnicians.length || 0} Techs`;
+                }
+
+                // Ground Profit Simulator in Live Realized ARPT if not custom edited
+                const simTicketInput = document.getElementById('simTicketPrice');
+                if (simTicketInput && !simTicketInput.dataset.userEdited && data.statisticalMetrics && data.statisticalMetrics.arpt) {
+                    simTicketInput.value = data.statisticalMetrics.arpt;
+                }
+                if (typeof runProfitSimulator === 'function') {
+                    runProfitSimulator();
+                }
             }
 
-            // Render Charts via Chart.js
+            // In-place chart update handler
             if (typeof initAllCharts === 'function') {
                 initAllCharts(data);
-            }
-
-            // Ground Profit Simulator in Live Realized ARPT if not custom edited
-            const simTicketInput = document.getElementById('simTicketPrice');
-            if (simTicketInput && !simTicketInput.dataset.userEdited && data.statisticalMetrics && data.statisticalMetrics.arpt) {
-                simTicketInput.value = data.statisticalMetrics.arpt;
-            }
-            if (typeof runProfitSimulator === 'function') {
-                runProfitSimulator();
             }
         }
     } catch (err) {
@@ -220,6 +245,8 @@ async function loadTechnicians() {
     }
 }
 
+let lastRequestsSignature = '';
+
 async function fetchRequests(silent = false) {
     const refreshIcon = document.getElementById('refreshIcon');
     if (refreshIcon && !silent) refreshIcon.classList.add('rotate-180');
@@ -235,9 +262,17 @@ async function fetchRequests(silent = false) {
         const data = await response.json();
 
         if (data.success) {
-            currentRequests = data.requests;
-            renderTable();
-            renderZoneHeatmap(currentRequests);
+            const reqs = data.requests || [];
+            const sig = reqs.map(r => `${r.id}:${r.status}:${r.technician_id || ''}:${r.final_amount || ''}:${r.updated_at || ''}`).join('|');
+            const hasChanged = sig !== lastRequestsSignature;
+            lastRequestsSignature = sig;
+            currentRequests = reqs;
+
+            // Only re-render DOM tables and heatmaps if data changed or manual refresh
+            if (hasChanged || !silent) {
+                renderTable();
+                renderZoneHeatmap(currentRequests);
+            }
             fetchAnalytics();
             if (!silent && window.showToast) window.showToast('Telemetry and queue synchronized', 'info', 2000);
         }
@@ -1216,13 +1251,16 @@ function renderActivityFeed(requests) {
     feed.innerHTML = items;
 }
 
-// Hook into fetchRequests to also update activity feed and today strip
+// Hook into fetchRequests to also update activity feed and today strip (Diff-Guarded)
 const _origFetchRequests = fetchRequests;
 fetchRequests = async function(silent = false) {
+    const prevSig = lastRequestsSignature;
     await _origFetchRequests(silent);
-    renderActivityFeed(currentRequests);
-    renderTodayStrip();
-    checkLowStock();
+    if (lastRequestsSignature !== prevSig || !silent) {
+        renderActivityFeed(currentRequests);
+        renderTodayStrip();
+        checkLowStock();
+    }
 };
 
 // ─── Dynamic Job Realized Revenue Calculator ─────────────

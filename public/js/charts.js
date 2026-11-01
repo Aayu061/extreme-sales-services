@@ -86,8 +86,6 @@ function initStatusChart(canvasId, statusCounts) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || typeof Chart === 'undefined') return;
 
-    if (chartStatusInstance) chartStatusInstance.destroy();
-
     const isDark = document.documentElement.classList.contains('dark');
     const counts = statusCounts || {};
     const labels = ['Pending', 'Assigned', 'In Progress', 'Completed'];
@@ -100,6 +98,14 @@ function initStatusChart(canvasId, statusCounts) {
 
     const total = dataValues.reduce((a, b) => a + b, 0);
     const bgColors = [PALETTE.AMBER_QUEUE, PALETTE.INDIGO_DISPATCH, PALETTE.SKY_PROGRESS, PALETTE.JADE];
+
+    if (chartStatusInstance) {
+        chartStatusInstance.data.datasets[0].data = total > 0 ? dataValues : [1];
+        chartStatusInstance.data.datasets[0].realTotal = total;
+        chartStatusInstance.data.datasets[0].backgroundColor = total > 0 ? bgColors : [isDark ? 'rgba(184, 170, 152, 0.18)' : 'rgba(184, 170, 152, 0.22)'];
+        chartStatusInstance.update('none');
+        return;
+    }
 
     chartStatusInstance = new Chart(ctx, {
         type: 'doughnut',
@@ -166,7 +172,6 @@ function initTrendChart(canvasId, trendData) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || typeof Chart === 'undefined') return;
 
-    if (chartTrendInstance) chartTrendInstance.destroy();
 
     const isDark = document.documentElement.classList.contains('dark');
     const chartCtx = ctx.getContext('2d');
@@ -193,6 +198,14 @@ function initTrendChart(canvasId, trendData) {
     const completions = (trendData && trendData.completions && trendData.completions.length > 0)
         ? trendData.completions
         : labels.map(() => 0);
+
+        if (chartTrendInstance) {
+        chartTrendInstance.data.labels = labels;
+        chartTrendInstance.data.datasets[0].data = bookings;
+        chartTrendInstance.data.datasets[1].data = completions;
+        chartTrendInstance.update('none');
+        return;
+    }
 
     chartTrendInstance = new Chart(ctx, {
         type: 'line',
@@ -281,7 +294,6 @@ function initWorkloadChart(canvasId, workloadData) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || typeof Chart === 'undefined') return;
 
-    if (chartWorkloadInstance) chartWorkloadInstance.destroy();
 
     const isDark = document.documentElement.classList.contains('dark');
     const gridColor = isDark ? PALETTE.TAUPE_GRID_DARK : PALETTE.TAUPE_GRID_LIGHT;
@@ -290,6 +302,14 @@ function initWorkloadChart(canvasId, workloadData) {
     const labels = hasData ? workloadData.labels : ['No Active Technicians'];
     const assigned = hasData ? workloadData.assigned : [0];
     const completed = hasData ? workloadData.completed : [0];
+
+        if (chartWorkloadInstance) {
+        chartWorkloadInstance.data.labels = labels;
+        chartWorkloadInstance.data.datasets[0].data = assigned;
+        chartWorkloadInstance.data.datasets[1].data = completed;
+        chartWorkloadInstance.update('none');
+        return;
+    }
 
     chartWorkloadInstance = new Chart(ctx, {
         type: 'bar',
@@ -354,7 +374,6 @@ function initServiceDistChart(canvasId, distData) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || typeof Chart === 'undefined') return;
 
-    if (chartServiceDistInstance) chartServiceDistInstance.destroy();
 
     const isDark = document.documentElement.classList.contains('dark');
     const gridColor = isDark ? PALETTE.TAUPE_GRID_DARK : PALETTE.TAUPE_GRID_LIGHT;
@@ -370,6 +389,13 @@ function initServiceDistChart(canvasId, distData) {
         PALETTE.GOLD_HIGH,
         PALETTE.INDIGO_DISPATCH
     ];
+
+        if (chartServiceDistInstance) {
+        chartServiceDistInstance.data.labels = labels;
+        chartServiceDistInstance.data.datasets[0].data = dataValues;
+        chartServiceDistInstance.update('none');
+        return;
+    }
 
     chartServiceDistInstance = new Chart(ctx, {
         type: 'bar',
@@ -424,7 +450,6 @@ function initFmeaRiskChart(canvasId, fmeaData) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || typeof Chart === 'undefined') return;
 
-    if (chartFmeaRiskInstance) chartFmeaRiskInstance.destroy();
 
     const isDark = document.documentElement.classList.contains('dark');
     const labels = ['Critical (RPN ≥300)', 'High (200–299)', 'Moderate (100–199)', 'Minor (<100)'];
@@ -437,6 +462,13 @@ function initFmeaRiskChart(canvasId, fmeaData) {
         PALETTE.SKY_PROGRESS,
         PALETTE.JADE
     ];
+
+        if (chartFmeaRiskInstance) {
+        chartFmeaRiskInstance.data.datasets[0].data = total > 0 ? counts : [1];
+        chartFmeaRiskInstance.data.datasets[0].realTotal = total;
+        chartFmeaRiskInstance.update('none');
+        return;
+    }
 
     chartFmeaRiskInstance = new Chart(ctx, {
         type: 'doughnut',
@@ -501,12 +533,28 @@ function switchTrendTimeframe(days) {
     }
 }
 
-// Master initialization
+// Master initialization with Deep Hash Diffing (Zero Flash on Idle Background Sync)
+let lastAnalyticsHash = '';
+
 function initAllCharts(analytics) {
-    configureChartDefaults();
     if (!analytics) return;
+    const hash = JSON.stringify({
+        status: analytics.statusCounts,
+        trend: analytics.trend,
+        trend30d: analytics.trend30d,
+        workload: analytics.technicianWorkload,
+        services: analytics.serviceDistribution,
+        fmea: analytics.fmeaDistribution,
+        tf: currentTrendDays
+    });
+
+    if (hash === lastAnalyticsHash && chartStatusInstance && chartTrendInstance) {
+        return; // Complete silent no-op when background telemetry is unchanged
+    }
+    lastAnalyticsHash = hash;
     cachedAnalyticsData = analytics;
 
+    configureChartDefaults();
     initStatusChart('chartJobStatus', analytics.statusCounts);
 
     const trendSource = (currentTrendDays === 30 && analytics.trend30d) ? analytics.trend30d : analytics.trend;
@@ -523,6 +571,12 @@ function initAllCharts(analytics) {
 // Redraw on theme toggle
 window.addEventListener('theme-changed', () => {
     if (cachedAnalyticsData) {
+        lastAnalyticsHash = '';
+        if (chartStatusInstance) { chartStatusInstance.destroy(); chartStatusInstance = null; }
+        if (chartTrendInstance) { chartTrendInstance.destroy(); chartTrendInstance = null; }
+        if (chartWorkloadInstance) { chartWorkloadInstance.destroy(); chartWorkloadInstance = null; }
+        if (chartServiceDistInstance) { chartServiceDistInstance.destroy(); chartServiceDistInstance = null; }
+        if (chartFmeaRiskInstance) { chartFmeaRiskInstance.destroy(); chartFmeaRiskInstance = null; }
         initAllCharts(cachedAnalyticsData);
     }
 });
