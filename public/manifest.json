@@ -1,0 +1,16 @@
+{
+  "name": "Extreme Sales & Services - HVAC Fleet Platform",
+  "short_name": "Extreme S&S",
+  "description": "Enterprise AC Sales, Smart Diagnostics, Fleet Dispatch & Field Engineering Portal",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#FDFBF7",
+  "theme_color": "#A05B3A",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

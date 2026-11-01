@@ -291,6 +291,19 @@
 
         <!-- 1. SERVICE DISPATCH TAB -->
         <div id="tab-dispatch" class="tab-content p-6 block">
+          <!-- SPATIAL MUMBAI ZONE DISPATCH HEATMAP -->
+          <div id="adminZoneHeatmap" class="mb-6 p-4 rounded-2xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+            <div class="flex items-center justify-between mb-2.5">
+              <span class="text-xs font-black uppercase tracking-wider text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5">
+                <span>🗺️</span> Mumbai Metropolitan Spatial Dispatch Density
+              </span>
+              <span id="zoneActiveSummary" class="text-[11px] font-bold text-[#A05B3A] dark:text-[#E4C99A]">Computing fleet zones...</span>
+            </div>
+            <div id="zoneDensityGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+              <!-- Dynamically rendered zone breakdown pills -->
+            </div>
+          </div>
+
           <!-- Filters Toolbar -->
           <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
             <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
@@ -933,6 +946,100 @@
         };
       })();
     </script>
+    <!-- PRINTABLE WORK ORDER & GST TAX INVOICE MODAL -->
+    <div id="adminInvoiceModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white text-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]">
+        <!-- Invoice Header -->
+        <div class="flex justify-between items-start pb-4 border-b border-slate-200 mb-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-[#A05B3A] text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black">ES</span>
+              <span class="text-xl font-black tracking-tight text-slate-900">Extreme Sales &amp; Services</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Authorized HVAC Sales, Repair &amp; Maintenance Operations</p>
+            <p class="text-[11px] text-slate-500 font-mono mt-0.5">GSTIN: 27AABCE1234F1Z5 • Mumbai, Maharashtra</p>
+          </div>
+          <div class="text-right">
+            <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-black tracking-wide border border-emerald-200">
+              TAX INVOICE / WORK ORDER
+            </span>
+            <p id="invNumber" class="text-xs font-mono font-bold text-slate-700 mt-1.5">INV-2026-0001</p>
+            <p id="invDate" class="text-[11px] text-slate-500 font-mono mt-0.5"></p>
+          </div>
+        </div>
+
+        <!-- Bill To & Service Info -->
+        <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Customer / Bill To</span>
+            <span id="invCustName" class="font-extrabold text-slate-900 text-sm block mt-0.5">Customer Name</span>
+            <span id="invCustPhone" class="text-slate-600 block mt-0.5">📞 +91 98200 00000</span>
+            <span id="invCustAddr" class="text-slate-600 block mt-0.5">Address on file</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Service &amp; Engineer</span>
+            <span id="invServiceType" class="font-extrabold text-[#A05B3A] text-sm block mt-0.5">AC Repair</span>
+            <span id="invTechName" class="text-slate-700 font-medium block mt-0.5">Field Engineer: Assigned</span>
+            <span id="invTicketId" class="text-slate-500 font-mono text-[11px] block mt-0.5">Ticket: AC-XXXX</span>
+          </div>
+        </div>
+
+        <!-- Line Items Table -->
+        <div class="mb-6 rounded-xl border border-slate-200 overflow-hidden">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px] tracking-wider">
+              <tr>
+                <th class="p-3">Description</th>
+                <th class="p-3 text-center">HSN/SAC</th>
+                <th class="p-3 text-center">Qty</th>
+                <th class="p-3 text-right">Rate</th>
+                <th class="p-3 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="invLineItems" class="divide-y divide-slate-100">
+              <!-- Dynamically populated line items -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Totals & Taxes -->
+        <div class="flex justify-end mb-6">
+          <div class="w-64 space-y-1.5 text-xs text-slate-600">
+            <div class="flex justify-between">
+              <span>Subtotal:</span>
+              <span id="invSubtotal" class="font-mono font-bold text-slate-900">₹0.00</span>
+            </div>
+            <div class="flex justify-between text-[11px]">
+              <span>CGST (9%):</span>
+              <span id="invCgst" class="font-mono">₹0.00</span>
+            </div>
+            <div class="flex justify-between text-[11px]">
+              <span>SGST (9%):</span>
+              <span id="invSgst" class="font-mono">₹0.00</span>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-slate-300 text-sm font-black text-slate-900">
+              <span>Grand Total:</span>
+              <span id="invTotal" class="font-mono text-emerald-700">₹0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer / Print Action -->
+        <div class="pt-4 border-t border-slate-200 flex justify-between items-center print:hidden">
+          <span class="text-[11px] text-slate-500">System generated official document</span>
+          <div class="flex gap-2">
+            <button type="button" onclick="closeAdminInvoiceModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+              Close
+            </button>
+            <button type="button" onclick="window.print()" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+              <span>🖨️</span>
+              <span>Print Work Order / PDF</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="js/admin.js"></script>
   </body>
 </html>

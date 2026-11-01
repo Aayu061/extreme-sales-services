@@ -159,6 +159,7 @@ async function fetchRequests(silent = false) {
             if (badgeCount) badgeCount.innerText = pending + assigned + progress;
 
             renderTable();
+            renderTechnicianRadar();
             if (!silent && window.showToast) window.showToast("Queue synchronized with field", "info", 1800);
         }
     } catch(err) {
@@ -240,14 +241,18 @@ function renderTable() {
 
         const isAmc = req.service_type && req.service_type.includes('[✅ AMC Covered]');
         const serviceClean = req.service_type.replace('[✅ AMC Covered]', '');
+        const isEmergency = req.issue_description && /emergency|spark|fire|leak|urgent|server|icu|immediate/i.test(req.issue_description);
 
         tr.innerHTML = `
             <td class="px-5 py-4">
                 <div class="font-extrabold text-[#342C27] dark:text-[#F2EDE3]">${escapeHtml(req.name)}</div>
                 <div class="text-[#655448] dark:text-[#B8AA98] text-[11px] mt-0.5">📞 ${escapeHtml(req.phone)}</div>
                 <div class="text-[#655448] dark:text-[#B8AA98] text-[11px] truncate max-w-xs mt-0.5">📍 ${escapeHtml(req.address)}</div>
-                <div class="text-[10px] font-mono text-[#A05B3A] dark:text-[#E4C99A] bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 px-1.5 py-0.5 rounded w-max mt-1 font-bold border border-[#A05B3A]/30">
-                    ${escapeHtml(req.request_id)}
+                <div class="flex items-center gap-1.5 flex-wrap mt-1">
+                    <span class="text-[10px] font-mono text-[#A05B3A] dark:text-[#E4C99A] bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 px-1.5 py-0.5 rounded font-bold border border-[#A05B3A]/30">
+                        ${escapeHtml(req.request_id)}
+                    </span>
+                    ${isEmergency ? '<span class="inline-flex items-center gap-1 bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800 text-[9px] font-black px-1.5 py-0.5 rounded-full animate-pulse">🚨 URGENT SLA (&lt;45m)</span>' : ''}
                 </div>
             </td>
             <td class="px-5 py-4">
@@ -290,6 +295,65 @@ function renderTable() {
             </td>
         `;
         tbody.appendChild(tr);
+    });
+}
+
+function renderTechnicianRadar() {
+    const grid = document.getElementById('techRadarGrid');
+    if (!grid) return;
+
+    if (!availableTechnicians || availableTechnicians.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-1 sm:col-span-3 text-center py-2 text-xs text-[#655448] dark:text-[#B8AA98]">
+                Loading active technicians...
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = '';
+    availableTechnicians.forEach(t => {
+        const activeJobsCount = currentRequests.filter(r => 
+            r.technician_id === t.id && (r.status === 'Assigned' || r.status === 'In Progress')
+        ).length;
+
+        let loadBadge = {
+            class: 'bg-[#2E6B52]/15 text-[#2E6B52] dark:text-[#77B89A] border-[#77B89A]/30',
+            dot: 'bg-[#2E6B52] dark:bg-[#77B89A]',
+            label: '🟢 Available'
+        };
+        if (activeJobsCount >= 3) {
+            loadBadge = {
+                class: 'bg-[#C2410C]/15 text-[#C2410C] border-[#C2410C]/30',
+                dot: 'bg-[#C2410C]',
+                label: '🔴 High Load'
+            };
+        } else if (activeJobsCount > 0) {
+            loadBadge = {
+                class: 'bg-[#D97706]/15 text-[#D97706] border-[#D97706]/30',
+                dot: 'bg-[#D97706]',
+                label: '🟡 On-Site'
+            };
+        }
+
+        const card = document.createElement('div');
+        card.className = "p-3 rounded-xl bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 flex items-center justify-between";
+        card.innerHTML = `
+            <div>
+                <div class="font-extrabold text-xs text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5">
+                    <span>🧑‍🔧</span>
+                    <span>${escapeHtml(t.name)}</span>
+                </div>
+                <div class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-0.5 font-mono">
+                    ${activeJobsCount} Active Assigned ${activeJobsCount === 1 ? 'Job' : 'Jobs'}
+                </div>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${loadBadge.class} flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full ${loadBadge.dot}"></span>
+                <span>${loadBadge.label}</span>
+            </span>
+        `;
+        grid.appendChild(card);
     });
 }
 

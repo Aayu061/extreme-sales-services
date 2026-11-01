@@ -54,6 +54,102 @@ window.fetch = async function(url, options = {}, extra = {}) {
     return response;
 };
 
+// ═══════════════════════════════════════════════════════════
+// OFFLINE QUEUE & NETWORK RESILIENCE MANAGER
+// ═══════════════════════════════════════════════════════════
+function getOfflineQueue() {
+    try {
+        return JSON.parse(localStorage.getItem('ess_tech_offline_queue') || '[]');
+    } catch(e) {
+        return [];
+    }
+}
+
+function saveOfflineQueue(queue) {
+    try {
+        localStorage.setItem('ess_tech_offline_queue', JSON.stringify(queue));
+    } catch(e) {}
+    updateOfflinePill();
+}
+
+function addToOfflineQueue(actionItem) {
+    const queue = getOfflineQueue();
+    queue.push({
+        ...actionItem,
+        queuedAt: new Date().toISOString()
+    });
+    saveOfflineQueue(queue);
+}
+
+function updateOfflinePill() {
+    const pill = document.getElementById('offlineIndicator');
+    const countEl = document.getElementById('offlineQueueCount');
+    const queue = getOfflineQueue();
+    const isOnline = navigator.onLine;
+
+    if (pill) {
+        if (!isOnline || queue.length > 0) {
+            pill.classList.remove('hidden');
+            pill.classList.add('flex');
+        } else {
+            pill.classList.add('hidden');
+            pill.classList.remove('flex');
+        }
+    }
+    if (countEl) {
+        countEl.innerText = queue.length;
+    }
+}
+
+async function syncOfflineQueue() {
+    if (!navigator.onLine) return;
+    const queue = getOfflineQueue();
+    if (queue.length === 0) {
+        updateOfflinePill();
+        return;
+    }
+
+    if (window.showToast) window.showToast(`Syncing ${queue.length} offline updates...`, 'info', 2000);
+    const remaining = [];
+
+    for (const item of queue) {
+        try {
+            const res = await originalFetch(`${API_BASE}/api/admin/update-status`, {
+                method: 'PATCH',
+                headers: authHeaders,
+                body: JSON.stringify({
+                    requestId: item.requestId,
+                    newStatus: item.newStatus,
+                    notes: item.notes || ""
+                })
+            });
+            if (!res.ok) {
+                remaining.push(item);
+            }
+        } catch(e) {
+            remaining.push(item);
+        }
+    }
+
+    saveOfflineQueue(remaining);
+    if (remaining.length === 0) {
+        if (window.showToast) window.showToast("All offline jobs synchronized with dispatch!", "success");
+        fetchJobs(true);
+    } else {
+        if (window.showToast) window.showToast(`${remaining.length} updates pending re-sync`, "warning");
+    }
+}
+
+window.addEventListener('online', () => {
+    updateOfflinePill();
+    syncOfflineQueue();
+});
+
+window.addEventListener('offline', () => {
+    updateOfflinePill();
+    if (window.showToast) window.showToast("You are offline. Changes will be saved locally and synced later.", "warning");
+});
+
 // Strict Real-Auth Guard & Token Expiry Check
 const token = localStorage.getItem('ess_token');
 const role = localStorage.getItem('ess_role');
@@ -92,6 +188,8 @@ async function fetchJobs(silent = false) {
 
         if (data.success) {
             myJobs = data.requests || [];
+            try { localStorage.setItem('ess_tech_cached_jobs', JSON.stringify(myJobs)); } catch(e){}
+            updateOfflinePill();
 
             // Stats
             const assigned = myJobs.filter(j => j.status === 'Assigned').length;
@@ -115,6 +213,25 @@ async function fetchJobs(silent = false) {
         }
     } catch(err) {
         console.warn("Tech jobs fetch note:", err.message);
+        try {
+            const cached = localStorage.getItem('ess_tech_cached_jobs');
+            if (cached) {
+                myJobs = JSON.parse(cached);
+                const assigned = myJobs.filter(j => j.status === 'Assigned').length;
+                const progress = myJobs.filter(j => j.status === 'In Progress').length;
+                const completed = myJobs.filter(j => j.status === 'Completed').length;
+                document.getElementById('statAssigned').innerText = assigned;
+                document.getElementById('statProgress').innerText = progress;
+                document.getElementById('statCompleted').innerText = completed;
+                document.getElementById('jobCountLabel').innerText = `${myJobs.length} jobs (Offline Cache)`;
+                renderJobs();
+                renderEarningsStrip();
+                updateProgressRing();
+                updateOfflinePill();
+                if (!silent && window.showToast) window.showToast("Network offline: Loaded schedule from local cache", "info");
+                return;
+            }
+        } catch(e){}
         handleFetchError(err.message);
         if (!silent && window.showToast) window.showToast("Network error syncing schedule", "error");
     } finally {
@@ -278,9 +395,9 @@ function renderJobs() {
                         <span>💬</span>
                         <span>WhatsApp</span>
                     </a>
-                    <a href="https://maps.google.com/?q=${encodeURIComponent((job.address || '') + ', Mumbai')}" target="_blank" class="flex-1 sm:flex-none text-center bg-[#E6DFD3]/60 hover:bg-[#E6DFD3] dark:bg-[#1F1916] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((job.address || '') + ', Mumbai')}" target="_blank" class="flex-1 sm:flex-none text-center bg-[#E6DFD3]/60 hover:bg-[#E6DFD3] dark:bg-[#1F1916] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] font-bold px-3 py-2 rounded-xl text-xs transition flex items-center justify-center gap-1 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20" title="Turn-by-turn Navigation">
                         <span>📍</span>
-                        <span>Map</span>
+                        <span>GPS Navigate</span>
                     </a>
                 </div>
 
@@ -295,6 +412,15 @@ function renderJobs() {
 }
 
 async function startJob(requestId) {
+    if (!navigator.onLine) {
+        addToOfflineQueue({ requestId, newStatus: 'In Progress' });
+        const job = myJobs.find(j => j.request_id === requestId);
+        if (job) job.status = 'In Progress';
+        renderJobs();
+        if (window.showToast) window.showToast(`[Offline] Job ${requestId} marked In Progress. Will sync when online.`, 'info');
+        return;
+    }
+
     try {
         const res = await fetch(`${API_BASE}/api/admin/update-status`, {
             method: 'PATCH',
@@ -309,7 +435,11 @@ async function startJob(requestId) {
             if (window.showToast) window.showToast(data.message || "Failed to update status", "error");
         }
     } catch(e) {
-        if (window.showToast) window.showToast("Failed to update status", "error");
+        addToOfflineQueue({ requestId, newStatus: 'In Progress' });
+        const job = myJobs.find(j => j.request_id === requestId);
+        if (job) job.status = 'In Progress';
+        renderJobs();
+        if (window.showToast) window.showToast(`[Offline Queue] Job ${requestId} queued for sync.`, 'warning');
     }
 }
 
@@ -527,6 +657,24 @@ document.getElementById('completionForm')?.addEventListener('submit', async (e) 
         service_type: 'AC Repair'
     };
 
+    if (!navigator.onLine) {
+        addToOfflineQueue({
+            requestId,
+            newStatus: 'Completed',
+            notes: fullNotes
+        });
+        const job = myJobs.find(j => j.request_id === requestId);
+        if (job) {
+            job.status = 'Completed';
+            job.completion_notes = fullNotes;
+        }
+        renderJobs();
+        closeCompletionModal();
+        showReceipt(currentJob, bill, notes);
+        if (window.showToast) window.showToast(`[Offline] Job ${requestId} signed off! Saved locally and will sync when online.`, 'info');
+        return;
+    }
+
     try {
         const res = await fetch(`${API_BASE}/api/admin/update-status`, {
             method: 'PATCH',
@@ -548,7 +696,20 @@ document.getElementById('completionForm')?.addEventListener('submit', async (e) 
             if (window.showToast) window.showToast(data.message || "Server rejected sign off", "error");
         }
     } catch(err) {
-        if (window.showToast) window.showToast("Sign off failed", "error");
+        addToOfflineQueue({
+            requestId,
+            newStatus: 'Completed',
+            notes: fullNotes
+        });
+        const job = myJobs.find(j => j.request_id === requestId);
+        if (job) {
+            job.status = 'Completed';
+            job.completion_notes = fullNotes;
+        }
+        renderJobs();
+        closeCompletionModal();
+        showReceipt(currentJob, bill, notes);
+        if (window.showToast) window.showToast(`[Network Issue] Job ${requestId} saved to offline queue.`, 'warning');
     }
 });
 
@@ -870,3 +1031,12 @@ window.loadTechGuide = function(key, btnEl) {
     `;
 };
 
+
+// Register Service Worker for PWA & offline resilience
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.debug('[SW] Registration failed:', err);
+        });
+    });
+}

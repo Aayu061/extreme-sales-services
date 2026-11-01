@@ -317,6 +317,28 @@
               <label for="address">Full Service Address &amp; Flat/Building *</label>
             </div>
 
+                        <!-- Preferred Time Slot Picker -->
+            <div class="mb-4">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#353935]/70 mb-2">Preferred Time Window</label>
+              <div class="grid grid-cols-3 gap-2 text-xs">
+                <label class="cursor-pointer border border-[#E5DFD3] rounded-lg p-2.5 text-center transition-all has-[:checked]:border-[#2563EB] has-[:checked]:bg-blue-50/70 has-[:checked]:text-[#2563EB] font-medium hover:bg-stone-50">
+                  <input type="radio" name="timeSlot" value="Morning (9 AM - 12 PM)" class="sr-only" checked>
+                  <span class="block text-sm">🌅 Morning</span>
+                  <span class="text-[10px] text-stone-500">9 AM - 12 PM</span>
+                </label>
+                <label class="cursor-pointer border border-[#E5DFD3] rounded-lg p-2.5 text-center transition-all has-[:checked]:border-[#2563EB] has-[:checked]:bg-blue-50/70 has-[:checked]:text-[#2563EB] font-medium hover:bg-stone-50">
+                  <input type="radio" name="timeSlot" value="Afternoon (12 PM - 4 PM)" class="sr-only">
+                  <span class="block text-sm">☀️ Afternoon</span>
+                  <span class="text-[10px] text-stone-500">12 PM - 4 PM</span>
+                </label>
+                <label class="cursor-pointer border border-[#E5DFD3] rounded-lg p-2.5 text-center transition-all has-[:checked]:border-[#2563EB] has-[:checked]:bg-blue-50/70 has-[:checked]:text-[#2563EB] font-medium hover:bg-stone-50">
+                  <input type="radio" name="timeSlot" value="Evening (4 PM - 8 PM)" class="sr-only">
+                  <span class="block text-sm">🌆 Evening</span>
+                  <span class="text-[10px] text-stone-500">4 PM - 8 PM</span>
+                </label>
+              </div>
+            </div>
+
             <div class="form-field">
               <textarea id="message" rows="2" placeholder=" "></textarea>
               <label for="message">Issue Description / Unit Brand / Notes (Optional)</label>

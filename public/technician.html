@@ -23,6 +23,8 @@
         } catch(e){}
       })();
     </script>
+      <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#A05B3A">
   </head>
   <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] min-h-screen font-sans antialiased pb-12 selection:bg-[#B86E4B] selection:text-white transition-colors duration-200">
 
@@ -47,6 +49,12 @@
           </div>
 
           <div class="flex gap-2 items-center">
+            <!-- Offline Sync Status Indicator -->
+            <div id="offlineIndicator" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#C27A23]/20 text-[#C27A23] dark:text-[#E4C99A] border border-[#C27A23]/40">
+              <span class="w-2 h-2 rounded-full bg-[#C27A23] animate-ping"></span>
+              <span class="hidden sm:inline">Offline Mode</span>
+              <span id="offlineQueueCount" class="bg-[#C27A23] text-white text-[9px] px-1.5 py-0.5 rounded-full font-mono">0</span>
+            </div>
             <button
               type="button"
               class="theme-toggle-btn text-[#B8AA98] hover:text-white transition p-2 rounded-lg hover:bg-white/10"

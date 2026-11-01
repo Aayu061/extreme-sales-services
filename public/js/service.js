@@ -70,13 +70,18 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
+    const selectedSlot = document.querySelector('input[name="timeSlot"]:checked')?.value || "Morning (9 AM - 12 PM)";
+    const rawMessage = document.getElementById('message')?.value || "";
+    const combinedMessage = selectedSlot ? `[Slot: ${selectedSlot}] ${rawMessage}`.trim() : rawMessage;
+
     const formData = {
         name: nameInput.value,
         email: emailInput.value,
         phone: phoneInput.value,
         serviceType: serviceInput.value,
         address: addressInput.value,
-        message: document.getElementById('message')?.value || "" // using ?. in case message is missing
+        timeSlot: selectedSlot,
+        message: combinedMessage
     };
 
     const submitBtn = form.querySelector('button[type="submit"]');
