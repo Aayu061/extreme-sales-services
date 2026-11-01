@@ -279,6 +279,7 @@ class DispatchEngine {
         const geoScore = Math.max(20, Math.min(100, Math.round(100 - (distKm * 2.1))));
 
         // 2. WORKLOAD SCORE (0 - 100)
+        const maxCapacity = technician.max_capacity || profile.max_capacity || 4;
         const activeJobs = technician.active_jobs !== undefined
             ? technician.active_jobs
             : (technician.current_load !== undefined ? technician.current_load : (profile.active_jobs || 0));
@@ -287,8 +288,8 @@ class DispatchEngine {
         else if (activeJobs === 2) workloadScore = 45;
         else if (activeJobs >= 3) workloadScore = Math.max(10, 30 - ((activeJobs - 3) * 10));
 
-        // Fatigue penalty if technician is overbooked
-        if (activeJobs >= 4) {
+        // Fatigue and dynamic capacity penalty
+        if (activeJobs >= maxCapacity) {
             workloadScore = Math.max(5, workloadScore - 15);
         }
 
@@ -301,10 +302,19 @@ class DispatchEngine {
             }
         }
 
-        const techSkills = new Set(technician.skills || profile.skills || []);
+        const rawSkills = technician.skills || profile.skills || [];
+        const techSkills = new Set(rawSkills.map(s => String(s).toUpperCase().replace(/[\s\-_]+/g, '')));
         let matchCount = 0;
         requiredSkills.forEach(s => {
-            if (techSkills.has(s) || techSkills.has(s.replace(/_/g, ' '))) matchCount++;
+            const normalizedReq = String(s).toUpperCase().replace(/[\s\-_]+/g, '');
+            let found = false;
+            for (const ts of techSkills) {
+                if (ts === normalizedReq || ts.includes(normalizedReq) || normalizedReq.includes(ts)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) matchCount++;
         });
         const skillScore = Math.round((matchCount / Math.max(1, requiredSkills.length)) * 100);
 

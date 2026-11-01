@@ -48,13 +48,16 @@ function configureChartDefaults() {
     Chart.defaults.plugins.tooltip.displayColors = true;
 }
 
-// Custom Center Text Plugin for Doughnut Charts
+// Custom Center Text Plugin for Doughnut Charts (Fixed Zero-Baseline KPI Count)
 const doughnutCenterTextPlugin = {
     id: 'doughnutCenterText',
     beforeDraw(chart) {
         if (chart.config.type !== 'doughnut') return;
         const { ctx, chartArea: { top, bottom, left, right, width, height } } = chart;
-        const total = chart.data.datasets[0].data.reduce((a, b) => a + (Number(b) || 0), 0);
+        const dataset = chart.data.datasets && chart.data.datasets[0];
+        const total = (dataset && typeof dataset.realTotal === 'number')
+            ? dataset.realTotal
+            : (dataset && dataset.data ? dataset.data.reduce((a, b) => a + (Number(b) || 0), 0) : 0);
         const isDark = document.documentElement.classList.contains('dark');
 
         ctx.save();
@@ -104,7 +107,8 @@ function initStatusChart(canvasId, statusCounts) {
             labels: labels,
             datasets: [{
                 data: total > 0 ? dataValues : [1],
-                backgroundColor: total > 0 ? bgColors : [isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'],
+                realTotal: total,
+                backgroundColor: total > 0 ? bgColors : [isDark ? 'rgba(184, 170, 152, 0.18)' : 'rgba(184, 170, 152, 0.22)'],
                 borderWidth: 2,
                 borderColor: isDark ? '#27211D' : '#FDFBF7',
                 hoverOffset: total > 0 ? 6 : 0
@@ -440,7 +444,8 @@ function initFmeaRiskChart(canvasId, fmeaData) {
             labels: labels,
             datasets: [{
                 data: total > 0 ? counts : [1],
-                backgroundColor: total > 0 ? colors : [isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'],
+                realTotal: total,
+                backgroundColor: total > 0 ? colors : [isDark ? 'rgba(184, 170, 152, 0.18)' : 'rgba(184, 170, 152, 0.22)'],
                 borderWidth: 2,
                 borderColor: isDark ? '#27211D' : '#FDFBF7'
             }]

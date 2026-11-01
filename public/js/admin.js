@@ -78,6 +78,9 @@ if (!token || role !== 'admin' || isTokenExpired(token) || token.startsWith('dem
 // Global State
 let currentRequests = [];
 let availableTechnicians = [];
+let allSystemUsers = [];
+let activeTeamRoleFilter = 'all';
+let teamSearchQuery = '';
 let activeStatusFilter = 'All';
 let searchQuery = '';
 
@@ -193,6 +196,7 @@ async function loadTechnicians() {
         if (data.success) {
             availableTechnicians = data.technicians;
             renderTechniciansGrid();
+            loadAllUsers();
         }
     } catch(err) {
         console.warn("Technicians fetch note:", err.message);
@@ -519,49 +523,243 @@ async function assignTechnician(requestId, technicianId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// 3. FLEET & USERS
+// 3. FLEET & USERS (Algorithmic Onboarding & Team Directory)
 // ═══════════════════════════════════════════════════════════
-function renderTechniciansGrid() {
+function onUserRoleChange() {
+    const role = document.getElementById('newUserRole')?.value;
+    const techFields = document.getElementById('techAlgoFields');
+    const staffFields = document.getElementById('staffFields');
+    if (!techFields || !staffFields) return;
+
+    if (role === 'technician') {
+        techFields.classList.remove('hidden');
+        staffFields.classList.add('hidden');
+    } else if (role === 'staff') {
+        techFields.classList.add('hidden');
+        staffFields.classList.remove('hidden');
+    } else {
+        techFields.classList.add('hidden');
+        staffFields.classList.add('hidden');
+    }
+}
+window.onUserRoleChange = onUserRoleChange;
+
+async function loadAllUsers() {
+    try {
+        const response = await fetch(`${API_BASE}/api/admin/users`, { headers: authHeaders });
+        const data = await response.json();
+        if (data.success) {
+            allSystemUsers = data.users || [];
+            updateTeamFilterCounts();
+            renderTeamDirectory();
+        }
+    } catch(err) {
+        console.warn("All users fetch note:", err.message);
+    }
+}
+window.loadAllUsers = loadAllUsers;
+
+function updateTeamFilterCounts() {
+    const total = allSystemUsers.length;
+    const techs = allSystemUsers.filter(u => u.role === 'technician').length;
+    const staff = allSystemUsers.filter(u => u.role === 'staff').length;
+    const admins = allSystemUsers.filter(u => u.role === 'admin').length;
+
+    const elAll = document.getElementById('countTeamAll');
+    const elTech = document.getElementById('countTeamTech');
+    const elStaff = document.getElementById('countTeamStaff');
+    const elAdmin = document.getElementById('countTeamAdmin');
+
+    if (elAll) elAll.innerText = total;
+    if (elTech) elTech.innerText = techs;
+    if (elStaff) elStaff.innerText = staff;
+    if (elAdmin) elAdmin.innerText = admins;
+}
+
+function setTeamRoleFilter(role, btn) {
+    activeTeamRoleFilter = role;
+    document.querySelectorAll('.team-filter-btn').forEach(b => {
+        b.className = 'team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition';
+    });
+    if (btn) {
+        btn.className = 'team-filter-btn px-3 py-1.5 rounded-lg text-xs font-black bg-[#A05B3A] text-white shadow-xs transition';
+    }
+    renderTeamDirectory();
+}
+window.setTeamRoleFilter = setTeamRoleFilter;
+
+function filterTeamDirectory() {
+    teamSearchQuery = (document.getElementById('teamSearchInput')?.value || '').toLowerCase().trim();
+    renderTeamDirectory();
+}
+window.filterTeamDirectory = filterTeamDirectory;
+
+function renderTeamDirectory() {
     const grid = document.getElementById('techniciansGrid');
     if (!grid) return;
 
-    grid.innerHTML = '';
-    availableTechnicians.forEach(t => {
-        const card = document.createElement('div');
-        card.className = "bg-white dark:bg-[#27211D] border border-[#B8AA98]/20 dark:border-white/10 rounded-xl p-4 shadow-2xs hover:shadow-md transition flex flex-col justify-between";
-        const safeName = escapeHtml(t.name || 'Technician');
-        const safeInitial = safeName.charAt(0) || 'T';
-        card.innerHTML = `
-            <div>
-                <div class="flex items-start justify-between mb-2">
-                    <div class="w-9 h-9 rounded-lg bg-[#A05B3A]/15 dark:bg-[#A05B3A]/25 text-[#A05B3A] dark:text-[#E4C99A] font-black text-sm flex items-center justify-center border border-[#A05B3A]/30">
-                        ${safeInitial}
-                    </div>
-                    <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${t.active_jobs > 0 ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30' : 'bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30'}">
-                        ${t.active_jobs > 0 ? `${t.active_jobs} Active Jobs` : 'Available / Free'}
-                    </span>
-                </div>
-                <h4 class="font-extrabold text-[#342C27] dark:text-[#FDFBF7] text-sm">${safeName}</h4>
-                <p class="text-xs text-[#655448] dark:text-[#B8AA98] font-mono mt-0.5">${escapeHtml(t.phone || 'Field Certified')}</p>
-                <p class="text-xs text-[#655448]/80 dark:text-[#B8AA98]/80 truncate mt-0.5">${escapeHtml(t.email || '')}</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-[#B8AA98]/15 dark:border-white/5 flex items-center justify-between text-xs font-bold text-[#655448] dark:text-[#B8AA98]">
-                <span>Completed: ${Number(t.completed_jobs || 0)}</span>
-                <span class="text-[#77B89A] font-extrabold">Rating: 4.9 ★</span>
+    let users = allSystemUsers;
+    if (activeTeamRoleFilter !== 'all') {
+        users = users.filter(u => u.role === activeTeamRoleFilter);
+    }
+    if (teamSearchQuery) {
+        users = users.filter(u =>
+            (u.name || '').toLowerCase().includes(teamSearchQuery) ||
+            (u.email || '').toLowerCase().includes(teamSearchQuery) ||
+            (u.phone || '').toLowerCase().includes(teamSearchQuery) ||
+            (u.zone || '').toLowerCase().includes(teamSearchQuery) ||
+            (u.department || '').toLowerCase().includes(teamSearchQuery)
+        );
+    }
+
+    if (users.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full py-12 text-center bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl border border-[#B8AA98]/30 dark:border-[#B8AA98]/15 p-8">
+                <span class="text-3xl block mb-2">👥</span>
+                <h4 class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]">No Team Members Found</h4>
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98] max-w-sm mx-auto mt-1">
+                    ${teamSearchQuery ? 'No accounts matched your search criteria. Try a different query.' : 'Use the form on the left to provision accounts for dispatchers or field technicians.'}
+                </p>
             </div>
         `;
-        grid.appendChild(card);
-    });
+        return;
+    }
+
+    const ZONE_LABELS = {
+        'WESTERN_SUBURBS': 'Western Suburbs',
+        'CENTRAL_MUMBAI': 'Central Mumbai',
+        'SOUTH_MUMBAI': 'South Mumbai',
+        'THANE_ZONE': 'Thane & Central',
+        'NAVI_MUMBAI': 'Navi Mumbai'
+    };
+
+    grid.innerHTML = users.map(u => {
+        const safeName = escapeHtml(u.name || 'Team Member');
+        const safeEmail = escapeHtml(u.email || '');
+        const safePhone = escapeHtml(u.phone || 'Field Certified');
+        const safeInitial = safeName.charAt(0).toUpperCase() || 'U';
+        const role = (u.role || '').toLowerCase();
+        const isTech = role === 'technician';
+        const isStaff = role === 'staff';
+        const isAdmin = role === 'admin';
+
+        let roleBadge = '';
+        let avatarCls = 'bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] border-[#A05B3A]/30';
+        if (isAdmin) {
+            roleBadge = `<span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] border border-[#A05B3A]/30">👑 Administrator</span>`;
+            avatarCls = 'bg-[#A05B3A] text-white';
+        } else if (isStaff) {
+            roleBadge = `<span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[#0284C7]/15 text-[#0284C7] dark:text-sky-400 border border-[#0284C7]/30">🎧 Dispatch Staff</span>`;
+            avatarCls = 'bg-[#0284C7]/20 text-[#0284C7] dark:text-sky-400 border-[#0284C7]/40';
+        } else {
+            const activeJobs = Number(u.active_jobs) || 0;
+            const maxCap = Number(u.max_capacity) || 4;
+            const loadBadgeCls = activeJobs >= maxCap
+                ? 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30'
+                : activeJobs > 0
+                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30'
+                    : 'bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border-[#77B89A]/30';
+            roleBadge = `<span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${loadBadgeCls}">
+                ${activeJobs > 0 ? `${activeJobs}/${maxCap} Active Jobs` : 'Available / Free'}
+            </span>`;
+            avatarCls = 'bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] border-[#77B89A]/40';
+        }
+
+        const zonePill = isTech && u.zone
+            ? `<div class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#B8AA98]/20 dark:bg-white/10 text-[#655448] dark:text-[#B8AA98]">
+                 <span>📍</span>
+                 <span>${ZONE_LABELS[u.zone] || u.zone}</span>
+               </div>`
+            : (isStaff && u.department ? `<div class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#0284C7]/10 text-[#0284C7] dark:text-sky-400">
+                 <span>🏢</span>
+                 <span>${escapeHtml(u.department)}</span>
+               </div>` : '');
+
+        const skillsList = isTech && Array.isArray(u.skills) && u.skills.length > 0
+            ? `<div class="flex flex-wrap gap-1 mt-2">
+                ${u.skills.slice(0, 3).map(s => `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/70 dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 dark:border-white/10">${escapeHtml(s.replace(/_/g, ' '))}</span>`).join('')}
+                ${u.skills.length > 3 ? `<span class="text-[9px] text-[#A05B3A] font-bold">+${u.skills.length - 3}</span>` : ''}
+              </div>`
+            : '';
+
+        const canDelete = u.email !== 'admin@extremess.com' && u.id !== 'usr-super-admin';
+
+        return `
+            <div class="bg-white dark:bg-[#27211D] border border-[#B8AA98]/30 dark:border-white/10 rounded-2xl p-4 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="w-9 h-9 rounded-xl ${avatarCls} font-black text-sm flex items-center justify-center border shadow-xs">
+                            ${safeInitial}
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            ${roleBadge}
+                            ${canDelete ? `
+                            <button type="button" onclick="deleteUser('${u.id}', '${safeName.replace(/'/g, "\\'")}')" class="text-[#655448] dark:text-[#B8AA98] hover:text-red-600 dark:hover:text-red-400 p-1 transition cursor-pointer" title="Remove User">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>` : ''}
+                        </div>
+                    </div>
+                    <h4 class="font-black text-[#342C27] dark:text-[#FDFBF7] text-sm">${safeName}</h4>
+                    <p class="text-xs text-[#655448] dark:text-[#B8AA98] font-mono mt-0.5">${safePhone}</p>
+                    <p class="text-xs text-[#655448]/80 dark:text-[#B8AA98]/80 truncate mt-0.5">${safeEmail}</p>
+                    ${zonePill ? `<div class="mt-2">${zonePill}</div>` : ''}
+                    ${skillsList}
+                </div>
+                ${isTech ? `
+                <div class="mt-4 pt-3 border-t border-[#B8AA98]/15 dark:border-white/5 flex items-center justify-between text-xs font-bold text-[#655448] dark:text-[#B8AA98]">
+                    <span>Completed: ${Number(u.completed_jobs || 0)}</span>
+                    <span class="text-[#77B89A] font-extrabold">QA: ${u.rating ? Number(u.rating).toFixed(1) : '4.8'} ★</span>
+                </div>` : `
+                <div class="mt-4 pt-3 border-t border-[#B8AA98]/15 dark:border-white/5 flex items-center justify-between text-[11px] font-bold text-[#655448] dark:text-[#B8AA98]">
+                    <span>Access: Verified</span>
+                    <span class="text-[#A05B3A] dark:text-[#E4C99A] font-extrabold">Active</span>
+                </div>`}
+            </div>
+        `;
+    }).join('');
 }
+window.renderTechniciansGrid = renderTeamDirectory;
+
+async function deleteUser(userId, userName) {
+    if (!confirm(`Are you sure you want to remove team member "${userName}"? This will revoke system credentials.`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/users/${encodeURIComponent(userId)}`, {
+            method: 'DELETE',
+            headers: authHeaders
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (window.showToast) window.showToast("Team member removed successfully", "success");
+            await loadAllUsers();
+            await loadTechnicians();
+        } else {
+            if (window.showToast) window.showToast(data.message || "Failed to remove user", "error");
+        }
+    } catch(err) {
+        if (window.showToast) window.showToast("Network error while removing user", "error");
+    }
+}
+window.deleteUser = deleteUser;
 
 document.getElementById('createUserForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const role = document.getElementById('newUserRole')?.value || 'technician';
+    const checkedSkills = Array.from(document.querySelectorAll('input[name="techSkills[]"]:checked')).map(cb => cb.value);
+
     const payload = {
         name: document.getElementById('newUserName').value,
         email: document.getElementById('newUserEmail').value,
-        role: document.getElementById('newUserRole').value,
+        role: role,
         phone: document.getElementById('newUserPhone').value,
-        password: document.getElementById('newUserPass').value
+        password: document.getElementById('newUserPass').value,
+        zone: document.getElementById('newUserZone')?.value || 'WESTERN_SUBURBS',
+        skills: checkedSkills,
+        max_capacity: Number(document.getElementById('newUserCapacity')?.value || 4),
+        rating: Number(document.getElementById('newUserRating')?.value || 4.8),
+        department: document.getElementById('newUserDept')?.value || 'Dispatch Coordination'
     };
 
     try {
@@ -570,14 +768,24 @@ document.getElementById('createUserForm')?.addEventListener('submit', async (e) 
             headers: authHeaders,
             body: JSON.stringify(payload)
         });
-        if (res.ok) {
-            if (window.showToast) window.showToast(`${payload.name} added to team!`, 'success');
+        const data = await res.json();
+        if (data.success) {
+            if (window.showToast) window.showToast("User account created successfully", "success");
             e.target.reset();
+            // Re-check default skills
+            document.querySelectorAll('input[name="techSkills[]"]').forEach(cb => {
+                if (['PCB_ELECTRONICS', 'JET_WASH', 'REFRIGERATION_GAS', 'GENERAL_HVAC'].includes(cb.value)) {
+                    cb.checked = true;
+                }
+            });
+            onUserRoleChange();
+            await loadAllUsers();
             await loadTechnicians();
-            fetchRequests(true);
+        } else {
+            if (window.showToast) window.showToast(data.message || "Failed to create user", "error");
         }
     } catch(err) {
-        if (window.showToast) window.showToast("Failed to create user", 'error');
+        if (window.showToast) window.showToast("Network error creating user", "error");
     }
 });
 
