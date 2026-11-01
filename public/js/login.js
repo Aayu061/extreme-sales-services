@@ -166,6 +166,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 // Card entrance animation & URL parameter pre-selection
 window.addEventListener('DOMContentLoaded', () => {
+    checkApiHealth();
     const card = document.getElementById('loginForm')?.parentElement;
     if (typeof gsap !== 'undefined' && card) {
         gsap.fromTo(card,
@@ -229,3 +230,24 @@ window.fillVivaDemo = function() {
     }
     if (window.showToast) window.showToast(`Pre-filled demo credentials for ${currentRole.toUpperCase()}`, 'info');
 };
+
+async function checkApiHealth() {
+    const healthText = document.getElementById('healthText');
+    const healthDot = document.getElementById('healthDot');
+    if (!healthText || !healthDot) return;
+    const t0 = performance.now();
+    try {
+        const res = await fetch(`${API_BASE}/healthz`, { method: 'GET' });
+        const latency = Math.round(performance.now() - t0);
+        if (res.ok) {
+            healthText.innerText = `Live API: Connected (${latency}ms)`;
+            healthDot.className = 'w-2 h-2 rounded-full bg-[#77B89A] animate-pulse';
+        } else {
+            healthText.innerText = 'API: Service Degraded';
+            healthDot.className = 'w-2 h-2 rounded-full bg-amber-500';
+        }
+    } catch(err) {
+        healthText.innerText = 'API: Offline';
+        healthDot.className = 'w-2 h-2 rounded-full bg-red-500';
+    }
+}

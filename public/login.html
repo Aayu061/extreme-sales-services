@@ -43,6 +43,12 @@
 </head>
 <body class="role-admin min-h-screen bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] font-sans antialiased flex flex-col justify-between selection:bg-[#A05B3A] selection:text-white">
 
+    <!-- Live API Status Indicator -->
+    <div id="backendHealthBadge" class="fixed top-4 left-4 z-50 flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-md border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs text-[#655448] dark:text-[#B8AA98]">
+      <span id="healthDot" class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
+      <span id="healthText">Live API: Checking...</span>
+    </div>
+
     <!-- Theme Toggle Floating Button -->
     <div class="fixed top-4 right-4 z-50">
         <button

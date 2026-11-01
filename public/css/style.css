@@ -3718,3 +3718,30 @@ html.dark .estimator-pill:not(.active):not(.bg-blue-600):hover {
     height: 100% !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT MEDIA STYLES (Executive Briefing & Work Orders)
+═══════════════════════════════════════════════════════════ */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt !important;
+  }
+  header, footer, nav, .print\:hidden, #refreshBtn, #exportBtn, .theme-toggle-btn {
+    display: none !important;
+  }
+  #executiveReportModal, #adminInvoiceModal {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+    box-shadow: none !important;
+  }
+  #executiveReportModal > div, #adminInvoiceModal > div {
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
