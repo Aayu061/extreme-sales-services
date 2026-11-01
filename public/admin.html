@@ -64,6 +64,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </button>
+            <button type="button" onclick="openExecutiveReport()" class="bg-[#77B89A]/20 hover:bg-[#77B89A] text-[#77B89A] hover:text-[#1A1412] border border-[#77B89A]/40 p-2 sm:px-3 sm:py-1.5 rounded-lg font-bold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer" title="Generate comprehensive printable executive audit briefing for examiners">
+              <span>📋</span>
+              <span class="hidden md:inline">Executive Briefing</span>
+            </button>
             <button type="button" id="exportBtn" onclick="exportDataCsv()" class="bg-[#3D342F] hover:bg-[#655448] text-white border border-[#B8AA98]/40 p-2 sm:px-3 sm:py-1.5 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow-xs">
               <span>📊</span>
               <span class="hidden sm:inline">Export CSV</span>
@@ -229,11 +233,17 @@
           <div class="flex items-center justify-between mb-4">
             <div>
               <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Service Volume &amp; Completion Trends</h2>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">7-Day booking intake vs technician on-site completions</p>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Intake telemetry vs verified field completions</p>
             </div>
-            <span class="text-[10px] font-extrabold bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#A05B3A] dark:text-[#E4C99A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#E4C99A]/60 dark:border-[#E4C99A]/30">
-              Live Trend
-            </span>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1 bg-[#E6DFD3]/60 dark:bg-[#1A1412] p-1 rounded-xl border border-[#B8AA98]/30">
+                <button type="button" id="btnTrend7d" onclick="switchTrendTimeframe(7)" class="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-[#A05B3A] text-white shadow-xs transition">7D</button>
+                <button type="button" id="btnTrend30d" onclick="switchTrendTimeframe(30)" class="px-2.5 py-1 text-[10px] font-bold rounded-lg text-[#655448] dark:text-[#B8AA98] hover:text-black dark:hover:text-white transition">30D</button>
+              </div>
+              <span class="hidden sm:inline-block text-[10px] font-extrabold bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#A05B3A] dark:text-[#E4C99A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#E4C99A]/60 dark:border-[#E4C99A]/30">
+                Live Stream
+              </span>
+            </div>
           </div>
           <div class="chart-wrapper">
             <canvas id="chartTrend"></canvas>
@@ -348,8 +358,9 @@
                   id="searchRequestInput"
                   oninput="handleSearch(this.value)"
                   placeholder="Search customer, phone, ID..."
-                  class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-white dark:focus:bg-[#1A1412] text-[#342C27] dark:text-white outline-none transition placeholder:text-[#655448]/60 dark:placeholder:text-[#B8AA98]/50"
+                  class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 rounded-xl pl-3.5 pr-10 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-white dark:focus:bg-[#1A1412] text-[#342C27] dark:text-white outline-none transition placeholder:text-[#655448]/60 dark:placeholder:text-[#B8AA98]/50"
                 >
+                <kbd class="hidden sm:inline-block absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono bg-black/5 dark:bg-white/10 text-[#655448] dark:text-[#B8AA98] rounded border border-black/10 dark:border-white/10 select-none pointer-events-none">/</kbd>
               </div>
               <button type="button" onclick="exportDispatchCSV()" title="Export all service dispatches to CSV spreadsheet" class="bg-[#342C27] dark:bg-[#3D342F] hover:bg-[#3D342F] dark:hover:bg-[#655448] text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm border border-[#B8AA98]/30 dark:border-[#B8AA98]/20">
                 <span>📥</span>
@@ -518,6 +529,40 @@
 
         <!-- 6. ANALYTICS & PROFIT SIMULATOR TAB -->
         <div id="tab-analytics" class="tab-content p-6 hidden space-y-8">
+          <!-- 6-Tile Executive Statistical Summary Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Total Volume</span>
+              <span id="statStatTotalVolume" class="text-xl sm:text-2xl font-black font-mono text-[#342C27] dark:text-[#FDFBF7] block mt-0.5">0</span>
+              <span class="text-[9px] text-[#77B89A] font-bold">100% Live DB</span>
+            </div>
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Mean MTTR</span>
+              <span id="statStatMttr" class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5">--</span>
+              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Turnaround Mins</span>
+            </div>
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">SLA Compliance</span>
+              <span id="statStatSla" class="text-xl sm:text-2xl font-black font-mono text-[#77B89A] block mt-0.5">--%</span>
+              <span class="text-[9px] text-[#77B89A] font-bold">&lt;45m Target</span>
+            </div>
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">First-Time Fix</span>
+              <span id="statStatFtfr" class="text-xl sm:text-2xl font-black font-mono text-[#0284C7] dark:text-sky-400 block mt-0.5">--%</span>
+              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Single Visit Rate</span>
+            </div>
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Avg Ticket Rev</span>
+              <span id="statStatArpt" class="text-xl sm:text-2xl font-black font-mono text-[#C27A23] dark:text-amber-400 block mt-0.5">₹0</span>
+              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Blended Realized</span>
+            </div>
+            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs">
+              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Fleet Capacity</span>
+              <span id="statStatFleetUtil" class="text-xl sm:text-2xl font-black font-mono text-[#8B5CF6] block mt-0.5">--</span>
+              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Active Engineers</span>
+            </div>
+          </div>
+
           <!-- Profit Margin & Unit Economics Calculator (Deep Espresso Architectural Monolith) -->
           <div class="bg-[#27211D] dark:bg-[#1A1412] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden border border-[#3D342F] dark:border-[#B8AA98]/20">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-white/10">
@@ -599,12 +644,32 @@
             </div>
           </div>
 
-          <!-- Service Distribution Breakdown -->
-          <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
-            <h4 class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-1">Service Demand &amp; Category Share</h4>
-            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-5">Proportion of incoming tickets across service categories</p>
-            <div id="serviceDemandBreakdown" class="space-y-4">
-              <!-- Dynamically populated progress bars -->
+          <!-- 2-Column Analytical Insights: Category Share & FMEA Risk Severity -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Service Distribution Breakdown -->
+            <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+              <div class="flex items-center justify-between mb-1">
+                <h4 class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Service Demand &amp; Category Share</h4>
+                <span class="text-[10px] font-black px-2 py-0.5 bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] rounded-full border border-[#A05B3A]/30">Demand</span>
+              </div>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-5">Proportion of incoming tickets across service categories</p>
+              <div id="serviceDemandBreakdown" class="space-y-4">
+                <!-- Dynamically populated progress bars -->
+              </div>
+            </div>
+
+            <!-- FMEA Diagnostic Risk Distribution -->
+            <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1">
+                <div>
+                  <h4 class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]">FMEA Predictive Reliability Breakdown</h4>
+                  <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Risk Priority Number distribution across complaint taxonomy</p>
+                </div>
+                <span class="text-[10px] font-black px-2 py-0.5 bg-red-500/15 text-red-600 dark:text-red-400 rounded-full border border-red-500/30">FMEA AI</span>
+              </div>
+              <div class="h-56 mt-2 relative flex items-center justify-center">
+                <canvas id="chartFmeaRisk"></canvas>
+              </div>
             </div>
           </div>
 
@@ -723,258 +788,103 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/charts.js"></script>
-    <!-- ESS Mineral Architecture Chart Theme Calibration -->
-    <script>
-      (function() {
-        if (typeof Chart === 'undefined') return;
+    <!-- PRINT-READY EXECUTIVE BRIEFING REPORT MODAL (Examiner Viva Audit) -->
+    <div id="executiveReportModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white text-slate-800 rounded-3xl max-w-4xl w-full p-6 sm:p-10 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-start pb-4 border-b border-slate-200 mb-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-[#A05B3A] text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-sm">ES</span>
+              <div>
+                <h2 class="text-xl font-black tracking-tight text-slate-900">Extreme Sales &amp; Services</h2>
+                <p class="text-xs text-slate-500 font-medium">Enterprise Climate Control • Executive Telemetry &amp; Field Operations Audit</p>
+              </div>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-black tracking-wide border border-amber-200">
+              AUDIT BRIEFING
+            </span>
+            <p id="execReportDate" class="text-xs font-mono font-bold text-slate-600 mt-1">2026-11-01</p>
+            <p class="text-[10px] text-slate-400 font-mono">CONFIDENTIAL • EXAMINER VIVA</p>
+          </div>
+        </div>
 
-        // Mineral Architecture Palette Tokens
-        const COPPER = '#A05B3A';
-        const JADE = '#77B89A';
-        const AMBER_QUEUE = '#C27A23';
-        const BRONZE = '#655448';
-        const SAGE = '#879581';
-        const CHAMPAGNE = '#E4C99A';
-        const TAUPE_GRID = 'rgba(184, 170, 152, 0.22)';
-        const TEXT_BRONZE = '#655448';
+        <!-- 6 KPI Snapshot -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Total Volume</span>
+            <span id="repTotalVolume" class="text-lg font-black font-mono text-slate-800 block mt-0.5">0</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Mean MTTR</span>
+            <span id="repMttr" class="text-lg font-black font-mono text-[#A05B3A] block mt-0.5">--</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">SLA Compliance</span>
+            <span id="repSla" class="text-lg font-black font-mono text-emerald-600 block mt-0.5">--%</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">First-Time Fix</span>
+            <span id="repFtfr" class="text-lg font-black font-mono text-blue-600 block mt-0.5">98%</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Est. Revenue</span>
+            <span id="repRev" class="text-lg font-black font-mono text-slate-800 block mt-0.5">₹0</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Active Fleet</span>
+            <span id="repFleet" class="text-lg font-black font-mono text-purple-600 block mt-0.5">0 Techs</span>
+          </div>
+        </div>
 
-        // Override Trend Chart to use Calibrated Copper (Bookings) & Luminous Jade (Completions)
-        const origInitTrend = window.initTrendChart;
-        window.initTrendChart = function(canvasId, trendData) {
-          const ctx = document.getElementById(canvasId);
-          if (!ctx) return;
-          if (window.chartTrendInstance) window.chartTrendInstance.destroy();
+        <!-- Financial Statement Snapshot -->
+        <div class="mb-6 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+          <h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Unit Economics &amp; P&amp;L Summary</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold">Gross Revenue</span>
+              <span id="repGrossRev" class="text-sm font-black font-mono text-slate-800 block mt-0.5">₹0</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold">Direct COGS</span>
+              <span id="repCogs" class="text-sm font-black font-mono text-amber-600 block mt-0.5">₹0</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold">Net Operating Profit</span>
+              <span id="repNet" class="text-sm font-black font-mono text-emerald-600 block mt-0.5">₹0</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold">Gross Margin %</span>
+              <span id="repMargin" class="text-sm font-black font-mono text-slate-800 block mt-0.5">0%</span>
+            </div>
+          </div>
+        </div>
 
-          const isDark = document.documentElement.classList.contains('dark');
-          const chartCtx = ctx.getContext('2d');
+        <!-- Field Operations Leaderboard -->
+        <div class="mb-6">
+          <h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Field Technician Performance Ranking</h4>
+          <div id="repTechRanking" class="text-xs text-slate-600">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
 
-          const gradientCopper = chartCtx.createLinearGradient(0, 0, 0, 240);
-          gradientCopper.addColorStop(0, 'rgba(160, 91, 58, 0.28)');
-          gradientCopper.addColorStop(1, 'rgba(160, 91, 58, 0.0)');
-
-          const gradientJade = chartCtx.createLinearGradient(0, 0, 0, 240);
-          gradientJade.addColorStop(0, 'rgba(119, 184, 154, 0.28)');
-          gradientJade.addColorStop(1, 'rgba(119, 184, 154, 0.0)');
-
-          window.chartTrendInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: trendData.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-              datasets: [
-                {
-                  label: 'New Bookings',
-                  data: (trendData && trendData.bookings) || [0, 0, 0, 0, 0, 0, 0],
-                  borderColor: COPPER,
-                  backgroundColor: gradientCopper,
-                  fill: true,
-                  tension: 0.4,
-                  borderWidth: 2.5,
-                  pointRadius: 4,
-                  pointHoverRadius: 6,
-                  pointBackgroundColor: COPPER
-                },
-                {
-                  label: 'Completions',
-                  data: (trendData && trendData.completions) || [0, 0, 0, 0, 0, 0, 0],
-                  borderColor: JADE,
-                  backgroundColor: gradientJade,
-                  fill: true,
-                  tension: 0.4,
-                  borderWidth: 2.5,
-                  pointRadius: 4,
-                  pointHoverRadius: 6,
-                  pointBackgroundColor: JADE
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              interaction: { mode: 'index', intersect: false },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: TAUPE_GRID },
-                  ticks: { stepSize: 2, color: isDark ? '#B8AA98' : TEXT_BRONZE, font: { weight: 600 } }
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: isDark ? '#B8AA98' : TEXT_BRONZE, font: { weight: 600 } }
-                }
-              },
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: {
-                    boxWidth: 12,
-                    padding: 12,
-                    font: { weight: 700 },
-                    color: isDark ? '#FDFBF7' : '#342C27'
-                  }
-                }
-              }
-            }
-          });
-        };
-
-        // Override Status Doughnut Chart to preserve positive jade and amber warning states
-        window.initStatusChart = function(canvasId, statusCounts) {
-          const ctx = document.getElementById(canvasId);
-          if (!ctx) return;
-          if (window.chartStatusInstance) window.chartStatusInstance.destroy();
-
-          const isDark = document.documentElement.classList.contains('dark');
-          const labels = ['Pending', 'Assigned', 'In Progress', 'Completed'];
-          const dataValues = [
-            statusCounts.Pending || 0,
-            statusCounts.Assigned || 0,
-            statusCounts['In Progress'] || 0,
-            statusCounts.Completed || 0
-          ];
-
-          const total = dataValues.reduce((a, b) => a + b, 0);
-          const finalLabels = total > 0 ? labels : ['Queue Empty'];
-          const finalData = total > 0 ? dataValues : [1];
-          const bgColors = total > 0 ? [AMBER_QUEUE, BRONZE, COPPER, JADE] : [isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'];
-
-          window.chartStatusInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-              labels: finalLabels,
-              datasets: [{
-                data: finalData,
-                backgroundColor: bgColors,
-                borderWidth: 3,
-                borderColor: isDark ? '#27211D' : '#FDFBF7',
-                hoverOffset: total > 0 ? 6 : 0
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              cutout: '72%',
-              plugins: {
-                legend: {
-                  position: 'bottom',
-                  labels: {
-                    boxWidth: 12,
-                    padding: 14,
-                    font: { weight: 700 },
-                    color: isDark ? '#FDFBF7' : '#342C27'
-                  }
-                }
-              }
-            }
-          });
-        };
-
-        // Override Fleet Workload Chart
-        window.initWorkloadChart = function(canvasId, workloadData) {
-          const ctx = document.getElementById(canvasId);
-          if (!ctx) return;
-          if (window.chartWorkloadInstance) window.chartWorkloadInstance.destroy();
-
-          const isDark = document.documentElement.classList.contains('dark');
-
-          window.chartWorkloadInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: (workloadData && workloadData.labels && workloadData.labels.length > 0) ? workloadData.labels : ['No Technicians Active'],
-              datasets: [
-                {
-                  label: 'Active Jobs',
-                  data: (workloadData && workloadData.assigned && workloadData.assigned.length > 0) ? workloadData.assigned : [0],
-                  backgroundColor: COPPER,
-                  borderRadius: 6,
-                  barPercentage: 0.6
-                },
-                {
-                  label: 'Completed Jobs',
-                  data: (workloadData && workloadData.completed && workloadData.completed.length > 0) ? workloadData.completed : [0],
-                  backgroundColor: JADE,
-                  borderRadius: 6,
-                  barPercentage: 0.6
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: TAUPE_GRID },
-                  ticks: { stepSize: 1, color: isDark ? '#B8AA98' : TEXT_BRONZE, font: { weight: 600 } }
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: isDark ? '#B8AA98' : TEXT_BRONZE, font: { weight: 600 } }
-                }
-              },
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: {
-                    boxWidth: 12,
-                    padding: 10,
-                    font: { weight: 700 },
-                    color: isDark ? '#FDFBF7' : '#342C27'
-                  }
-                }
-              }
-            }
-          });
-        };
-
-        // Override Service Categories Distribution
-        window.initServiceDistChart = function(canvasId, distData) {
-          const ctx = document.getElementById(canvasId);
-          if (!ctx) return;
-          if (window.chartServiceDistInstance) window.chartServiceDistInstance.destroy();
-
-          const isDark = document.documentElement.classList.contains('dark');
-
-          window.chartServiceDistInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: distData.labels || ['AC Repair', 'Servicing', 'Installation', 'Gas Refill', 'AMC'],
-              datasets: [{
-                label: 'Total Requests',
-                data: (distData && distData.data && distData.data.length > 0) ? distData.data : [0, 0, 0, 0, 0],
-                backgroundColor: [
-                  COPPER,
-                  BRONZE,
-                  SAGE,
-                  CHAMPAGNE,
-                  JADE
-                ],
-                borderRadius: 8,
-                barPercentage: 0.65
-              }]
-            },
-            options: {
-              indexAxis: 'y',
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: {
-                  beginAtZero: true,
-                  grid: { color: TAUPE_GRID },
-                  ticks: { color: isDark ? '#B8AA98' : TEXT_BRONZE, font: { weight: 600 } }
-                },
-                y: {
-                  grid: { display: false },
-                  ticks: { color: isDark ? '#B8AA98' : TEXT_BRONZE, font: { weight: 600 } }
-                }
-              },
-              plugins: {
-                legend: { display: false }
-              }
-            }
-          });
-        };
-      })();
-    </script>
+        <!-- Modal Actions (Hidden in Print) -->
+        <div class="pt-4 border-t border-slate-200 flex justify-between items-center print:hidden">
+          <span class="text-xs text-slate-400">Press Esc to close • Print optimized layout</span>
+          <div class="flex gap-2.5">
+            <button type="button" onclick="closeExecutiveReport()" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition cursor-pointer">
+              Close
+            </button>
+            <button type="button" onclick="window.print()" class="px-5 py-2 bg-[#A05B3A] hover:bg-[#854224] text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+              <span>🖨️</span>
+              <span>Print Audit Briefing</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- PRINTABLE WORK ORDER & GST TAX INVOICE MODAL -->
     <div id="adminInvoiceModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
       <div class="bg-white text-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]">

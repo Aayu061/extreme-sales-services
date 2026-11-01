@@ -243,6 +243,18 @@ function renderTable() {
         const serviceClean = req.service_type.replace('[✅ AMC Covered]', '');
         const isEmergency = req.issue_description && /emergency|spark|fire|leak|urgent|server|icu|immediate/i.test(req.issue_description);
 
+        let slaBadge = '';
+        if (req.status === 'Pending' && req.created_at) {
+            const ageMins = Math.round((Date.now() - new Date(req.created_at).getTime()) / 60000);
+            if (ageMins > 45) {
+                slaBadge = `<span class="inline-flex items-center gap-1 bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 text-[9px] font-black px-1.5 py-0.5 rounded-full animate-pulse">🔴 SLA Escalated (${ageMins}m)</span>`;
+            } else if (ageMins >= 15) {
+                slaBadge = `<span class="inline-flex items-center gap-1 bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[9px] font-bold px-1.5 py-0.5 rounded-full">🟡 Triage Window (${ageMins}m)</span>`;
+            } else {
+                slaBadge = `<span class="inline-flex items-center gap-1 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-bold px-1.5 py-0.5 rounded-full">🟢 On Schedule (&lt;15m)</span>`;
+            }
+        }
+
         tr.innerHTML = `
             <td class="px-5 py-4">
                 <div class="font-extrabold text-[#342C27] dark:text-[#F2EDE3]">${escapeHtml(req.name)}</div>
@@ -253,6 +265,7 @@ function renderTable() {
                         ${escapeHtml(req.request_id)}
                     </span>
                     ${isEmergency ? '<span class="inline-flex items-center gap-1 bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800 text-[9px] font-black px-1.5 py-0.5 rounded-full animate-pulse">🚨 URGENT SLA (&lt;45m)</span>' : ''}
+                    ${slaBadge}
                 </div>
             </td>
             <td class="px-5 py-4">
