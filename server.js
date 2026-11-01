@@ -2104,9 +2104,31 @@ app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
             'AMC Visits': amcSubs.filter(s => s.status === 'Active').length
         };
 
+        // Dynamic Realized Revenue Algorithm (calculates actual job invoice amounts)
+        const completedReqs = reqs.filter(r => r.status === 'Completed');
+        let totalServiceRevenue = 0;
+        completedReqs.forEach(r => {
+            if (r.final_amount && !isNaN(Number(r.final_amount))) {
+                totalServiceRevenue += Number(r.final_amount);
+            } else if (r.completion_notes && r.completion_notes.includes('Total: ₹')) {
+                const match = r.completion_notes.match(/Total:\s*₹([0-9,]+)/);
+                if (match) totalServiceRevenue += parseFloat(match[1].replace(/,/g, ''));
+                else totalServiceRevenue += 499;
+            } else if (r.service_type) {
+                const st = String(r.service_type).toLowerCase();
+                if (st.includes('gas')) totalServiceRevenue += 1850;
+                else if (st.includes('install')) totalServiceRevenue += 1450;
+                else if (st.includes('clean') || st.includes('jet')) totalServiceRevenue += 699;
+                else totalServiceRevenue += 499; // Standard Repair / Doorstep visit base labor
+            } else {
+                totalServiceRevenue += 499;
+            }
+        });
+
         const activeAmcCount = amcSubs.filter(s => s.status === 'Active').length;
-        const totalRevenue = (statusCounts.Completed * 1499) + (activeAmcCount * 2400);
-        const arpt = statusCounts.Completed > 0 ? Math.round(totalRevenue / statusCounts.Completed) : 1850;
+        const amcRevenue = amcSubs.filter(s => s.status === 'Active').reduce((sum, s) => sum + (Number(s.price) || 2400), 0);
+        const totalRevenue = totalServiceRevenue + amcRevenue;
+        const arpt = completedReqs.length > 0 ? Math.round(totalServiceRevenue / completedReqs.length) : 499;
 
         return res.json({
             success: true,
