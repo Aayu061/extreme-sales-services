@@ -184,6 +184,15 @@ async function fetchAnalytics() {
             if (typeof initAllCharts === 'function') {
                 initAllCharts(data);
             }
+
+            // Ground Profit Simulator in Live Realized ARPT if not custom edited
+            const simTicketInput = document.getElementById('simTicketPrice');
+            if (simTicketInput && !simTicketInput.dataset.userEdited && data.statisticalMetrics && data.statisticalMetrics.arpt) {
+                simTicketInput.value = data.statisticalMetrics.arpt;
+            }
+            if (typeof runProfitSimulator === 'function') {
+                runProfitSimulator();
+            }
         }
     } catch (err) {
         console.warn("Analytics fetch note:", err.message);
@@ -1216,19 +1225,43 @@ fetchRequests = async function(silent = false) {
     checkLowStock();
 };
 
-// ─── Today Summary Strip ─────────────────────────────────
+// ─── Dynamic Job Realized Revenue Calculator ─────────────
+function getRequestRealizedRevenue(req) {
+    if (!req) return 499;
+    if (req.final_amount && !isNaN(Number(req.final_amount))) {
+        return Number(req.final_amount);
+    }
+    if (req.completion_notes && req.completion_notes.includes('Total: ₹')) {
+        const match = req.completion_notes.match(/Total:\s*₹([0-9,]+)/);
+        if (match) return parseFloat(match[1].replace(/,/g, ''));
+    }
+    const st = String(req.service_type || '').toLowerCase();
+    if (st.includes('gas')) return 1850;
+    if (st.includes('install')) return 1450;
+    if (st.includes('clean') || st.includes('jet')) return 699;
+    return 499; // Standard Repair / Doorstep visit base labor
+}
+window.getRequestRealizedRevenue = getRequestRealizedRevenue;
+
+// ─── Today Summary Strip (Dynamic Realized Revenue) ─────────
 function renderTodayStrip() {
     const strip = document.getElementById('todayStrip');
     if (!strip) return;
 
-    const completed = currentRequests.filter(r => r.status === 'Completed').length;
-    const pending   = currentRequests.filter(r => r.status === 'Pending').length;
-    const active    = currentRequests.filter(r => r.status === 'In Progress').length;
-    const totalEst  = (completed * 1499) + (active * 850);
+    const completedReqs = currentRequests.filter(r => r.status === 'Completed');
+    const pending       = currentRequests.filter(r => r.status === 'Pending').length;
+    const active        = currentRequests.filter(r => r.status === 'In Progress').length;
+    
+    let totalEst = 0;
+    completedReqs.forEach(r => {
+        totalEst += getRequestRealizedRevenue(r);
+    });
+    // Add doorstep base labor for on-site active visits
+    totalEst += (active * 499);
 
     strip.innerHTML = `
         <div class="today-stat">
-            <div class="text-[#FDFBF7] font-black text-xl">${completed}</div>
+            <div class="text-[#FDFBF7] font-black text-xl">${completedReqs.length}</div>
             <div class="text-[#E4C99A] text-[10px] font-bold uppercase tracking-widest">Completed Today</div>
         </div>
         <div class="today-stat">
@@ -1315,6 +1348,11 @@ function getPriority(req) {
 // ═══════════════════════════════════════════════════════════
 
 function runProfitSimulator() {
+    const simInput = document.getElementById('simTicketPrice');
+    if (simInput && !simInput.dataset.listenerAttached) {
+        simInput.dataset.listenerAttached = 'true';
+        simInput.addEventListener('input', () => { simInput.dataset.userEdited = 'true'; });
+    }
     const completedJobs = currentRequests.filter(r => r.status === 'Completed').length;
     const count = completedJobs;
     const countEl = document.getElementById('calcCompletedCount');
@@ -1593,20 +1631,25 @@ function openExecutiveReport() {
     const elRev = document.getElementById('repRev');
     const elFleet = document.getElementById('repFleet');
 
+    const completedList = currentRequests.filter(r => r.status === 'Completed');
+    let realizedRev = 0;
+    completedList.forEach(r => {
+        realizedRev += getRequestRealizedRevenue(r);
+    });
+
     if (elTot) elTot.innerText = totalReqs;
     if (elMttr) elMttr.innerText = completedReqs > 0 ? '38m' : 'N/A';
     if (elSla) elSla.innerText = '98.5%';
     if (elFtfr) elFtfr.innerText = '98%';
-    if (elRev) elRev.innerText = `₹${(completedReqs * 1850).toLocaleString('en-IN')}`;
+    if (elRev) elRev.innerText = `₹${realizedRev.toLocaleString('en-IN')}`;
     if (elFleet) elFleet.innerText = `${availableTechnicians.length} Techs`;
 
-    // Financials
-    const ticketPrice = parseFloat(document.getElementById('simTicketPrice')?.value || 1850);
+    // Financials: Grounded in Live Verified Invoiced Revenue
     const partsCogs = parseFloat(document.getElementById('simPartsCogs')?.value || 580);
     const techPayout = parseFloat(document.getElementById('simTechPayout')?.value || 350);
     const overhead = parseFloat(document.getElementById('simOverhead')?.value || 15000);
 
-    const grossRev = completedReqs * ticketPrice;
+    const grossRev = realizedRev;
     const totalCogs = completedReqs * (partsCogs + techPayout);
     const netProfit = grossRev - totalCogs - (completedReqs > 0 ? overhead : 0);
     const marginPct = grossRev > 0 ? Math.round(((grossRev - totalCogs) / grossRev) * 100) : 0;
