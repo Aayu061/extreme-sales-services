@@ -145,6 +145,10 @@ function animateAdminCounter(elementId, targetVal, prefix = '', suffix = '') {
 async function fetchAnalytics() {
     try {
         const response = await fetch(`${API_BASE}/api/admin/analytics`, { headers: authHeaders });
+        if (!response.ok) {
+            console.warn(`[ESS Analytics] Analytics API responded with status ${response.status}`);
+            return;
+        }
         const data = await response.json();
 
         if (data.success) {
@@ -192,6 +196,10 @@ async function fetchAnalytics() {
 async function loadTechnicians() {
     try {
         const response = await fetch(`${API_BASE}/api/admin/users/technicians`, { headers: authHeaders });
+        if (!response.ok) {
+            console.warn(`[ESS Technicians] Technicians API responded with status ${response.status}`);
+            return;
+        }
         const data = await response.json();
         if (data.success) {
             availableTechnicians = data.technicians;
@@ -211,6 +219,10 @@ async function fetchRequests(silent = false) {
         if (availableTechnicians.length === 0) await loadTechnicians();
 
         const response = await fetch(`${API_BASE}/api/admin/requests`, { headers: authHeaders });
+        if (!response.ok) {
+            console.warn(`[ESS Requests] Requests API responded with status ${response.status}`);
+            return;
+        }
         const data = await response.json();
 
         if (data.success) {
@@ -547,6 +559,10 @@ window.onUserRoleChange = onUserRoleChange;
 async function loadAllUsers() {
     try {
         const response = await fetch(`${API_BASE}/api/admin/users`, { headers: authHeaders });
+        if (!response.ok) {
+            console.warn(`[ESS Users] Users API responded with status ${response.status}`);
+            return;
+        }
         const data = await response.json();
         if (data.success) {
             allSystemUsers = data.users || [];

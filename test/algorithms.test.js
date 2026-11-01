@@ -68,6 +68,15 @@ describe('ALGORITHM 1: FMEA Predictive Diagnostics & Equipment Reliability', () 
         assert.equal(waterReport.detectedDiagnosis.category, 'Drainage & Airflow');
         assert.ok(waterReport.detectedDiagnosis.severity !== 'CRITICAL', 'Water dripping must not be classified as critical electrical hazard');
     });
+
+    test('Rapid evaluateFMEA computes RPN without crashing on edge cases', () => {
+        const hazard = diagnosticsEngine.evaluateFMEA('compressor MCB trip', 'AC Repair');
+        assert.ok(hazard.rpn >= 150);
+        assert.equal(hazard.riskLevel, 'CRITICAL_HAZARD');
+
+        const empty = diagnosticsEngine.evaluateFMEA('', '');
+        assert.ok(empty.rpn > 0);
+    });
 });
 
 describe('ALGORITHM 2: Fleet Dispatch Optimization & Geodesic Distance', () => {
