@@ -228,7 +228,7 @@ window.fillVivaDemo = function() {
         if (emailEl) emailEl.value = 'tech@extremess.com';
         if (passEl) passEl.value = 'tech123';
     }
-    if (window.showToast) window.showToast(`Pre-filled demo credentials for ${currentRole.toUpperCase()}`, 'info');
+    if (window.showToast) window.showToast(`Pre-filled credentials for ${currentRole.toUpperCase()}`, 'info');
 };
 
 async function checkApiHealth() {
