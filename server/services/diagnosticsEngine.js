@@ -426,6 +426,32 @@ class DiagnosticsEngine {
             latencyMs
         };
     }
+
+    /**
+     * Rapid Failure Mode & Effects Analysis (FMEA) Evaluation
+     * Evaluates a complaint description and returns { rpn, severityScore, occurrenceScore, detectionScore, riskLevel }
+     */
+    evaluateFMEA(description = '', serviceType = '', brand = '', ageYears = 3) {
+        try {
+            const report = this.predictDiagnosis({
+                description: String(description || ''),
+                serviceType: String(serviceType || ''),
+                brand,
+                ageYears
+            });
+            if (report && report.fmeaRisk) {
+                return report.fmeaRisk;
+            }
+        } catch (_) {}
+
+        return {
+            severityScore: 4,
+            occurrenceScore: 4,
+            detectionScore: 4,
+            rpn: 64,
+            riskLevel: 'LOW'
+        };
+    }
 }
 
 module.exports = new DiagnosticsEngine();
