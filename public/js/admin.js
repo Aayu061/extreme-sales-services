@@ -272,6 +272,9 @@ async function fetchRequests(silent = false) {
             if (hasChanged || !silent) {
                 renderTable();
                 renderZoneHeatmap(currentRequests);
+                if (typeof renderActivityFeed === 'function') renderActivityFeed(currentRequests);
+                if (typeof renderTodayStrip === 'function') renderTodayStrip();
+                if (typeof checkLowStock === 'function') checkLowStock();
             }
             fetchAnalytics();
             if (!silent && window.showToast) window.showToast('Telemetry and queue synchronized', 'info', 2000);
@@ -1251,17 +1254,7 @@ function renderActivityFeed(requests) {
     feed.innerHTML = items;
 }
 
-// Hook into fetchRequests to also update activity feed and today strip (Diff-Guarded)
-const _origFetchRequests = fetchRequests;
-fetchRequests = async function(silent = false) {
-    const prevSig = lastRequestsSignature;
-    await _origFetchRequests(silent);
-    if (lastRequestsSignature !== prevSig || !silent) {
-        renderActivityFeed(currentRequests);
-        renderTodayStrip();
-        checkLowStock();
-    }
-};
+// Activity feed and today strip are integrated directly in fetchRequests
 
 // ─── Dynamic Job Realized Revenue Calculator ─────────────
 function getRequestRealizedRevenue(req) {
