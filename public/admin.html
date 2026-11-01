@@ -80,6 +80,33 @@
       </div>
     </header>
 
+    <!-- CROSS-PLATFORM ECOSYSTEM NAVIGATION BAR -->
+    <div class="bg-[#FDFBF7] dark:bg-[#27211D] border-b border-[#B8AA98]/30 px-4 py-2.5 shadow-2xs">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-1.5 text-[#655448] dark:text-[#B8AA98] font-bold">
+          <span class="text-sm">🌐</span>
+          <span class="uppercase tracking-wider text-[11px]">Platform Ecosystem:</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <a href="service.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
+            <span>🛠️</span> <span>Service Booking Portal</span> <span class="text-[10px] text-stone-400">↗</span>
+          </a>
+          <a href="staff.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
+            <span>📡</span> <span>Staff Dispatch Console</span> <span class="text-[10px] text-stone-400">↗</span>
+          </a>
+          <a href="technician.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
+            <span>📱</span> <span>Technician Field App</span> <span class="text-[10px] text-stone-400">↗</span>
+          </a>
+          <a href="status.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
+            <span>📍</span> <span>Public Order Tracking</span> <span class="text-[10px] text-stone-400">↗</span>
+          </a>
+          <a href="amc.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
+            <span>🛡️</span> <span>AMC Contracts</span> <span class="text-[10px] text-stone-400">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
       <!-- PAGE HEADER -->
@@ -736,7 +763,7 @@
               datasets: [
                 {
                   label: 'New Bookings',
-                  data: trendData.bookings || [4, 6, 5, 8, 7, 9, 6],
+                  data: (trendData && trendData.bookings) || [0, 0, 0, 0, 0, 0, 0],
                   borderColor: COPPER,
                   backgroundColor: gradientCopper,
                   fill: true,
@@ -748,7 +775,7 @@
                 },
                 {
                   label: 'Completions',
-                  data: trendData.completions || [3, 4, 6, 7, 6, 8, 5],
+                  data: (trendData && trendData.completions) || [0, 0, 0, 0, 0, 0, 0],
                   borderColor: JADE,
                   backgroundColor: gradientJade,
                   fill: true,
@@ -805,19 +832,21 @@
             statusCounts.Completed || 0
           ];
 
-          // Mineral Semantic Statuses: Amber warning, Bronze assigned, Copper in-progress, Jade complete
-          const bgColors = [AMBER_QUEUE, BRONZE, COPPER, JADE];
+          const total = dataValues.reduce((a, b) => a + b, 0);
+          const finalLabels = total > 0 ? labels : ['Queue Empty'];
+          const finalData = total > 0 ? dataValues : [1];
+          const bgColors = total > 0 ? [AMBER_QUEUE, BRONZE, COPPER, JADE] : [isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'];
 
           window.chartStatusInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
-              labels: labels,
+              labels: finalLabels,
               datasets: [{
-                data: dataValues,
+                data: finalData,
                 backgroundColor: bgColors,
                 borderWidth: 3,
                 borderColor: isDark ? '#27211D' : '#FDFBF7',
-                hoverOffset: 6
+                hoverOffset: total > 0 ? 6 : 0
               }]
             },
             options: {
@@ -850,18 +879,18 @@
           window.chartWorkloadInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-              labels: workloadData.labels || ['Suresh', 'Ramesh', 'Deepak'],
+              labels: (workloadData && workloadData.labels && workloadData.labels.length > 0) ? workloadData.labels : ['No Technicians Active'],
               datasets: [
                 {
                   label: 'Active Jobs',
-                  data: workloadData.assigned || [2, 1, 0],
+                  data: (workloadData && workloadData.assigned && workloadData.assigned.length > 0) ? workloadData.assigned : [0],
                   backgroundColor: COPPER,
                   borderRadius: 6,
                   barPercentage: 0.6
                 },
                 {
                   label: 'Completed Jobs',
-                  data: workloadData.completed || [5, 4, 3],
+                  data: (workloadData && workloadData.completed && workloadData.completed.length > 0) ? workloadData.completed : [0],
                   backgroundColor: JADE,
                   borderRadius: 6,
                   barPercentage: 0.6
@@ -911,7 +940,7 @@
               labels: distData.labels || ['AC Repair', 'Servicing', 'Installation', 'Gas Refill', 'AMC'],
               datasets: [{
                 label: 'Total Requests',
-                data: distData.data || [12, 18, 5, 8, 14],
+                data: (distData && distData.data && distData.data.length > 0) ? distData.data : [0, 0, 0, 0, 0],
                 backgroundColor: [
                   COPPER,
                   BRONZE,

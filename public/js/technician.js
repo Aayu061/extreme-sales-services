@@ -21,7 +21,7 @@ try {
     if (rawUser) {
         const u = JSON.parse(rawUser);
         const badge = document.getElementById('techNameBadge');
-        if (badge) badge.innerText = u.name || 'Suresh Kumar';
+        if (badge) badge.innerText = u.name || 'Field Technician';
         if (u.id) currentTechId = u.id;
     }
 } catch(e) {}
@@ -580,7 +580,7 @@ function showReceipt(job, bill, notes) {
     });
     document.getElementById('receiptReqId').innerText = job.request_id || document.getElementById('modalTargetRequestId').value;
     
-    let techName = 'Suresh Kumar';
+    let techName = 'Field Technician';
     try {
         const u = JSON.parse(localStorage.getItem('ess_user') || '{}');
         if (u.name) techName = u.name;
