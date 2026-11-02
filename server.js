@@ -158,7 +158,8 @@ let systemUsers = [
 ];
 
 let serviceRequests = [];
-let products = [];
+const initialProducts = require('./server/data/products.js');
+let products = Array.isArray(initialProducts) ? [...initialProducts] : [];
 const amcPlans = [
     {
         id: "amc-1",
@@ -1387,7 +1388,7 @@ app.delete('/api/admin/products/:id', authMiddleware(['admin']), async (req, res
 
 app.put('/api/admin/products/:id', authMiddleware(['admin']), async (req, res) => {
     const id = req.params.id;
-    const { name, category, price, quantity, stock, condition, brand, description, image_url } = req.body;
+    const { name, category, price, quantity, stock, condition, brand, model, starRating, capacityTon, description, image_url } = req.body;
 
     const updateData = {};
     if (name !== undefined) {
@@ -1410,7 +1411,10 @@ app.put('/api/admin/products/:id', authMiddleware(['admin']), async (req, res) =
     }
     if (category !== undefined) updateData.category = category;
     if (condition !== undefined) updateData.condition = condition;
-    if (brand !== undefined) updateData.brand = brand.trim();
+    if (brand !== undefined) updateData.brand = String(brand).trim();
+    if (model !== undefined) updateData.model = String(model).trim();
+    if (starRating !== undefined) updateData.starRating = Number(starRating) || 3;
+    if (capacityTon !== undefined) updateData.capacityTon = Number(capacityTon) || 1.5;
     if (description !== undefined) updateData.description = description.trim();
     if (image_url !== undefined) updateData.image_url = image_url;
     updateData.updated_at = new Date().toISOString();
@@ -1624,6 +1628,63 @@ app.delete('/api/admin/amc-plans/:id', authMiddleware(['admin']), async (req, re
     if (idx !== -1) amcPlans.splice(idx, 1);
     fastCache.invalidateTag('amc');
     res.json({ success: true, message: "Plan deleted" });
+});
+
+app.put('/api/admin/amc-plans/:id', authMiddleware(['admin']), async (req, res) => {
+    const id = req.params.id;
+    const { name, price, services_per_year, description } = req.body || {};
+
+    const updateData = {};
+    if (name !== undefined) {
+        if (!name || typeof name !== 'string' || name.trim().length < 2) {
+            return res.status(400).json({ success: false, message: "Valid plan name of at least 2 characters is required." });
+        }
+        updateData.name = name.trim();
+    }
+    if (price !== undefined) {
+        const numPrice = Number(price);
+        if (!Number.isFinite(numPrice) || numPrice < 0) {
+            return res.status(400).json({ success: false, message: "Valid plan price is required." });
+        }
+        updateData.price = numPrice;
+    }
+    if (services_per_year !== undefined) {
+        const numServices = Number(services_per_year);
+        if (!Number.isInteger(numServices) || numServices <= 0 || numServices > 12) {
+            return res.status(400).json({ success: false, message: "Services per year must be an integer between 1 and 12." });
+        }
+        updateData.services_per_year = numServices;
+    }
+    if (description !== undefined) {
+        updateData.description = String(description).trim();
+    }
+    updateData.updated_at = new Date().toISOString();
+
+    if (isFirebaseMode) {
+        try {
+            const docRef = db.collection('amc_plans').doc(id);
+            const docSnap = await docRef.get();
+            if (!docSnap.exists) {
+                return res.status(404).json({ success: false, message: "AMC plan not found" });
+            }
+            await docRef.update(updateData);
+            fastCache.invalidateTag('amc');
+            return res.json({ 
+                success: true, 
+                message: "AMC plan updated successfully", 
+                plan: { id, ...docSnap.data(), ...updateData } 
+            });
+        } catch (e) {
+            return res.status(500).json({ success: false, message: "Failed to update AMC plan" });
+        }
+    }
+
+    const match = amcPlans.find(p => p.id === id);
+    if (!match) return res.status(404).json({ success: false, message: "AMC plan not found" });
+
+    Object.assign(match, updateData);
+    fastCache.invalidateTag('amc');
+    res.json({ success: true, message: "AMC plan updated successfully", plan: match });
 });
 
 app.get('/api/admin/customer-amc', authMiddleware(['admin', 'staff']), async (req, res) => {
