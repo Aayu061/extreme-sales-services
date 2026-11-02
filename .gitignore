@@ -1,3 +1,8 @@
+# Media & Video Recordings
+*.mp4
+*.mov
+*.avi
+
 # Dependencies
 node_modules/
 
