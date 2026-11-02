@@ -806,6 +806,16 @@
             <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Item Name</label>
             <input type="text" id="prodName" required placeholder="e.g. LG Dual Inverter 1.5 Ton Split AC" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Brand</label>
+              <input type="text" id="prodBrand" placeholder="e.g. Daikin, Voltas, LG" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Model Code</label>
+              <input type="text" id="prodModel" placeholder="e.g. MTKM50U" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            </div>
+          </div>
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Category</label>
@@ -901,6 +911,16 @@
             <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Item Name</label>
             <input type="text" id="editProdName" required placeholder="e.g. Daikin Inverter Split AC" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Brand</label>
+              <input type="text" id="editProdBrand" placeholder="e.g. Daikin, Voltas, LG" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Model Code</label>
+              <input type="text" id="editProdModel" placeholder="e.g. MTKM50U" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            </div>
+          </div>
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Category</label>
@@ -975,6 +995,44 @@
           <div class="flex justify-end gap-2 pt-2">
             <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition">Cancel</button>
             <button type="submit" class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition">Update Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- EDIT AMC CONTRACT MODAL -->
+    <div id="editAmcModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Edit AMC Contract Tier</h3>
+            <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-0.5">Update contract pricing, free maintenance visits, and deliverables</p>
+          </div>
+          <button type="button" onclick="document.getElementById('editAmcModal').classList.add('hidden')" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg">✕</button>
+        </div>
+        <form id="editAmcForm" class="space-y-3">
+          <input type="hidden" id="editAmcId">
+          <div>
+            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Tier Name</label>
+            <input type="text" id="editAmcName" required placeholder="e.g. Eco Saver Plan" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Yearly Price (₹)</label>
+              <input type="number" id="editAmcPrice" required min="0" placeholder="1200" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Free Services/Year</label>
+              <input type="number" id="editAmcServices" required min="1" max="12" placeholder="2" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Deliverables &amp; Coverage</label>
+            <textarea id="editAmcDesc" rows="3" required placeholder="Service deliverables, chemical wet washes, breakdown coverage..." class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"></textarea>
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="document.getElementById('editAmcModal').classList.add('hidden')" class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition">Cancel</button>
+            <button type="submit" class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition">Update Tier</button>
           </div>
         </form>
       </div>

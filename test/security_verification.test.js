@@ -602,6 +602,78 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
         assert.match(data.message, /not found/i);
     });
 
+    test('PUT /api/admin/amc-plans/:id RBAC, input validation and update mechanics', async () => {
+        const adminToken = jwt.sign(
+            { id: 'admin-1', role: 'admin', email: 'admin@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+        const techToken = jwt.sign(
+            { id: 'tech-1', role: 'technician', email: 'tech@test.com' },
+            testSecret,
+            { algorithm: 'HS256', expiresIn: '1h' }
+        );
+
+        const plansRes = await fetch(`${baseUrl}/api/amc-plans`);
+        const plansData = await plansRes.json();
+        assert.ok(plansData.success && plansData.plans.length > 0);
+        const targetPlanId = plansData.plans[0].id;
+
+        // 1. Unauthenticated rejects with 401
+        const unauthRes = await fetch(`${baseUrl}/api/admin/amc-plans/${targetPlanId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ price: 1500 })
+        });
+        assert.equal(unauthRes.status, 401);
+
+        // 2. Non-admin (technician) rejects with 403
+        const techRes = await fetch(`${baseUrl}/api/admin/amc-plans/${targetPlanId}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${techToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ price: 1500 })
+        });
+        assert.equal(techRes.status, 403);
+
+        // 3. Admin non-existent plan returns 404
+        const notFoundRes = await fetch(`${baseUrl}/api/admin/amc-plans/non-existent-amc-9999`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ price: 1500 })
+        });
+        assert.equal(notFoundRes.status, 404);
+
+        // 4. Admin invalid input (negative price) returns 400
+        const invalidRes = await fetch(`${baseUrl}/api/admin/amc-plans/${targetPlanId}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ price: -500 })
+        });
+        assert.equal(invalidRes.status, 400);
+
+        // 5. Admin valid update succeeds with 200 OK
+        const validRes = await fetch(`${baseUrl}/api/admin/amc-plans/${targetPlanId}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ price: 1499, services_per_year: 3 })
+        });
+        assert.equal(validRes.status, 200);
+        const validData = await validRes.json();
+        assert.equal(validData.success, true);
+    });
+
     test('PATCH /api/admin/assign-technician rejects assigning non-technician and terminal tickets', async () => {
         const adminToken = jwt.sign(
             { id: 'admin-1', role: 'admin', email: 'admin@test.com' },

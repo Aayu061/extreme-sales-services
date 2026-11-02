@@ -1105,6 +1105,10 @@ function openEditProductModal(id) {
     editProductImageData = '';
     document.getElementById('editProdId').value = product.id;
     document.getElementById('editProdName').value = product.name;
+    const elBrand = document.getElementById('editProdBrand');
+    if (elBrand) elBrand.value = product.brand || '';
+    const elModel = document.getElementById('editProdModel');
+    if (elModel) elModel.value = product.model || '';
     document.getElementById('editProdCategory').value = product.category;
     document.getElementById('editProdPrice').value = product.price;
     document.getElementById('editProdQuantity').value = product.stock !== undefined ? product.stock : 5;
@@ -1133,6 +1137,10 @@ document.getElementById('editProductForm')?.addEventListener('submit', async (e)
         description: document.getElementById('editProdDesc').value || '',
         condition: document.getElementById('editProdCategory').value === 'used_ac' ? 'Certified 2nd Hand' : 'Brand New'
     };
+    const elBrand = document.getElementById('editProdBrand');
+    if (elBrand && elBrand.value.trim()) payload.brand = elBrand.value.trim();
+    const elModel = document.getElementById('editProdModel');
+    if (elModel && elModel.value.trim()) payload.model = elModel.value.trim();
     if (finalImageUrl !== undefined) {
         payload.image_url = finalImageUrl;
     }
@@ -1165,6 +1173,8 @@ document.getElementById('addProductForm')?.addEventListener('submit', async (e) 
         category: document.getElementById('prodCategory').value,
         price: document.getElementById('prodPrice').value,
         quantity: document.getElementById('prodQuantity').value || 5,
+        brand: document.getElementById('prodBrand')?.value || 'Brand',
+        model: document.getElementById('prodModel')?.value || '',
         image_url: finalImageUrl,
         description: document.getElementById('prodDesc').value || '',
         condition: document.getElementById('prodCategory').value === 'used_ac' ? 'Certified 2nd Hand' : 'Brand New'
@@ -1207,6 +1217,8 @@ async function deleteProduct(id) {
 // ═══════════════════════════════════════════════════════════
 // 5. AMC PLANS & SUBSCRIPTIONS
 // ═══════════════════════════════════════════════════════════
+let loadedAmcPlans = [];
+
 async function fetchAmcData() {
     const plansGrid = document.getElementById('amcPlansGridAdmin');
     const amcTable = document.getElementById('amcTableBody');
@@ -1215,6 +1227,7 @@ async function fetchAmcData() {
         const resPlans = await fetch(`${API_BASE}/api/amc-plans`);
         const pData = await resPlans.json();
         if (pData.success && plansGrid) {
+            loadedAmcPlans = pData.plans || [];
             plansGrid.innerHTML = '';
             pData.plans.forEach(p => {
                 const div = document.createElement('div');
@@ -1225,15 +1238,20 @@ async function fetchAmcData() {
                 div.innerHTML = `
                     <div>
                         <h4 class="font-black text-[#342C27] dark:text-[#FDFBF7] text-base">${safeName}</h4>
-                        <div class="text-2xl font-black text-[#A05B3A] dark:text-[#E4C99A] mt-2">₹${Number(p.price) || 0}<span class="text-xs text-[#655448] dark:text-[#B8AA98] font-normal">/yr</span></div>
+                        <div class="text-2xl font-black text-[#A05B3A] dark:text-[#E4C99A] mt-2">₹${(Number(p.price) || 0).toLocaleString('en-IN')}<span class="text-xs text-[#655448] dark:text-[#B8AA98] font-normal">/yr</span></div>
                         <span class="inline-block mt-2 bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30 text-xs font-extrabold px-3 py-1 rounded-full">
                             ${Number(p.services_per_year) || 3} Free Services/Year
                         </span>
                         <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-3 italic">${safeDesc}</p>
                     </div>
-                    <button onclick="deleteAmcPlan('${safeId}')" class="mt-4 text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wider transition">
-                        Delete Tier
-                    </button>
+                    <div class="mt-4 pt-3 border-t border-[#B8AA98]/20 dark:border-white/10 flex items-center justify-center gap-2">
+                        <button onclick="openEditAmcModal('${safeId}')" class="text-[#A05B3A] hover:text-[#884728] border border-[#A05B3A]/30 hover:bg-[#A05B3A]/10 text-xs font-bold px-3 py-1 rounded-lg transition flex items-center gap-1">
+                            <span>✏️</span> Edit
+                        </button>
+                        <button onclick="deleteAmcPlan('${safeId}')" class="text-red-500 hover:text-red-700 border border-red-300/40 hover:bg-red-500/10 text-xs font-bold px-3 py-1 rounded-lg transition">
+                            Delete Tier
+                        </button>
+                    </div>
                 `;
                 plansGrid.appendChild(div);
             });
@@ -1303,6 +1321,49 @@ async function deleteAmcPlan(id) {
     await fetch(`${API_BASE}/api/admin/amc-plans/${id}`, { method: 'DELETE', headers: authHeaders });
     fetchAmcData();
 }
+
+function openEditAmcModal(id) {
+    const plan = loadedAmcPlans.find(p => p.id === id);
+    if (!plan) return;
+
+    document.getElementById('editAmcId').value = plan.id;
+    document.getElementById('editAmcName').value = plan.name || '';
+    document.getElementById('editAmcPrice').value = plan.price !== undefined ? plan.price : 0;
+    document.getElementById('editAmcServices').value = plan.services_per_year !== undefined ? plan.services_per_year : 3;
+    document.getElementById('editAmcDesc').value = plan.description || '';
+
+    document.getElementById('editAmcModal')?.classList.remove('hidden');
+}
+window.openEditAmcModal = openEditAmcModal;
+
+document.getElementById('editAmcForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editAmcId').value;
+    const payload = {
+        name: document.getElementById('editAmcName').value.trim(),
+        price: Number(document.getElementById('editAmcPrice').value),
+        services_per_year: Number(document.getElementById('editAmcServices').value),
+        description: document.getElementById('editAmcDesc').value.trim()
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/api/admin/amc-plans/${id}`, {
+            method: 'PUT',
+            headers: authHeaders,
+            body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+            document.getElementById('editAmcModal')?.classList.add('hidden');
+            if (window.showToast) window.showToast(`Updated "${payload.name}" successfully!`, "success");
+            fetchAmcData();
+        } else {
+            const errData = await res.json().catch(() => ({}));
+            if (window.showToast) window.showToast(errData.message || "Failed to update AMC tier", "error");
+        }
+    } catch (err) {
+        if (window.showToast) window.showToast("Network error updating AMC tier", "error");
+    }
+});
 
 async function activateAmc(id) {
     const services = prompt("Confirm number of free services for this 1-year contract:", "3");
