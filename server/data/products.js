@@ -1,6 +1,7 @@
 /**
  * Extreme Sales & Services - 15 Verified Air Conditioners Catalog
  * 5 Top Brands in India x 3 Verified Models Each
+ * All authentic product images stored locally in /images/products/
  */
 
 const products = [
@@ -19,7 +20,7 @@ const products = [
     capacityTon: 1.5,
     description: "Dew Clean Technology, 3D Airflow, PM2.5 Filter, Triple Display, 100% Copper Condenser with Anti-Corrosion Treatment.",
     specs: "Cooling Capacity: 5.28 kW | Power Consumption: 785 kWh/yr | Refrigerant: R-32 | Warranty: 1 Yr Comprehensive + 10 Yrs Compressor",
-    image_url: "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/daikin-mtkm50u.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -36,7 +37,7 @@ const products = [
     capacityTon: 1.0,
     description: "Coanda Airflow for draft-free comfort, Power Chill Operation, PM2.5 Air Filter, 100% Grooved Copper Tubes.",
     specs: "Cooling Capacity: 3.52 kW | Power Consumption: 680 kWh/yr | Refrigerant: R-32 | Stabilizer Free (130V - 285V)",
-    image_url: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/daikin-ftky35u.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -53,7 +54,7 @@ const products = [
     capacityTon: 2.0,
     description: "Patented Neo Swing Inverter Compressor, Dual Flap 3D Airflow for Large Living Spaces up to 260 sq.ft, Heavy Duty Tropical Cooling.",
     specs: "Cooling Capacity: 7.1 kW | Power Consumption: 980 kWh/yr | Max Ambient: 54°C | 100% Pure Copper",
-    image_url: "https://images.unsplash.com/photo-1617103996702-96ff29b1c467?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/daikin-ftkm71u.jpg",
     created_at: new Date().toISOString()
   },
 
@@ -72,7 +73,7 @@ const products = [
     capacityTon: 1.5,
     description: "4-in-1 Adjustable Cooling Modes, Superdry Moisture Removal Mode, High Ambient Cooling up to 52°C, Anti-Microbial Air Protection.",
     specs: "Cooling Capacity: 5.1 kW | Power Consumption: 751 kWh/yr | Dual Temperature Display | 100% Inner Grooved Copper",
-    image_url: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/voltas-185v.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -89,7 +90,7 @@ const products = [
     capacityTon: 1.0,
     description: "Turbo Cooling with instantaneous chill, Eco Power Save Mode, Sleep Mode, Multi-Stage Filtration with CO2 reduction.",
     specs: "Cooling Capacity: 3.4 kW | Power Consumption: 660 kWh/yr | Low Noise Operation: 28 dB | 100% Copper",
-    image_url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/voltas-123v.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -106,7 +107,7 @@ const products = [
     capacityTon: 1.5,
     description: "2-in-1 Convertible Inverter Window AC, Self-Diagnosis, High Ambient Cooling up to 50°C, Memory Restart, Easy Clean Filter.",
     specs: "Cooling Capacity: 4.95 kW | Eco-Friendly R32 Refrigerant | Energy Efficient Rotary Compressor",
-    image_url: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/voltas-183v-window.jpg",
     created_at: new Date().toISOString()
   },
 
@@ -125,7 +126,7 @@ const products = [
     capacityTon: 1.5,
     description: "AI DUAL Inverter with sensory intelligence, 6-in-1 AI Convertible Cooling, Ocean Black Fin anti-corrosion, Diet Mode, HD Virus Filter.",
     specs: "Cooling Capacity: 5.0 kW | Power Consumption: 685 kWh/yr | Dual Inverter Rotary | Ocean Black Protection",
-    image_url: "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/lg-ts-q19ynze.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -142,7 +143,7 @@ const products = [
     capacityTon: 1.0,
     description: "6-in-1 Convertible AI Cooling, Ez Clean Filter with quick rinse latch, 100% Copper with Ocean Black Protection, Low Gas Detection Sensor.",
     specs: "Cooling Capacity: 3.45 kW | Power Consumption: 571 kWh/yr | R-32 Green Refrigerant | Smart Diagnosis",
-    image_url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/lg-ts-q14ynxe.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -159,7 +160,7 @@ const products = [
     capacityTon: 2.0,
     description: "Fast Cooling Vane with 15m Long Distance Air Throw, AI Convertible 6-in-1, ADC Safety Sensor, 100% Copper Condenser.",
     specs: "Cooling Capacity: 6.5 kW | High Airflow: 850 CFM | Super Silent 31 dB | 10 Yrs Compressor Warranty",
-    image_url: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/lg-ts-q24enxe.jpg",
     created_at: new Date().toISOString()
   },
 
@@ -178,7 +179,7 @@ const products = [
     capacityTon: 1.5,
     description: "5-in-1 Convertible Inverter, Precision Cooling to 0.5°C, Turbo Cool, Acoustic Jacket Compressor insulation, Anti-Corrosive Blue Fins.",
     specs: "Cooling Capacity: 5.05 kW | Power Consumption: 732 kWh/yr | Self Clean Tech | 100% Copper Tubes",
-    image_url: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/bluestar-ia518vnu.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -195,7 +196,7 @@ const products = [
     capacityTon: 1.0,
     description: "4-in-1 Convertible Cooling, Self-Clean Technology to eliminate coil mold, Anti-Corrosive Blue Fins, Hidden Digital Temperature Display.",
     specs: "Cooling Capacity: 3.4 kW | Power Consumption: 658 kWh/yr | Eco Mode | High Reliability PCB",
-    image_url: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/bluestar-ia312ynu.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -212,7 +213,7 @@ const products = [
     capacityTon: 2.0,
     description: "Heavy Duty Dual Rotor Inverter Compressor, 5-in-1 Variable Cooling, High Volume 920 CFM Air Throw for Commercial Halls and Master Suites.",
     specs: "Cooling Capacity: 6.8 kW | Power Consumption: 940 kWh/yr | 100% Grooved Copper | R-32 Eco Refrigerant",
-    image_url: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/bluestar-ia424ynu.jpg",
     created_at: new Date().toISOString()
   },
 
@@ -231,7 +232,7 @@ const products = [
     capacityTon: 1.5,
     description: "Miraie IoT App & Voice Control (Alexa/Google Assistant), 7-in-1 Convertible AI Mode, PM 0.1 Air Purification Filter, Eco Tough Casing.",
     specs: "Cooling Capacity: 5.1 kW | Power Consumption: 742 kWh/yr | Hidden Display | Shield Blu+ Condenser",
-    image_url: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/panasonic-nu18yky5w.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -248,7 +249,7 @@ const products = [
     capacityTon: 1.0,
     description: "Miraie IoT Connected, Shield Blu+ Anti-Corrosion Coating, Custom Sleep Temperature Profiles, 100% Copper Condenser.",
     specs: "Cooling Capacity: 3.45 kW | Power Consumption: 648 kWh/yr | Stabilizer Free Operation | Smart Diagnosis",
-    image_url: "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/panasonic-su12yky3w.jpg",
     created_at: new Date().toISOString()
   },
   {
@@ -265,7 +266,7 @@ const products = [
     capacityTon: 2.0,
     description: "nanoeX Active Air Sterilization (99.9% virus and bacteria inhibition), Jetstream 45ft Ultra-Long Airflow, Aerowings Dual Flaps.",
     specs: "Cooling Capacity: 7.0 kW | Power Consumption: 960 kWh/yr | Premium Matte Finish | Twin Rotary Inverter",
-    image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+    image_url: "/images/products/panasonic-xu24ykyf.jpg",
     created_at: new Date().toISOString()
   }
 ];

@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "seed:admin": "node scripts/seedAdmin.js",
     "seed:products": "node scripts/seedProducts.js",
+    "download:images": "node scripts/downloadAllAcImages.js",
     "seed:users": "node scripts/seedAllUsers.js",
     "seed:amc": "node scripts/seedAmcPlans.js",
     "update:admin": "node scripts/updateAdmin.js",
