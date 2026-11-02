@@ -24,3 +24,4 @@ This directory stores offline/local assets for AC systems and spare parts.
 2. In the Admin modal, switch to **Image URL** and type:
    `/images/products/your-image-name.jpg`
 3. Click **Save Product**.
+
