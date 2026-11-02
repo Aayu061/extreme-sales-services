@@ -806,7 +806,7 @@
             <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Item Name</label>
             <input type="text" id="prodName" required placeholder="e.g. LG Dual Inverter 1.5 Ton Split AC" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Category</label>
               <select id="prodCategory" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
@@ -819,15 +819,58 @@
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Price (₹)</label>
               <input type="number" id="prodPrice" required placeholder="29990" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Initial Stock</label>
               <input type="number" id="prodQuantity" value="5" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
-            <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Image URL</label>
-              <input type="url" id="prodImage" placeholder="https://images.unsplash.com/..." class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+          </div>
+
+          <!-- PRODUCT PHOTO UPLOAD FROM PC / URL -->
+          <div class="border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 rounded-xl p-3 bg-[#F2EDE3]/40 dark:bg-[#1A1412]/40">
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase">Product Image</label>
+              <div class="flex items-center bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/30 rounded-lg p-0.5 text-[10px] font-bold">
+                <button type="button" id="tabAddImgFile" onclick="switchProductImgMode('add', 'file')" class="px-2.5 py-1 rounded-md bg-[#A05B3A] text-white transition flex items-center gap-1 shadow-xs">
+                  <span>📁</span> From PC
+                </button>
+                <button type="button" id="tabAddImgUrl" onclick="switchProductImgMode('add', 'url')" class="px-2.5 py-1 rounded-md text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition flex items-center gap-1">
+                  <span>🔗</span> Image URL
+                </button>
+              </div>
+            </div>
+
+            <!-- Upload from PC Dropzone -->
+            <div id="addImgFileMode">
+              <input type="file" id="prodImageFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="hidden">
+              <div id="addImgDropzone" onclick="document.getElementById('prodImageFile').click()" class="border-2 border-dashed border-[#B8AA98]/60 dark:border-[#B8AA98]/40 hover:border-[#A05B3A] dark:hover:border-[#E4C99A] rounded-xl p-3.5 text-center cursor-pointer transition bg-white/70 dark:bg-[#1A1412]/60 hover:bg-[#A05B3A]/5 group">
+                <div class="flex flex-col items-center justify-center gap-1">
+                  <div class="w-8 h-8 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center text-sm group-hover:scale-110 transition">
+                    📸
+                  </div>
+                  <p class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7]">Click to browse image from your PC</p>
+                  <p class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Select any photo from your computer (JPG, PNG, WEBP)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Image URL Input Mode -->
+            <div id="addImgUrlMode" class="hidden">
+              <input type="text" id="prodImage" placeholder="https://images.unsplash.com/... or /images/products/my-ac.jpg" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1">Paste web image link or local path (e.g. <code class="text-[#A05B3A]">/images/products/my-ac.jpg</code>)</p>
+            </div>
+
+            <!-- Image Preview Box -->
+            <div id="addImgPreviewBox" class="hidden mt-2 relative rounded-lg overflow-hidden border border-[#B8AA98]/40 bg-white/80 dark:bg-[#1A1412]/80 flex items-center justify-between p-2">
+              <div class="flex items-center gap-2.5 overflow-hidden">
+                <img id="addImgPreviewThumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Preview" class="w-12 h-12 object-cover rounded-md border border-[#B8AA98]/30 flex-shrink-0 bg-[#F2EDE3]">
+                <div class="text-left overflow-hidden">
+                  <div id="addImgPreviewName" class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7] truncate">selected-image.jpg</div>
+                  <div id="addImgPreviewMeta" class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Ready to save</div>
+                </div>
+              </div>
+              <button type="button" onclick="clearProductImage('add')" class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-500/10 px-2 py-1 rounded transition flex-shrink-0">
+                ✕ Remove
+              </button>
             </div>
           </div>
           <div>
@@ -858,7 +901,7 @@
             <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Item Name</label>
             <input type="text" id="editProdName" required placeholder="e.g. Daikin Inverter Split AC" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Category</label>
               <select id="editProdCategory" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
@@ -871,15 +914,58 @@
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Price (₹)</label>
               <input type="number" id="editProdPrice" required placeholder="29990" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Stock Quantity</label>
               <input type="number" id="editProdQuantity" required class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
-            <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Image URL</label>
-              <input type="url" id="editProdImage" placeholder="https://images.unsplash.com/..." class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+          </div>
+
+          <!-- PRODUCT PHOTO UPLOAD FROM PC / URL (EDIT) -->
+          <div class="border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 rounded-xl p-3 bg-[#F2EDE3]/40 dark:bg-[#1A1412]/40">
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase">Product Image</label>
+              <div class="flex items-center bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/30 rounded-lg p-0.5 text-[10px] font-bold">
+                <button type="button" id="tabEditImgFile" onclick="switchProductImgMode('edit', 'file')" class="px-2.5 py-1 rounded-md bg-[#A05B3A] text-white transition flex items-center gap-1 shadow-xs">
+                  <span>📁</span> From PC
+                </button>
+                <button type="button" id="tabEditImgUrl" onclick="switchProductImgMode('edit', 'url')" class="px-2.5 py-1 rounded-md text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition flex items-center gap-1">
+                  <span>🔗</span> Image URL
+                </button>
+              </div>
+            </div>
+
+            <!-- Upload from PC Dropzone (Edit) -->
+            <div id="editImgFileMode">
+              <input type="file" id="editProdImageFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="hidden">
+              <div id="editImgDropzone" onclick="document.getElementById('editProdImageFile').click()" class="border-2 border-dashed border-[#B8AA98]/60 dark:border-[#B8AA98]/40 hover:border-[#A05B3A] dark:hover:border-[#E4C99A] rounded-xl p-3.5 text-center cursor-pointer transition bg-white/70 dark:bg-[#1A1412]/60 hover:bg-[#A05B3A]/5 group">
+                <div class="flex flex-col items-center justify-center gap-1">
+                  <div class="w-8 h-8 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center text-sm group-hover:scale-110 transition">
+                    📸
+                  </div>
+                  <p class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7]">Click to choose a new image from your PC</p>
+                  <p class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Select any photo from your computer (JPG, PNG, WEBP)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Image URL Input Mode (Edit) -->
+            <div id="editImgUrlMode" class="hidden">
+              <input type="text" id="editProdImage" placeholder="https://images.unsplash.com/... or /images/products/my-ac.jpg" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1">Paste web image link or local path (e.g. <code class="text-[#A05B3A]">/images/products/my-ac.jpg</code>)</p>
+            </div>
+
+            <!-- Image Preview Box (Edit) -->
+            <div id="editImgPreviewBox" class="hidden mt-2 relative rounded-lg overflow-hidden border border-[#B8AA98]/40 bg-white/80 dark:bg-[#1A1412]/80 flex items-center justify-between p-2">
+              <div class="flex items-center gap-2.5 overflow-hidden">
+                <img id="editImgPreviewThumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Preview" class="w-12 h-12 object-cover rounded-md border border-[#B8AA98]/30 flex-shrink-0 bg-[#F2EDE3]">
+                <div class="text-left overflow-hidden">
+                  <div id="editImgPreviewName" class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7] truncate">current-image.jpg</div>
+                  <div id="editImgPreviewMeta" class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Current photo</div>
+                </div>
+              </div>
+              <button type="button" onclick="clearProductImage('edit')" class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-500/10 px-2 py-1 rounded transition flex-shrink-0">
+                ✕ Remove
+              </button>
             </div>
           </div>
           <div>

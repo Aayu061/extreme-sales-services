@@ -55,9 +55,9 @@ app.use(cors({
     credentials: true
 }));
 
-// Strict request body parsing limits
-app.use(express.json({ limit: '100kb' }));
-app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+// Strict request body parsing limits (supports client-optimized product image uploads from PC)
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Production Security Headers
 app.use((req, res, next) => {
