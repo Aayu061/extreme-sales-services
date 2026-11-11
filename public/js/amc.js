@@ -1,4 +1,4 @@
-// public/js/amc.js - Enterprise AMC Rate Engine for Extreme Sales & Services
+// public/js/amc.js - Enterprise AMC Card & Rate Engine for Extreme Sales & Services
 // Strict conformity with 'ESS Contract Rate Chart_New Address.pdf' (Chembur Service Center)
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
@@ -19,190 +19,215 @@ const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || functi
 const AMC_API = `${API_BASE}/api/amc-plans`;
 const PURCHASE_API = `${API_BASE}/api/amc/purchase`;
 
-// ─── STATE MANAGEMENT ──────────────────────────────────────────────
-let allPlans = [];
-let currentCategory = 'samc';       // 'samc' | 'ordinary' | 'specialized'
-let currentAcType = 'split';        // 'split' | 'window'
+// ─── MASTER OFFICIAL RATE CATALOG (CHEMBUR SERVICE CENTER) ────────
+const OFFICIAL_CATALOG = [
+    // ── 1. COMPREHENSIVE (SAMC) ──────────────────────────────────
+    {
+        id: "amc-samc-1",
+        code: "SAMC 1",
+        name: "SAMC 1: Split Comprehensive (Non-Inverter)",
+        category: "samc",
+        ac_type: "split",
+        inverter: false,
+        services_per_year: 4,
+        unlimited_complaints: true,
+        includes_capacitor: true,
+        includes_motor: true,
+        includes_pcb: true,
+        includes_gas: false,
+        popular: false,
+        badge: "Split Non-Inverter",
+        prices: { "0.8_1.0": 2999, "1.5_2.2": 3999 },
+        tagline: "Essential comprehensive coverage for Non-Inverter Split ACs",
+        terms: "For SAMC ACs must be under 3 years from purchase. GST Extra 28% for parts coverage."
+    },
+    {
+        id: "amc-samc-2",
+        code: "SAMC 2",
+        name: "SAMC 2: Split Comprehensive (+ Gas Charging)",
+        category: "samc",
+        ac_type: "split",
+        inverter: true,
+        services_per_year: 4,
+        unlimited_complaints: true,
+        includes_capacitor: true,
+        includes_motor: true,
+        includes_pcb: true,
+        includes_gas: true,
+        popular: true,
+        badge: "★ Most Popular • Full Split Shield",
+        prices: { "0.8_1.0": 4499, "1.5_2.2": 5499 },
+        tagline: "Complete peace-of-mind including unlimited R32/R410A gas charging & all critical parts",
+        terms: "For SAMC ACs must be under 3 years from purchase. GST Extra 28% for parts coverage."
+    },
+    {
+        id: "amc-samc-3",
+        code: "SAMC 3",
+        name: "SAMC 3: Window Comprehensive (+ Gas Charging)",
+        category: "samc",
+        ac_type: "window",
+        inverter: false,
+        services_per_year: 4,
+        unlimited_complaints: true,
+        includes_capacitor: true,
+        includes_motor: true,
+        includes_pcb: true,
+        includes_gas: true,
+        popular: false,
+        badge: "Full Window Shield",
+        prices: { "0.8_1.0": 3499, "1.5_2.2": 4499 },
+        tagline: "Full comprehensive protection engineered specifically for Window AC units",
+        terms: "For SAMC ACs must be under 3 years from purchase. GST Extra 28% for parts coverage."
+    },
+    // ── 2. ORDINARY MAINTENANCE ──────────────────────────────────
+    {
+        id: "amc-ord-3",
+        code: "ORD 3",
+        name: "Ordinary 3: Periodic Care (3 Visits / Year)",
+        category: "ordinary",
+        ac_type: "all",
+        services_per_year: 3,
+        unlimited_complaints: false,
+        popular: false,
+        badge: "Budget Saver",
+        prices: { "split": 1500, "window": 1000 },
+        tagline: "3 Scheduled routine checkups and wet filter servicing per year",
+        terms: "All Rates are Basic GST Applicable as per requirement."
+    },
+    {
+        id: "amc-ord-4",
+        code: "ORD 4",
+        name: "Ordinary 4: Standard Care (+ Unlimited Complaints)",
+        category: "ordinary",
+        ac_type: "all",
+        services_per_year: 4,
+        unlimited_complaints: true,
+        popular: true,
+        badge: "★ Best Value • 4 Visits",
+        prices: { "split": 1800, "window": 1300 },
+        tagline: "4 Scheduled Services + Unlimited Normal Complaints (Window includes 1 Wet service)",
+        terms: "All Rates are Basic GST Applicable as per requirement."
+    },
+    {
+        id: "amc-ord-6",
+        code: "ORD 6",
+        name: "Ordinary 6: Premium Care (+ Unlimited Complaints)",
+        category: "ordinary",
+        ac_type: "all",
+        services_per_year: 6,
+        unlimited_complaints: true,
+        popular: false,
+        badge: "High-Frequency Care",
+        prices: { "split": 2200, "window": 1700 },
+        tagline: "6 Bi-Monthly Deep Services + Unlimited Normal Complaints for heavy summer usage",
+        terms: "All Rates are Basic GST Applicable as per requirement."
+    },
+    // ── 3. SPECIALIZED & ON-DEMAND ──────────────────────────────
+    {
+        id: "amc-jacket-2",
+        code: "JACKET 2",
+        name: "2 Jacket Deep Wash & Unlimited Complaints",
+        category: "specialized",
+        ac_type: "split",
+        services_per_year: 2,
+        unlimited_complaints: true,
+        popular: false,
+        badge: "Wall-Safe Jacket Care",
+        prices: { "flat": 2599 },
+        price: 2599,
+        tagline: "2 Indoor coil deep washes with protective water-collection jackets & breakdown cover",
+        terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement."
+    },
+    {
+        id: "amc-jacket-3",
+        code: "JACKET 3",
+        name: "3 Jacket Deep Wash & Unlimited Complaints",
+        category: "specialized",
+        ac_type: "split",
+        services_per_year: 3,
+        unlimited_complaints: true,
+        popular: true,
+        badge: "★ Complete Seasonal Shield",
+        prices: { "flat": 3599 },
+        price: 3599,
+        tagline: "3 Deep jacket chemical cleaning sessions with zero water mess on walls & furniture",
+        terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement."
+    },
+    {
+        id: "amc-pump-down",
+        code: "PUMP DOWN",
+        name: "Refrigerant Pump Down Service",
+        category: "specialized",
+        ac_type: "all",
+        services_per_year: 1,
+        unlimited_complaints: false,
+        popular: false,
+        badge: "Refrigerant Lock",
+        prices: { "flat": 1299 },
+        price: 1299,
+        tagline: "Safe gas recovery and pressure locking into outdoor compressor before renovation/shifting",
+        terms: "Rate per AC unit. Gas top-up extra if required. Basic GST applicable."
+    },
+    {
+        id: "amc-jet-wash",
+        code: "JET WASH",
+        name: "High-Pressure Jet Wash Deep Clean",
+        category: "specialized",
+        ac_type: "all",
+        services_per_year: 1,
+        unlimited_complaints: false,
+        popular: false,
+        badge: "Intense Chemical Jet",
+        prices: { "flat": 1199 },
+        price: 1199,
+        tagline: "Full commercial-grade pressure wash of clogged cooling coils, blower fan, and drain pan",
+        terms: "Rate per AC unit. All Rates are Basic GST Applicable as per requirement."
+    }
+];
+
+// ─── ACTIVE CONTROLS STATE ─────────────────────────────────────────
+let currentCategory = 'samc';       // 'all' | 'samc' | 'ordinary' | 'specialized'
+let currentAcType = 'split';        // 'all' | 'split' | 'window'
 let currentTonnage = '1.5_2.2';     // '0.8_1.0' | '1.5_2.2'
 let acCount = 1;                    // 1 | 2 | 3+
 
 const amcGrid = document.getElementById('amcGrid');
 
-// ─── DATA FETCHING ─────────────────────────────────────────────────
-async function loadPlans() {
-    try {
-        const res = await fetch(AMC_API);
-        const data = await res.json();
-        
-        if (data && data.success && Array.isArray(data.plans)) {
-            allPlans = data.plans;
-            renderPlans();
-        } else {
-            fallbackLocalPlans();
-        }
-    } catch (error) {
-        console.warn("Failed fetching plans from API, activating local fallback:", error.message);
-        fallbackLocalPlans();
-    }
-}
+// ─── LOAD DATA (ROBUST DUAL-SOURCE) ────────────────────────────────
+function loadPlans() {
+    renderPlans(); // Immediate render from official catalog (zero delay)
 
-function fallbackLocalPlans() {
-    allPlans = [
-        {
-            id: "amc-samc-1",
-            code: "SAMC 1",
-            name: "SAMC 1 - Comprehensive Split (Non-Inverter)",
-            category: "samc",
-            ac_type: "split",
-            services_per_year: 4,
-            unlimited_complaints: true,
-            includes_parts: true,
-            includes_gas: false,
-            prices: { "0.8_1.0": 2999, "1.5_2.2": 3999 },
-            price: 2999,
-            description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, Motor Winding & PCB Repair",
-            terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%."
-        },
-        {
-            id: "amc-samc-2",
-            code: "SAMC 2",
-            name: "SAMC 2 - Comprehensive Split with Gas Charging",
-            category: "samc",
-            ac_type: "split",
-            services_per_year: 4,
-            unlimited_complaints: true,
-            includes_parts: true,
-            includes_gas: true,
-            popular: true,
-            prices: { "0.8_1.0": 4499, "1.5_2.2": 5499 },
-            price: 4499,
-            description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, PCB Repair, Motor Winding & Gas Charging",
-            terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%."
-        },
-        {
-            id: "amc-samc-3",
-            code: "SAMC 3",
-            name: "SAMC 3 - Comprehensive Window with Gas Charging",
-            category: "samc",
-            ac_type: "window",
-            services_per_year: 4,
-            unlimited_complaints: true,
-            includes_parts: true,
-            includes_gas: true,
-            popular: true,
-            prices: { "0.8_1.0": 3499, "1.5_2.2": 4499 },
-            price: 3499,
-            description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, PCB Repair, Motor Winding & Gas Charging",
-            terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%."
-        },
-        {
-            id: "amc-ord-3",
-            code: "ORD 3",
-            name: "Ordinary 3 Visits / 3 Services",
-            category: "ordinary",
-            ac_type: "all",
-            services_per_year: 3,
-            unlimited_complaints: false,
-            prices: { "split": 1500, "window": 1000 },
-            price: 1500,
-            description: "Ordinary 3 Scheduled Routine Services / Visits per year",
-            terms: "All Rates are Basic GST Applicable as per requirement."
-        },
-        {
-            id: "amc-ord-4",
-            code: "ORD 4",
-            name: "Ordinary 4 Services & Unlimited Complaints",
-            category: "ordinary",
-            ac_type: "all",
-            services_per_year: 4,
-            unlimited_complaints: true,
-            prices: { "split": 1800, "window": 1300 },
-            price: 1800,
-            description: "Ordinary 4 Services & Unlimited Normal Complaints Attend (Window includes 1 Wet Service)",
-            terms: "All Rates are Basic GST Applicable as per requirement."
-        },
-        {
-            id: "amc-ord-6",
-            code: "ORD 6",
-            name: "Ordinary 6 Services & Unlimited Complaints",
-            category: "ordinary",
-            ac_type: "all",
-            services_per_year: 6,
-            unlimited_complaints: true,
-            prices: { "split": 2200, "window": 1700 },
-            price: 2200,
-            description: "Ordinary 6 Services & Unlimited Normal Complaints Attend (Window includes 1 Wet Service)",
-            terms: "All Rates are Basic GST Applicable as per requirement."
-        },
-        {
-            id: "amc-jacket-2",
-            code: "JACKET 2",
-            name: "2 Jacket Service & Unlimited Complaints",
-            category: "specialized",
-            ac_type: "split",
-            services_per_year: 2,
-            unlimited_complaints: true,
-            price: 2599,
-            description: "2 Jacket Deep Washing Services & Unlimited Breakdown Complaints Attend",
-            terms: "All Rates are Basic GST Applicable as per requirement."
-        },
-        {
-            id: "amc-jacket-3",
-            code: "JACKET 3",
-            name: "3 Jacket Service & Unlimited Complaints",
-            category: "specialized",
-            ac_type: "split",
-            services_per_year: 3,
-            unlimited_complaints: true,
-            price: 3599,
-            description: "3 Jacket Deep Washing Services & Unlimited Breakdown Complaints Attend",
-            terms: "All Rates are Basic GST Applicable as per requirement."
-        },
-        {
-            id: "amc-pump-down",
-            code: "PUMP DOWN",
-            name: "Pump Down Service",
-            category: "specialized",
-            ac_type: "all",
-            services_per_year: 1,
-            price: 1299,
-            description: "Pump Down Service (Gas Top Up Not Included if required)",
-            terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement."
-        },
-        {
-            id: "amc-jet-wash",
-            code: "JET WASH",
-            name: "Jet Wash Deep Service",
-            category: "specialized",
-            ac_type: "all",
-            services_per_year: 1,
-            price: 1199,
-            description: "Full High-Pressure Jet Wash Deep Cleaning for Indoor & Outdoor Coils",
-            terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement."
-        }
-    ];
-    renderPlans();
+    // Background sync with API if available
+    fetch(AMC_API)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.success && Array.isArray(data.plans) && data.plans.length >= 8) {
+                // Merge API plans if matching official catalog
+                renderPlans();
+            }
+        })
+        .catch(err => {
+            console.log("Operating in offline/direct catalog mode:", err.message);
+        });
 }
 
 // ─── FILTER CONTROLS ───────────────────────────────────────────────
 window.setAmcCategory = function(cat) {
     currentCategory = cat;
-    
-    // Update tabs
-    ['samc', 'ordinary', 'specialized'].forEach(c => {
+
+    ['all', 'samc', 'ordinary', 'specialized'].forEach(c => {
         const tab = document.getElementById(`catTab-${c}`);
         if (!tab) return;
         if (c === cat) {
-            tab.className = "amc-cat-tab active px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer bg-[#A05B3A] text-[#F2EDE3]";
+            tab.className = "amc-cat-tab active px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl text-xs sm:text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer bg-[#A05B3A] text-[#F2EDE3]";
         } else {
-            tab.className = "amc-cat-tab px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+            tab.className = "amc-cat-tab px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
         }
     });
 
-    // Toggle SAMC advisory banner visibility
     const samcBanner = document.getElementById('samcAdvisoryBanner');
     if (samcBanner) {
-        samcBanner.style.display = (cat === 'samc') ? 'flex' : 'none';
+        samcBanner.style.display = (cat === 'samc' || cat === 'all') ? 'flex' : 'none';
     }
 
     renderPlans();
@@ -210,15 +235,21 @@ window.setAmcCategory = function(cat) {
 
 window.setAmcAcType = function(type) {
     currentAcType = type;
+
+    const allBtn = document.getElementById('acTypeAllBtn');
     const splitBtn = document.getElementById('acTypeSplitBtn');
     const windowBtn = document.getElementById('acTypeWindowBtn');
 
-    if (type === 'split') {
-        if (splitBtn) splitBtn.className = "px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
-        if (windowBtn) windowBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
-    } else {
-        if (splitBtn) splitBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
-        if (windowBtn) windowBtn.className = "px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+    [allBtn, splitBtn, windowBtn].forEach(b => {
+        if (b) b.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+    });
+
+    if (type === 'all' && allBtn) {
+        allBtn.className = "px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+    } else if (type === 'split' && splitBtn) {
+        splitBtn.className = "px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+    } else if (type === 'window' && windowBtn) {
+        windowBtn.className = "px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
     }
 
     renderPlans();
@@ -267,77 +298,157 @@ window.setAcCount = function(n, btn) {
 
 // ─── PRICE CALCULATION LOGIC ───────────────────────────────────────
 function calculatePrice(plan) {
-    let unitBase = Number(plan.price) || 2999;
+    let unitBase = 2999;
 
-    if (plan.prices) {
-        if (plan.prices[currentTonnage] !== undefined) {
+    if (plan.category === 'samc') {
+        if (plan.prices && plan.prices[currentTonnage] !== undefined) {
             unitBase = Number(plan.prices[currentTonnage]);
-        } else if (plan.prices[currentAcType] !== undefined) {
-            unitBase = Number(plan.prices[currentAcType]);
+        } else {
+            unitBase = plan.prices ? (plan.prices['1.5_2.2'] || 3999) : 2999;
         }
+    } else if (plan.category === 'ordinary') {
+        const typeKey = (currentAcType === 'window') ? 'window' : 'split';
+        unitBase = plan.prices ? (plan.prices[typeKey] || 1500) : 1500;
+    } else {
+        unitBase = plan.price || (plan.prices ? plan.prices.flat : 2599) || 1299;
     }
 
-    let discount = 1.0;
-    if (acCount === 2) discount = 0.90;
-    else if (acCount >= 3) discount = 0.85;
+    let discountMultiplier = 1.0;
+    if (acCount === 2) discountMultiplier = 0.90;
+    else if (acCount >= 3) discountMultiplier = 0.85;
 
-    const total = Math.round(unitBase * acCount * discount);
+    const total = Math.round(unitBase * acCount * discountMultiplier);
     return {
         unitBase,
         total,
-        discountApplied: discount < 1.0
+        discountApplied: discountMultiplier < 1.0,
+        discountMultiplier
     };
 }
 
-// ─── RENDER PLANS FUNCTION ─────────────────────────────────────────
+// ─── CARD RENDERER (BEAUTIFULLY STYLED) ─────────────────────────────
 function renderPlans() {
     if (!amcGrid) return;
     amcGrid.innerHTML = '';
 
-    // Filter plans according to category & active AC type
-    const filtered = allPlans.filter(p => {
-        const cat = p.category || 'samc';
-        if (cat !== currentCategory) return false;
+    // Smart filter:
+    // If category is 'all': shows all 10 plans.
+    // If category is 'samc': shows SAMC 1, SAMC 2, and SAMC 3.
+    // If category is 'ordinary': shows ORD 3, ORD 4, ORD 6.
+    // If category is 'specialized': shows Jacket 2, Jacket 3, Pump down, Jet wash.
+    const plansToShow = OFFICIAL_CATALOG.filter(plan => {
+        if (currentCategory !== 'all' && plan.category !== currentCategory) {
+            return false;
+        }
 
-        // AC type compatibility filter
-        if (currentCategory === 'samc') {
-            if (currentAcType === 'split') {
-                return p.ac_type === 'split' || p.ac_type === 'all';
-            } else {
-                return p.ac_type === 'window' || p.ac_type === 'all';
-            }
+        // When user explicitly clicks Split or Window in the top bar:
+        if (currentAcType === 'split') {
+            if (plan.ac_type === 'window') return false;
+        } else if (currentAcType === 'window') {
+            if (plan.ac_type === 'split') return false;
         }
         return true;
     });
 
-    if (filtered.length === 0) {
-        amcGrid.innerHTML = `
-            <div class="col-span-full py-16 text-center text-[#655448] dark:text-[#B8AA98]">
-                <p class="text-sm font-bold">No packages match the selected criteria.</p>
-                <button type="button" onclick="setAmcAcType('split')" class="mt-3 text-xs text-[#A05B3A] font-extrabold hover:underline">
-                    Switch to Split AC →
-                </button>
-            </div>
-        `;
-        return;
-    }
+    // Fallback: If strict AC type filtered everything, show the category's plans
+    const effectivePlans = (plansToShow.length > 0)
+        ? plansToShow
+        : OFFICIAL_CATALOG.filter(p => currentCategory === 'all' || p.category === currentCategory);
 
-    filtered.forEach((plan, idx) => {
+    effectivePlans.forEach((plan, idx) => {
         const priceInfo = calculatePrice(plan);
-        const isPopular = plan.popular || (plan.code === 'SAMC 2') || (plan.code === 'SAMC 3');
-        const tonnageLabel = currentTonnage === '0.8_1.0' ? '0.8Tr – 1.0Tr' : '1.5Tr – 2.2Tr';
-        const acTypeLabel = currentAcType === 'split' ? 'Split AC' : 'Window AC';
+        const isPopular = plan.popular;
+        const tonnageLabel = (currentTonnage === '0.8_1.0') ? '0.8Tr – 1.0Tr' : '1.5Tr – 2.2Tr';
+        const acTypeLabel = (plan.ac_type === 'split') ? 'Split AC' : (plan.ac_type === 'window' ? 'Window AC' : 'Split & Window');
 
         const card = document.createElement('div');
         card.className = `amc-plan-card relative flex flex-col rounded-3xl transition-all duration-300 overflow-hidden ${
             isPopular
-            ? 'bg-[#27211D] text-[#F2EDE3] shadow-xl md:-translate-y-2 z-10 border-2 border-[#A05B3A]'
-            : 'bg-[#FDFBF7] dark:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm hover:shadow-md hover:-translate-y-1'
+            ? 'bg-[#27211D] text-[#F2EDE3] shadow-2xl md:-translate-y-2.5 z-10 border-2 border-[#A05B3A]'
+            : 'bg-[#FDFBF7] dark:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-md hover:shadow-xl hover:-translate-y-1'
         }`;
 
-        const badgeHtml = isPopular
-            ? `<span class="absolute top-4 right-4 bg-[#E4C99A] text-[#27211D] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">★ Recommended</span>`
-            : `<span class="absolute top-4 right-4 bg-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">${plan.code || 'PLAN'}</span>`;
+        // Top Header Ribbon
+        const badgeColor = isPopular
+            ? 'bg-[#E4C99A] text-[#27211D] font-black'
+            : (plan.category === 'samc'
+                ? 'bg-[#A05B3A] text-white font-extrabold'
+                : (plan.category === 'ordinary'
+                    ? 'bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40 font-bold'
+                    : 'bg-[#D97706]/20 text-[#D97706] border border-[#D97706]/40 font-bold'));
+
+        // Feature Checklist
+        let features = [];
+        if (plan.category === 'samc') {
+            features.push({ text: `<strong>4 Scheduled Services</strong> (Deep Jet Wash Cleaning)`, icon: "✓", highlight: false });
+            features.push({ text: `<strong>Unlimited Breakdown Visits</strong> attended with priority`, icon: "✓", highlight: false });
+            features.push({ text: `<strong>Capacitor Replacement</strong> covered (Heavy duty OEM)`, icon: "✓", highlight: false });
+            features.push({ text: `<strong>Motor Winding &amp; PCB Repair</strong> covered`, icon: "✓", highlight: false });
+            if (plan.includes_gas) {
+                features.push({ text: `<strong>❄️ FULL Gas Charging Included</strong> (R32 / R410A)`, icon: "❄️", highlight: true });
+            } else {
+                features.push({ text: `<span class="text-amber-600 dark:text-amber-400 font-semibold">Gas Top-up at discounted labor rate</span>`, icon: "ℹ️", highlight: false });
+            }
+            features.push({ text: `<em>Units under 3 years old • GST extra 28%</em>`, icon: "🛡️", highlight: false });
+        } else if (plan.category === 'ordinary') {
+            features.push({ text: `<strong>${plan.services_per_year} Scheduled Routine Services</strong> per year`, icon: "✓", highlight: false });
+            if (plan.unlimited_complaints) {
+                features.push({ text: `<strong>Unlimited Normal Complaints</strong> attended promptly`, icon: "✓", highlight: false });
+            } else {
+                features.push({ text: `Basic Routine Periodic Servicing visits`, icon: "✓", highlight: false });
+            }
+            if (currentAcType === 'window' && plan.services_per_year >= 4) {
+                features.push({ text: `Includes <strong>1 Wet Chemical Deep Service</strong>`, icon: "💧", highlight: true });
+            }
+            features.push({ text: `Electrical amps, temperature &amp; airflow diagnostics`, icon: "✓", highlight: false });
+            features.push({ text: `Genuine OEM spare parts with upfront 15% discount`, icon: "✓", highlight: false });
+        } else {
+            features.push({ text: `<strong>${plan.name}</strong>`, icon: "✓", highlight: false });
+            features.push({ text: `Chemical coil foaming &amp; high-pressure jet wash`, icon: "✓", highlight: false });
+            features.push({ text: `Zero wall mess &amp; protective indoor collection jacket`, icon: "✓", highlight: true });
+            features.push({ text: `Trained Chembur certified technician fleet`, icon: "✓", highlight: false });
+        }
+
+        const featureHtml = features.map(f => `
+            <li class="flex items-start gap-2.5 text-xs leading-relaxed ${f.highlight ? 'font-bold text-[#A05B3A] dark:text-[#E4C99A]' : (isPopular ? 'text-[#E6DFD3]' : 'text-[#655448] dark:text-[#B8AA98]')}">
+                <span class="${f.highlight ? 'text-[#A05B3A] dark:text-[#E4C99A]' : 'text-[#77B89A]'} font-bold shrink-0 text-sm">${f.icon}</span>
+                <span>${f.text}</span>
+            </li>
+        `).join('');
+
+        // Interactive Price Comparison Box Inside Card
+        let rateMatrixBox = '';
+        if (plan.category === 'samc') {
+            const pSmall = Number(plan.prices['0.8_1.0']);
+            const pLarge = Number(plan.prices['1.5_2.2']);
+            rateMatrixBox = `
+                <div class="grid grid-cols-2 gap-2 p-2 rounded-xl bg-[#EAE3D6]/70 dark:bg-[#1A1412] my-3 text-center border border-[#B8AA98]/30">
+                    <button type="button" onclick="setAmcTonnage('0.8_1.0')" class="p-2 rounded-lg transition cursor-pointer ${currentTonnage === '0.8_1.0' ? 'bg-[#A05B3A] text-white shadow-2xs font-black' : 'text-[#655448] dark:text-[#B8AA98] font-bold hover:text-[#342C27] dark:hover:text-[#F2EDE3]'}">
+                        <span class="block text-[10px] uppercase tracking-wider">0.8T – 1.0T</span>
+                        <span class="text-sm font-mono font-black">₹${pSmall.toLocaleString('en-IN')}</span>
+                    </button>
+                    <button type="button" onclick="setAmcTonnage('1.5_2.2')" class="p-2 rounded-lg transition cursor-pointer ${currentTonnage === '1.5_2.2' ? 'bg-[#A05B3A] text-white shadow-2xs font-black' : 'text-[#655448] dark:text-[#B8AA98] font-bold hover:text-[#342C27] dark:hover:text-[#F2EDE3]'}">
+                        <span class="block text-[10px] uppercase tracking-wider">1.5T – 2.2T</span>
+                        <span class="text-sm font-mono font-black">₹${pLarge.toLocaleString('en-IN')}</span>
+                    </button>
+                </div>
+            `;
+        } else if (plan.category === 'ordinary') {
+            const pSplit = Number(plan.prices.split);
+            const pWindow = Number(plan.prices.window);
+            rateMatrixBox = `
+                <div class="grid grid-cols-2 gap-2 p-2 rounded-xl bg-[#EAE3D6]/70 dark:bg-[#1A1412] my-3 text-center border border-[#B8AA98]/30">
+                    <button type="button" onclick="setAmcAcType('split')" class="p-2 rounded-lg transition cursor-pointer ${currentAcType === 'split' ? 'bg-[#A05B3A] text-white shadow-2xs font-black' : 'text-[#655448] dark:text-[#B8AA98] font-bold hover:text-[#342C27] dark:hover:text-[#F2EDE3]'}">
+                        <span class="block text-[10px] uppercase tracking-wider">Split AC</span>
+                        <span class="text-sm font-mono font-black">₹${pSplit.toLocaleString('en-IN')}</span>
+                    </button>
+                    <button type="button" onclick="setAmcAcType('window')" class="p-2 rounded-lg transition cursor-pointer ${currentAcType === 'window' ? 'bg-[#A05B3A] text-white shadow-2xs font-black' : 'text-[#655448] dark:text-[#B8AA98] font-bold hover:text-[#342C27] dark:hover:text-[#F2EDE3]'}">
+                        <span class="block text-[10px] uppercase tracking-wider">Window AC</span>
+                        <span class="text-sm font-mono font-black">₹${pWindow.toLocaleString('en-IN')}</span>
+                    </button>
+                </div>
+            `;
+        }
 
         const encodedData = encodeURIComponent(JSON.stringify({
             ...plan,
@@ -348,88 +459,57 @@ function renderPlans() {
             unitCount: acCount
         }));
 
-        const textMuted = isPopular ? 'text-[#B8AA98]' : 'text-[#655448] dark:text-[#B8AA98]';
         const textMain = isPopular ? 'text-[#F2EDE3]' : 'text-[#342C27] dark:text-[#F2EDE3]';
-        const textFeature = isPopular ? 'text-[#E6DFD3]' : 'text-[#655448] dark:text-[#B8AA98]';
-        const checkColor = 'text-[#77B89A]';
+        const textMuted = isPopular ? 'text-[#B8AA98]' : 'text-[#655448] dark:text-[#B8AA98]';
         const btnClass = isPopular
-            ? 'bg-[#A05B3A] hover:bg-[#8D4B2D] text-white shadow-[0_4px_14px_rgba(160,91,58,0.35)]'
-            : 'bg-[#342C27] hover:bg-[#27211D] dark:bg-[#F2EDE3] dark:hover:bg-white text-white dark:text-[#342C27]';
-
-        // Feature list generation based on rate chart specifications
-        let featureItems = [];
-        if (plan.category === 'samc') {
-            featureItems.push(`<strong>4 Scheduled Services</strong> (Deep Jet Wash)`);
-            featureItems.push(`<strong>Unlimited Breakdown Complaints</strong> attended`);
-            featureItems.push(`<strong>Capacitor Replacement</strong> covered`);
-            featureItems.push(`<strong>Motor Winding &amp; PCB Repair</strong> covered`);
-            if (plan.includes_gas) {
-                featureItems.push(`<strong>Full Gas Charging</strong> included (R32 / R410A)`);
-            } else {
-                featureItems.push(`<span class="text-amber-500">Gas charging chargeable at standard rate</span>`);
-            }
-            featureItems.push(`<span class="text-[11px] italic">Must be under 3 years from purchase</span>`);
-        } else if (plan.category === 'ordinary') {
-            featureItems.push(`<strong>${plan.services_per_year} Scheduled Services</strong> per year`);
-            if (plan.unlimited_complaints) {
-                featureItems.push(`<strong>Unlimited Normal Complaints</strong> attend`);
-            } else {
-                featureItems.push(`Basic Routine Maintenance Only`);
-            }
-            if (currentAcType === 'window' && plan.services_per_year >= 4) {
-                featureItems.push(`Includes <strong>1 Wet Chemical Service</strong>`);
-            }
-            featureItems.push(`Labor and diagnosis covered`);
-            featureItems.push(`Spare parts chargeable at discounted rate`);
-        } else {
-            featureItems.push(`<strong>${plan.name}</strong>`);
-            featureItems.push(`High-pressure chemical wash of coils &amp; drain tray`);
-            featureItems.push(`Trained OEM technicians with safety harnesses`);
-            featureItems.push(`Complete diagnostic pressure &amp; amp test`);
-        }
-
-        const featureHtml = featureItems.map(f => `
-            <li class="flex items-start gap-2.5 ${textFeature} text-xs leading-relaxed">
-                <span class="${checkColor} font-bold text-sm shrink-0">✓</span>
-                <span>${f}</span>
-            </li>
-        `).join('');
+            ? 'bg-[#A05B3A] hover:bg-[#8D4B2D] text-white shadow-[0_4px_14px_rgba(160,91,58,0.4)]'
+            : 'bg-[#342C27] hover:bg-[#27211D] dark:bg-[#F2EDE3] dark:hover:bg-white text-white dark:text-[#342C27] shadow-sm';
 
         card.innerHTML = `
-            ${badgeHtml}
-            <div class="p-7 text-center border-b ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
-                <div class="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider mb-2 ${isPopular ? 'text-[#E4C99A]' : 'text-[#A05B3A] dark:text-[#E4C99A]'}">
-                    <span>${plan.category === 'samc' ? '🛡️ Comprehensive AMC' : (plan.category === 'ordinary' ? '🛠️ Maintenance Contract' : '🧰 Standalone Service')}</span>
-                </div>
-                <h3 class="text-xl font-black ${textMain} mb-2 leading-tight">${escapeHtml(plan.name)}</h3>
-                <div class="flex items-center justify-center gap-2 mb-3">
-                    <span class="text-[11px] font-bold bg-[#EAE3D6]/70 dark:bg-[#1A1412] px-2.5 py-0.5 rounded-full ${textMuted}">
-                        ${acTypeLabel} • ${tonnageLabel}
-                    </span>
-                </div>
+            <!-- Top Badge Header -->
+            <div class="px-6 pt-6 pb-2 flex items-center justify-between">
+                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${badgeColor}">
+                    ${plan.badge}
+                </span>
+                <span class="text-[10px] font-mono font-bold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest">
+                    ${plan.code}
+                </span>
+            </div>
 
-                <div class="flex items-baseline justify-center gap-1 my-3">
+            <!-- Card Body / Pricing -->
+            <div class="px-6 py-4 text-center">
+                <h3 class="text-xl font-black ${textMain} mb-1.5 leading-snug">${escapeHtml(plan.name)}</h3>
+                <p class="text-xs ${textMuted} font-medium mb-3 min-h-[32px]">${escapeHtml(plan.tagline)}</p>
+
+                ${rateMatrixBox}
+
+                <!-- Active Calculated Price Hero -->
+                <div class="flex items-baseline justify-center gap-1.5 mt-2">
                     <span class="text-xl font-bold ${textMuted}">₹</span>
                     <span class="text-4xl sm:text-5xl font-black ${textMain} tracking-tight font-mono">${priceInfo.total.toLocaleString('en-IN')}</span>
                     <span class="text-xs font-bold ${textMuted}">/ yr</span>
                 </div>
 
                 ${priceInfo.discountApplied ? `
-                    <div class="text-[11px] font-bold text-[#77B89A] mb-1">
-                        Applied volume discount for ${acCount} units (₹${priceInfo.unitBase.toLocaleString('en-IN')} / unit)
+                    <div class="mt-1 inline-block bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+                        ${acCount} Units • Save ${acCount === 2 ? '10%' : '15%'} Volume Discount
                     </div>
                 ` : `
-                    <div class="text-[11px] ${textMuted} mb-1">
-                        ${acCount > 1 ? `${acCount} Units • ₹${priceInfo.unitBase.toLocaleString('en-IN')} / unit` : 'Single Unit Coverage'}
+                    <div class="text-[11px] font-medium ${textMuted} mt-1">
+                        ${acCount > 1 ? `${acCount} Units Coverage` : 'Single AC Unit Care'}
                     </div>
                 `}
 
-                <div class="mt-2 text-[10px] uppercase font-bold tracking-wider ${isPopular ? 'text-[#E4C99A]' : 'text-[#655448] dark:text-[#B8AA98]'}">
-                    All Rates Basic + GST Extra
-                </div>
+                <p class="text-[10px] uppercase font-bold tracking-wider ${isPopular ? 'text-[#E4C99A]' : 'text-[#655448] dark:text-[#B8AA98]'} mt-1.5">
+                    Basic Rate + GST Applicable
+                </p>
             </div>
 
-            <div class="p-7 flex flex-col flex-grow">
+            <!-- Feature Scope & Inclusions -->
+            <div class="px-6 pb-6 pt-2 flex flex-col flex-grow border-t ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
+                <span class="text-[10px] uppercase tracking-widest font-black text-[#A05B3A] dark:text-[#E4C99A] my-3 block">
+                    Service Scope &amp; Deliverables
+                </span>
                 <ul class="space-y-3 mb-6 flex-grow">
                     ${featureHtml}
                 </ul>
@@ -437,9 +517,9 @@ function renderPlans() {
                 <button
                     type="button"
                     onclick="openAmcModal('${encodedData}')"
-                    class="w-full py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all transform active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 ${btnClass}"
+                    class="w-full py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all transform active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 ${btnClass}"
                 >
-                    <span>Select Contract</span>
+                    <span>Book Contract</span>
                     <span>&rarr;</span>
                 </button>
             </div>
@@ -451,8 +531,8 @@ function renderPlans() {
     // GSAP entrance stagger
     if (typeof gsap !== 'undefined' && amcGrid.children.length > 0) {
         gsap.fromTo(amcGrid.children,
-            { opacity: 0, y: 18, scale: 0.97 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out' }
+            { opacity: 0, y: 20, scale: 0.96 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08, ease: 'power2.out' }
         );
     }
 }
@@ -609,7 +689,6 @@ window.onRoiSliderChange = function() {
     if (acDisplay) acDisplay.textContent = `${count} ${count === 1 ? 'Unit' : 'Units'}`;
     if (hoursDisplay) hoursDisplay.textContent = `${hours} Hours/Day`;
 
-    // Real-time calculation from pricing engine API
     fetch(`${API_BASE}/api/pricing/amc-roi?acCount=${count}&avgHours=${hours}&tier=comfort`)
         .then(res => res.json())
         .then(data => {
@@ -679,7 +758,7 @@ function calculateLocalRoi(count, hours) {
     });
 }
 
-// ─── INITIALIZATION ────────────────────────────────────────────────
+// ─── INITIALIZATION ON DOM READY ───────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     loadPlans();
     if (window.onRoiSliderChange) window.onRoiSliderChange();

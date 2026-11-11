@@ -133,9 +133,18 @@
         <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
           <button
             type="button"
+            id="catTab-all"
+            onclick="setAmcCategory('all')"
+            class="amc-cat-tab px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+          >
+            <span>🌟</span> <span>All Contracts</span>
+            <span class="bg-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3] text-[10px] px-2 py-0.5 rounded-full font-bold">10 Plans</span>
+          </button>
+          <button
+            type="button"
             id="catTab-samc"
             onclick="setAmcCategory('samc')"
-            class="amc-cat-tab active px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer bg-[#A05B3A] text-[#F2EDE3]"
+            class="amc-cat-tab active px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl text-xs sm:text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer bg-[#A05B3A] text-[#F2EDE3]"
           >
             <span>🛡️</span> <span>Comprehensive (SAMC)</span>
             <span class="bg-[#FDFBF7]/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Parts + Gas</span>
@@ -144,7 +153,7 @@
             type="button"
             id="catTab-ordinary"
             onclick="setAmcCategory('ordinary')"
-            class="amc-cat-tab px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+            class="amc-cat-tab px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
           >
             <span>🛠️</span> <span>Ordinary Maintenance</span>
             <span class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] text-[10px] px-2 py-0.5 rounded-full font-bold">3, 4, 6 Visits</span>
@@ -153,7 +162,7 @@
             type="button"
             id="catTab-specialized"
             onclick="setAmcCategory('specialized')"
-            class="amc-cat-tab px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+            class="amc-cat-tab px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
           >
             <span>🧰</span> <span>Jacket &amp; Standalone</span>
             <span class="bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] text-[10px] px-2 py-0.5 rounded-full font-bold">Deep Care</span>
@@ -168,9 +177,17 @@
             <div class="inline-flex p-1 bg-[#F2EDE3] dark:bg-[#1A1412] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
               <button
                 type="button"
+                id="acTypeAllBtn"
+                onclick="setAmcAcType('all')"
+                class="px-3 py-1.5 text-xs font-extrabold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+              >
+                All Types
+              </button>
+              <button
+                type="button"
                 id="acTypeSplitBtn"
                 onclick="setAmcAcType('split')"
-                class="px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs"
+                class="px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs"
               >
                 Split AC
               </button>
@@ -178,7 +195,7 @@
                 type="button"
                 id="acTypeWindowBtn"
                 onclick="setAmcAcType('window')"
-                class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+                class="px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
               >
                 Window AC
               </button>
@@ -193,7 +210,7 @@
                 type="button"
                 id="tonnageSmallBtn"
                 onclick="setAmcTonnage('0.8_1.0')"
-                class="px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs"
+                class="px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
               >
                 0.8Tr – 1.0Tr
               </button>
@@ -201,7 +218,7 @@
                 type="button"
                 id="tonnageLargeBtn"
                 onclick="setAmcTonnage('1.5_2.2')"
-                class="px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+                class="px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs"
               >
                 1.5Tr – 2.2Tr
               </button>
