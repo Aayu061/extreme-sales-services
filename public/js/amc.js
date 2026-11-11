@@ -1,4 +1,5 @@
-// frontend/js/amc.js
+// public/js/amc.js - Enterprise AMC Rate Engine for Extreme Sales & Services
+// Strict conformity with 'ESS Contract Rate Chart_New Address.pdf' (Chembur Service Center)
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.BACKEND_URL !== undefined)
@@ -14,268 +15,585 @@ const escapeHtml = (window.APP_CONFIG && window.APP_CONFIG.escapeHtml) || functi
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 };
+
 const AMC_API = `${API_BASE}/api/amc-plans`;
 const PURCHASE_API = `${API_BASE}/api/amc/purchase`;
 
+// ─── STATE MANAGEMENT ──────────────────────────────────────────────
+let allPlans = [];
+let currentCategory = 'samc';       // 'samc' | 'ordinary' | 'specialized'
+let currentAcType = 'split';        // 'split' | 'window'
+let currentTonnage = '1.5_2.2';     // '0.8_1.0' | '1.5_2.2'
+let acCount = 1;                    // 1 | 2 | 3+
+
 const amcGrid = document.getElementById('amcGrid');
 
+// ─── DATA FETCHING ─────────────────────────────────────────────────
 async function loadPlans() {
     try {
         const res = await fetch(AMC_API);
         const data = await res.json();
         
-        if (data.success) {
-            renderPlans(data.plans);
+        if (data && data.success && Array.isArray(data.plans)) {
+            allPlans = data.plans;
+            renderPlans();
         } else {
-            amcGrid.innerHTML = `<div class="col-span-full text-center text-red-500 font-bold py-12">Failed to load AMC packages.</div>`;
+            fallbackLocalPlans();
         }
     } catch (error) {
-        amcGrid.innerHTML = `<div class="col-span-full text-center text-gray-500 font-bold py-12">Unable to connect to server.</div>`;
+        console.warn("Failed fetching plans from API, activating local fallback:", error.message);
+        fallbackLocalPlans();
     }
 }
 
-function renderPlans(plans) {
-    rawPlans = plans;
-    amcGrid.innerHTML = '';
+function fallbackLocalPlans() {
+    allPlans = [
+        {
+            id: "amc-samc-1",
+            code: "SAMC 1",
+            name: "SAMC 1 - Comprehensive Split (Non-Inverter)",
+            category: "samc",
+            ac_type: "split",
+            services_per_year: 4,
+            unlimited_complaints: true,
+            includes_parts: true,
+            includes_gas: false,
+            prices: { "0.8_1.0": 2999, "1.5_2.2": 3999 },
+            price: 2999,
+            description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, Motor Winding & PCB Repair",
+            terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%."
+        },
+        {
+            id: "amc-samc-2",
+            code: "SAMC 2",
+            name: "SAMC 2 - Comprehensive Split with Gas Charging",
+            category: "samc",
+            ac_type: "split",
+            services_per_year: 4,
+            unlimited_complaints: true,
+            includes_parts: true,
+            includes_gas: true,
+            popular: true,
+            prices: { "0.8_1.0": 4499, "1.5_2.2": 5499 },
+            price: 4499,
+            description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, PCB Repair, Motor Winding & Gas Charging",
+            terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%."
+        },
+        {
+            id: "amc-samc-3",
+            code: "SAMC 3",
+            name: "SAMC 3 - Comprehensive Window with Gas Charging",
+            category: "samc",
+            ac_type: "window",
+            services_per_year: 4,
+            unlimited_complaints: true,
+            includes_parts: true,
+            includes_gas: true,
+            popular: true,
+            prices: { "0.8_1.0": 3499, "1.5_2.2": 4499 },
+            price: 3499,
+            description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, PCB Repair, Motor Winding & Gas Charging",
+            terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%."
+        },
+        {
+            id: "amc-ord-3",
+            code: "ORD 3",
+            name: "Ordinary 3 Visits / 3 Services",
+            category: "ordinary",
+            ac_type: "all",
+            services_per_year: 3,
+            unlimited_complaints: false,
+            prices: { "split": 1500, "window": 1000 },
+            price: 1500,
+            description: "Ordinary 3 Scheduled Routine Services / Visits per year",
+            terms: "All Rates are Basic GST Applicable as per requirement."
+        },
+        {
+            id: "amc-ord-4",
+            code: "ORD 4",
+            name: "Ordinary 4 Services & Unlimited Complaints",
+            category: "ordinary",
+            ac_type: "all",
+            services_per_year: 4,
+            unlimited_complaints: true,
+            prices: { "split": 1800, "window": 1300 },
+            price: 1800,
+            description: "Ordinary 4 Services & Unlimited Normal Complaints Attend (Window includes 1 Wet Service)",
+            terms: "All Rates are Basic GST Applicable as per requirement."
+        },
+        {
+            id: "amc-ord-6",
+            code: "ORD 6",
+            name: "Ordinary 6 Services & Unlimited Complaints",
+            category: "ordinary",
+            ac_type: "all",
+            services_per_year: 6,
+            unlimited_complaints: true,
+            prices: { "split": 2200, "window": 1700 },
+            price: 2200,
+            description: "Ordinary 6 Services & Unlimited Normal Complaints Attend (Window includes 1 Wet Service)",
+            terms: "All Rates are Basic GST Applicable as per requirement."
+        },
+        {
+            id: "amc-jacket-2",
+            code: "JACKET 2",
+            name: "2 Jacket Service & Unlimited Complaints",
+            category: "specialized",
+            ac_type: "split",
+            services_per_year: 2,
+            unlimited_complaints: true,
+            price: 2599,
+            description: "2 Jacket Deep Washing Services & Unlimited Breakdown Complaints Attend",
+            terms: "All Rates are Basic GST Applicable as per requirement."
+        },
+        {
+            id: "amc-jacket-3",
+            code: "JACKET 3",
+            name: "3 Jacket Service & Unlimited Complaints",
+            category: "specialized",
+            ac_type: "split",
+            services_per_year: 3,
+            unlimited_complaints: true,
+            price: 3599,
+            description: "3 Jacket Deep Washing Services & Unlimited Breakdown Complaints Attend",
+            terms: "All Rates are Basic GST Applicable as per requirement."
+        },
+        {
+            id: "amc-pump-down",
+            code: "PUMP DOWN",
+            name: "Pump Down Service",
+            category: "specialized",
+            ac_type: "all",
+            services_per_year: 1,
+            price: 1299,
+            description: "Pump Down Service (Gas Top Up Not Included if required)",
+            terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement."
+        },
+        {
+            id: "amc-jet-wash",
+            code: "JET WASH",
+            name: "Jet Wash Deep Service",
+            category: "specialized",
+            ac_type: "all",
+            services_per_year: 1,
+            price: 1199,
+            description: "Full High-Pressure Jet Wash Deep Cleaning for Indoor & Outdoor Coils",
+            terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement."
+        }
+    ];
+    renderPlans();
+}
+
+// ─── FILTER CONTROLS ───────────────────────────────────────────────
+window.setAmcCategory = function(cat) {
+    currentCategory = cat;
     
-    if (!plans || plans.length === 0) {
-        amcGrid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12 font-medium">Currently updating our Maintenance Plans. Check back soon!</div>`;
+    // Update tabs
+    ['samc', 'ordinary', 'specialized'].forEach(c => {
+        const tab = document.getElementById(`catTab-${c}`);
+        if (!tab) return;
+        if (c === cat) {
+            tab.className = "amc-cat-tab active px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer bg-[#A05B3A] text-[#F2EDE3]";
+        } else {
+            tab.className = "amc-cat-tab px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+        }
+    });
+
+    // Toggle SAMC advisory banner visibility
+    const samcBanner = document.getElementById('samcAdvisoryBanner');
+    if (samcBanner) {
+        samcBanner.style.display = (cat === 'samc') ? 'flex' : 'none';
+    }
+
+    renderPlans();
+};
+
+window.setAmcAcType = function(type) {
+    currentAcType = type;
+    const splitBtn = document.getElementById('acTypeSplitBtn');
+    const windowBtn = document.getElementById('acTypeWindowBtn');
+
+    if (type === 'split') {
+        if (splitBtn) splitBtn.className = "px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+        if (windowBtn) windowBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+    } else {
+        if (splitBtn) splitBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+        if (windowBtn) windowBtn.className = "px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+    }
+
+    renderPlans();
+};
+
+window.setAmcTonnage = function(tonnage) {
+    currentTonnage = tonnage;
+    const smallBtn = document.getElementById('tonnageSmallBtn');
+    const largeBtn = document.getElementById('tonnageLargeBtn');
+
+    if (tonnage === '0.8_1.0') {
+        if (smallBtn) smallBtn.className = "px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+        if (largeBtn) largeBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+    } else {
+        if (smallBtn) smallBtn.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]";
+        if (largeBtn) largeBtn.className = "px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs";
+    }
+
+    renderPlans();
+};
+
+window.setAcCount = function(n, btn) {
+    acCount = n;
+    document.querySelectorAll('.ac-count-btn').forEach(b => {
+        b.className = "ac-count-btn bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] text-xs font-bold w-8 h-8 rounded-xl transition";
+    });
+    if (btn) {
+        btn.className = "ac-count-btn bg-[#A05B3A] text-[#F2EDE3] text-xs font-black w-8 h-8 rounded-xl transition shadow-xs";
+    }
+
+    const badge = document.getElementById('volumeDiscountBadge');
+    if (badge) {
+        if (acCount === 2) {
+            badge.innerText = "10% Volume Off";
+            badge.classList.remove('hidden');
+        } else if (acCount >= 3) {
+            badge.innerText = "15% Fleet Off";
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    renderPlans();
+};
+
+// ─── PRICE CALCULATION LOGIC ───────────────────────────────────────
+function calculatePrice(plan) {
+    let unitBase = Number(plan.price) || 2999;
+
+    if (plan.prices) {
+        if (plan.prices[currentTonnage] !== undefined) {
+            unitBase = Number(plan.prices[currentTonnage]);
+        } else if (plan.prices[currentAcType] !== undefined) {
+            unitBase = Number(plan.prices[currentAcType]);
+        }
+    }
+
+    let discount = 1.0;
+    if (acCount === 2) discount = 0.90;
+    else if (acCount >= 3) discount = 0.85;
+
+    const total = Math.round(unitBase * acCount * discount);
+    return {
+        unitBase,
+        total,
+        discountApplied: discount < 1.0
+    };
+}
+
+// ─── RENDER PLANS FUNCTION ─────────────────────────────────────────
+function renderPlans() {
+    if (!amcGrid) return;
+    amcGrid.innerHTML = '';
+
+    // Filter plans according to category & active AC type
+    const filtered = allPlans.filter(p => {
+        const cat = p.category || 'samc';
+        if (cat !== currentCategory) return false;
+
+        // AC type compatibility filter
+        if (currentCategory === 'samc') {
+            if (currentAcType === 'split') {
+                return p.ac_type === 'split' || p.ac_type === 'all';
+            } else {
+                return p.ac_type === 'window' || p.ac_type === 'all';
+            }
+        }
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        amcGrid.innerHTML = `
+            <div class="col-span-full py-16 text-center text-[#655448] dark:text-[#B8AA98]">
+                <p class="text-sm font-bold">No packages match the selected criteria.</p>
+                <button type="button" onclick="setAmcAcType('split')" class="mt-3 text-xs text-[#A05B3A] font-extrabold hover:underline">
+                    Switch to Split AC →
+                </button>
+            </div>
+        `;
         return;
     }
 
-    plans.forEach((plan, index) => {
-        const isPopular = index === 1 || (plan.name && (plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('comprehensive') || plan.name.toLowerCase().includes('premium')));
-        
+    filtered.forEach((plan, idx) => {
+        const priceInfo = calculatePrice(plan);
+        const isPopular = plan.popular || (plan.code === 'SAMC 2') || (plan.code === 'SAMC 3');
+        const tonnageLabel = currentTonnage === '0.8_1.0' ? '0.8Tr – 1.0Tr' : '1.5Tr – 2.2Tr';
+        const acTypeLabel = currentAcType === 'split' ? 'Split AC' : 'Window AC';
+
         const card = document.createElement('div');
-        card.className = `amc-plan-card relative flex flex-col rounded-2xl transition-all duration-300 overflow-hidden ${
-            isPopular 
-            ? 'bg-[#27211D] text-[#F2EDE3] shadow-xl md:-translate-y-3 z-10 border-2 border-[#A05B3A]' 
+        card.className = `amc-plan-card relative flex flex-col rounded-3xl transition-all duration-300 overflow-hidden ${
+            isPopular
+            ? 'bg-[#27211D] text-[#F2EDE3] shadow-xl md:-translate-y-2 z-10 border-2 border-[#A05B3A]'
             : 'bg-[#FDFBF7] dark:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm hover:shadow-md hover:-translate-y-1'
         }`;
 
-        const badge = isPopular 
-            ? `<span class="absolute top-4 right-4 bg-[#E4C99A] text-[#27211D] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">★ Most Popular</span>` 
-            : '';
+        const badgeHtml = isPopular
+            ? `<span class="absolute top-4 right-4 bg-[#E4C99A] text-[#27211D] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">★ Recommended</span>`
+            : `<span class="absolute top-4 right-4 bg-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">${plan.code || 'PLAN'}</span>`;
 
-        const encodedData = encodeURIComponent(JSON.stringify(plan));
+        const encodedData = encodeURIComponent(JSON.stringify({
+            ...plan,
+            selectedTonnage: tonnageLabel,
+            selectedAcType: acTypeLabel,
+            calculatedPrice: priceInfo.total,
+            unitPrice: priceInfo.unitBase,
+            unitCount: acCount
+        }));
+
         const textMuted = isPopular ? 'text-[#B8AA98]' : 'text-[#655448] dark:text-[#B8AA98]';
         const textMain = isPopular ? 'text-[#F2EDE3]' : 'text-[#342C27] dark:text-[#F2EDE3]';
         const textFeature = isPopular ? 'text-[#E6DFD3]' : 'text-[#655448] dark:text-[#B8AA98]';
         const checkColor = 'text-[#77B89A]';
-        const badgeClass = isPopular ? 'bg-[#342C27] text-[#E4C99A] border-[#B8AA98]/40' : 'bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border-[#77B89A]/40 dark:border-[#77B89A]/30';
-        const btnClass = 'bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] font-bold shadow-md';
+        const btnClass = isPopular
+            ? 'bg-[#A05B3A] hover:bg-[#8D4B2D] text-white shadow-[0_4px_14px_rgba(160,91,58,0.35)]'
+            : 'bg-[#342C27] hover:bg-[#27211D] dark:bg-[#F2EDE3] dark:hover:bg-white text-white dark:text-[#342C27]';
 
-        const safePlanName = escapeHtml(plan.name || '');
-        const safePlanDesc = escapeHtml(plan.description || 'Full part inspection & cleaning');
-        const ppvSavings = Math.round((Number(plan.price) || 2999) * 0.35);
+        // Feature list generation based on rate chart specifications
+        let featureItems = [];
+        if (plan.category === 'samc') {
+            featureItems.push(`<strong>4 Scheduled Services</strong> (Deep Jet Wash)`);
+            featureItems.push(`<strong>Unlimited Breakdown Complaints</strong> attended`);
+            featureItems.push(`<strong>Capacitor Replacement</strong> covered`);
+            featureItems.push(`<strong>Motor Winding &amp; PCB Repair</strong> covered`);
+            if (plan.includes_gas) {
+                featureItems.push(`<strong>Full Gas Charging</strong> included (R32 / R410A)`);
+            } else {
+                featureItems.push(`<span class="text-amber-500">Gas charging chargeable at standard rate</span>`);
+            }
+            featureItems.push(`<span class="text-[11px] italic">Must be under 3 years from purchase</span>`);
+        } else if (plan.category === 'ordinary') {
+            featureItems.push(`<strong>${plan.services_per_year} Scheduled Services</strong> per year`);
+            if (plan.unlimited_complaints) {
+                featureItems.push(`<strong>Unlimited Normal Complaints</strong> attend`);
+            } else {
+                featureItems.push(`Basic Routine Maintenance Only`);
+            }
+            if (currentAcType === 'window' && plan.services_per_year >= 4) {
+                featureItems.push(`Includes <strong>1 Wet Chemical Service</strong>`);
+            }
+            featureItems.push(`Labor and diagnosis covered`);
+            featureItems.push(`Spare parts chargeable at discounted rate`);
+        } else {
+            featureItems.push(`<strong>${plan.name}</strong>`);
+            featureItems.push(`High-pressure chemical wash of coils &amp; drain tray`);
+            featureItems.push(`Trained OEM technicians with safety harnesses`);
+            featureItems.push(`Complete diagnostic pressure &amp; amp test`);
+        }
+
+        const featureHtml = featureItems.map(f => `
+            <li class="flex items-start gap-2.5 ${textFeature} text-xs leading-relaxed">
+                <span class="${checkColor} font-bold text-sm shrink-0">✓</span>
+                <span>${f}</span>
+            </li>
+        `).join('');
 
         card.innerHTML = `
-            ${badge}
-            <div class="p-8 text-center border-b ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
-                <p class="${textMuted} text-xs font-bold uppercase tracking-widest mb-2">${isPopular ? 'Recommended Choice' : 'Annual AC Care'}</p>
-                <h3 class="text-2xl font-black ${textMain} mb-4">${safePlanName}</h3>
-                <div class="flex items-end justify-center gap-1 mb-2">
-                    <span class="text-2xl font-bold ${textMuted}">₹</span>
-                    <span id="plan-price-${index}" class="text-5xl font-black ${textMain} tracking-tighter">${Number(plan.price) || 0}</span>
-                    <span id="plan-suffix-${index}" class="text-sm font-bold ${textMuted} mb-1">/yr</span>
+            ${badgeHtml}
+            <div class="p-7 text-center border-b ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
+                <div class="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider mb-2 ${isPopular ? 'text-[#E4C99A]' : 'text-[#A05B3A] dark:text-[#E4C99A]'}">
+                    <span>${plan.category === 'samc' ? '🛡️ Comprehensive AMC' : (plan.category === 'ordinary' ? '🛠️ Maintenance Contract' : '🧰 Standalone Service')}</span>
                 </div>
-                <p id="plan-savings-${index}" class="text-xs font-bold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B] dark:text-[#77B89A]'} mb-3 min-h-[1.2rem]"></p>
-                <span class="text-xs font-bold py-1.5 px-4 rounded-full border ${badgeClass}">${Number(plan.services_per_year) || 3} Free Visits Included</span>
-            </div>
-            
-            <div class="p-8 flex flex-col flex-grow">
-                <ul class="space-y-3 mb-6 text-sm flex-grow">
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Priority Emergency Response</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Gas Level & Leakage Check Included</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> ${safePlanDesc}</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Automated Periodic Reminders</li>
-                    <li class="flex items-center gap-2 ${textFeature}"><span class="${checkColor} font-bold">✓</span> Upfront Genuine Spares Discount</li>
-                </ul>
-                <div class="${isPopular ? 'bg-[#342C27]' : 'bg-[#77B89A]/10 dark:bg-[#77B89A]/20'} rounded-xl p-3 mb-4 text-center">
-                    <span class="text-xs font-extrabold ${isPopular ? 'text-[#E4C99A]' : 'text-[#1D3D2B] dark:text-[#77B89A]'}">
-                        💰 Save ~₹${ppvSavings.toLocaleString('en-IN')} vs Pay-Per-Visit
+                <h3 class="text-xl font-black ${textMain} mb-2 leading-tight">${escapeHtml(plan.name)}</h3>
+                <div class="flex items-center justify-center gap-2 mb-3">
+                    <span class="text-[11px] font-bold bg-[#EAE3D6]/70 dark:bg-[#1A1412] px-2.5 py-0.5 rounded-full ${textMuted}">
+                        ${acTypeLabel} • ${tonnageLabel}
                     </span>
                 </div>
-                <button onclick="openAmcModal('${encodedData}')" class="w-full py-4 rounded-xl shadow-md transition-all text-sm uppercase tracking-wider ${btnClass}">
-                    Select This Plan →
+
+                <div class="flex items-baseline justify-center gap-1 my-3">
+                    <span class="text-xl font-bold ${textMuted}">₹</span>
+                    <span class="text-4xl sm:text-5xl font-black ${textMain} tracking-tight font-mono">${priceInfo.total.toLocaleString('en-IN')}</span>
+                    <span class="text-xs font-bold ${textMuted}">/ yr</span>
+                </div>
+
+                ${priceInfo.discountApplied ? `
+                    <div class="text-[11px] font-bold text-[#77B89A] mb-1">
+                        Applied volume discount for ${acCount} units (₹${priceInfo.unitBase.toLocaleString('en-IN')} / unit)
+                    </div>
+                ` : `
+                    <div class="text-[11px] ${textMuted} mb-1">
+                        ${acCount > 1 ? `${acCount} Units • ₹${priceInfo.unitBase.toLocaleString('en-IN')} / unit` : 'Single Unit Coverage'}
+                    </div>
+                `}
+
+                <div class="mt-2 text-[10px] uppercase font-bold tracking-wider ${isPopular ? 'text-[#E4C99A]' : 'text-[#655448] dark:text-[#B8AA98]'}">
+                    All Rates Basic + GST Extra
+                </div>
+            </div>
+
+            <div class="p-7 flex flex-col flex-grow">
+                <ul class="space-y-3 mb-6 flex-grow">
+                    ${featureHtml}
+                </ul>
+
+                <button
+                    type="button"
+                    onclick="openAmcModal('${encodedData}')"
+                    class="w-full py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all transform active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 ${btnClass}"
+                >
+                    <span>Select Contract</span>
+                    <span>&rarr;</span>
                 </button>
             </div>
         `;
-        
+
         amcGrid.appendChild(card);
     });
 
+    // GSAP entrance stagger
     if (typeof gsap !== 'undefined' && amcGrid.children.length > 0) {
         gsap.fromTo(amcGrid.children,
-            { opacity: 0, y: 24, scale: 0.96 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.45, stagger: 0.08, ease: 'power2.out' }
+            { opacity: 0, y: 18, scale: 0.97 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out' }
         );
-    }
-
-    if (typeof updateAllPlanCards === 'function') {
-        updateAllPlanCards();
     }
 }
 
-// ------ BOOKING MODAL LOGIC ------ //
+// ─── MODAL CONTROLS & SUBMISSION ───────────────────────────────────
 const modal = document.getElementById('amcModal');
 const modalContent = document.getElementById('amcModalContent');
 const form = document.getElementById('amcForm');
 
-function openAmcModal(encodedData) {
-    const plan = JSON.parse(decodeURIComponent(encodedData));
-    
-    document.getElementById('modalPlanId').value = plan.id;
-    document.getElementById('modalPlanName').innerText = plan.name;
-    document.getElementById('modalPlanPrice').innerText = `₹${plan.price} / year`;
-    document.getElementById('successMsg').classList.add('hidden'); 
-    
-    if (typeof window.openGsapModal === 'function') {
-        window.openGsapModal(modal);
-    } else {
+window.openAmcModal = function(encodedData) {
+    const data = JSON.parse(decodeURIComponent(encodedData));
+
+    document.getElementById('modalPlanId').value = data.id || '';
+    document.getElementById('modalAcType').value = currentAcType;
+    document.getElementById('modalTonnage').value = currentTonnage;
+    document.getElementById('modalPrice').value = data.calculatedPrice || 0;
+    document.getElementById('modalServicesCount').value = data.services_per_year || 4;
+
+    document.getElementById('modalPlanName').innerText = data.name;
+    document.getElementById('modalPlanBadge').innerText = data.code || 'AMC';
+    document.getElementById('modalConfigTag').innerText = `${data.selectedAcType} • ${data.selectedTonnage}`;
+    document.getElementById('modalUnitsTag').innerText = `${data.unitCount} Unit${data.unitCount > 1 ? 's' : ''}`;
+    document.getElementById('modalPlanPrice').innerText = `₹${(data.calculatedPrice || 0).toLocaleString('en-IN')} / year`;
+    document.getElementById('modalTermsNote').innerText = data.terms || "All Rates are Basic + GST Applicable as per requirement.";
+
+    const successMsg = document.getElementById('successMsg');
+    if (successMsg) successMsg.classList.add('hidden');
+
+    if (modal) {
         modal.classList.remove('hidden');
         setTimeout(() => {
             modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
+            if (modalContent) modalContent.classList.remove('scale-95');
         }, 10);
     }
-    
-    setTimeout(() => document.getElementById('custName').focus(), 150);
-}
 
-function closeAmcModal() {
-    if (typeof window.closeGsapModal === 'function') {
-        window.closeGsapModal(modal, () => {
-            form.reset();
-        });
-    } else {
+    setTimeout(() => {
+        const input = document.getElementById('custName');
+        if (input) input.focus();
+    }, 150);
+};
+
+window.closeAmcModal = function() {
+    if (modal) {
         modal.classList.add('opacity-0');
-        modalContent.classList.add('scale-95');
+        if (modalContent) modalContent.classList.add('scale-95');
         setTimeout(() => {
             modal.classList.add('hidden');
-            form.reset(); 
+            if (form) form.reset();
         }, 300);
     }
+};
+
+if (modal) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeAmcModal();
+    });
 }
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (form) {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const payload = {
-        plan_id: document.getElementById('modalPlanId').value,
-        plan_name: document.getElementById('modalPlanName').innerText,
-        customer_name: document.getElementById('custName').value,
-        email: document.getElementById('custEmail').value,
-        phone: document.getElementById('custPhone').value
-    };
+        const name = document.getElementById('custName').value.trim();
+        const phone = document.getElementById('custPhone').value.trim();
+        const email = document.getElementById('custEmail').value.trim();
+        const address = document.getElementById('custAddress').value.trim();
+        const plan_name = document.getElementById('modalPlanName').innerText;
+        const plan_id = document.getElementById('modalPlanId').value;
+        const ac_type = document.getElementById('modalAcType').value;
+        const tonnage = document.getElementById('modalTonnage').value;
+        const price = document.getElementById('modalPrice').value;
+        const services_per_year = document.getElementById('modalServicesCount').value;
 
-    const btn = form.querySelector('button[type="submit"]');
-    const originalText = btn.innerText;
-    btn.innerText = "Processing...";
-    btn.disabled = true;
+        const payload = {
+            name,
+            customer_name: name,
+            phone,
+            email,
+            address,
+            plan_name,
+            plan_id,
+            ac_type,
+            tonnage,
+            price,
+            services_per_year
+        };
 
-    try {
-        const res = await fetch(PURCHASE_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+            <span>Registering Contract...</span>
+        `;
+        submitBtn.disabled = true;
 
-        if (res.ok) {
-            btn.classList.add('hidden');
-            document.getElementById('successMsg').classList.remove('hidden');
-            setTimeout(() => {
-                closeAmcModal();
-                btn.classList.remove('hidden');
-            }, 3000);
-        } else {
+        try {
+            const res = await fetch(PURCHASE_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
             const data = await res.json().catch(() => ({}));
-            if (window.showToast) window.showToast(data.message || "Something went wrong requesting this subscription.", 'error');
-            else alert(data.message || "Something went wrong requesting this subscription.");
-        }
-    } catch (e) {
-        if (window.showToast) window.showToast("Network error submitting subscription.", 'error');
-        else alert("Network error.");
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
-});
 
-// Close modal visually safely
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeAmcModal();
-});
+            if (res.ok && data.success) {
+                submitBtn.classList.add('hidden');
+                const successMsg = document.getElementById('successMsg');
+                if (successMsg) successMsg.classList.remove('hidden');
 
-// ─── Pricing Toggle & Savings Calculator ─────────────────────────
-let isAnnual  = true;   // true = annual (default), false = monthly
-let acCount   = 1;      // number of AC units
-let rawPlans  = [];     // cache loaded plans
+                if (window.showToast) {
+                    window.showToast("AMC subscription registered! Our Chembur desk will call you shortly.", "success");
+                }
 
-// Toggle annual/monthly
-window.toggleAmcBilling = function() {
-    isAnnual = !isAnnual;
-    const track = document.getElementById('amcToggleTrack');
-    if (track) track.classList.toggle('on', isAnnual);
-    const label = document.getElementById('amcBillingLabel');
-    if (label) label.textContent = isAnnual ? 'Annual Billing' : 'Monthly Billing';
-    updatePricingDisplay();
-};
-
-// AC count buttons
-window.setAcCount = function(n, btn) {
-    acCount = n;
-    document.querySelectorAll('.ac-count-btn').forEach(b => {
-        b.classList.remove('bg-[#A05B3A]', 'text-[#F2EDE3]', 'bg-blue-600', 'text-white', 'shadow-xs');
-        b.classList.add('bg-[#F2EDE3]', 'text-[#655448]');
-    });
-    if (btn) {
-        btn.classList.add('bg-[#A05B3A]', 'text-[#F2EDE3]', 'shadow-xs');
-        btn.classList.remove('bg-[#F2EDE3]', 'text-[#655448]', 'bg-slate-100', 'text-slate-700');
-    }
-    updatePricingDisplay();
-};
-
-function updatePricingDisplay() {
-    rawPlans.forEach((plan, idx) => {
-        const basePrice  = Number(plan.price);
-        const multiplied = basePrice * acCount;
-        const final      = isAnnual ? multiplied : Math.round(multiplied / 12);
-        const suffix     = isAnnual ? '/yr' : '/mo';
-        const savings    = isAnnual ? Math.round(multiplied * 0.20) : 0;
-
-        const priceEl   = document.getElementById(`plan-price-${idx}`);
-        const suffixEl  = document.getElementById(`plan-suffix-${idx}`);
-        const savingsEl = document.getElementById(`plan-savings-${idx}`);
-
-        if (priceEl) {
-            priceEl.textContent = final.toLocaleString('en-IN');
-            if (typeof gsap !== 'undefined') {
-                gsap.fromTo(priceEl, { scale: 1.12 }, { scale: 1, duration: 0.25, ease: 'back.out(2)' });
+                setTimeout(() => {
+                    closeAmcModal();
+                    submitBtn.classList.remove('hidden');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 3000);
+            } else {
+                if (window.showToast) window.showToast(data.message || "Failed to register AMC.", "error");
+                else alert(data.message || "Failed to register AMC.");
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
-        }
-        if (suffixEl)  suffixEl.textContent  = suffix;
-        if (savingsEl) {
-            savingsEl.textContent = isAnnual && savings > 0
-                ? `Save ₹${savings.toLocaleString('en-IN')} vs monthly`
-                : acCount > 1 ? `${acCount} AC units included` : '';
+        } catch(err) {
+            console.error("AMC Purchase Network Error:", err);
+            if (window.showToast) window.showToast("Network error submitting subscription.", "error");
+            else alert("Network error submitting subscription.");
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
     });
 }
 
-// Trigger initial dynamic pricing calculation
-setTimeout(updatePricingDisplay, 100);
-
-// Init
-loadPlans();
-
-// ─── Thermodynamic ROI & Energy Savings Calculator ─────────
-let currentRoiState = {
-    savings: 4200,
-    kwh: 458,
-    roi: 168,
-    co2: 375
-};
+// ─── THERMODYNAMIC ROI CALCULATOR ──────────────────────────────────
+let currentRoiState = { savings: 4200, kwh: 458, roi: 168, co2: 375 };
 
 window.onRoiSliderChange = function() {
     const acSlider = document.getElementById('roiAcSlider');
@@ -291,7 +609,7 @@ window.onRoiSliderChange = function() {
     if (acDisplay) acDisplay.textContent = `${count} ${count === 1 ? 'Unit' : 'Units'}`;
     if (hoursDisplay) hoursDisplay.textContent = `${hours} Hours/Day`;
 
-    // Try fetching real-time calculation from pricing engine API
+    // Real-time calculation from pricing engine API
     fetch(`${API_BASE}/api/pricing/amc-roi?acCount=${count}&avgHours=${hours}&tier=comfort`)
         .then(res => res.json())
         .then(data => {
@@ -345,7 +663,7 @@ function calculateLocalRoi(count, hours) {
     const kwhPerYear = Math.round(hours * 0.22 * days * count);
     const powerBillSaved = Math.round(kwhPerYear * tariff);
     const repairsSaved = 3200 * count;
-    const amcCost = 2499 * count;
+    const amcCost = 2999 * count;
     const netSavings = Math.max(0, (powerBillSaved + repairsSaved) - amcCost);
     const roiPct = Math.round((netSavings / amcCost) * 100);
 
@@ -361,8 +679,8 @@ function calculateLocalRoi(count, hours) {
     });
 }
 
-// Init calculator on load
-window.addEventListener('DOMContentLoaded', () => {
+// ─── INITIALIZATION ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    loadPlans();
     if (window.onRoiSliderChange) window.onRoiSliderChange();
 });
-
