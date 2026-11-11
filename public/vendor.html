@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Partner Portal | Extreme Sales &amp; Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Anti-flicker: apply dark class ONLY if explicitly saved as dark -->
+    <script>
+      (function(){
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e){}
+      })();
+    </script>
+  </head>
+  <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] min-h-screen font-sans antialiased selection:bg-[#B86E4B] selection:text-white transition-colors duration-200">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-[#A05B3A] text-white rounded-xl flex items-center justify-center shadow-[0_2px_8px_rgba(160,91,58,0.35)]">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </div>
+            <div>
+              <span class="text-lg font-black tracking-tight text-white">Extreme S&amp;S <span class="text-[#E4C99A] font-bold text-xs bg-[#E4C99A]/15 px-2.5 py-0.5 rounded-full border border-[#E4C99A]/30">Vendor Portal</span></span>
+              <div class="flex items-center gap-1.5 text-[11px] text-[#B8AA98]">
+                <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
+                <span>Verified Supplier &amp; Equipment Channel</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2.5 items-center">
+            <a href="products.html" target="_blank" class="hidden sm:inline-flex text-[#B8AA98] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-white/10 transition items-center gap-1">
+              <span>Public Store</span>
+              <span class="text-xs">↗</span>
+            </a>
+            <button
+              type="button"
+              class="theme-toggle-btn text-[#B8AA98] hover:text-white transition p-2 rounded-lg hover:bg-white/10"
+              aria-label="Toggle Theme"
+            >
+              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+              <svg class="theme-icon-sun w-5 h-5 hidden text-[#E4C99A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </button>
+            <button type="button" id="refreshBtn" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-[0_2px_10px_rgba(160,91,58,0.3)] transition flex items-center gap-1.5 cursor-pointer">
+              <span id="refreshIcon" class="inline-block transition">↻</span>
+              <span>Sync Catalog</span>
+            </button>
+            <button type="button" onclick="handleVendorLogout()" class="bg-[#A05B3A]/20 hover:bg-[#A05B3A] text-[#E4C99A] hover:text-white border border-[#A05B3A]/40 px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+      <!-- PAGE TITLE & KPI BAR -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight">Supplier Dashboard</h1>
+          <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1">Manage wholesale AC inventory supply, spare parts pricing, and commercial buyer inquiries.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-[#77B89A]/15 text-[#5A957A] border border-[#77B89A]/30">
+            <span class="w-2 h-2 rounded-full bg-[#77B89A]"></span>
+            <span>Vendor Partner: Daikin &amp; Voltas Authorized</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI METRICS GRID -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white/80 dark:bg-[#27211D]/80 backdrop-blur-sm p-5 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Available Products</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="kpiTotalProducts" class="text-3xl font-black text-[#342C27] dark:text-[#F2EDE3]">--</span>
+            <span class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A]">Listed in Store</span>
+          </div>
+        </div>
+
+        <div class="bg-white/80 dark:bg-[#27211D]/80 backdrop-blur-sm p-5 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Units In Stock</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="kpiUnitsInStock" class="text-3xl font-black text-[#77B89A]">--</span>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Ready Dispatch</span>
+          </div>
+        </div>
+
+        <div class="bg-white/80 dark:bg-[#27211D]/80 backdrop-blur-sm p-5 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Spares Catalog</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="kpiTotalSpares" class="text-3xl font-black text-[#A05B3A] dark:text-[#E4C99A]">8</span>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">OEM Line Items</span>
+          </div>
+        </div>
+
+        <div class="bg-white/80 dark:bg-[#27211D]/80 backdrop-blur-sm p-5 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Open Commercial Bids</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="kpiOpenBids" class="text-3xl font-black text-[#5A957A]">2</span>
+            <span class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A]">Under Review</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PORTAL TABS -->
+      <div class="flex border-b border-[#B8AA98]/30 gap-2 overflow-x-auto pb-1">
+        <button onclick="switchVendorTab('products')" id="tabBtnProducts" class="vendor-tab active px-4 py-2.5 text-xs font-bold rounded-xl transition flex items-center gap-2 cursor-pointer bg-[#A05B3A] text-white shadow-xs">
+          <span>📦</span> AC Equipment Supply
+        </button>
+        <button onclick="switchVendorTab('spares')" id="tabBtnSpares" class="vendor-tab px-4 py-2.5 text-xs font-bold rounded-xl transition flex items-center gap-2 cursor-pointer text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]">
+          <span>🔩</span> Spare Parts &amp; Gas
+        </button>
+        <button onclick="switchVendorTab('inquiries')" id="tabBtnInquiries" class="vendor-tab px-4 py-2.5 text-xs font-bold rounded-xl transition flex items-center gap-2 cursor-pointer text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]">
+          <span>💼</span> B2B Purchase Inquiries
+        </button>
+        <button onclick="switchVendorTab('profile')" id="tabBtnProfile" class="vendor-tab px-4 py-2.5 text-xs font-bold rounded-xl transition flex items-center gap-2 cursor-pointer text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]">
+          <span>🏢</span> Supplier Profile
+        </button>
+      </div>
+
+      <!-- SECTION 1: AC EQUIPMENT SUPPLY -->
+      <section id="sectionProducts" class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/30">
+          <div>
+            <h2 class="text-base font-bold text-[#342C27] dark:text-[#F2EDE3]">AC Units &amp; Equipment Inventory</h2>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Submit wholesale supply rates and availability for consumer-facing catalog models.</p>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="searchProductInput" placeholder="Filter by brand or model..." oninput="filterVendorProducts()" class="px-3.5 py-1.5 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916] text-xs text-[#342C27] dark:text-[#F2EDE3] placeholder-[#B8AA98] focus:outline-none focus:ring-1 focus:ring-[#A05B3A]">
+          </div>
+        </div>
+
+        <div class="bg-white/80 dark:bg-[#27211D]/80 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[#E6DFD3]/40 dark:bg-[#1F1916] border-b border-[#B8AA98]/30 text-[#655448] dark:text-[#B8AA98] font-bold uppercase tracking-wider">
+                  <th class="p-3.5">Product Details</th>
+                  <th class="p-3.5">Consumer MRP</th>
+                  <th class="p-3.5">Wholesale Supply Rate</th>
+                  <th class="p-3.5">Stock Status</th>
+                  <th class="p-3.5">Lead Time</th>
+                  <th class="p-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="vendorProductList" class="divide-y divide-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3]">
+                <tr>
+                  <td colspan="6" class="p-6 text-center text-[#655448] dark:text-[#B8AA98]">Loading supplier catalog...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: SPARE PARTS & GAS -->
+      <section id="sectionSpares" class="space-y-4 hidden">
+        <div class="bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/30">
+          <h2 class="text-base font-bold text-[#342C27] dark:text-[#F2EDE3]">OEM Spare Parts &amp; Consumables Supply</h2>
+          <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Set wholesale supplier pricing for essential HVAC components used in servicing.</p>
+        </div>
+
+        <div class="bg-white/80 dark:bg-[#27211D]/80 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[#E6DFD3]/40 dark:bg-[#1F1916] border-b border-[#B8AA98]/30 text-[#655448] dark:text-[#B8AA98] font-bold uppercase tracking-wider">
+                  <th class="p-3.5">Component / Specification</th>
+                  <th class="p-3.5">Compatible AC Brands</th>
+                  <th class="p-3.5">Supplier Unit Cost</th>
+                  <th class="p-3.5">Warranty</th>
+                  <th class="p-3.5">Quantity Available</th>
+                  <th class="p-3.5 text-right">Update</th>
+                </tr>
+              </thead>
+              <tbody id="vendorSparesList" class="divide-y divide-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3]">
+                <!-- Populated dynamically by vendor.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: B2B COMMERCIAL INQUIRIES -->
+      <section id="sectionInquiries" class="space-y-4 hidden">
+        <div class="bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/30">
+          <h2 class="text-base font-bold text-[#342C27] dark:text-[#F2EDE3]">Commercial Lead Quotations</h2>
+          <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Submit wholesale supply bids for bulk corporate customer inquiries forwarded by ESS Admin.</p>
+        </div>
+
+        <div id="vendorInquiryCards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- SECTION 4: SUPPLIER PROFILE & COMPLIANCE -->
+      <section id="sectionProfile" class="space-y-4 hidden">
+        <div class="bg-white/80 dark:bg-[#27211D]/80 p-6 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs max-w-2xl space-y-4">
+          <h2 class="text-lg font-bold text-[#342C27] dark:text-[#F2EDE3]">Supplier Partner Details</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="font-bold text-[#655448] dark:text-[#B8AA98]">Vendor Name</label>
+              <input type="text" id="vendorNameInput" value="Chembur Aircon Spares &amp; Logistics" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916]">
+            </div>
+            <div>
+              <label class="font-bold text-[#655448] dark:text-[#B8AA98]">GSTIN Number</label>
+              <input type="text" id="vendorGstinInput" value="27ANTPP9778J1ZO" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916]">
+            </div>
+            <div>
+              <label class="font-bold text-[#655448] dark:text-[#B8AA98]">Dispatch Hub / Warehouse</label>
+              <input type="text" id="vendorWarehouseInput" value="Shell Colony, Chembur East, Mumbai - 400071" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916]">
+            </div>
+            <div>
+              <label class="font-bold text-[#655448] dark:text-[#B8AA98]">Contact Phone</label>
+              <input type="text" id="vendorPhoneInput" value="7977805245 / 9969423500" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916]">
+            </div>
+          </div>
+          <div class="pt-2">
+            <button type="button" onclick="saveVendorProfile()" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-5 py-2 rounded-xl font-bold text-xs shadow-xs transition cursor-pointer">
+              Save Partner Particulars
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL: SUBMIT BID -->
+    <div id="bidModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs hidden">
+      <div class="bg-white dark:bg-[#27211D] rounded-2xl max-w-md w-full p-6 space-y-4 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xl">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-bold text-[#342C27] dark:text-[#F2EDE3]">Submit Commercial Supply Bid</h3>
+          <button onclick="closeBidModal()" class="text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white text-lg font-bold">×</button>
+        </div>
+        <p id="bidModalInquirySummary" class="text-xs text-[#655448] dark:text-[#B8AA98]">Quoting for: Daikin 1.5T 5 Star Inverter Split AC (5 units)</p>
+        
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="font-bold text-[#655448] dark:text-[#B8AA98]">Wholesale Unit Rate (excl. GST)</label>
+            <input type="number" id="bidUnitRate" placeholder="e.g. 41500" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3]">
+          </div>
+          <div>
+            <label class="font-bold text-[#655448] dark:text-[#B8AA98]">Available Delivery Window</label>
+            <select id="bidDeliveryWindow" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3]">
+              <option value="Same Day (Chembur/Mumbai Hub)">Same Day (Chembur / Mumbai Hub)</option>
+              <option value="24 - 48 Hours">24 - 48 Hours</option>
+              <option value="3 - 5 Business Days">3 - 5 Business Days</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-[#655448] dark:text-[#B8AA98]">Warranty &amp; Notes</label>
+            <textarea id="bidNotes" rows="2" placeholder="e.g. 1 Year comprehensive + 5 yr compressor warranty included" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-white dark:bg-[#1F1916] text-[#342C27] dark:text-[#F2EDE3]"></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button onclick="closeBidModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-black/5 dark:hover:bg-white/5 transition">Cancel</button>
+          <button onclick="submitBidConfirmed()" class="px-5 py-2 rounded-xl text-xs font-bold bg-[#A05B3A] hover:bg-[#944E2E] text-white transition shadow-xs">Submit Bid to Admin</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <script src="js/vendor.js"></script>
+  </body>
+</html>

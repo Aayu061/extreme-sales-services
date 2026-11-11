@@ -282,19 +282,26 @@ function renderTable() {
                 ${req.dispatch_score ? `<div class="text-[9px] text-[#A05B3A] dark:text-[#E4C99A] font-bold bg-[#A05B3A]/10 dark:bg-[#A05B3A]/20 px-1 py-0.5 rounded border border-[#A05B3A]/30 w-max mt-0.5">⚡ ${escapeHtml(req.dispatch_score)}% Match</div>` : ''}
             </td>
             <td class="px-5 py-4">
-                <select onchange="assignTechnician('${req.request_id}', this.value)" class="w-full min-w-[145px] bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3] rounded-lg py-1.5 px-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none font-medium">
-                    ${techOpts}
-                </select>
-                ${req.status === 'Pending' ? `
-                <button type="button" onclick="triggerAlgorithmicAutoDispatch('${req.request_id}')" class="mt-1.5 w-full bg-[#A05B3A]/15 hover:bg-[#A05B3A] text-[#A05B3A] dark:text-[#E4C99A] hover:text-white border border-[#A05B3A]/30 font-black py-1 px-2 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Compute optimal technician using MOW-GDM algorithm">
-                    <span>⚡</span>
-                    <span>Auto-Match AI</span>
-                </button>
-                ` : ''}
+                ${(req.pys_request_number || req.status === 'Forwarded to PYS' || req.pys_status) ? `
+                    <div class="inline-flex flex-col gap-1">
+                        <span class="inline-flex items-center gap-1.5 bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] border border-[#77B89A]/30 text-[10px] font-black px-2 py-1 rounded-lg">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#77B89A] animate-pulse"></span>
+                            <span>PYS Synced · ${escapeHtml(req.pys_request_number || 'Live')}</span>
+                        </span>
+                        ${req.technician_name ? `<span class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Tech: <strong>${escapeHtml(req.technician_name)}</strong></span>` : '<span class="text-[9px] text-[#B8AA98]">Awaiting PYS Dispatcher</span>'}
+                    </div>
+                ` : `
+                    <button type="button" id="fwdBtn_${req.request_id}" onclick="forwardToPys('${req.request_id}')" class="w-full bg-[#A05B3A] hover:bg-[#8D4B2D] text-white font-bold py-1.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95">
+                        <span>🚀</span>
+                        <span>Forward to PYS</span>
+                    </button>
+                    <div class="text-[9px] text-[#655448] dark:text-[#B8AA98] text-center mt-1">Handoff to Enterprise FSM</div>
+                `}
             </td>
             <td class="px-5 py-4">
                 <select onchange="updateRequestStatus('${req.request_id}', this.value)" class="w-full min-w-[130px] bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#F2EDE3] rounded-lg py-1.5 px-2 text-xs font-bold outline-none">
                     <option value="Pending" ${req.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                    <option value="Forwarded to PYS" ${req.status === 'Forwarded to PYS' ? 'selected' : ''}>🏢 Forwarded to PYS</option>
                     <option value="Assigned" ${req.status === 'Assigned' ? 'selected' : ''}>🧑‍🔧 Assigned</option>
                     <option value="In Progress" ${req.status === 'In Progress' ? 'selected' : ''}>🛠️ In Progress</option>
                     <option value="Completed" ${req.status === 'Completed' ? 'selected' : ''}>✅ Completed</option>
@@ -369,6 +376,40 @@ function renderTechnicianRadar() {
         grid.appendChild(card);
     });
 }
+
+async function forwardToPys(ticketId) {
+    const btn = document.getElementById(`fwdBtn_${ticketId}`);
+    if (btn) {
+        btn.innerHTML = `<span>⏳</span><span>Syncing...</span>`;
+        btn.disabled = true;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/api/inquiries/forward-to-pys`, {
+            method: 'POST',
+            headers: authHeaders,
+            body: JSON.stringify({ ticketId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast(`✅ ${data.message || 'Forwarded to Place Your Service!'}`, 'success');
+            fetchServiceRequests();
+        } else {
+            showToast(`❌ ${data.message || 'Failed to forward to PYS'}`, 'error');
+            if (btn) {
+                btn.innerHTML = `<span>🚀</span><span>Forward to PYS</span>`;
+                btn.disabled = false;
+            }
+        }
+    } catch (e) {
+        showToast('Network error while forwarding to PYS', 'error');
+        if (btn) {
+            btn.innerHTML = `<span>🚀</span><span>Forward to PYS</span>`;
+            btn.disabled = false;
+        }
+    }
+}
+window.forwardToPys = forwardToPys;
 
 async function updateRequestStatus(requestId, newStatus) {
     try {

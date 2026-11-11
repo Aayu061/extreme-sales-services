@@ -30,13 +30,15 @@ const {
     generateSecureRequestId,
     validateProductInput
 } = require('./server/middleware/security');
+const pysIntegrationService = require('./server/services/pysIntegrationService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Tightened Cross-Origin Resource Sharing (CORS)
+// Tightened Cross-Origin Resource Sharing (CORS) with Place Your Service (PYS) whitelisting
 const allowedOrigins = [
     process.env.APP_URL,
+    process.env.PYS_FRONTEND_URL || 'https://place-your-service.vercel.app',
     'https://extreme-sales-services.vercel.app',
     'http://localhost:5000',
     'http://localhost:3000',
@@ -141,19 +143,19 @@ let systemUsers = [
     },
     {
         id: "usr-staff",
-        name: "Staff Dispatcher",
+        name: "Staff Operations",
         email: "staff@extremess.com",
         role: "staff",
         phone: "9820011000",
         password: "staff123"
     },
     {
-        id: "usr-tech-1",
-        name: "Field Technician",
-        email: "tech@extremess.com",
-        role: "technician",
+        id: "usr-vendor-1",
+        name: "Authorized Equipment & Spares Vendor",
+        email: "vendor@extremess.com",
+        role: "vendor",
         phone: "9820011223",
-        password: "tech123"
+        password: "vendor123"
     }
 ];
 
@@ -384,7 +386,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
             if (requestedRole && typeof requestedRole === 'string') {
                 const targetRole = requestedRole.trim().toLowerCase();
                 if (user.role !== targetRole) {
-                    const portalNames = { admin: 'Admin', staff: 'Staff', technician: 'Field Tech' };
+                    const portalNames = { admin: 'Admin', staff: 'Staff', vendor: 'Vendor' };
                     const userPortal = portalNames[user.role] || user.role;
                     return res.status(403).json({
                         success: false,
@@ -431,7 +433,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
     if (requestedRole && typeof requestedRole === 'string') {
         const targetRole = requestedRole.trim().toLowerCase();
         if (matchedUser.role !== targetRole) {
-            const portalNames = { admin: 'Admin', staff: 'Staff', technician: 'Field Tech' };
+            const portalNames = { admin: 'Admin', staff: 'Staff', vendor: 'Vendor' };
             const userPortal = portalNames[matchedUser.role] || matchedUser.role;
             return res.status(403).json({
                 success: false,
@@ -554,6 +556,35 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
                 });
             }
 
+            // Dual-Platform Sync: Auto-forward service inquiry to Place Your Service (PYS) REST Engine
+            Promise.resolve().then(async () => {
+                try {
+                    const ticketForPys = {
+                        id: requestId,
+                        ticketId: requestId,
+                        name: name.trim(),
+                        phone: formattedPhone,
+                        email: (email || '').trim().toLowerCase(),
+                        address: address.trim(),
+                        serviceType: serviceType.trim(),
+                        description: (message || '').trim(),
+                        preferredDate: new Date().toISOString().split('T')[0]
+                    };
+                    const syncRes = await pysIntegrationService.forwardServiceRequest(ticketForPys);
+                    if (syncRes.success) {
+                        console.log(`[PYS Live Sync] Successfully forwarded ${requestId} to PYS: ${syncRes.pysRequestNumber || syncRes.pysRequestId}`);
+                        await db.collection('service_requests').doc(requestId).update({
+                            status: 'Forwarded to PYS',
+                            pys_request_id: syncRes.pysRequestId || '',
+                            pys_request_number: syncRes.pysRequestNumber || '',
+                            pys_synced_at: syncRes.syncedAt || new Date().toISOString()
+                        });
+                    }
+                } catch (err) {
+                    console.warn('[PYS Live Sync] Background sync deferred:', err.message);
+                }
+            });
+
             return res.status(201).json({ success: true, requestId });
         }
 
@@ -584,6 +615,27 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
             created_at: new Date().toISOString()
         };
         serviceRequests.unshift(newReq);
+
+        // Local Dual-Platform Sync
+        Promise.resolve().then(async () => {
+            try {
+                const syncRes = await pysIntegrationService.forwardServiceRequest({
+                    id: requestId,
+                    ticketId: requestId,
+                    name: name.trim(),
+                    phone: formattedPhone,
+                    email: email,
+                    address: address.trim(),
+                    serviceType: serviceType.trim(),
+                    description: (message || '').trim()
+                });
+                if (syncRes.success) {
+                    newReq.status = 'Forwarded to PYS';
+                    newReq.pys_request_id = syncRes.pysRequestId || '';
+                    newReq.pys_request_number = syncRes.pysRequestNumber || '';
+                }
+            } catch (_) {}
+        });
 
         return res.status(201).json({ success: true, requestId });
     } catch (err) {
@@ -1226,6 +1278,229 @@ app.get('/api/technician/jobs', authMiddleware(['technician', 'admin', 'staff'])
     // Local Mock Store Mode
     let jobs = serviceRequests.filter(r => r.technician_id === techId);
     res.json({ success: true, requests: jobs });
+});
+
+// ═══════════════════════════════════════════════════════════
+// PLACE YOUR SERVICE (PYS) DUAL-PLATFORM INTEGRATION & WEBHOOKS
+// ═══════════════════════════════════════════════════════════
+
+// Indian GSTIN Statutory Compliance Lookup (Calls PYS with Algorithmic Fallback)
+app.post('/api/compliance/gstin/lookup', async (req, res) => {
+    const { gstin } = req.body;
+    if (!gstin) {
+        return res.status(400).json({ success: false, message: 'GSTIN is required' });
+    }
+    const result = await pysIntegrationService.lookupGstin(gstin);
+    if (result.success) {
+        return res.json(result);
+    }
+    return res.status(400).json(result);
+});
+
+// PYS Enterprise Connection Health & Latency Telemetry
+app.get('/api/integrations/pys/health', authMiddleware(['admin']), async (req, res) => {
+    const health = await pysIntegrationService.checkHealth();
+    res.json({ success: true, health });
+});
+
+// Staff / Admin 1-Click Service Inquiry Forwarding to PYS Enterprise
+app.post('/api/inquiries/forward-to-pys', authMiddleware(['admin', 'staff']), async (req, res) => {
+    const { ticketId } = req.body;
+    if (!ticketId) {
+        return res.status(400).json({ success: false, message: 'ticketId is required.' });
+    }
+
+    let targetTicket = null;
+    let targetDocId = null;
+
+    if (isFirebaseMode) {
+        try {
+            const snap = await db.collection('service_requests').where('request_id', '==', ticketId).get();
+            if (!snap.empty) {
+                targetDocId = snap.docs[0].id;
+                targetTicket = { id: ticketId, ...snap.docs[0].data() };
+            } else {
+                const docById = await db.collection('service_requests').doc(ticketId).get();
+                if (docById.exists) {
+                    targetDocId = docById.id;
+                    targetTicket = { id: ticketId, ...docById.data() };
+                }
+            }
+        } catch (e) {
+            console.error('Database query error on forwarding:', e.message);
+        }
+    } else {
+        targetTicket = serviceRequests.find(r => r.request_id === ticketId || r.id === ticketId);
+    }
+
+    if (!targetTicket) {
+        return res.status(404).json({ success: false, message: 'Ticket not found.' });
+    }
+
+    const syncResult = await pysIntegrationService.forwardServiceRequest(targetTicket);
+
+    if (syncResult.success) {
+        const updatePayload = {
+            status: 'Forwarded to PYS',
+            pys_request_id: syncResult.pysRequestId || '',
+            pys_request_number: syncResult.pysRequestNumber || '',
+            pys_synced_at: syncResult.syncedAt || new Date().toISOString()
+        };
+
+        if (isFirebaseMode && targetDocId) {
+            await db.collection('service_requests').doc(targetDocId).update(updatePayload);
+        } else if (targetTicket) {
+            Object.assign(targetTicket, updatePayload);
+        }
+
+        return res.json({
+            success: true,
+            message: `Service Inquiry ${ticketId} successfully forwarded to Place Your Service!`,
+            pysRequestNumber: syncResult.pysRequestNumber,
+            pysRequestId: syncResult.pysRequestId
+        });
+    } else {
+        return res.status(502).json({
+            success: false,
+            message: syncResult.error || 'Failed to forward to PYS Enterprise API.'
+        });
+    }
+});
+
+// Inbound Outbound Webhook Receiver from PYS
+app.post('/api/webhooks/pys', async (req, res) => {
+    if (!pysIntegrationService.verifyWebhookAuth(req)) {
+        return res.status(401).json({ success: false, message: 'Unauthorized: Invalid webhook secret.' });
+    }
+
+    const { event, pysRequestId, pysRequestNumber, externalReferenceId, status, technician, scheduledDate } = req.body;
+    console.log(`[PYS Inbound Webhook] Event: ${event}, Ref: ${externalReferenceId}, Status: ${status}`);
+
+    if (!externalReferenceId) {
+        return res.status(400).json({ success: false, message: 'Missing externalReferenceId' });
+    }
+
+    const statusMap = {
+        'REQUESTED': 'Pending',
+        'PENDING': 'Pending',
+        'SCHEDULED': 'Scheduled',
+        'ASSIGNED': 'Assigned',
+        'EN_ROUTE': 'In Progress',
+        'IN_PROGRESS': 'In Progress',
+        'RESOLVED': 'Completed',
+        'COMPLETED': 'Completed',
+        'CANCELLED': 'Cancelled'
+    };
+
+    const mappedStatus = statusMap[status] || status || 'In Progress';
+    const updateData = {
+        status: mappedStatus,
+        pys_status: status,
+        pys_request_id: pysRequestId,
+        pys_request_number: pysRequestNumber,
+        updated_at: new Date().toISOString()
+    };
+
+    if (technician && technician.name) {
+        updateData.technician_name = technician.name;
+        updateData.technician_phone = technician.phone || '';
+    }
+    if (scheduledDate) {
+        updateData.scheduled_date = scheduledDate;
+    }
+
+    try {
+        if (isFirebaseMode) {
+            const snap = await db.collection('service_requests').where('request_id', '==', externalReferenceId).get();
+            if (!snap.empty) {
+                await snap.docs[0].ref.update(updateData);
+            } else {
+                const docSnap = await db.collection('service_requests').doc(externalReferenceId).get();
+                if (docSnap.exists) {
+                    await docSnap.ref.update(updateData);
+                }
+            }
+        } else {
+            const match = serviceRequests.find(r => r.request_id === externalReferenceId || r.id === externalReferenceId);
+            if (match) {
+                Object.assign(match, updateData);
+            }
+        }
+        return res.json({ success: true, message: 'Webhook processed successfully' });
+    } catch (err) {
+        console.error('[PYS Webhook Processing Error]:', err.message);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════
+// VENDOR PARTNER PORTAL ENDPOINTS
+// ═══════════════════════════════════════════════════════════
+
+let vendorSubmissions = [];
+
+// List products for vendor catalog management
+app.get('/api/vendor/products', authMiddleware(['vendor', 'admin']), (req, res) => {
+    res.json({ success: true, products: products });
+});
+
+// Vendor updates wholesale price, stock, or lead time
+app.post('/api/vendor/inventory-update', authMiddleware(['vendor', 'admin']), (req, res) => {
+    const { productId, rate, stock, lead } = req.body;
+    const vendorId = req.user.id;
+
+    const existingIndex = vendorSubmissions.findIndex(s => s.productId === productId && s.vendorId === vendorId);
+    const updateRecord = {
+        vendorId,
+        productId,
+        rate: Number(rate) || 0,
+        stock: Number(stock) || 0,
+        lead: lead || '24 - 48 Hours',
+        updatedAt: new Date().toISOString()
+    };
+
+    if (existingIndex >= 0) {
+        vendorSubmissions[existingIndex] = updateRecord;
+    } else {
+        vendorSubmissions.push(updateRecord);
+    }
+
+    res.json({ success: true, message: 'Vendor inventory updated successfully', record: updateRecord });
+});
+
+// Vendor views open B2B purchase inquiries
+app.get('/api/vendor/inquiries', authMiddleware(['vendor', 'admin']), (req, res) => {
+    // Return sample B2B bulk inquiries
+    const inquiries = [
+        {
+            id: 'INQ-B2B-101',
+            client: 'Kiran Logistics Chembur',
+            requirement: '5x 1.5 Ton 5-Star Inverter Split ACs for Ground Office',
+            preferredBrand: 'Daikin or Voltas',
+            targetDate: 'Within 48 Hours',
+            status: 'Open for Bids'
+        },
+        {
+            id: 'INQ-B2B-102',
+            client: 'Greenfield Diagnostic Clinic',
+            requirement: '2x 2.0 Ton Heavy Duty Split ACs for Server & Scanning Room',
+            preferredBrand: 'Blue Star / Daikin',
+            targetDate: 'Urgent (Same Day)',
+            status: 'Open for Bids'
+        }
+    ];
+    res.json({ success: true, inquiries });
+});
+
+// Vendor submits commercial supply bid
+app.post('/api/vendor/submit-bid', authMiddleware(['vendor', 'admin']), (req, res) => {
+    const { inquiryId, rate, window, notes } = req.body;
+    console.log(`[Vendor Bid Received] Inquiry: ${inquiryId}, Rate: ₹${rate}, Vendor: ${req.user.name}`);
+    res.json({
+        success: true,
+        message: 'Commercial bid submitted successfully to ESS Admin',
+        bid: { inquiryId, rate, window, notes, submittedAt: new Date().toISOString() }
+    });
 });
 
 // Phase 2.7: Algorithmic Team Onboarding & Unified Team Directory

@@ -98,8 +98,8 @@
           <a href="staff.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
             <span>📡</span> <span>Staff Dispatch Console</span> <span class="text-[10px] text-stone-400">↗</span>
           </a>
-          <a href="technician.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
-            <span>📱</span> <span>Technician Field App</span> <span class="text-[10px] text-stone-400">↗</span>
+          <a href="vendor.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
+            <span>🏭</span> <span>Vendor Partner Portal</span> <span class="text-[10px] text-stone-400">↗</span>
           </a>
           <a href="status.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
             <span>📍</span> <span>Public Order Tracking</span> <span class="text-[10px] text-stone-400">↗</span>
@@ -376,7 +376,7 @@
                   <th class="px-5 py-3.5">Customer &amp; Request ID</th>
                   <th class="px-5 py-3.5">Service Details</th>
                   <th class="px-5 py-3.5">Status</th>
-                  <th class="px-5 py-3.5">Technician Assignment</th>
+                  <th class="px-5 py-3.5">PYS Enterprise Sync</th>
                   <th class="px-5 py-3.5">Status Control</th>
                   <th class="px-5 py-3.5">Actions</th>
                 </tr>
@@ -413,8 +413,8 @@
                 <div>
                   <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">System Role</label>
                   <select id="newUserRole" onchange="onUserRoleChange()" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-                    <option value="technician" selected>Technician (Field App)</option>
-                    <option value="staff">Staff (Dispatcher)</option>
+                    <option value="vendor" selected>Vendor / Supplier Partner</option>
+                    <option value="staff">Staff Operations</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
@@ -534,13 +534,13 @@
               <!-- Directory Filter Tabs -->
               <div class="flex flex-wrap items-center gap-2 p-1.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/30 dark:border-[#B8AA98]/15">
                 <button type="button" id="tabFilterAll" onclick="setTeamRoleFilter('all', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-black bg-[#A05B3A] text-white shadow-xs transition">
-                  All Team Members (<span id="countTeamAll">0</span>)
+                  All Directory (<span id="countTeamAll">0</span>)
                 </button>
-                <button type="button" id="tabFilterTech" onclick="setTeamRoleFilter('technician', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
-                  🧑‍🔧 Field Technicians (<span id="countTeamTech">0</span>)
+                <button type="button" id="tabFilterVendor" onclick="setTeamRoleFilter('vendor', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
+                  🏭 Suppliers &amp; Vendors (<span id="countTeamVendor">0</span>)
                 </button>
                 <button type="button" id="tabFilterStaff" onclick="setTeamRoleFilter('staff', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
-                  🎧 Dispatch Staff (<span id="countTeamStaff">0</span>)
+                  🎧 Staff Operations (<span id="countTeamStaff">0</span>)
                 </button>
                 <button type="button" id="tabFilterAdmin" onclick="setTeamRoleFilter('admin', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
                   👑 Administrators (<span id="countTeamAdmin">0</span>)

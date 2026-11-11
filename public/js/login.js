@@ -26,15 +26,15 @@ const roleMeta = {
         badgeClass: 'bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] border border-[#77B89A]/30',
         redirect: 'staff.html'
     },
-    technician: {
-        label: 'Field Tech',
-        title: 'Technician Mobile Portal',
-        subtitle: 'Access daily schedules, on-site jobs & status updates',
-        bodyClass: 'role-technician',
-        btnBg: 'bg-[#D97706]',
-        hoverBtnBg: 'hover:bg-[#B45309]',
-        badgeClass: 'bg-[#D97706]/15 text-[#D97706] dark:text-[#E4C99A] border border-[#D97706]/30',
-        redirect: 'technician.html'
+    vendor: {
+        label: 'Vendor',
+        title: 'Supplier Partner Portal',
+        subtitle: 'Manage wholesale inventory, spare parts & commercial quotes',
+        bodyClass: 'role-vendor',
+        btnBg: 'bg-[#A05B3A]',
+        hoverBtnBg: 'hover:bg-[#8D4B2D]',
+        badgeClass: 'bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] border border-[#A05B3A]/30',
+        redirect: 'vendor.html'
     }
 };
 
@@ -118,8 +118,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             }
             localStorage.setItem('ess_token', data.token);
             localStorage.setItem('ess_role', data.role);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('role', data.role);
             if (data.user) {
                 localStorage.setItem('ess_user', JSON.stringify(data.user));
+                localStorage.setItem('user', JSON.stringify(data.user));
             }
 
             if (window.showToast) {
@@ -224,9 +227,9 @@ window.fillVivaDemo = function() {
     } else if (currentRole === 'staff') {
         if (emailEl) emailEl.value = 'staff@extremess.com';
         if (passEl) passEl.value = 'staff123';
-    } else if (currentRole === 'technician') {
-        if (emailEl) emailEl.value = 'tech@extremess.com';
-        if (passEl) passEl.value = 'tech123';
+    } else if (currentRole === 'vendor') {
+        if (emailEl) emailEl.value = 'vendor@extremess.com';
+        if (passEl) passEl.value = 'vendor123';
     }
     if (window.showToast) window.showToast(`Pre-filled credentials for ${currentRole.toUpperCase()}`, 'info');
 };

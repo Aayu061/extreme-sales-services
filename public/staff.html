@@ -181,6 +181,7 @@
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
               <button type="button" onclick="filterStatus('All', this)" class="filter-pill active bg-[#342C27] text-white dark:bg-[#F2EDE3] dark:text-[#342C27] text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs cursor-pointer">All</button>
               <button type="button" onclick="filterStatus('Pending', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">⏳ Pending</button>
+              <button type="button" onclick="filterStatus('Forwarded to PYS', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">🏢 Forwarded to PYS</button>
               <button type="button" onclick="filterStatus('Assigned', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">🧑‍🔧 Assigned</button>
               <button type="button" onclick="filterStatus('In Progress', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">🛠️ In Progress</button>
               <button type="button" onclick="filterStatus('Completed', this)" class="filter-pill bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/30 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">✅ Completed</button>
@@ -217,7 +218,7 @@
                   <th class="px-5 py-3.5">Customer &amp; Location</th>
                   <th class="px-5 py-3.5">Service Details</th>
                   <th class="px-5 py-3.5">Status</th>
-                  <th class="px-5 py-3.5">Assign Field Tech</th>
+                  <th class="px-5 py-3.5">PYS Enterprise Sync</th>
                   <th class="px-5 py-3.5">Status Control</th>
                   <th class="px-5 py-3.5">Contact Customer</th>
                 </tr>
