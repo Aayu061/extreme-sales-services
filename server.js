@@ -162,27 +162,179 @@ const initialProducts = require('./server/data/products.js');
 let products = Array.isArray(initialProducts) ? [...initialProducts] : [];
 const amcPlans = [
     {
-        id: "amc-1",
-        name: "Eco Saver Plan",
-        price: 1200,
-        services_per_year: 2,
-        description: "2 Jet-pump wet washes, pressure diagnostics, electrical checks & 10% off parts.",
-        created_at: new Date().toISOString()
-    },
-    {
-        id: "amc-2",
-        name: "Comfort Standard Plan",
-        price: 2400,
-        services_per_year: 3,
-        description: "3 Jet-pump deep cleans, free unlimited breakdown visits, electrical checks, and 20% off gas top-ups.",
-        created_at: new Date().toISOString()
-    },
-    {
-        id: "amc-3",
-        name: "Elite Ultimate Plan",
-        price: 4500,
+        id: "amc-samc-1",
+        code: "SAMC 1",
+        name: "SAMC 1 - Comprehensive Split (Non-Inverter)",
+        category: "samc",
+        ac_type: "split",
+        inverter: false,
         services_per_year: 4,
-        description: "4 Quarterly jet cleans, fully covered gas refilling, free capacitor/motor parts replacement, 4-hour priority response.",
+        unlimited_complaints: true,
+        includes_parts: true,
+        includes_gas: false,
+        prices: {
+            "0.8_1.0": 2999,
+            "1.5_2.2": 3999
+        },
+        price: 2999,
+        description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, Motor Winding & PCB Repair",
+        terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-samc-2",
+        code: "SAMC 2",
+        name: "SAMC 2 - Comprehensive Split with Gas Charging",
+        category: "samc",
+        ac_type: "split",
+        services_per_year: 4,
+        unlimited_complaints: true,
+        includes_parts: true,
+        includes_gas: true,
+        popular: true,
+        prices: {
+            "0.8_1.0": 4499,
+            "1.5_2.2": 5499
+        },
+        price: 4499,
+        description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, PCB Repair, Motor Winding & Gas Charging",
+        terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-samc-3",
+        code: "SAMC 3",
+        name: "SAMC 3 - Comprehensive Window with Gas Charging",
+        category: "samc",
+        ac_type: "window",
+        services_per_year: 4,
+        unlimited_complaints: true,
+        includes_parts: true,
+        includes_gas: true,
+        prices: {
+            "0.8_1.0": 3499,
+            "1.5_2.2": 4499
+        },
+        price: 3499,
+        description: "4 Services, Unlimited Complaints Attend, Capacitor Replace, PCB Repair, Motor Winding & Gas Charging",
+        terms: "For SAMC AC's Must Have Under 3 Years from Purchase. GST Extra 28%.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-ord-3",
+        code: "ORD 3",
+        name: "Ordinary 3 Visits / 3 Services",
+        category: "ordinary",
+        ac_type: "all",
+        services_per_year: 3,
+        unlimited_complaints: false,
+        includes_parts: false,
+        includes_gas: false,
+        prices: {
+            "split": 1500,
+            "window": 1000
+        },
+        price: 1500,
+        description: "Ordinary 3 Scheduled Routine Services / Visits per year",
+        terms: "All Rates are Basic GST Applicable as per requirement.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-ord-4",
+        code: "ORD 4",
+        name: "Ordinary 4 Services & Unlimited Complaints",
+        category: "ordinary",
+        ac_type: "all",
+        services_per_year: 4,
+        unlimited_complaints: true,
+        includes_parts: false,
+        includes_gas: false,
+        prices: {
+            "split": 1800,
+            "window": 1300
+        },
+        price: 1800,
+        description: "Ordinary 4 Services & Unlimited Normal Complaints Attend (Window includes 1 Wet Service)",
+        terms: "All Rates are Basic GST Applicable as per requirement.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-ord-6",
+        code: "ORD 6",
+        name: "Ordinary 6 Services & Unlimited Complaints",
+        category: "ordinary",
+        ac_type: "all",
+        services_per_year: 6,
+        unlimited_complaints: true,
+        includes_parts: false,
+        includes_gas: false,
+        prices: {
+            "split": 2200,
+            "window": 1700
+        },
+        price: 2200,
+        description: "Ordinary 6 Services & Unlimited Normal Complaints Attend (Window includes 1 Wet Service)",
+        terms: "All Rates are Basic GST Applicable as per requirement.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-jacket-2",
+        code: "JACKET 2",
+        name: "2 Jacket Service & Unlimited Complaints",
+        category: "specialized",
+        ac_type: "split",
+        services_per_year: 2,
+        unlimited_complaints: true,
+        includes_parts: false,
+        includes_gas: false,
+        price: 2599,
+        description: "2 Jacket Deep Washing Services & Unlimited Breakdown Complaints Attend",
+        terms: "All Rates are Basic GST Applicable as per requirement.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-jacket-3",
+        code: "JACKET 3",
+        name: "3 Jacket Service & Unlimited Complaints",
+        category: "specialized",
+        ac_type: "split",
+        services_per_year: 3,
+        unlimited_complaints: true,
+        includes_parts: false,
+        includes_gas: false,
+        price: 3599,
+        description: "3 Jacket Deep Washing Services & Unlimited Breakdown Complaints Attend",
+        terms: "All Rates are Basic GST Applicable as per requirement.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-pump-down",
+        code: "PUMP DOWN",
+        name: "Pump Down Service",
+        category: "specialized",
+        ac_type: "all",
+        services_per_year: 1,
+        unlimited_complaints: false,
+        includes_parts: false,
+        includes_gas: false,
+        price: 1299,
+        description: "Pump Down Service (Gas Top Up Not Included if required)",
+        terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement.",
+        created_at: new Date().toISOString()
+    },
+    {
+        id: "amc-jet-wash",
+        code: "JET WASH",
+        name: "Jet Wash Deep Service",
+        category: "specialized",
+        ac_type: "all",
+        services_per_year: 1,
+        unlimited_complaints: false,
+        includes_parts: false,
+        includes_gas: false,
+        price: 1199,
+        description: "Full High-Pressure Jet Wash Deep Cleaning for Indoor & Outdoor Coils",
+        terms: "Per unit basis. All Rates are Basic GST Applicable as per requirement.",
         created_at: new Date().toISOString()
     }
 ];
@@ -1732,9 +1884,10 @@ app.patch('/api/admin/customer-amc/:id/activate', authMiddleware(['admin']), asy
 });
 
 app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
-    const { name, phone, plan_name, address, email } = req.body || {};
+    const { name, customer_name, phone, plan_name, plan_id, ac_type, tonnage, price, address, email, services_per_year } = req.body || {};
+    const finalName = (name || customer_name || '').trim();
 
-    if (!validateName(name)) {
+    if (!validateName(finalName)) {
         return res.status(400).json({ success: false, message: "Please provide a valid customer name." });
     }
     if (!validatePhone(phone)) {
@@ -1744,13 +1897,17 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
 
     const newSub = {
         id: "sub-" + Date.now(),
-        customer_name: name.trim(),
+        customer_name: finalName,
         phone: formattedPhone,
         email: email ? email.trim().toLowerCase() : '',
         address: address ? address.trim() : '',
+        plan_id: plan_id || '',
         plan_name: (plan_name || "Comfort Standard Plan").trim(),
+        ac_type: ac_type || 'split',
+        tonnage: tonnage || '1.5',
+        price: Number(price) || 0,
         status: "Pending",
-        remaining_services: 3,
+        remaining_services: Number(services_per_year) || 4,
         created_at: new Date().toISOString()
     };
 
@@ -1764,7 +1921,7 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
                     try {
                         await emailService.sendAMCConfirmationEmail(
                             email.trim().toLowerCase(),
-                            name.trim(),
+                            finalName,
                             newSub.plan_name,
                             formattedPhone
                         );

@@ -97,16 +97,31 @@
 
     <!-- HERO HEADER -->
     <header class="pt-32 pb-14 px-4 text-center relative overflow-hidden border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3] dark:from-[#1A1412] dark:to-[#27211D]">
-      <div class="relative z-10 max-w-3xl mx-auto">
-        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-sm text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-xs mb-4">
-          <span class="w-2 h-2 rounded-full bg-[#77B89A]"></span> Guaranteed Zero Breakdown Support
-        </span>
+      <div class="relative z-10 max-w-4xl mx-auto">
+        <div class="flex flex-wrap justify-center items-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-sm text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span> Official Contract Rate Chart 2026
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#27211D]/10 dark:bg-[#F2EDE3]/10 text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/30">
+            📍 Chembur (E), Mumbai - 400071
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30">
+            GSTIN: 27ANTPP9778J1ZO
+          </span>
+        </div>
         <h1 class="text-3xl md:text-5xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-4 leading-tight tracking-tight">
           Annual Maintenance <span class="text-[#A05B3A] dark:text-[#E4C99A]">Contracts (AMC)</span>
         </h1>
-        <p class="text-[#655448] dark:text-[#B8AA98] text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-medium">
-          Full-season peace of mind for residential and commercial ACs. Priority dispatch, routine jet wash maintenance, and zero labor charges.
+        <p class="text-[#655448] dark:text-[#B8AA98] text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-medium mb-4">
+          Full-season peace of mind for residential, commercial &amp; industrial air conditioners. Certified preventive maintenance, priority breakdown dispatch, genuine spare parts, and zero surprise bills.
         </p>
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] bg-[#A05B3A]/10 px-4 py-2 rounded-xl border border-[#A05B3A]/25">
+          <span>📞 Direct Desk: Deepak Panchal</span>
+          <span>•</span>
+          <a href="tel:7977805245" class="hover:underline">7977805245</a>
+          <span>/</span>
+          <a href="tel:9969423500" class="hover:underline">9969423500</a>
+        </div>
       </div>
     </header>
 
@@ -114,44 +129,210 @@
     <main class="flex-grow py-12 px-4">
       <div class="max-w-7xl mx-auto -mt-6 pb-16 relative z-10">
 
-        <!-- Billing Toggle + AC Count Selector -->
-        <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <!-- Annual / Monthly toggle -->
+        <!-- 1. CATEGORY NAVIGATION TABS -->
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
+          <button
+            type="button"
+            id="catTab-samc"
+            onclick="setAmcCategory('samc')"
+            class="amc-cat-tab active px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer bg-[#A05B3A] text-[#F2EDE3]"
+          >
+            <span>🛡️</span> <span>Comprehensive (SAMC)</span>
+            <span class="bg-[#FDFBF7]/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Parts + Gas</span>
+          </button>
+          <button
+            type="button"
+            id="catTab-ordinary"
+            onclick="setAmcCategory('ordinary')"
+            class="amc-cat-tab px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+          >
+            <span>🛠️</span> <span>Ordinary Maintenance</span>
+            <span class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] text-[10px] px-2 py-0.5 rounded-full font-bold">3, 4, 6 Visits</span>
+          </button>
+          <button
+            type="button"
+            id="catTab-specialized"
+            onclick="setAmcCategory('specialized')"
+            class="amc-cat-tab px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+          >
+            <span>🧰</span> <span>Jacket &amp; Standalone</span>
+            <span class="bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] text-[10px] px-2 py-0.5 rounded-full font-bold">Deep Care</span>
+          </button>
+        </div>
+
+        <!-- 2. INTERACTIVE CONFIGURATION CONTROLS -->
+        <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 sm:p-6 mb-8 flex flex-wrap items-center justify-between gap-5">
+          <!-- AC Type Selector -->
           <div class="flex items-center gap-3">
-            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider">Monthly</span>
-            <div id="amcToggleTrack" class="amc-toggle-track on" onclick="toggleAmcBilling()">
-              <div class="amc-toggle-thumb"></div>
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider">AC Type:</span>
+            <div class="inline-flex p-1 bg-[#F2EDE3] dark:bg-[#1A1412] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+              <button
+                type="button"
+                id="acTypeSplitBtn"
+                onclick="setAmcAcType('split')"
+                class="px-3.5 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs"
+              >
+                Split AC
+              </button>
+              <button
+                type="button"
+                id="acTypeWindowBtn"
+                onclick="setAmcAcType('window')"
+                class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+              >
+                Window AC
+              </button>
             </div>
-            <span id="amcBillingLabel" class="text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] uppercase tracking-wider">Annual Billing</span>
-            <span class="savings-badge bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40 dark:border-[#77B89A]/30 px-2 py-0.5 rounded-full text-[11px] font-bold">💰 Save 20%</span>
           </div>
-          <!-- AC Unit Count -->
+
+          <!-- Capacity / Tonnage Selector -->
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider">Capacity:</span>
+            <div class="inline-flex p-1 bg-[#F2EDE3] dark:bg-[#1A1412] rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+              <button
+                type="button"
+                id="tonnageSmallBtn"
+                onclick="setAmcTonnage('0.8_1.0')"
+                class="px-3 py-1.5 text-xs font-extrabold rounded-lg transition bg-[#A05B3A] text-white shadow-2xs"
+              >
+                0.8Tr – 1.0Tr
+              </button>
+              <button
+                type="button"
+                id="tonnageLargeBtn"
+                onclick="setAmcTonnage('1.5_2.2')"
+                class="px-3 py-1.5 text-xs font-bold rounded-lg transition text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3]"
+              >
+                1.5Tr – 2.2Tr
+              </button>
+            </div>
+          </div>
+
+          <!-- Unit Count & Volume Discount -->
           <div class="flex items-center gap-3">
             <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider">AC Units:</span>
-            <div class="flex gap-2">
-              <button type="button" onclick="setAcCount(1,this)" class="ac-count-btn bg-[#A05B3A] text-[#F2EDE3] text-xs font-bold w-9 h-9 rounded-xl transition shadow-xs">1</button>
-              <button type="button" onclick="setAcCount(2,this)" class="ac-count-btn bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] text-xs font-bold w-9 h-9 rounded-xl transition">2</button>
-              <button type="button" onclick="setAcCount(3,this)" class="ac-count-btn bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] text-xs font-bold w-9 h-9 rounded-xl transition">3+</button>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="setAcCount(1,this)" class="ac-count-btn bg-[#A05B3A] text-[#F2EDE3] text-xs font-black w-8 h-8 rounded-xl transition shadow-xs">1</button>
+              <button type="button" onclick="setAcCount(2,this)" class="ac-count-btn bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] text-xs font-bold w-8 h-8 rounded-xl transition">2</button>
+              <button type="button" onclick="setAcCount(3,this)" class="ac-count-btn bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] text-xs font-bold w-8 h-8 rounded-xl transition">3+</button>
             </div>
-            <span class="text-xs text-[#655448] dark:text-[#B8AA98] font-medium hidden md:inline">Tiered volume discount</span>
+            <span id="volumeDiscountBadge" class="hidden sm:inline bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40 px-2 py-0.5 rounded-full text-[11px] font-bold">10% Off</span>
           </div>
         </div>
 
-        <!-- Plans Grid -->
+        <!-- 3. OFFICIAL STATUTORY POLICY ADVISORY (DIRECTLY FROM PDF) -->
+        <div id="samcAdvisoryBanner" class="mb-8 p-4 bg-[#A05B3A]/10 border border-[#A05B3A]/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2.5">
+            <span class="text-lg">⚠️</span>
+            <p class="font-bold text-[#342C27] dark:text-[#F2EDE3]">
+              <span class="text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-wider font-black">Official Contract Terms:</span>
+              For Comprehensive (SAMC) coverage, AC units must be under 3 years from purchase date. GST extra 28% for full parts/gas coverage.
+            </p>
+          </div>
+          <span class="text-[11px] font-extrabold text-[#655448] dark:text-[#B8AA98] shrink-0 bg-[#FDFBF7] dark:bg-[#27211D] px-3 py-1 rounded-lg border border-[#B8AA98]/30">
+            GST: 27ANTPP9778J1ZO
+          </span>
+        </div>
+
+        <!-- 4. DYNAMIC PLANS GRID -->
         <div
           id="amcGrid"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch mb-12"
         >
-          <!-- Loading state placeholder -->
-          <div class="col-span-full py-20 text-center">
-            <div class="flex flex-col items-center gap-3">
-              <svg class="w-10 h-10 text-[#A05B3A] animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-              </svg>
-              <p class="font-bold text-[#655448] uppercase tracking-wider text-xs">
-                Loading Protection Packages...
+          <!-- Dynamic cards injected via amc.js -->
+        </div>
+
+        <!-- 5. COMPLETE RATE CHART MATRIX TABLE (ACCORDION / TRANSPARENCY DESK) -->
+        <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-6 md:p-8 shadow-sm">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#B8AA98]/30">
+            <div>
+              <h3 class="text-xl font-black text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-2">
+                <span>📑</span> <span>Official Master Contract Rate Chart</span>
+              </h3>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1">
+                Conforms strictly to Extreme Sales &amp; Services Chembur Service Center schedule.
               </p>
             </div>
+            <span class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40 text-xs font-bold px-3 py-1.5 rounded-xl">
+              All Rates Basic + GST Applicable
+            </span>
+          </div>
+
+          <!-- Master Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left text-[#342C27] dark:text-[#F2EDE3]">
+              <thead>
+                <tr class="bg-[#EAE3D6] dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] uppercase text-[11px] font-black tracking-wider">
+                  <th class="py-3 px-4 rounded-l-xl">Plan Code</th>
+                  <th class="py-3 px-4">Service Description &amp; Scope</th>
+                  <th class="py-3 px-4 text-center">0.8Tr – 1.0Tr</th>
+                  <th class="py-3 px-4 rounded-r-xl text-center">1.5Tr – 2.2Tr</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#B8AA98]/20 font-medium">
+                <!-- SAMC 1 -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-black text-[#A05B3A] dark:text-[#E4C99A]">SAMC 1</td>
+                  <td class="py-3.5 px-4">
+                    <strong>4 Services</strong>, Unlimited Complaints Attend, Capacitor Replace, Motor Winding &amp; PCB Repair <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]">(Split Non-Inverter)</span>
+                  </td>
+                  <td class="py-3.5 px-4 text-center font-mono font-bold text-[#342C27] dark:text-[#F2EDE3]">₹2,999/- Yr</td>
+                  <td class="py-3.5 px-4 text-center font-mono font-bold text-[#A05B3A] dark:text-[#E4C99A]">₹3,999/- Yr</td>
+                </tr>
+                <!-- SAMC 2 -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition bg-[#A05B3A]/5">
+                  <td class="py-3.5 px-4 font-black text-[#A05B3A] dark:text-[#E4C99A]">SAMC 2 ★</td>
+                  <td class="py-3.5 px-4">
+                    <strong>4 Services</strong>, Unlimited Complaints, Capacitor, PCB Repair, Motor Winding <strong>&amp; Gas Charging</strong> <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]">(Split Full)</span>
+                  </td>
+                  <td class="py-3.5 px-4 text-center font-mono font-bold text-[#342C27] dark:text-[#F2EDE3]">₹4,499/- Yr</td>
+                  <td class="py-3.5 px-4 text-center font-mono font-black text-[#A05B3A] dark:text-[#E4C99A]">₹5,499/- Yr</td>
+                </tr>
+                <!-- SAMC 3 -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-black text-[#A05B3A] dark:text-[#E4C99A]">SAMC 3</td>
+                  <td class="py-3.5 px-4">
+                    <strong>4 Services</strong>, Unlimited Complaints, Capacitor, PCB Repair, Motor Winding <strong>&amp; Gas Charging</strong> <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]">(Window Full)</span>
+                  </td>
+                  <td class="py-3.5 px-4 text-center font-mono font-bold text-[#342C27] dark:text-[#F2EDE3]">₹3,499/- Yr</td>
+                  <td class="py-3.5 px-4 text-center font-mono font-bold text-[#A05B3A] dark:text-[#E4C99A]">₹4,499/- Yr</td>
+                </tr>
+                <!-- Ordinary 3 -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-bold text-[#655448] dark:text-[#B8AA98]">Ordinary 3</td>
+                  <td class="py-3.5 px-4">Ordinary Only 3 Services or 3 Visits per year</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,500 Split</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,000 Window</td>
+                </tr>
+                <!-- Ordinary 4 -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-bold text-[#655448] dark:text-[#B8AA98]">Ordinary 4</td>
+                  <td class="py-3.5 px-4">Ordinary 4 Services &amp; Unlimited Normal Complaints (Window includes 1 Wet service)</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,800 Split</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,300 Window</td>
+                </tr>
+                <!-- Ordinary 6 -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-bold text-[#655448] dark:text-[#B8AA98]">Ordinary 6</td>
+                  <td class="py-3.5 px-4">Ordinary 6 Services &amp; Unlimited Normal Complaints (Window includes 1 Wet service)</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹2,200 Split</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,700 Window</td>
+                </tr>
+                <!-- Specialized Rows -->
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-bold text-[#77B89A]">Jacket Care</td>
+                  <td class="py-3.5 px-4">2 Jacket Service &amp; Unlimited Complaints / 3 Jacket Service &amp; Unlimited Complaints</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹2,599 (2 Jack)</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹3,599 (3 Jack)</td>
+                </tr>
+                <tr class="hover:bg-[#F2EDE3]/60 dark:hover:bg-[#342C27]/40 transition">
+                  <td class="py-3.5 px-4 font-bold text-[#77B89A]">On-Demand</td>
+                  <td class="py-3.5 px-4">Pump Down Service / Deep Jet Wash Chemical Service</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,299 (Pump)</td>
+                  <td class="py-3.5 px-4 text-center font-mono">₹1,199 (Jet)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -288,14 +469,25 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-[#FDFBF7] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-center py-8 border-t border-[#B8AA98]/40 dark:border-[#B8AA98]/20 mt-auto">
-      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-        <p>&copy; 2026 Extreme Sales &amp; Services • Verified Preventative AMC Plans</p>
-        <div class="flex gap-4">
+    <footer class="bg-[#FDFBF7] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] py-10 border-t border-[#B8AA98]/40 dark:border-[#B8AA98]/20 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-center md:text-left">
+        <div>
+          <p class="font-black text-[#342C27] dark:text-[#F2EDE3] text-sm">
+            Extreme Sales &amp; Services <span class="text-[#A05B3A] dark:text-[#E4C99A]">HVAC Enterprise</span>
+          </p>
+          <p class="mt-1 text-[#655448] dark:text-[#B8AA98]">
+            Shop no 40, Shell Colony, Nr Sunny Hotel, Chembur (E), Mumbai - 400071
+          </p>
+          <p class="mt-0.5 font-mono text-[11px] text-[#A05B3A] dark:text-[#E4C99A] font-bold">
+            GSTIN: 27ANTPP9778J1ZO • Desk: Deepak Panchal (+91 7977805245 / +91 9969423500)
+          </p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-5 font-bold">
           <a href="index.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Home</a>
+          <a href="products.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">AC Products</a>
           <a href="service.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Book Service</a>
           <a href="status.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Track Status</a>
-          <a href="contact.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Contact</a>
+          <a href="contact.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Contact Us</a>
         </div>
       </div>
     </footer>
@@ -306,68 +498,92 @@
       class="fixed inset-0 bg-[#342C27]/60 backdrop-blur-md z-[100] flex items-center justify-center hidden opacity-0 transition-all duration-300 p-4"
     >
       <div
-        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 transition-all duration-300 border border-[#B8AA98]/50 dark:border-[#B8AA98]/20"
+        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden transform scale-95 transition-all duration-300 border border-[#B8AA98]/50 dark:border-[#B8AA98]/20"
         id="amcModalContent"
       >
         <div class="bg-gradient-to-r from-[#27211D] to-[#342C27] p-6 flex justify-between items-center text-[#F2EDE3] border-b border-[#A05B3A]/30">
           <div>
-            <h3 class="font-bold text-[#F2EDE3] text-lg tracking-tight">
-              Subscribe to AMC
-            </h3>
+            <div class="flex items-center gap-2">
+              <span id="modalPlanBadge" class="bg-[#A05B3A] text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded">SAMC</span>
+              <h3 class="font-bold text-[#F2EDE3] text-lg tracking-tight">
+                Subscribe to Contract
+              </h3>
+            </div>
             <p class="text-[#B8AA98] text-xs mt-0.5">
-              Annual AC Maintenance &amp; Care
+              Verified Maintenance Contract • Shell Colony Workshop
             </p>
           </div>
           <button
             type="button"
             onclick="closeAmcModal()"
-            class="text-[#F2EDE3]/80 hover:text-[#F2EDE3] transition text-2xl font-bold leading-none p-1"
+            class="text-[#F2EDE3]/80 hover:text-[#F2EDE3] transition text-2xl font-bold leading-none p-1 cursor-pointer"
           >
             &times;
           </button>
         </div>
 
         <div class="p-6">
-          <div class="bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-4 text-center mb-6">
+          <!-- Summary Box -->
+          <div class="bg-[#F2EDE3] dark:bg-[#1A1412] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-4 text-center mb-5">
             <p
               id="modalPlanName"
-              class="text-xl font-bold text-[#342C27] dark:text-[#F2EDE3] mb-1"
+              class="text-lg font-black text-[#342C27] dark:text-[#F2EDE3] mb-1"
             >
               Plan Name
             </p>
-            <p id="modalPlanPrice" class="text-lg text-[#A05B3A] dark:text-[#E4C99A] font-extrabold font-mono">
+            <div class="flex flex-wrap justify-center items-center gap-2 mb-2">
+              <span id="modalConfigTag" class="text-xs font-bold bg-[#EAE3D6] dark:bg-[#27211D] px-2.5 py-0.5 rounded-full text-[#655448] dark:text-[#B8AA98]">Split AC • 1.5 - 2.2 Ton</span>
+              <span id="modalUnitsTag" class="text-xs font-bold bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] px-2.5 py-0.5 rounded-full">1 Unit</span>
+            </div>
+            <p id="modalPlanPrice" class="text-2xl text-[#A05B3A] dark:text-[#E4C99A] font-black font-mono">
               ₹0 / yr
+            </p>
+            <p id="modalTermsNote" class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-1 italic">
+              All Rates are Basic + GST Applicable as per requirement.
             </p>
           </div>
 
           <form id="amcForm" class="space-y-4">
             <input type="hidden" id="modalPlanId">
-            <div class="form-field">
-              <input type="text" id="custName" required placeholder=" ">
-              <label for="custName">Full Name *</label>
+            <input type="hidden" id="modalAcType">
+            <input type="hidden" id="modalTonnage">
+            <input type="hidden" id="modalPrice">
+            <input type="hidden" id="modalServicesCount">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="form-field">
+                <input type="text" id="custName" required placeholder=" " class="w-full text-xs">
+                <label for="custName">Full Name *</label>
+              </div>
+              <div class="form-field">
+                <input type="tel" id="custPhone" required placeholder=" " maxlength="10" class="w-full text-xs">
+                <label for="custPhone">10-Digit Mobile *</label>
+              </div>
             </div>
+
             <div class="form-field">
-              <input type="email" id="custEmail" required placeholder=" ">
-              <label for="custEmail">Email Address *</label>
+              <input type="email" id="custEmail" required placeholder=" " class="w-full text-xs">
+              <label for="custEmail">Email Address (for Digital Receipt) *</label>
             </div>
+
             <div class="form-field">
-              <input type="tel" id="custPhone" required placeholder=" ">
-              <label for="custPhone">10-Digit Phone Number *</label>
+              <input type="text" id="custAddress" required placeholder=" " class="w-full text-xs">
+              <label for="custAddress">Complete Address &amp; Pincode (Mumbai / Thane / Navi Mumbai) *</label>
             </div>
 
             <button
               type="submit"
-              class="w-full bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-3.5 rounded-xl text-sm font-bold shadow-md transition active:scale-[0.99]"
+              class="w-full bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-3.5 rounded-xl text-sm font-bold shadow-md transition active:scale-[0.99] cursor-pointer"
             >
-              Submit Activation Request &rarr;
+              Submit AMC Registration Request &rarr;
             </button>
             <div
               id="successMsg"
-              class="bg-[#77B89A]/15 text-[#1D3D2B] border border-[#77B89A]/40 rounded-xl p-4 text-center hidden"
+              class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40 rounded-xl p-4 text-center hidden"
             >
-              <p class="font-bold text-sm">Request Received Successfully!</p>
-              <p class="text-xs mt-1 text-[#2D5A43] font-medium">
-                Our service manager will call you within 2 hours to confirm scheduling.
+              <p class="font-bold text-sm">✅ Request Registered Successfully!</p>
+              <p class="text-xs mt-1 font-medium">
+                Our Chembur dispatch desk will contact you within 2 hours to confirm your maintenance schedule.
               </p>
             </div>
           </form>
