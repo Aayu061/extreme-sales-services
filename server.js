@@ -40,8 +40,10 @@ const allowedOrigins = [
     process.env.APP_URL,
     process.env.PYS_FRONTEND_URL || 'https://place-your-service.vercel.app',
     'https://extreme-sales-services.vercel.app',
+    'http://localhost:5002',
     'http://localhost:5000',
     'http://localhost:3000',
+    'http://127.0.0.1:5002',
     'http://127.0.0.1:5000',
     'http://127.0.0.1:3000'
 ].filter(Boolean);
@@ -1919,48 +1921,69 @@ app.get('/api/admin/enquiries', authMiddleware(['admin', 'staff']), async (req, 
 });
 
 app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
-    const { product_id, product_name, name, phone, message } = req.body || {};
-
-    if (!validateName(name)) {
-        return res.status(400).json({ success: false, message: "Please provide your full name (2–100 characters)." });
-    }
-    if (!validatePhone(phone)) {
-        return res.status(400).json({ success: false, message: "Please provide a valid 10-digit phone number." });
-    }
-
-    const newEnq = {
-        id: "enq-" + Date.now(),
-        product_id: product_id || "general",
-        product_name: (product_name || "AC Consultation").trim(),
-        name: name.trim(),
-        phone: cleanPhone(phone) || phone.trim(),
-        message: (message || "Price quote requested").trim().slice(0, 500),
-        status: "Open",
-        created_at: new Date().toISOString()
-    };
-
-    if (isFirebaseMode) {
-        try {
-            await db.collection('enquiries').add(newEnq);
-            return res.status(201).json({ success: true, message: "Enquiry submitted successfully." });
-        } catch(e) {
-            return res.status(500).json({ success: false, message: "Unable to submit enquiry." });
-        }
-    }
-
-    // Forward to consolidated PYS Supabase engine
     try {
-        await pysIntegrationService._request('/contact-enquiries', 'POST', {
-            name: newEnq.name,
-            phone: newEnq.phone,
-            subject: newEnq.product_name,
-            message: newEnq.message,
-            source_channel: 'EXTREME_SALES_SERVICES'
-        });
-    } catch (_) {}
+        const { product_id, product_name, name, phone, email, subject, message, serviceType, service_type, productOfInterest } = req.body || {};
 
-    enquiries.unshift(newEnq);
-    res.status(201).json({ success: true, message: "Enquiry submitted successfully." });
+        if (!validateName(name)) {
+            return res.status(400).json({ success: false, message: "Please provide your full name (2–100 characters)." });
+        }
+        if (!phone && !email) {
+            return res.status(400).json({ success: false, message: "Please provide a valid phone number or email address." });
+        }
+
+        const cleanCustomerPhone = phone ? (cleanPhone(phone) || phone.trim()) : '';
+        const effectiveServiceType = serviceType || service_type || undefined;
+        const effectiveSubject = subject ? subject.trim() : (product_name ? `Product Inquiry: ${product_name}` : (effectiveServiceType ? `Inquiry for ${effectiveServiceType}` : 'General AC Service Consultation'));
+        const effectiveMessage = (message || `Customer inquired about ${productOfInterest || product_name || effectiveServiceType || 'Extreme Sales & Services offerings'}.`).trim().slice(0, 1000);
+
+        const newEnq = {
+            id: "enq-" + Date.now(),
+            product_id: product_id || "general",
+            product_name: (product_name || effectiveSubject).trim(),
+            name: name.trim(),
+            phone: cleanCustomerPhone,
+            email: email ? email.trim().toLowerCase() : '',
+            subject: effectiveSubject,
+            serviceType: effectiveServiceType,
+            message: effectiveMessage,
+            status: "Open",
+            created_at: new Date().toISOString()
+        };
+
+        if (isFirebaseMode) {
+            try {
+                await db.collection('enquiries').add(newEnq);
+            } catch (e) {
+                console.warn('Local Firebase enquiry insert deferred:', e.message);
+            }
+        }
+        enquiries.unshift(newEnq);
+
+        // Forward to central PYS CRM contact_enquiries table
+        const forwardResult = await pysIntegrationService.forwardEnquiry({
+            name: newEnq.name,
+            phone: newEnq.phone || undefined,
+            email: newEnq.email || undefined,
+            subject: effectiveSubject,
+            message: effectiveMessage,
+            serviceType: effectiveServiceType,
+            productOfInterest: productOfInterest || product_name || undefined
+        });
+
+        const assignedNumber = forwardResult.success && forwardResult.data
+            ? (forwardResult.data.enquiryNumber || forwardResult.data.enquiry_number)
+            : `ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
+
+        return res.status(201).json({
+            success: true,
+            message: "Thank you! Your inquiry has been received. Our technical representative will contact you shortly.",
+            enquiryNumber: assignedNumber,
+            syncedWithPys: forwardResult.success
+        });
+    } catch (err) {
+        console.error('Error in /api/enquiries:', err);
+        return res.status(500).json({ success: false, message: "Unable to process inquiry. Please call us directly." });
+    }
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -2233,6 +2256,23 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
         created_at: new Date().toISOString()
     };
 
+    // Forward AMC Subscription lead to central PYS CRM contact_enquiries table
+    Promise.resolve().then(async () => {
+        try {
+            await pysIntegrationService.forwardEnquiry({
+                name: finalName,
+                phone: formattedPhone,
+                email: email ? email.trim().toLowerCase() : undefined,
+                serviceType: 'AMC Annual Maintenance Contract',
+                subject: `AMC Subscription: ${newSub.plan_name} (${newSub.ac_type}, ${newSub.tonnage}T)`,
+                message: `Customer purchased ${newSub.plan_name} for ₹${newSub.price}. Address: ${address || 'Not specified'}. Remaining Visits: ${newSub.remaining_services}.`,
+                productOfInterest: newSub.plan_name
+            });
+        } catch (crmErr) {
+            console.warn('[AMC CRM Forward] Background sync deferred:', crmErr.message);
+        }
+    });
+
     if (isFirebaseMode) {
         try {
             await db.collection('customer_amc').add(newSub);
@@ -2486,6 +2526,25 @@ app.get('/api/track/live', (req, res) => {
     };
 
     const sendUpdate = async () => {
+        try {
+            const pysTrackRes = await pysIntegrationService.trackTicket(id, phone);
+            if (pysTrackRes && pysTrackRes.success && pysTrackRes.data) {
+                const t = pysTrackRes.data.ticket;
+                const c = pysTrackRes.data.customer || {};
+                const s = pysTrackRes.data.schedule || {};
+                const tech = s.technician || {};
+                res.write(`data: ${JSON.stringify({
+                    success: true,
+                    requestId: t.requestNumber,
+                    name: maskName(c.name),
+                    status: t.status,
+                    technician_name: tech.name || "Pending Assignment",
+                    service_type: t.requestType
+                })}\n\n`);
+                return;
+            }
+        } catch (_) {}
+
         if (isFirebaseMode) {
             try {
                 const snap = await db.collection('service_requests').where('request_id', '==', id).get();
@@ -2772,44 +2831,6 @@ app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
     }
 });
 
-// ═══════════════════════════════════════════════════════════
-// CUSTOMER GENERAL INQUIRIES & CONSULTATIONS (PYS CRM FORWARDING)
-// ═══════════════════════════════════════════════════════════
-app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
-    try {
-        const { name, phone, email, subject, message, serviceType, productOfInterest } = req.body;
-
-        if (!name || (!phone && !email)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Name and either a valid phone number or email address are required.'
-            });
-        }
-
-        const enquiryPayload = {
-            name: name.trim(),
-            phone: phone ? cleanPhone(phone) : undefined,
-            email: email ? email.trim() : undefined,
-            subject: subject ? subject.trim() : (serviceType ? `Inquiry for ${serviceType}` : 'General AC Service Consultation'),
-            message: message ? message.trim() : `Customer inquired about ${productOfInterest || serviceType || 'Extreme Sales & Services offerings'}.`,
-            productOfInterest: productOfInterest || undefined,
-            serviceType: serviceType || undefined,
-        };
-
-        // Forward to PYS CRM contact_enquiries table
-        const forwardResult = await pysIntegrationService.forwardEnquiry(enquiryPayload);
-
-        return res.status(201).json({
-            success: true,
-            message: 'Thank you! Your inquiry has been received. Our technical representative will contact you shortly.',
-            enquiryNumber: forwardResult.success && forwardResult.data ? forwardResult.data.enquiryNumber : `ENQ-${Math.floor(100000 + Math.random() * 900000)}`,
-            syncedWithPys: forwardResult.success
-        });
-    } catch (err) {
-        console.error('Error in /api/enquiries:', err);
-        return res.status(500).json({ success: false, message: 'Unable to process inquiry. Please call us directly.' });
-    }
-});
 
 // Global Express Error Middleware with PYS Bug Inspector Telemetry Interceptor
 app.use((err, req, res, next) => {

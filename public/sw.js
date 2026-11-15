@@ -1,16 +1,23 @@
 // Service Worker for Extreme Sales & Services PWA (Offline Resilient)
-const CACHE_NAME = 'ess-pwa-v1';
+const CACHE_NAME = 'ess-pwa-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/login.html',
-    '/technician.html',
+    '/customer-portal.html',
     '/status.html',
     '/service.html',
     '/products.html',
-    '/css/custom.css',
-    '/js/technician.js',
+    '/amc.html',
+    '/contact.html',
+    '/vendor.html',
+    '/staff.html',
+    '/css/style.css',
+    '/js/config.js',
+    '/js/service.js',
+    '/js/status.js',
     '/js/login.js',
+    '/favicon.svg',
     '/manifest.json'
 ];
 
@@ -55,10 +62,9 @@ self.addEventListener('fetch', (event) => {
                 return caches.match(event.request).then((cachedResponse) => {
                     if (cachedResponse) return cachedResponse;
                     if (event.request.headers.get('accept')?.includes('text/html')) {
-                        return caches.match('/technician.html') || caches.match('/index.html');
+                        return caches.match('/customer-portal.html').then((res) => res || caches.match('/index.html'));
                     }
                 });
             })
     );
 });
-

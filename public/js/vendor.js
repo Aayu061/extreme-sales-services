@@ -6,6 +6,7 @@
 let allProducts = [];
 let vendorInventory = {};
 let activeInquiryForBid = null;
+let inquiriesList = MOCK_INQUIRIES;
 
 const DEFAULT_SPARES = [
     { id: 'sp-1', name: '1.5 Ton Rotary Compressor (R32)', brand: 'Daikin / Highly', cost: 7200, warranty: '1 Year', qty: 14 },
@@ -289,11 +290,28 @@ function renderSpares() {
     `).join('');
 }
 
-function renderInquiries() {
+async function renderInquiries() {
     const container = document.getElementById('vendorInquiryCards');
     if (!container) return;
 
-    container.innerHTML = MOCK_INQUIRIES.map(inq => `
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const res = await fetch('/api/vendor/inquiries', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.inquiries && Array.isArray(data.inquiries)) {
+                    inquiriesList = data.inquiries;
+                }
+            }
+        }
+    } catch (_) {
+        // Fallback to MOCK_INQUIRIES on offline/error
+    }
+
+    container.innerHTML = (inquiriesList || MOCK_INQUIRIES).map(inq => `
         <div class="bg-white/80 dark:bg-[#27211D]/80 p-5 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs space-y-3">
           <div class="flex justify-between items-start">
             <div>
@@ -322,7 +340,7 @@ function renderInquiries() {
 }
 
 function openBidModal(inquiryId) {
-    activeInquiryForBid = MOCK_INQUIRIES.find(i => i.id === inquiryId);
+    activeInquiryForBid = (inquiriesList || MOCK_INQUIRIES).find(i => i.id === inquiryId);
     if (!activeInquiryForBid) return;
 
     const summary = document.getElementById('bidModalInquirySummary');

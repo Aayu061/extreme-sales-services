@@ -9,10 +9,11 @@
                     window.location.hostname === '127.0.0.1' || 
                     window.location.protocol === 'file:';
 
-    // In local development, point to local Express server.
+    // In local development, point to local Express server (port 5002).
+    // If running on the same port (5002), relative '' works cleanly.
     // In production, use empty string '' so `${BACKEND_URL}/api/...` resolves to relative `/api/...` via Vercel edge rewrite.
-    const backendUrl = isLocal ? 'http://localhost:5000' : '';
-    const apiBase = isLocal ? 'http://localhost:5000/api' : '/api';
+    const backendUrl = isLocal ? (window.location.port === '5002' ? '' : 'http://localhost:5002') : '';
+    const apiBase = isLocal ? (backendUrl ? `${backendUrl}/api` : '/api') : '/api';
 
     // Global XSS Sanitization Utility (Phase 4)
     function escapeHtml(str) {
