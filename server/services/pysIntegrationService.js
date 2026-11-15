@@ -13,7 +13,7 @@ class PysIntegrationService {
         this.baseUrl = (process.env.PYS_API_BASE_URL || 'https://place-your-service-api.onrender.com/api/v1').replace(/\/$/, '');
         this.apiKey = process.env.PYS_API_KEY || '***REMOVED***';
         this.webhookSecret = process.env.PYS_WEBHOOK_SECRET || '***REMOVED***';
-        this.timeoutMs = 8000;
+        this.timeoutMs = 30000;
     }
 
     /**
@@ -203,18 +203,25 @@ class PysIntegrationService {
      */
     async forwardServiceRequest(ticket) {
         try {
-            const phone = (ticket.phone || '').trim().replace(/\D/g, '').slice(-10);
+            const rawPhone = ticket.phone || '';
+            const phone = rawPhone.trim().replace(/\D/g, '').slice(-10);
             const customerName = (ticket.name || ticket.customerName || 'Valued Customer').trim();
-            const customerEmail = (ticket.email || `customer-${phone || Date.now()}@extremess.com`).trim();
-            const address = ticket.address || 'Chembur, Mumbai, Maharashtra';
+            const customerEmail = (ticket.email || `customer-${phone || Date.now()}@extremess.com`).trim().toLowerCase();
+            const rawAddress = (ticket.address || '').trim();
+            const address = rawAddress.length >= 3 ? rawAddress : 'Chembur, Mumbai, Maharashtra';
 
             let customerId = null;
+            let siteId = null;
 
             // Step 1: Find or Create Customer on PYS
-            if (phone) {
+            if (phone && phone.length >= 7) {
                 const searchRes = await this._request(`/customers?search=${encodeURIComponent(phone)}`, 'GET');
                 if (searchRes.ok && searchRes.data && searchRes.data.data && Array.isArray(searchRes.data.data.customers) && searchRes.data.data.customers.length > 0) {
-                    customerId = searchRes.data.data.customers[0].id;
+                    const c = searchRes.data.data.customers[0];
+                    customerId = c.id;
+                    if (c.primarySite && c.primarySite.id) {
+                        siteId = c.primarySite.id;
+                    }
                 }
             }
 
@@ -223,30 +230,39 @@ class PysIntegrationService {
                     name: customerName,
                     phone: phone || '9999999999',
                     email: customerEmail,
+                    address: address,
                     customerType: 'TEMPORARY',
                     companyName: ticket.companyName || customerName,
                     gstNumber: ticket.gstin || ticket.gstNumber || undefined
                 });
 
                 if (createCustRes.ok && createCustRes.data && createCustRes.data.data && createCustRes.data.data.customer) {
-                    customerId = createCustRes.data.data.customer.id;
+                    const c = createCustRes.data.data.customer;
+                    customerId = c.id;
+                    if (c.primarySite && c.primarySite.id) {
+                        siteId = c.primarySite.id;
+                    }
+                } else {
+                    const errorMsg = (createCustRes.data && createCustRes.data.error && createCustRes.data.error.message) ||
+                                     (createCustRes.data && createCustRes.data.message) ||
+                                     createCustRes.error || 'Failed to create customer record in PYS';
+                    return { success: false, error: errorMsg, status: createCustRes.status };
                 }
             }
 
-            // Step 2: Register Primary Site if customer was created or lookup customer sites
-            let siteId = null;
-            if (customerId) {
+            // Step 2: Ensure Site ID is available
+            if (!siteId && customerId) {
                 const siteRes = await this._request(`/customers/${customerId}/sites`, 'GET');
                 if (siteRes.ok && siteRes.data && siteRes.data.data && Array.isArray(siteRes.data.data.sites) && siteRes.data.data.sites.length > 0) {
                     siteId = siteRes.data.data.sites[0].id;
                 } else {
                     const createSiteRes = await this._request('/sites', 'POST', {
                         customerId,
-                        siteName: `${customerName} Location`,
+                        siteName: `${customerName} - Main Site`,
                         address: address,
-                        city: 'Mumbai',
-                        state: 'Maharashtra',
-                        pincode: '400071',
+                        contactPerson: customerName,
+                        contactPhone: phone || '9999999999',
+                        contactEmail: customerEmail,
                         isPrimary: true
                     });
                     if (createSiteRes.ok && createSiteRes.data && createSiteRes.data.data && createSiteRes.data.data.site) {
@@ -255,24 +271,33 @@ class PysIntegrationService {
                 }
             }
 
+            if (!customerId || !siteId) {
+                return {
+                    success: false,
+                    error: `Could not link Customer (${customerId}) and Site (${siteId}) in PYS`
+                };
+            }
+
             // Step 3: Dispatch Service Request to PYS
+            const effectiveServiceType = ticket.service_type || ticket.serviceType || 'AC Repair & Service';
+            const effectiveDescription = ticket.issue_description || ticket.problem || ticket.description || 'Customer requested service via Extreme S&S';
             const descriptionParts = [
-                `ESS Service Inquiry: ${ticket.serviceType || 'AC Repair & Service'}`,
+                `ESS Service Inquiry: ${effectiveServiceType}`,
                 ticket.brand ? `AC Brand: ${ticket.brand}` : null,
-                ticket.problem || ticket.description ? `Issue Reported: ${ticket.problem || ticket.description}` : null,
-                ticket.preferredDate ? `Preferred Slot: ${ticket.preferredDate}` : null
+                `Issue: ${effectiveDescription}`,
+                ticket.preferredDate || ticket.preferred_date ? `Preferred Slot: ${ticket.preferredDate || ticket.preferred_date}` : null
             ].filter(Boolean);
 
             const payload = {
-                customerId: customerId || undefined,
-                siteId: siteId || undefined,
+                customerId,
+                siteId,
                 assetId: null,
                 requestType: 'BREAKDOWN',
                 priority: ticket.priority === 'urgent' ? 'CRITICAL' : 'HIGH',
                 description: descriptionParts.join(' | '),
                 sourceChannel: 'EXTREME_SALES_SERVICES',
-                externalReferenceId: ticket.id || ticket.ticketId || `SR-${Date.now()}`,
-                preferredDate: ticket.preferredDate || new Date().toISOString().split('T')[0]
+                externalReferenceId: ticket.request_id || ticket.id || ticket.ticketId || `SR-${Date.now()}`,
+                preferredDate: ticket.preferredDate || ticket.preferred_date || new Date().toISOString().split('T')[0]
             };
 
             const ticketRes = await this._request('/service-requests', 'POST', payload);
@@ -291,7 +316,9 @@ class PysIntegrationService {
 
             return {
                 success: false,
-                error: (ticketRes.data && ticketRes.data.message) || ticketRes.error || 'Failed to sync with PYS',
+                error: (ticketRes.data && ticketRes.data.error && ticketRes.data.error.message) ||
+                       (ticketRes.data && ticketRes.data.message) ||
+                       ticketRes.error || 'Failed to sync service request with PYS',
                 status: ticketRes.status
             };
         } catch (err) {
