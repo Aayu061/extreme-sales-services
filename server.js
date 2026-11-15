@@ -1412,7 +1412,7 @@ app.post('/api/webhooks/pys', async (req, res) => {
         'PENDING': 'Pending',
         'SCHEDULED': 'Scheduled',
         'ASSIGNED': 'Assigned',
-        'EN_ROUTE': 'In Progress',
+        'EN_ROUTE': 'On The Way',
         'IN_PROGRESS': 'In Progress',
         'RESOLVED': 'Completed',
         'COMPLETED': 'Completed',

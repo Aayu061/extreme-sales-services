@@ -420,6 +420,7 @@ function renderTable() {
                     <option value="Pending" ${req.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                     <option value="Forwarded to PYS" ${req.status === 'Forwarded to PYS' ? 'selected' : ''}>🏢 Forwarded to PYS</option>
                     <option value="Assigned" ${req.status === 'Assigned' ? 'selected' : ''}>🧑‍🔧 Assigned</option>
+                    <option value="On The Way" ${req.status === 'On The Way' ? 'selected' : ''}>🚀 On The Way</option>
                     <option value="In Progress" ${req.status === 'In Progress' ? 'selected' : ''}>🛠️ In Progress</option>
                     <option value="Completed" ${req.status === 'Completed' ? 'selected' : ''}>✅ Completed</option>
                 </select>
