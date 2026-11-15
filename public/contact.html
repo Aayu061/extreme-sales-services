@@ -14,6 +14,7 @@
       };
     </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <style>
       html.dark #feedbackForm input,
@@ -52,7 +53,7 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
-          <div class="flex-shrink-0 flex items-center">
+          <div class="shrink-0 flex items-center">
             <a
               href="index.html"
               class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5"
@@ -195,7 +196,7 @@
       </div>
       <div
         id="mobileMenu"
-        class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold mt-2"
+        class="flex-toggle hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 md:hidden text-center flex-col space-y-3 font-semibold mt-2"
       >
         <a
           href="index.html"
@@ -302,6 +303,7 @@
           <a
             href="https://wa.me/917977805245?text=Hello%20Extreme%20SS,%20I%20need%20AC%20service"
             target="_blank"
+            rel="noopener noreferrer"
             class="text-[#2E6B52] dark:text-[#77B89A] font-black text-base hover:underline"
             >Chat on WhatsApp &rarr;</a
           >
@@ -326,6 +328,7 @@
           <a
             href="https://mail.google.com/mail/?view=cm&fs=1&to=extremess0121@gmail.com"
             target="_blank"
+            rel="noopener noreferrer"
             class="text-[#A05B3A] dark:text-[#E4C99A] font-black text-sm hover:underline"
             >extremess0121@gmail.com</a
           >
@@ -368,7 +371,8 @@
                   >Master Workshop &amp; Service Desk:</span
                 >
                 <span
-                  >Shop no 40, Shell Colony, Nr Sunny Hotel, Chembur (E), Mumbai, Maharashtra - 400071</span
+                  >Shop no 40, Shell Colony, Nr Sunny Hotel, Chembur (E),
+                  Mumbai, Maharashtra - 400071</span
                 >
               </div>
             </div>
@@ -379,7 +383,8 @@
                   class="font-extrabold text-[#342C27] dark:text-[#F2EDE3] block"
                   >Government Registered GSTIN:</span
                 >
-                <span class="font-mono text-[#A05B3A] dark:text-[#E4C99A] font-bold"
+                <span
+                  class="font-mono text-[#A05B3A] dark:text-[#E4C99A] font-bold"
                   >27ANTPP9778J1ZO</span
                 >
               </div>
@@ -417,7 +422,8 @@
                   >Primary Fleet Coverage:</span
                 >
                 <span
-                  >Chembur, Kurla, Ghatkopar, Sion, Wadala, Dadar, BKC, Navi Mumbai, Thane &amp; MMR Suburbs</span
+                  >Chembur, Kurla, Ghatkopar, Sion, Wadala, Dadar, BKC, Navi
+                  Mumbai, Thane &amp; MMR Suburbs</span
                 >
               </div>
             </div>
@@ -426,6 +432,7 @@
           <a
             href="https://maps.google.com/?q=Shop+no+40,+Shell+Colony,+Nr+Sunny+Hotel,+Chembur+East,+Mumbai+400071"
             target="_blank"
+            rel="noopener noreferrer"
             class="bg-[#A05B3A] hover:bg-[#8D4B2D] text-white font-bold py-3.5 px-6 rounded-2xl text-xs shadow-[0_4px_14px_rgba(160,91,58,0.3)] transition flex items-center justify-center gap-2"
           >
             <span>📍 Open Chembur Center in Google Maps &rarr;</span>
@@ -442,10 +449,160 @@
             class="w-full h-full border-0"
             allowfullscreen=""
             loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
+            referrerpolicy="no-referrer"
           >
           </iframe>
         </div>
+      </div>
+
+      <!-- 2.5 GENERAL CONSULTATION & INQUIRY FORM (FORWARDED DIRECTLY TO PYS CRM) -->
+      <div
+        class="mb-14 bg-[#FDFBF7] dark:bg-[#27211D] p-8 md:p-10 rounded-3xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm"
+      >
+        <div class="max-w-2xl">
+          <span
+            class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-wider block mb-1"
+          >
+            General Inquiries &amp; Consultations
+          </span>
+          <h2 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3]">
+            Speak with an HVAC Specialist
+          </h2>
+          <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1 mb-6">
+            Have a question about new AC installations, commercial AMC plans, or
+            custom cooling setups? Send us a message and our technical team will
+            respond within 2 hours.
+          </p>
+        </div>
+
+        <form id="generalInquiryForm" class="space-y-4 max-w-4xl">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Your Full Name *</label
+              >
+              <input
+                type="text"
+                id="enqName"
+                title="Your Full Name"
+                required
+                placeholder="e.g. Rahul Sharma"
+                class="w-full p-3 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412] dark:text-[#F2EDE3]">
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >10-Digit Mobile Number *</label
+              >
+              <input
+                type="tel"
+                id="enqPhone"
+                title="Phone Number"
+                required
+                pattern="[0-9]{10}"
+                placeholder="9820011000"
+                class="w-full p-3 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412] dark:text-[#F2EDE3]">
+            </div>
+            <div>
+              <label
+                for="enqEmail"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Email Address</label
+              >
+              <input
+                type="email"
+                id="enqEmail"
+                name="enqEmail"
+                placeholder="rahul@example.com"
+                title="Email Address"
+                
+                class="w-full p-3 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412] dark:text-[#F2EDE3]">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="enqServiceType"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Topic / Service of Interest</label
+              >
+              <select
+                id="enqServiceType"
+                name="enqServiceType"
+                title="Topic / Service of Interest"
+                
+                class="w-full p-3 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412] dark:text-[#F2EDE3]"
+              >
+                <option value="New AC Purchase &amp; Consultation">
+                  New AC Purchase &amp; Brand Recommendation
+                </option>
+                <option value="Commercial HVAC / VRV Project">
+                  Commercial VRV / Ductable HVAC Project
+                </option>
+                <option value="Annual Maintenance Contract (AMC)">
+                  Annual Maintenance Contract (AMC) Inquiry
+                </option>
+                <option value="Emergency Breakdown / Gas Refill">
+                  Emergency Breakdown / Refrigerant Refill
+                </option>
+                <option value="General Technical Inquiry">
+                  Other General Consultation
+                </option>
+              </select>
+            </div>
+            <div>
+              <label
+                for="enqSubject"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Subject</label
+              >
+              <input
+                type="text"
+                id="enqSubject"
+                name="enqSubject"
+                placeholder="e.g. Quotation for 4-ton Inverter System"
+                title="Inquiry Subject"
+                aria-label="Inquiry Subject"
+                class="w-full p-3 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412] dark:text-[#F2EDE3]">
+            </div>
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Message / Requirements *</label
+            >
+            <textarea
+              id="enqMessage"
+              title="Message or Inquiry Details"
+              rows="3"
+              required
+              placeholder="Please describe your requirements, building type, or current AC issue..."
+              class="w-full p-3 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412] dark:text-[#F2EDE3]"
+            ></textarea>
+          </div>
+
+          <div
+            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2"
+          >
+            <button
+              type="submit"
+              id="enqSubmitBtn"
+              class="bg-[#A05B3A] hover:bg-[#8D4B2D] text-white font-bold py-3 px-6 rounded-xl text-xs shadow-md transition flex items-center gap-2"
+            >
+              <span>Send Inquiry to Specialist &rarr;</span>
+            </button>
+            <span class="text-[11px] text-[#655448] dark:text-[#B8AA98]">
+              Directly routed to PYS Unified CRM with tracking ID (ENQ-XXXXXX)
+            </span>
+          </div>
+          <div
+            id="enqAlert"
+            class="hidden p-3 rounded-xl text-xs font-bold border"
+          ></div>
+        </form>
       </div>
 
       <!-- 3. CUSTOMER FEEDBACK & STAR RATING FORM -->
@@ -499,6 +656,7 @@
                 <input
                   type="text"
                   id="fbName"
+                  title="Your Name"
                   required
                   placeholder="e.g. Rahul Sharma"
                   class="w-full bg-[#F2EDE3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#342C27] dark:text-[#F2EDE3] focus:bg-[#FDFBF7] dark:focus:bg-[#1A1412] focus:border-[#A05B3A] outline-none">
@@ -511,6 +669,7 @@
                 <input
                   type="tel"
                   id="fbPhone"
+                  title="Phone Number"
                   required
                   placeholder="9876543210"
                   class="w-full bg-[#F2EDE3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#342C27] dark:text-[#F2EDE3] focus:bg-[#FDFBF7] dark:focus:bg-[#1A1412] focus:border-[#A05B3A] outline-none">
@@ -520,11 +679,13 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label
+                  for="fbCategory"
                   class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
                   >Service Type</label
                 >
                 <select
                   id="fbCategory"
+                  title="Service Type"
                   class="w-full bg-[#F2EDE3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#342C27] dark:text-[#F2EDE3] focus:bg-[#FDFBF7] dark:focus:bg-[#1A1412] focus:border-[#A05B3A] outline-none"
                 >
                   <option value="AC Repair &amp; Jet Wash">
@@ -550,6 +711,7 @@
                 <input
                   type="text"
                   id="fbBookingId"
+                  title="Booking or Service ID"
                   placeholder="e.g. AC-1001"
                   class="w-full bg-[#F2EDE3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#342C27] dark:text-[#F2EDE3] focus:bg-[#FDFBF7] dark:focus:bg-[#1A1412] focus:border-[#A05B3A] outline-none">
               </div>
@@ -563,6 +725,7 @@
               >
               <textarea
                 id="fbMessage"
+                title="Feedback Message"
                 rows="3"
                 required
                 placeholder="Tell us about the technician performance, cooling result, and overall experience..."
@@ -576,6 +739,7 @@
               <input
                 type="checkbox"
                 id="fbRecommend"
+                title="Recommend Extreme Sales & Services"
                 checked
                 class="w-4 h-4 text-[#A05B3A] rounded focus:ring-0 cursor-pointer accent-[#A05B3A]">
               <label
@@ -617,15 +781,40 @@
       </div>
     </main>
 
-    <!-- FOOTER -->
+    <!-- FOOTER WITH PROTECTED STAFF ACCESS -->
     <footer
       class="bg-[#FDFBF7] dark:bg-[#1F1916] text-[#655448] dark:text-[#B8AA98] pt-12 pb-8 border-t border-[#B8AA98]/30 mt-auto"
     >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs"
+      >
         <p>
           &copy; 2026 Extreme Sales &amp; Services. All Rights Reserved. Master
           Service Hub &amp; Certified Technicians.
         </p>
+        <div class="flex items-center gap-5">
+          <a
+            href="index.html"
+            class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition font-medium"
+            >Home</a
+          >
+          <a
+            href="service.html"
+            class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition font-medium"
+            >Book Service</a
+          >
+          <a
+            href="customer-portal.html"
+            class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition font-medium"
+            >Customer Portal</a
+          >
+          <a
+            href="login.html"
+            class="hover:text-[#E4C99A] text-[#A05B3A] dark:text-[#E4C99A] transition font-bold flex items-center gap-1.5"
+          >
+            <span>🔒</span> Staff &amp; Admin Access
+          </a>
+        </div>
       </div>
     </footer>
 
@@ -638,6 +827,7 @@
       <a
         href="https://wa.me/917977805245"
         target="_blank"
+        rel="noopener noreferrer"
         class="dock-item bg-[#77B89A] hover:bg-[#639D83] text-white"
       >
         <span>💬</span>
@@ -864,6 +1054,77 @@
               window.showToast("Failed to submit review", "error");
           }
         });
+
+      // General Consultation & Inquiry Form Submission (PYS CRM Forwarding)
+      const enqForm = document.getElementById("generalInquiryForm");
+      if (enqForm) {
+        enqForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("enqSubmitBtn");
+          const alertEl = document.getElementById("enqAlert");
+          const origHtml = btn ? btn.innerHTML : "";
+
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = "<span>Submitting Inquiry...</span>";
+          }
+
+          const payload = {
+            name: document.getElementById("enqName").value.trim(),
+            phone: document.getElementById("enqPhone").value.trim(),
+            email:
+              document.getElementById("enqEmail").value.trim() || undefined,
+            serviceType: document.getElementById("enqServiceType").value,
+            subject:
+              document.getElementById("enqSubject").value.trim() || undefined,
+            message: document.getElementById("enqMessage").value.trim(),
+          };
+
+          try {
+            const res = await fetch(`${API_BASE}/api/enquiries`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              if (alertEl) {
+                alertEl.className =
+                  "p-4 rounded-xl text-xs font-bold border bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800";
+                alertEl.innerHTML = `✅ Thank you! Your inquiry <strong>${data.enquiryNumber || ""}</strong> has been logged in our central CRM. A technician specialist will contact you shortly.`;
+                alertEl.classList.remove("hidden");
+              }
+              if (window.showToast) {
+                window.showToast(
+                  `Inquiry ${data.enquiryNumber || ""} submitted successfully!`,
+                  "success",
+                );
+              }
+              enqForm.reset();
+            } else {
+              if (alertEl) {
+                alertEl.className =
+                  "p-4 rounded-xl text-xs font-bold border bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800";
+                alertEl.textContent = `❌ ${data.message || "Failed to submit inquiry."}`;
+                alertEl.classList.remove("hidden");
+              }
+            }
+          } catch (err) {
+            if (alertEl) {
+              alertEl.className =
+                "p-4 rounded-xl text-xs font-bold border bg-rose-50 text-rose-800";
+              alertEl.textContent =
+                "❌ Connection error. Please call our hotline directly at +91 79778 05245.";
+              alertEl.classList.remove("hidden");
+            }
+          } finally {
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = origHtml;
+            }
+          }
+        });
+      }
 
       loadFeedbackStream();
     </script>

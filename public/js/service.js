@@ -9,8 +9,40 @@ const modal = document.getElementById('successModal');
 const trackingIdDisplay = document.getElementById('trackingIdDisplay');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
+function updatePriceEstimate() {
+    const serviceSelect = document.getElementById('serviceType');
+    const tonsSelect = document.getElementById('acTons');
+    if (!serviceSelect) return;
+
+    const opt = serviceSelect.selectedOptions[0];
+    let base = opt && opt.dataset.price ? parseFloat(opt.dataset.price) : 699;
+    const tons = tonsSelect ? parseFloat(tonsSelect.value) || 1.5 : 1.5;
+
+    // Tonnage capacity surcharge for commercial / heavy units
+    if (tons >= 3.0) base *= 1.35;
+    else if (tons >= 2.0) base *= 1.15;
+
+    base = Math.round(base);
+    const gst = Math.round(base * 0.18 * 100) / 100;
+    const total = Math.round((base + gst) * 100) / 100;
+
+    const baseEl = document.getElementById('estBasePrice');
+    const gstEl = document.getElementById('estGstPrice');
+    const totEl = document.getElementById('estTotalPrice');
+
+    if (baseEl) baseEl.textContent = `₹${base.toFixed(2)}`;
+    if (gstEl) gstEl.textContent = `₹${gst.toFixed(2)}`;
+    if (totEl) totEl.textContent = `₹${total.toFixed(2)}`;
+}
+
 // Auto-fill from 3D Estimator URL parameters
 window.addEventListener('DOMContentLoaded', () => {
+    const serviceSelect = document.getElementById('serviceType');
+    const tonsSelect = document.getElementById('acTons');
+    if (serviceSelect) serviceSelect.addEventListener('change', updatePriceEstimate);
+    if (tonsSelect) tonsSelect.addEventListener('change', updatePriceEstimate);
+    updatePriceEstimate();
+
     try {
         const params = new URLSearchParams(window.location.search);
         const serviceParam = params.get('serviceType') || params.get('service');
@@ -72,16 +104,21 @@ form.addEventListener('submit', async (e) => {
 
     const selectedSlot = document.querySelector('input[name="timeSlot"]:checked')?.value || "Morning (9 AM - 12 PM)";
     const rawMessage = document.getElementById('message')?.value || "";
-    const combinedMessage = selectedSlot ? `[Slot: ${selectedSlot}] ${rawMessage}`.trim() : rawMessage;
+    const brandVal = document.getElementById('acBrand')?.value || "Daikin";
+    const tonsVal = document.getElementById('acTons')?.value || "1.5";
+    const combinedMessage = selectedSlot ? `[Slot: ${selectedSlot}] [Brand: ${brandVal}] [${tonsVal}T] ${rawMessage}`.trim() : rawMessage;
 
     const formData = {
         name: nameInput.value,
         email: emailInput.value,
         phone: phoneInput.value,
         serviceType: serviceInput.value,
+        brand: brandVal,
+        tons: tonsVal,
         address: addressInput.value,
         timeSlot: selectedSlot,
-        message: combinedMessage
+        message: combinedMessage,
+        estimatedTotal: document.getElementById('estTotalPrice')?.textContent?.replace('₹', '') || '824.82'
     };
 
     const submitBtn = form.querySelector('button[type="submit"]');

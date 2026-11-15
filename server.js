@@ -33,7 +33,7 @@ const {
 const pysIntegrationService = require('./server/services/pysIntegrationService');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002;
 
 // Tightened Cross-Origin Resource Sharing (CORS) with Place Your Service (PYS) whitelisting
 const allowedOrigins = [
@@ -348,6 +348,31 @@ let customerFeedback = [];
 
 // Centralized Authorization Middleware
 const requireAuth = (roles = []) => authMiddleware(roles);
+
+// ═══════════════════════════════════════════════════════════
+// 2B. CUSTOMER PORTAL PROXY (CONSOLIDATED PYS SUPABASE ENGINE)
+// ═══════════════════════════════════════════════════════════
+app.use('/api/portal', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const pysEndpoint = `/portal${req.url}`;
+        const customHeaders = {};
+        if (authHeader) {
+            customHeaders['Authorization'] = authHeader;
+        }
+        const result = await pysIntegrationService._request(
+            pysEndpoint,
+            req.method,
+            req.method !== 'GET' ? req.body : null,
+            customHeaders
+        );
+        return res.status(result.status || (result.ok ? 200 : 500)).json(
+            result.data || { success: false, error: result.error }
+        );
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 // ═══════════════════════════════════════════════════════════
 // 3. AUTHENTICATION & LOGIN (RATE-LIMITED & SECURED)
@@ -1747,6 +1772,17 @@ app.get('/api/products', async (req, res) => {
         return res.json({ success: true, products: cachedProducts, cached: true, latency: '<1ms' });
     }
 
+    // 2. Fetch directly from consolidated PYS Supabase REST API
+    try {
+        const pysRes = await pysIntegrationService._request('/ess-products', 'GET');
+        if (pysRes.ok && pysRes.data && Array.isArray(pysRes.data.products) && pysRes.data.products.length > 0) {
+            fastCache.set('all_products', pysRes.data.products, 60000, ['products']);
+            return res.json({ success: true, products: pysRes.data.products, cached: false, source: 'PYS_SUPABASE' });
+        }
+    } catch (_) {
+        // Fallback gracefully to local mock if PYS API is starting up
+    }
+
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('products').orderBy('created_at', 'desc').get();
@@ -1911,6 +1947,17 @@ app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
             return res.status(500).json({ success: false, message: "Unable to submit enquiry." });
         }
     }
+
+    // Forward to consolidated PYS Supabase engine
+    try {
+        await pysIntegrationService._request('/contact-enquiries', 'POST', {
+            name: newEnq.name,
+            phone: newEnq.phone,
+            subject: newEnq.product_name,
+            message: newEnq.message,
+            source_channel: 'EXTREME_SALES_SERVICES'
+        });
+    } catch (_) {}
 
     enquiries.unshift(newEnq);
     res.status(201).json({ success: true, message: "Enquiry submitted successfully." });
@@ -2282,7 +2329,7 @@ app.get('/api/amc/check', async (req, res) => {
 // 8. TRACKING (REST & LIVE SSE) — LEAST-PRIVILEGE DATA EXPOSURE
 // ═══════════════════════════════════════════════════════════
 app.get(['/api/track', '/api/track/status'], async (req, res) => {
-    const id = (req.query.id || req.query.requestId || '').toUpperCase().trim();
+    const id = (req.query.id || req.query.requestId || req.query.ticket || '').toUpperCase().trim();
     const phone = (req.query.phone || '').trim();
 
     if (!id && !phone) {
@@ -2295,6 +2342,50 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
         if (parts.length === 1) return parts[0];
         return `${parts[0]} ${parts[parts.length - 1].charAt(0)}.`;
     };
+
+    // 1. Live Supabase Tracking via PYS Enterprise REST Engine
+    try {
+        const pysTrackRes = await pysIntegrationService.trackTicket(id, phone);
+        if (pysTrackRes.success && pysTrackRes.data) {
+            const t = pysTrackRes.data.ticket;
+            const c = pysTrackRes.data.customer || {};
+            const a = pysTrackRes.data.asset || {};
+            const s = pysTrackRes.data.schedule || {};
+            const tech = s.technician || {};
+
+            const customerZone = dispatchEngine.detectZone(c.address || '');
+            let etaInfo = null;
+            if (tech.name && t.status !== 'COMPLETED' && t.status !== 'RESOLVED') {
+                etaInfo = dispatchEngine.calculateETA(customerZone.id, 'CENTRAL_MUMBAI', 1, 35);
+            }
+
+            return res.json({
+                success: true,
+                requestId: t.requestNumber,
+                status: t.status,
+                currentStep: t.currentStep,
+                name: maskName(c.name),
+                customerCode: c.customerCode || null,
+                technician_name: tech.name || "Pending Assignment",
+                technician_phone: tech.phone ? tech.phone.replace(/(\d{5})$/, 'XXXXX') : null,
+                service_type: t.requestType,
+                description: t.description,
+                asset: a.brand ? `${a.brand} (${a.acType || 'AC'}, ${a.capacityTons || 1.5}T)` : null,
+                zone: customerZone.name,
+                created_at: t.createdAt,
+                preferred_date: t.preferredDate,
+                source: 'SUPABASE_PYS',
+                eta: etaInfo ? {
+                    estimatedArrival: etaInfo.estimatedArrival,
+                    totalMinutes: etaInfo.totalMinutes,
+                    travelMinutes: etaInfo.travelMinutes,
+                    trafficFactor: etaInfo.trafficFactor
+                } : null
+            });
+        }
+    } catch (trackErr) {
+        console.warn('[Track] PYS lookup fallback to local store:', trackErr.message);
+    }
 
     if (isFirebaseMode) {
         try {
@@ -2679,6 +2770,98 @@ app.get('/api/admin/analytics', authMiddleware(['admin']), async (req, res) => {
             error: err.message
         });
     }
+});
+
+// ═══════════════════════════════════════════════════════════
+// CUSTOMER GENERAL INQUIRIES & CONSULTATIONS (PYS CRM FORWARDING)
+// ═══════════════════════════════════════════════════════════
+app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
+    try {
+        const { name, phone, email, subject, message, serviceType, productOfInterest } = req.body;
+
+        if (!name || (!phone && !email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and either a valid phone number or email address are required.'
+            });
+        }
+
+        const enquiryPayload = {
+            name: name.trim(),
+            phone: phone ? cleanPhone(phone) : undefined,
+            email: email ? email.trim() : undefined,
+            subject: subject ? subject.trim() : (serviceType ? `Inquiry for ${serviceType}` : 'General AC Service Consultation'),
+            message: message ? message.trim() : `Customer inquired about ${productOfInterest || serviceType || 'Extreme Sales & Services offerings'}.`,
+            productOfInterest: productOfInterest || undefined,
+            serviceType: serviceType || undefined,
+        };
+
+        // Forward to PYS CRM contact_enquiries table
+        const forwardResult = await pysIntegrationService.forwardEnquiry(enquiryPayload);
+
+        return res.status(201).json({
+            success: true,
+            message: 'Thank you! Your inquiry has been received. Our technical representative will contact you shortly.',
+            enquiryNumber: forwardResult.success && forwardResult.data ? forwardResult.data.enquiryNumber : `ENQ-${Math.floor(100000 + Math.random() * 900000)}`,
+            syncedWithPys: forwardResult.success
+        });
+    } catch (err) {
+        console.error('Error in /api/enquiries:', err);
+        return res.status(500).json({ success: false, message: 'Unable to process inquiry. Please call us directly.' });
+    }
+});
+
+// Global Express Error Middleware with PYS Bug Inspector Telemetry Interceptor
+app.use((err, req, res, next) => {
+    const statusCode = err.status || err.statusCode || 500;
+    console.error(`[ESS Server Error] ${req.method} ${req.originalUrl}:`, err);
+
+    // Forward crash/unhandled 500 to PYS Bug Inspector
+    if (statusCode >= 500) {
+        pysIntegrationService.forwardCrashReport({
+            errorName: err.name || 'ExpressServerError',
+            message: err.message || 'Unhandled ESS Express error',
+            stack: err.stack,
+            url: req.originalUrl,
+            method: req.method,
+            statusCode,
+            context: {
+                ip: req.ip,
+                body: req.body ? Object.keys(req.body) : undefined
+            }
+        }).catch(() => {});
+    }
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    return res.status(statusCode).json({
+        success: false,
+        message: statusCode >= 500 ? 'An unexpected server error occurred.' : err.message,
+        error: process.env.NODE_ENV !== 'production' ? err.message : undefined
+    });
+});
+
+// Process-level uncaught exceptions & unhandled rejections
+process.on('unhandledRejection', (reason) => {
+    const msg = reason instanceof Error ? reason.message : String(reason);
+    const stack = reason instanceof Error ? reason.stack : undefined;
+    console.error('[ESS Unhandled Rejection]:', msg);
+    pysIntegrationService.forwardCrashReport({
+        errorName: 'UnhandledPromiseRejection',
+        message: msg,
+        stack
+    }).catch(() => {});
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('[ESS Uncaught Exception]:', error.message);
+    pysIntegrationService.forwardCrashReport({
+        errorName: error.name || 'UncaughtException',
+        message: error.message,
+        stack: error.stack
+    }).catch(() => {});
 });
 
 // 404 Catch-All Page Handler

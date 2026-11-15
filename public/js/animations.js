@@ -953,7 +953,7 @@ window.checkPincodeCoverage = function() {
       const engineerCount = Math.floor(Math.random() * 3) + 3; // 3–5
       result.className = "mt-4 text-xs font-bold text-emerald-400 bg-emerald-950/80 p-4 rounded-xl border border-emerald-800 flex items-start gap-3";
       result.innerHTML = `
-        <span class="engineer-live-dot mt-0.5 flex-shrink-0"></span>
+        <span class="engineer-live-dot mt-0.5 shrink-0"></span>
         <span>✅ <strong>Pincode ${code}</strong> is in our Priority Dispatch Hub.
         <strong>${engineerCount} Engineers Active</strong> nearby (&lt; 45 Mins Arrival).
         <a href="service.html" class="underline text-emerald-300 ml-1">Book now →</a></span>
@@ -1182,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     banner.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9999] bg-[#27211D]/95 backdrop-blur-xl border border-[#B8AA98]/40 text-[#F2EDE3] p-4 sm:p-5 rounded-2xl shadow-2xl transition-all duration-500 transform translate-y-8 opacity-0 flex flex-col gap-3 text-xs';
     banner.innerHTML = `
       <div class="flex items-start gap-3">
-        <span class="text-2xl flex-shrink-0">🍪</span>
+        <span class="text-2xl shrink-0">🍪</span>
         <div class="space-y-1">
           <p class="font-bold text-[#F2EDE3] text-sm">Cookie &amp; Service Preferences</p>
           <p class="text-[#B8AA98] text-xs leading-relaxed">

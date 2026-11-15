@@ -308,7 +308,7 @@ function renderTable() {
                 </select>
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
-                <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20Extreme%20AC%20Service%20coordinator%20here%20regarding%20request%20${req.request_id}." target="_blank" class="bg-[#77B89A]/15 hover:bg-[#77B89A] text-[#2E6B52] dark:text-[#77B89A] hover:text-[#1A1412] dark:hover:text-[#1A1412] border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 w-max">
+                <a href="https://wa.me/91${req.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name)},%20Extreme%20AC%20Service%20coordinator%20here%20regarding%20request%20${req.request_id}." target="_blank" rel="noopener noreferrer" class="bg-[#77B89A]/15 hover:bg-[#77B89A] text-[#2E6B52] dark:text-[#77B89A] hover:text-[#1A1412] dark:hover:text-[#1A1412] border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 w-max">
                     <span>💬</span>
                     <span>WhatsApp</span>
                 </a>
@@ -464,7 +464,7 @@ async function fetchEnquiries() {
                     <td class="px-5 py-3.5 font-bold text-[#A05B3A] dark:text-[#E4C99A]">${escapeHtml(enq.product_name)}</td>
                     <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98] italic">"${escapeHtml(enq.message)}"</td>
                     <td class="px-5 py-3.5">
-                        <a href="https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20regarding%20your%20enquiry%20with%20Extreme%20Sales%20%26%20Services" target="_blank" class="bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-[#1A1412] dark:hover:text-[#1A1412] border border-[#77B89A]/30 px-3 py-1 rounded-lg text-xs font-bold transition">
+                        <a href="https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20regarding%20your%20enquiry%20with%20Extreme%20Sales%20%26%20Services" target="_blank" rel="noopener noreferrer" class="bg-[#77B89A]/15 text-[#2E6B52] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-[#1A1412] dark:hover:text-[#1A1412] border border-[#77B89A]/30 px-3 py-1 rounded-lg text-xs font-bold transition">
                             💬 Follow Up
                         </a>
                     </td>

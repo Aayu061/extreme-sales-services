@@ -6,41 +6,57 @@
     <title>Extreme Sales &amp; Services | AC Experts</title>
     <meta
       name="description"
-      content="Professional AC sales, installation, repair &amp; annual maintenance contracts. Fast, certified, and available 24/7."
-    >
+      content="Professional AC sales, installation, repair &amp; annual maintenance contracts. Fast, certified, and available 24/7.">
     <!-- Open Graph & Social Sharing -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Extreme Sales &amp; Services | Premier AC Sales, Repair &amp; AMC">
-    <meta property="og:description" content="Certified 24/7 doorstep AC repair, multi-brand sales, and annual maintenance contracts with live dispatch tracking.">
-    <meta property="og:url" content="https://extreme-sales-services.vercel.app/">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&amp;fit=crop&amp;w=1200&amp;q=80">
+    <meta
+      property="og:title"
+      content="Extreme Sales &amp; Services | Premier AC Sales, Repair &amp; AMC">
+    <meta
+      property="og:description"
+      content="Certified 24/7 doorstep AC repair, multi-brand sales, and annual maintenance contracts with live dispatch tracking.">
+    <meta
+      property="og:url"
+      content="https://extreme-sales-services.vercel.app/">
+    <meta
+      property="og:image"
+      content="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&amp;fit=crop&amp;w=1200&amp;q=80">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Extreme Sales &amp; Services | Premier AC Care">
-    <meta name="twitter:description" content="Certified 24/7 doorstep AC repair, multi-brand sales, and annual maintenance contracts.">
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&amp;fit=crop&amp;w=1200&amp;q=80">
+    <meta
+      name="twitter:title"
+      content="Extreme Sales &amp; Services | Premier AC Care">
+    <meta
+      name="twitter:description"
+      content="Certified 24/7 doorstep AC repair, multi-brand sales, and annual maintenance contracts.">
+    <meta
+      name="twitter:image"
+      content="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&amp;fit=crop&amp;w=1200&amp;q=80">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
-        darkMode: 'class'
+        darkMode: "class",
       };
     </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <!-- Anti-flicker: ensure default clean light mode -->
     <script>
-      (function(){
+      (function () {
         try {
-          var saved = localStorage.getItem('theme');
-          if (saved === 'dark') {
-            document.documentElement.classList.add('dark');
+          var saved = localStorage.getItem("theme");
+          if (saved === "dark") {
+            document.documentElement.classList.add("dark");
           }
-        } catch(e){}
+        } catch (e) {}
       })();
     </script>
-      <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#A05B3A">
   </head>
-  <body class="bg-[#F2EDE3] text-[#342C27] dark:bg-[#1A1412] dark:text-[#F2EDE3] font-sans flex flex-col min-h-screen antialiased selection:bg-[#A05B3A] selection:text-white">
+  <body
+    class="bg-[#F2EDE3] text-[#342C27] dark:bg-[#1A1412] dark:text-[#F2EDE3] font-sans flex flex-col min-h-screen antialiased selection:bg-[#A05B3A] selection:text-white"
+  >
     <!-- Scroll Progress Bar -->
     <div id="scrollProgressBar"></div>
 
@@ -54,7 +70,7 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
-          <div class="flex-shrink-0 flex items-center">
+          <div class="shrink-0 flex items-center">
             <a
               href="index.html"
               class="text-xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-95 transition flex items-center gap-2.5"
@@ -63,7 +79,12 @@
                 class="bg-[#A05B3A] text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-sm"
                 >ES</span
               >
-              <span>Extreme <span class="text-[#A05B3A] dark:text-[#E4C99A]">S&amp;S</span></span>
+              <span
+                >Extreme
+                <span class="text-[#A05B3A] dark:text-[#E4C99A]"
+                  >S&amp;S</span
+                ></span
+              >
             </a>
           </div>
 
@@ -91,6 +112,11 @@
               >Track Status</a
             >
             <a
+              href="customer-portal.html"
+              class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
+              >Customer Portal</a
+            >
+            <a
               href="amc.html"
               class="nav-link text-[#655448] hover:text-[#A05B3A] dark:text-[#B8AA98] dark:hover:text-[#E4C99A] font-bold text-sm transition"
               >AMC Plans</a
@@ -102,13 +128,8 @@
             >
             <a
               href="service.html"
-              class="btn-accent !py-2 !px-4 !text-xs font-bold shadow-sm"
+              class="btn-accent py-2! px-4! text-xs! font-bold shadow-sm"
               >Book Service</a
-            >
-            <a
-              href="login.html"
-              class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] bg-white/70 dark:bg-[#27211D]/80 hover:bg-white dark:hover:bg-[#342C27] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 px-3 py-2 rounded-xl transition"
-              >Staff Portal</a
             >
             <!-- Theme Toggle Button -->
             <button
@@ -116,11 +137,31 @@
               class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-white/60 dark:hover:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 cursor-pointer"
               aria-label="Toggle Theme"
             >
-              <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              <svg
+                class="theme-icon-moon w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
               </svg>
-              <svg class="theme-icon-sun w-4 h-4 hidden text-[#E4C99A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg
+                class="theme-icon-sun w-4 h-4 hidden text-[#E4C99A]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </button>
           </div>
@@ -132,11 +173,31 @@
               class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-white/60 dark:hover:bg-[#27211D] cursor-pointer"
               aria-label="Toggle Theme"
             >
-              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              <svg
+                class="theme-icon-moon w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-[#E4C99A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg
+                class="theme-icon-sun w-5 h-5 hidden text-[#E4C99A]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </button>
             <button
@@ -169,17 +230,42 @@
         class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#1A1412]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 p-5 md:hidden text-[#342C27] dark:text-[#F2EDE3] mt-2"
       >
         <div class="flex flex-col space-y-3 text-center">
-          <a href="index.html" data-section="hero" class="nav-link text-[#A05B3A] dark:text-[#E4C99A] font-bold py-2">Home</a>
-          <a href="#services" data-section="services" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2">Services</a>
-          <a href="products.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2">Products</a>
-          <a href="status.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2">Track Status</a>
-          <a href="amc.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2">AMC Plans</a>
-          <a href="contact.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2">Contact Us</a>
-          <a href="service.html" class="btn-accent py-2.5 rounded-xl mt-2 font-bold block"
-            >Book Service</a
+          <a
+            href="index.html"
+            data-section="hero"
+            class="nav-link text-[#A05B3A] dark:text-[#E4C99A] font-bold py-2"
+            >Home</a
           >
-          <a href="login.html" class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] py-2 block border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 mt-2"
-            >Staff &amp; Admin Portal</a
+          <a
+            href="#services"
+            data-section="services"
+            class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2"
+            >Services</a
+          >
+          <a
+            href="products.html"
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2"
+            >Products</a
+          >
+          <a
+            href="status.html"
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2"
+            >Track Status</a
+          >
+          <a
+            href="amc.html"
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2"
+            >AMC Plans</a
+          >
+          <a
+            href="contact.html"
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-bold py-2"
+            >Contact Us</a
+          >
+          <a
+            href="service.html"
+            class="btn-accent py-2.5 rounded-xl mt-2 font-bold block"
+            >Book Service</a
           >
         </div>
       </div>
@@ -197,15 +283,31 @@
         class="w-full max-w-5xl mx-auto px-4 sm:px-6 relative z-10 text-center fade-up my-auto flex flex-col justify-center items-center py-6 sm:py-8"
       >
         <!-- Time-based greeting -->
-        <div id="heroGreeting" class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] mb-2 tracking-wider uppercase"></div>
+        <div
+          id="heroGreeting"
+          class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] mb-2 tracking-wider uppercase"
+        ></div>
 
         <!-- Trust Badge -->
-        <div class="inline-flex items-center gap-2 bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 shadow-sm mb-4">
+        <div
+          class="inline-flex items-center gap-2 bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 shadow-sm mb-4"
+        >
           <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
-          <span class="text-xs font-bold text-[#342C27] dark:text-[#F2EDE3]">Certified HVAC Team Active</span>
-          <span class="text-[#B8AA98] dark:text-[#B8AA98]/60 text-xs hidden sm:inline">|</span>
-          <span class="text-xs text-[#655448] dark:text-[#B8AA98] hidden sm:inline">Doorstep Service in 90 Mins</span>
-          <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40">Mumbai MMR</span>
+          <span class="text-xs font-bold text-[#342C27] dark:text-[#F2EDE3]"
+            >Certified HVAC Team Active</span
+          >
+          <span
+            class="text-[#B8AA98] dark:text-[#B8AA98]/60 text-xs hidden sm:inline"
+            >|</span
+          >
+          <span
+            class="text-xs text-[#655448] dark:text-[#B8AA98] hidden sm:inline"
+            >Doorstep Service in 90 Mins</span
+          >
+          <span
+            class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/40"
+            >Mumbai MMR</span
+          >
         </div>
 
         <!-- Clean Commercial Headline -->
@@ -213,20 +315,31 @@
           class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.2rem] font-black text-[#342C27] dark:text-[#F2EDE3] leading-[1.12] mb-4 tracking-tight"
         >
           Expert Air Conditioning<br>
-          <span class="text-[#A05B3A] dark:text-[#E4C99A]">Sales, Service &amp; Maintenance</span>
+          <span class="text-[#A05B3A] dark:text-[#E4C99A]"
+            >Sales, Service &amp; Maintenance</span
+          >
         </h1>
 
         <p
           class="text-sm sm:text-base md:text-lg text-[#655448] dark:text-[#B8AA98] mb-6 max-w-2xl mx-auto font-medium leading-relaxed"
         >
-          Fast doorstep repairs, genuine multi-brand AC sales, and certified Annual Maintenance Contracts (AMC) across Mumbai. Powered by <span id="typewriter" class="text-[#A05B3A] dark:text-[#E4C99A] font-bold">Cool Living</span>.
+          Fast doorstep repairs, genuine multi-brand AC sales, and certified
+          Annual Maintenance Contracts (AMC) across Mumbai. Powered by
+          <span
+            id="typewriter"
+            class="text-[#A05B3A] dark:text-[#E4C99A] font-bold"
+            >Cool Living</span
+          >.
         </p>
 
         <!-- CTA Action Buttons -->
-        <div id="heroCtaContainer" class="flex flex-wrap justify-center items-center gap-3.5 mb-6">
+        <div
+          id="heroCtaContainer"
+          class="flex flex-wrap justify-center items-center gap-3.5 mb-6"
+        >
           <a
             href="service.html"
-            class="btn-accent !py-3 !px-6 !text-sm flex items-center gap-2 font-bold shadow-md hover:scale-105 transition-all"
+            class="btn-accent py-3! px-6! text-sm! flex items-center gap-2 font-bold shadow-md hover:scale-105 transition-all"
           >
             <span>Book a Repair Service</span>
             <svg
@@ -245,7 +358,7 @@
           </a>
           <a
             href="products.html"
-            class="bg-[#FDFBF7] dark:bg-[#27211D] hover:bg-white dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 font-bold !py-3 !px-6 !text-sm rounded-xl shadow-xs flex items-center gap-2 hover:shadow-md transition-all"
+            class="bg-[#FDFBF7] dark:bg-[#27211D] hover:bg-white dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 font-bold py-3! px-6! text-sm! rounded-xl shadow-xs flex items-center gap-2 hover:shadow-md transition-all"
           >
             <span>Explore AC Catalog</span>
             <svg
@@ -264,26 +377,41 @@
           </a>
           <a
             href="tel:+917977805245"
-            class="bg-[#FDFBF7] dark:bg-[#27211D] hover:bg-white dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 font-bold !py-3 !px-5 !text-sm rounded-xl shadow-xs flex items-center gap-2 transition"
+            class="bg-[#FDFBF7] dark:bg-[#27211D] hover:bg-white dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 font-bold py-3! px-5! text-sm! rounded-xl shadow-xs flex items-center gap-2 transition"
           >
             <i class="fa-solid fa-phone text-[#A05B3A] dark:text-[#E4C99A]"></i>
             <span>Direct&nbsp;Helpline</span>
           </a>
         </div>
 
-
         <!-- Value Strip -->
-        <div class="inline-flex flex-wrap items-center justify-center gap-3 sm:gap-6 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-md px-6 py-2.5 rounded-full border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 shadow-sm text-xs font-bold text-[#342C27] dark:text-[#F2EDE3]">
-          <span class="flex items-center gap-1.5"><span class="text-[#77B89A] font-black">✓</span> 90-Min Doorstep Arrival</span>
-          <span class="flex items-center gap-1.5"><span class="text-[#77B89A] font-black">✓</span> 100% Genuine OEM Spares</span>
-          <span class="flex items-center gap-1.5"><span class="text-[#77B89A] font-black">✓</span> Verified Technicians</span>
-          <span class="flex items-center gap-1.5"><span class="text-[#77B89A] font-black">✓</span> 30-Day Service Warranty</span>
+        <div
+          class="inline-flex flex-wrap items-center justify-center gap-3 sm:gap-6 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-md px-6 py-2.5 rounded-full border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 shadow-sm text-xs font-bold text-[#342C27] dark:text-[#F2EDE3]"
+        >
+          <span class="flex items-center gap-1.5"
+            ><span class="text-[#77B89A] font-black">✓</span> 90-Min Doorstep
+            Arrival</span
+          >
+          <span class="flex items-center gap-1.5"
+            ><span class="text-[#77B89A] font-black">✓</span> 100% Genuine OEM
+            Spares</span
+          >
+          <span class="flex items-center gap-1.5"
+            ><span class="text-[#77B89A] font-black">✓</span> Verified
+            Technicians</span
+          >
+          <span class="flex items-center gap-1.5"
+            ><span class="text-[#77B89A] font-black">✓</span> 30-Day Service
+            Warranty</span
+          >
         </div>
         <!-- Service Platform Pillars -->
         <div
           class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-2xl w-full mx-auto border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 pt-4 mt-2"
         >
-          <div class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+          <div
+            class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+          >
             <h3
               class="text-xs sm:text-sm font-bold text-[#342C27] dark:text-[#F2EDE3] uppercase tracking-wider"
             >
@@ -295,7 +423,9 @@
               Live Service Tracking
             </p>
           </div>
-          <div class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+          <div
+            class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+          >
             <h3
               class="text-xs sm:text-sm font-bold text-[#342C27] dark:text-[#F2EDE3] uppercase tracking-wider"
             >
@@ -307,7 +437,9 @@
               Verified Technicians
             </p>
           </div>
-          <div class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+          <div
+            class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+          >
             <h3
               class="text-xs sm:text-sm font-bold text-[#342C27] dark:text-[#F2EDE3] uppercase tracking-wider"
             >
@@ -319,7 +451,9 @@
               Upfront Pricing
             </p>
           </div>
-          <div class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+          <div
+            class="text-center p-2 rounded-xl bg-[#FDFBF7]/70 dark:bg-[#27211D]/70 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+          >
             <h3
               class="text-xs sm:text-sm font-bold text-[#342C27] dark:text-[#F2EDE3] uppercase tracking-wider"
             >
@@ -335,7 +469,9 @@
       </div>
 
       <!-- BOTTOM DOCK: Scroll Indicator + Multi-Brand Ecosystem -->
-      <div class="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center pb-4 text-center shrink-0">
+      <div
+        class="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center pb-4 text-center shrink-0"
+      >
         <!-- Scroll Indicator -->
         <div class="mb-2">
           <a
@@ -345,69 +481,133 @@
             aria-label="Scroll down to services"
           >
             <div class="mouse-scroll"></div>
-            <span class="text-[9px] font-bold uppercase tracking-widest text-[#655448] dark:text-[#B8AA98] group-hover:text-[#A05B3A] dark:group-hover:text-[#E4C99A] transition-colors mt-0.5">Explore</span>
+            <span
+              class="text-[9px] font-bold uppercase tracking-widest text-[#655448] dark:text-[#B8AA98] group-hover:text-[#A05B3A] dark:group-hover:text-[#E4C99A] transition-colors mt-0.5"
+              >Explore</span
+            >
           </a>
         </div>
 
         <!-- Multi-Brand Partner Cloud -->
-        <div class="w-full border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 pt-3">
-          <p class="text-[10px] uppercase tracking-widest text-[#655448] dark:text-[#B8AA98] font-bold text-center mb-2">
+        <div
+          class="w-full border-t border-[#B8AA98]/30 dark:border-[#B8AA98]/20 pt-3"
+        >
+          <p
+            class="text-[10px] uppercase tracking-widest text-[#655448] dark:text-[#B8AA98] font-bold text-center mb-2"
+          >
             Multi-Brand Service Experts &bull; 100% Genuine Parts
           </p>
           <div class="flex flex-wrap items-center justify-center gap-2">
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Daikin</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Voltas</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Mitsubishi Electric</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Carrier</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Blue Star</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Hitachi</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">O General</span>
-            <span class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs">Panasonic</span>
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Daikin</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Voltas</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Mitsubishi Electric</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Carrier</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Blue Star</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Hitachi</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >O General</span
+            >
+            <span
+              class="px-3 py-1 rounded-lg bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/45 dark:border-[#B8AA98]/25 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] shadow-2xs"
+              >Panasonic</span
+            >
           </div>
         </div>
       </div>
     </section>
 
     <!-- INSTANT HVAC COST ESTIMATOR & QUOTE CALCULATOR -->
-    <section id="estimator" class="py-24 bg-[#F2EDE3] dark:bg-[#1A1412] relative border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20">
+    <section
+      id="estimator"
+      class="py-24 bg-[#F2EDE3] dark:bg-[#1A1412] relative border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 reveal">
-          <div class="inline-flex items-center gap-2 bg-[#77B89A]/20 border border-[#77B89A]/40 text-[#1D3D2B] dark:text-[#77B89A] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
+          <div
+            class="inline-flex items-center gap-2 bg-[#77B89A]/20 border border-[#77B89A]/40 text-[#1D3D2B] dark:text-[#77B89A] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4"
+          >
             <span>⚡</span> Upfront Transparent Pricing
           </div>
-          <h2 class="text-3xl md:text-5xl font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight mb-4">
+          <h2
+            class="text-3xl md:text-5xl font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight mb-4"
+          >
             Instant Service Cost Estimator
           </h2>
-          <p class="text-[#655448] dark:text-[#B8AA98] max-w-2xl mx-auto text-sm md:text-base font-medium">
-            Calculate exact upfront service estimates with zero hidden fees. See how much you save with our Annual Maintenance Contracts.
+          <p
+            class="text-[#655448] dark:text-[#B8AA98] max-w-2xl mx-auto text-sm md:text-base font-medium"
+          >
+            Calculate exact upfront service estimates with zero hidden fees. See
+            how much you save with our Annual Maintenance Contracts.
           </p>
         </div>
 
-        <div class="max-w-4xl mx-auto bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-[2.5rem] shadow-xl p-6 sm:p-10 reveal">
+        <div
+          class="max-w-4xl mx-auto bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-[2.5rem] shadow-xl p-6 sm:p-10 reveal"
+        >
           <div class="space-y-8">
             <!-- Step 1: AC Type -->
             <div>
-              <span class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest block mb-3">Step 1 • Select AC Unit Type</span>
+              <span
+                class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest block mb-3"
+                >Step 1 • Select AC Unit Type</span
+              >
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <button type="button" onclick="selectEstimatorOption('type', 'split', this)" class="estimator-pill active bg-[#A05B3A] text-white border-[#A05B3A] shadow-md p-4 rounded-2xl border font-bold text-xs flex items-center gap-3 transition">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('type', 'split', this)"
+                  class="estimator-pill active bg-[#A05B3A] text-white border-[#A05B3A] shadow-md p-4 rounded-2xl border font-bold text-xs flex items-center gap-3 transition"
+                >
                   <span class="text-xl">❄️</span>
                   <span class="text-left">
                     <span class="block font-black">Split Inverter AC</span>
-                    <span class="text-[10px] opacity-80">Wall Mounted Residential</span>
+                    <span class="text-[10px] opacity-80"
+                      >Wall Mounted Residential</span
+                    >
                   </span>
                 </button>
-                <button type="button" onclick="selectEstimatorOption('type', 'window', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-4 rounded-2xl border font-bold text-xs flex items-center gap-3 transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('type', 'window', this)"
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-4 rounded-2xl border font-bold text-xs flex items-center gap-3 transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]"
+                >
                   <span class="text-xl">🪟</span>
                   <span class="text-left">
                     <span class="block font-black">Window AC Unit</span>
-                    <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Box Window Fitted</span>
+                    <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]"
+                      >Box Window Fitted</span
+                    >
                   </span>
                 </button>
-                <button type="button" onclick="selectEstimatorOption('type', 'cassette', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-4 rounded-2xl border font-bold text-xs flex items-center gap-3 transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('type', 'cassette', this)"
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-4 rounded-2xl border font-bold text-xs flex items-center gap-3 transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]"
+                >
                   <span class="text-xl">🏢</span>
                   <span class="text-left">
                     <span class="block font-black">Cassette / Commercial</span>
-                    <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Ceiling Fitted Commercial</span>
+                    <span class="text-[10px] text-[#655448] dark:text-[#B8AA98]"
+                      >Ceiling Fitted Commercial</span
+                    >
                   </span>
                 </button>
               </div>
@@ -415,96 +615,212 @@
 
             <!-- Step 2: Capacity / Tonnage -->
             <div>
-              <span class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest block mb-3">Step 2 • Select Cooling Capacity</span>
+              <span
+                class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest block mb-3"
+                >Step 2 • Select Cooling Capacity</span
+              >
               <div class="grid grid-cols-3 gap-3">
-                <button type="button" onclick="selectEstimatorOption('tonnage', '1.0', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-center transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('tonnage', '1.0', this)"
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-center transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]"
+                >
                   <span class="block text-base font-black">1.0 Ton</span>
-                  <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium">Up to 120 sq.ft</span>
+                  <span
+                    class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium"
+                    >Up to 120 sq.ft</span
+                  >
                 </button>
-                <button type="button" onclick="selectEstimatorOption('tonnage', '1.5', this)" class="estimator-pill active bg-[#A05B3A] text-white border-[#A05B3A] shadow-md p-3.5 rounded-2xl border font-bold text-xs text-center transition">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('tonnage', '1.5', this)"
+                  class="estimator-pill active bg-[#A05B3A] text-white border-[#A05B3A] shadow-md p-3.5 rounded-2xl border font-bold text-xs text-center transition"
+                >
                   <span class="block text-base font-black">1.5 Ton</span>
-                  <span class="text-[10px] opacity-80 font-medium">120 - 180 sq.ft</span>
+                  <span class="text-[10px] opacity-80 font-medium"
+                    >120 - 180 sq.ft</span
+                  >
                 </button>
-                <button type="button" onclick="selectEstimatorOption('tonnage', '2.0', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-center transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('tonnage', '2.0', this)"
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-center transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A]"
+                >
                   <span class="block text-base font-black">2.0 Ton+</span>
-                  <span class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium">180+ sq.ft / Hall</span>
+                  <span
+                    class="text-[10px] text-[#655448] dark:text-[#B8AA98] font-medium"
+                    >180+ sq.ft / Hall</span
+                  >
                 </button>
               </div>
             </div>
 
             <!-- Step 3: Service Requirement -->
             <div>
-              <span class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest block mb-3">Step 3 • Select Primary Requirement</span>
+              <span
+                class="text-xs font-extrabold text-[#A05B3A] dark:text-[#E4C99A] uppercase tracking-widest block mb-3"
+                >Step 3 • Select Primary Requirement</span
+              >
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button type="button" onclick="selectEstimatorOption('service', 'jet_wash', this)" class="estimator-pill active bg-[#A05B3A] text-white border-[#A05B3A] shadow-md p-3.5 rounded-2xl border font-bold text-xs text-left transition flex items-center justify-between">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('service', 'jet_wash', this)"
+                  class="estimator-pill active bg-[#A05B3A] text-white border-[#A05B3A] shadow-md p-3.5 rounded-2xl border font-bold text-xs text-left transition flex items-center justify-between"
+                >
                   <span>🌊 Deep Foam Jet-Pump Wash</span>
-                  <span class="text-[11px] opacity-90 font-mono">From ₹699</span>
+                  <span class="text-[11px] opacity-90 font-mono"
+                    >From ₹699</span
+                  >
                 </button>
-                <button type="button" onclick="selectEstimatorOption('service', 'gas_refill', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-left transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A] flex items-center justify-between">
+                <button
+                  type="button"
+                  onclick="selectEstimatorOption('service', 'gas_refill', this)"
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-left transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A] flex items-center justify-between"
+                >
                   <span>💨 Gas Leak Test &amp; Top-Up</span>
-                  <span class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-mono">From ₹1,850</span>
+                  <span
+                    class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-mono"
+                    >From ₹1,850</span
+                  >
                 </button>
-                <button type="button" onclick="selectEstimatorOption('service', 'cooling_repair', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-left transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A] flex items-center justify-between">
+                <button
+                  type="button"
+                  onclick="
+                    selectEstimatorOption('service', 'cooling_repair', this)
+                  "
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-left transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A] flex items-center justify-between"
+                >
                   <span>🔧 Cooling Failure &amp; PCB Repair</span>
-                  <span class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-mono">From ₹1,150</span>
+                  <span
+                    class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-mono"
+                    >From ₹1,150</span
+                  >
                 </button>
-                <button type="button" onclick="selectEstimatorOption('service', 'installation', this)" class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-left transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A] flex items-center justify-between">
+                <button
+                  type="button"
+                  onclick="
+                    selectEstimatorOption('service', 'installation', this)
+                  "
+                  class="estimator-pill bg-white dark:bg-[#342C27] text-[#342C27] dark:text-[#F2EDE3] border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-3.5 rounded-2xl border font-bold text-xs text-left transition hover:border-[#A05B3A] dark:hover:border-[#E4C99A] flex items-center justify-between"
+                >
                   <span>🔩 Precision Installation</span>
-                  <span class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-mono">From ₹1,450</span>
+                  <span
+                    class="text-[11px] text-[#655448] dark:text-[#B8AA98] font-mono"
+                    >From ₹1,450</span
+                  >
                 </button>
               </div>
             </div>
 
             <!-- Quote Calculation Result Box -->
-            <div class="bg-[#F2EDE3] dark:bg-[#1A1412] rounded-3xl p-6 sm:p-8 border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 shadow-md mt-8">
-              <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20">
+            <div
+              class="bg-[#F2EDE3] dark:bg-[#1A1412] rounded-3xl p-6 sm:p-8 border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 shadow-md mt-8"
+            >
+              <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20"
+              >
                 <div>
-                  <span class="text-[10px] font-black uppercase tracking-widest text-[#655448] dark:text-[#B8AA98] block mb-1">Estimated Total (Inclusive of GST)</span>
+                  <span
+                    class="text-[10px] font-black uppercase tracking-widest text-[#655448] dark:text-[#B8AA98] block mb-1"
+                    >Estimated Total (Inclusive of GST)</span
+                  >
                   <div class="flex items-baseline gap-2">
-                    <span id="estTotalPrice" class="text-4xl font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight font-mono">₹825</span>
-                    <span class="text-xs text-[#655448] dark:text-[#B8AA98] font-medium">Standard Out-of-Warranty Rate</span>
+                    <span
+                      id="estTotalPrice"
+                      class="text-4xl font-black text-[#342C27] dark:text-[#F2EDE3] tracking-tight font-mono"
+                      >₹825</span
+                    >
+                    <span
+                      class="text-xs text-[#655448] dark:text-[#B8AA98] font-medium"
+                      >Standard Out-of-Warranty Rate</span
+                    >
                   </div>
-                  <div class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-1 flex items-center gap-3">
-                    <span>Base Labor: <strong id="estBasePrice" class="text-[#342C27] dark:text-[#F2EDE3] font-mono">₹699</strong></span>
+                  <div
+                    class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-1 flex items-center gap-3"
+                  >
+                    <span
+                      >Base Labor:
+                      <strong
+                        id="estBasePrice"
+                        class="text-[#342C27] dark:text-[#F2EDE3] font-mono"
+                        >₹699</strong
+                      ></span
+                    >
                     <span>•</span>
-                    <span>18% GST: <strong id="estGstPrice" class="text-[#342C27] dark:text-[#F2EDE3] font-mono">₹126</strong></span>
+                    <span
+                      >18% GST:
+                      <strong
+                        id="estGstPrice"
+                        class="text-[#342C27] dark:text-[#F2EDE3] font-mono"
+                        >₹126</strong
+                      ></span
+                    >
                     <span>•</span>
-                    <span>Est. Time: <strong id="estDuration" class="text-[#342C27] dark:text-[#F2EDE3]">45 mins</strong></span>
+                    <span
+                      >Est. Time:
+                      <strong
+                        id="estDuration"
+                        class="text-[#342C27] dark:text-[#F2EDE3]"
+                        >45 mins</strong
+                      ></span
+                    >
                   </div>
                 </div>
 
                 <!-- AMC Comparison Delight Banner -->
-                <div class="bg-[#77B89A]/20 border border-[#77B89A]/40 rounded-2xl p-4 text-[#1D3D2B] dark:text-[#77B89A] max-w-sm">
+                <div
+                  class="bg-[#77B89A]/20 border border-[#77B89A]/40 rounded-2xl p-4 text-[#1D3D2B] dark:text-[#77B89A] max-w-sm"
+                >
                   <div class="flex items-center gap-2 mb-1">
-                    <span class="text-[#1D3D2B] dark:text-[#77B89A] font-bold">🛡️ AMC Member Price:</span>
-                    <span class="bg-[#1D3D2B] dark:bg-[#77B89A] text-white dark:text-[#1A1412] text-[10px] font-black px-2 py-0.5 rounded-md">₹0 FREE</span>
+                    <span class="text-[#1D3D2B] dark:text-[#77B89A] font-bold"
+                      >🛡️ AMC Member Price:</span
+                    >
+                    <span
+                      class="bg-[#1D3D2B] dark:bg-[#77B89A] text-white dark:text-[#1A1412] text-[10px] font-black px-2 py-0.5 rounded-md"
+                      >₹0 FREE</span
+                    >
                   </div>
-                  <p class="text-xs text-[#1D3D2B] dark:text-[#77B89A] leading-tight">
-                    Covered 100% under our Annual Maintenance Contract. <strong id="estAmcSavings">Save ₹825</strong> on this service!
+                  <p
+                    class="text-xs text-[#1D3D2B] dark:text-[#77B89A] leading-tight"
+                  >
+                    Covered 100% under our Annual Maintenance Contract.
+                    <strong id="estAmcSavings">Save ₹825</strong> on this
+                    service!
                   </p>
                 </div>
               </div>
 
               <!-- Actions -->
-              <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
-                <a href="amc.html" class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] hover:text-[#944E2E] dark:hover:text-[#F2EDE3] transition flex items-center gap-1.5">
+              <div
+                class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6"
+              >
+                <a
+                  href="amc.html"
+                  class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] hover:text-[#944E2E] dark:hover:text-[#F2EDE3] transition flex items-center gap-1.5"
+                >
                   <span>Explore All AMC Plans &amp; Save Up To 40%</span>
                   <span>→</span>
                 </a>
-                <a id="estBookBtn" href="service.html" class="btn-accent px-8 py-3.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg w-full sm:w-auto">
+                <a
+                  id="estBookBtn"
+                  href="service.html"
+                  class="btn-accent px-8 py-3.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg w-full sm:w-auto"
+                >
                   <span>Proceed to Book at This Estimate</span>
                   <span>→</span>
                 </a>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </section>
 
     <!-- PREMIUM SERVICES -->
-    <section id="services" class="py-28 bg-[#F2EDE3] dark:bg-[#1A1412] relative border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20">
+    <section
+      id="services"
+      class="py-28 bg-[#F2EDE3] dark:bg-[#1A1412] relative border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/20"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 reveal">
           <h2
@@ -513,7 +829,9 @@
             Our Premium Services
           </h2>
           <div class="h-1.5 w-24 bg-[#A05B3A] mx-auto rounded-full mb-6"></div>
-          <p class="text-lg text-[#655448] dark:text-[#B8AA98] max-w-2xl mx-auto font-medium">
+          <p
+            class="text-lg text-[#655448] dark:text-[#B8AA98] max-w-2xl mx-auto font-medium"
+          >
             Expert AC solutions delivered with engineering precision and
             customer-first speed.
           </p>
@@ -547,10 +865,14 @@
                 />
               </svg>
             </div>
-            <h3 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-3">
+            <h3
+              class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-3"
+            >
               AC Installation
             </h3>
-            <p class="text-[#655448] dark:text-[#B8AA98] mb-8 leading-relaxed font-medium text-sm">
+            <p
+              class="text-[#655448] dark:text-[#B8AA98] mb-8 leading-relaxed font-medium text-sm"
+            >
               Authorized fitting and engineering for split, window, and VRF
               systems. Perfection in every bolt.
             </p>
@@ -591,10 +913,14 @@
                 />
               </svg>
             </div>
-            <h3 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-3">
+            <h3
+              class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-3"
+            >
               Expert Repair
             </h3>
-            <p class="text-[#655448] dark:text-[#B8AA98] mb-8 leading-relaxed font-medium text-sm">
+            <p
+              class="text-[#655448] dark:text-[#B8AA98] mb-8 leading-relaxed font-medium text-sm"
+            >
               Same-day recovery for leaks, cooling loss, and electrical faults.
               We fix what others can't.
             </p>
@@ -630,8 +956,14 @@
                 />
               </svg>
             </div>
-            <h3 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-3">Deep Clean</h3>
-            <p class="text-[#655448] dark:text-[#B8AA98] mb-8 leading-relaxed font-medium text-sm">
+            <h3
+              class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mb-3"
+            >
+              Deep Clean
+            </h3>
+            <p
+              class="text-[#655448] dark:text-[#B8AA98] mb-8 leading-relaxed font-medium text-sm"
+            >
               Jet-pressure wash and coil detailing. Restore your AC's efficiency
               and air quality instantly.
             </p>
@@ -650,23 +982,41 @@
     </section>
 
     <!-- 1. INTERACTIVE AC DIAGNOSTIC & FIX FINDER -->
-    <section id="diagnosis" class="py-24 bg-[#EBE4D8] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] relative overflow-hidden border-t border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+    <section
+      id="diagnosis"
+      class="py-24 bg-[#EBE4D8] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] relative overflow-hidden border-t border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center mb-12 reveal">
-          <span class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 inline-block mb-3 shadow-2xs">
+          <span
+            class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 inline-block mb-3 shadow-2xs"
+          >
             ⚡ Quick Diagnosis Tool
           </span>
-          <h2 class="text-3xl md:text-5xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-4">
-            What's Wrong With <span class="text-[#A05B3A] dark:text-[#E4C99A]">Your AC?</span>
+          <h2
+            class="text-3xl md:text-5xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-4"
+          >
+            What's Wrong With
+            <span class="text-[#A05B3A] dark:text-[#E4C99A]">Your AC?</span>
           </h2>
-          <p class="text-[#655448] dark:text-[#B8AA98] text-base max-w-2xl mx-auto font-medium">
-            Select your symptom below for an instant preliminary diagnosis, resolution time, and estimated pricing.
+          <p
+            class="text-[#655448] dark:text-[#B8AA98] text-base max-w-2xl mx-auto font-medium"
+          >
+            Select your symptom below for an instant preliminary diagnosis,
+            resolution time, and estimated pricing.
           </p>
         </div>
 
         <!-- Symptom Selector Chips -->
-        <div class="flex flex-wrap justify-center gap-3 mb-10 reveal" id="diagnosticSymptomChips">
-          <button type="button" class="symptom-chip active" data-symptom="no-cooling">
+        <div
+          class="flex flex-wrap justify-center gap-3 mb-10 reveal"
+          id="diagnosticSymptomChips"
+        >
+          <button
+            type="button"
+            class="symptom-chip active"
+            data-symptom="no-cooling"
+          >
             <span>❄️</span> <span>No Cooling / Warm Air</span>
           </button>
           <button type="button" class="symptom-chip" data-symptom="water-leak">
@@ -687,49 +1037,126 @@
         </div>
 
         <!-- Dynamic Diagnosis Card -->
-        <div id="diagnosticResultCard" class="neuro-card bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 p-8 md:p-10 rounded-3xl max-w-4xl mx-auto shadow-md reveal">
+        <div
+          id="diagnosticResultCard"
+          class="neuro-card bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 p-8 md:p-10 rounded-3xl max-w-4xl mx-auto shadow-md reveal"
+        >
           <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             <div class="md:col-span-8 space-y-4">
               <div class="flex items-center gap-3">
-                <span id="diagBadge" class="bg-[#E4C99A]/30 dark:bg-[#E4C99A]/20 text-[#342C27] dark:text-[#E4C99A] font-extrabold text-xs px-3 py-1 rounded-md border border-[#E4C99A]/60 uppercase tracking-wider">High Frequency Issue</span>
-                <span id="diagCategory" class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Category: Refrigerant &amp; Compressor</span>
+                <span
+                  id="diagBadge"
+                  class="bg-[#E4C99A]/30 dark:bg-[#E4C99A]/20 text-[#342C27] dark:text-[#E4C99A] font-extrabold text-xs px-3 py-1 rounded-md border border-[#E4C99A]/60 uppercase tracking-wider"
+                  >High Frequency Issue</span
+                >
+                <span
+                  id="diagCategory"
+                  class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]"
+                  >Category: Refrigerant &amp; Compressor</span
+                >
               </div>
-              <h3 id="diagTitle" class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3]">Insufficient Cooling &amp; Warm Air Discharge</h3>
-              <p id="diagDescription" class="text-[#655448] dark:text-[#B8AA98] text-sm leading-relaxed font-medium">
-                Usually caused by clogged condenser coils restricting heat exchange, capacitor degradation, or micro-leakage in R32/R410A copper gas lines.
+              <h3
+                id="diagTitle"
+                class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3]"
+              >
+                Insufficient Cooling &amp; Warm Air Discharge
+              </h3>
+              <p
+                id="diagDescription"
+                class="text-[#655448] dark:text-[#B8AA98] text-sm leading-relaxed font-medium"
+              >
+                Usually caused by clogged condenser coils restricting heat
+                exchange, capacitor degradation, or micro-leakage in R32/R410A
+                copper gas lines.
               </p>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2 text-xs">
-                <div class="bg-[#F2EDE3] dark:bg-[#342C27] p-3 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
-                  <span class="text-[#655448] dark:text-[#B8AA98] block font-semibold mb-0.5">Est. Resolution</span>
-                  <span id="diagTime" class="font-extrabold text-[#342C27] dark:text-[#F2EDE3] text-sm">45 Minutes</span>
+                <div
+                  class="bg-[#F2EDE3] dark:bg-[#342C27] p-3 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+                >
+                  <span
+                    class="text-[#655448] dark:text-[#B8AA98] block font-semibold mb-0.5"
+                    >Est. Resolution</span
+                  >
+                  <span
+                    id="diagTime"
+                    class="font-extrabold text-[#342C27] dark:text-[#F2EDE3] text-sm"
+                    >45 Minutes</span
+                  >
                 </div>
-                <div class="bg-[#F2EDE3] dark:bg-[#342C27] p-3 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
-                  <span class="text-[#655448] dark:text-[#B8AA98] block font-semibold mb-0.5">Price Estimate</span>
-                  <span id="diagPrice" class="font-black text-[#A05B3A] dark:text-[#E4C99A] text-sm">₹499 - ₹1,499</span>
+                <div
+                  class="bg-[#F2EDE3] dark:bg-[#342C27] p-3 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+                >
+                  <span
+                    class="text-[#655448] dark:text-[#B8AA98] block font-semibold mb-0.5"
+                    >Price Estimate</span
+                  >
+                  <span
+                    id="diagPrice"
+                    class="font-black text-[#A05B3A] dark:text-[#E4C99A] text-sm"
+                    >₹499 - ₹1,499</span
+                  >
                 </div>
-                <div class="bg-[#F2EDE3] dark:bg-[#342C27] p-3 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 col-span-2 sm:col-span-1">
-                  <span class="text-[#655448] dark:text-[#B8AA98] block font-semibold mb-0.5">Warranty</span>
-                  <span class="font-extrabold text-[#1D3D2B] dark:text-[#77B89A] bg-[#77B89A]/20 px-2 py-0.5 rounded text-sm inline-block">30-Day Guarantee</span>
+                <div
+                  class="bg-[#F2EDE3] dark:bg-[#342C27] p-3 rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 col-span-2 sm:col-span-1"
+                >
+                  <span
+                    class="text-[#655448] dark:text-[#B8AA98] block font-semibold mb-0.5"
+                    >Warranty</span
+                  >
+                  <span
+                    class="font-extrabold text-[#1D3D2B] dark:text-[#77B89A] bg-[#77B89A]/20 px-2 py-0.5 rounded text-sm inline-block"
+                    >30-Day Guarantee</span
+                  >
                 </div>
               </div>
 
               <!-- Clean Diagnosis Status Output -->
-              <div class="mt-4 p-3.5 bg-[#F2EDE3] dark:bg-[#342C27] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl flex flex-wrap items-center justify-between text-xs text-[#655448] dark:text-[#B8AA98] font-medium gap-2">
+              <div
+                class="mt-4 p-3.5 bg-[#F2EDE3] dark:bg-[#342C27] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl flex flex-wrap items-center justify-between text-xs text-[#655448] dark:text-[#B8AA98] font-medium gap-2"
+              >
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#77B89A]"></span>
-                  <span><strong id="diagAlgoCode" class="text-[#342C27] dark:text-[#F2EDE3] font-bold">Expert Diagnosis: Refrigerant &amp; Coil Inspection</strong></span>
+                  <span
+                    ><strong
+                      id="diagAlgoCode"
+                      class="text-[#342C27] dark:text-[#F2EDE3] font-bold"
+                      >Expert Diagnosis: Refrigerant &amp; Coil
+                      Inspection</strong
+                    ></span
+                  >
                 </div>
                 <div class="flex items-center gap-3">
-                  <span><strong id="diagAlgoConf" class="text-[#1D3D2B] dark:text-[#77B89A] font-bold">Accuracy: 98%</strong></span>
-                  <span><strong id="diagAlgoPriority" class="text-[#A05B3A] dark:text-[#E4C99A] font-bold">Priority: High</strong></span>
+                  <span
+                    ><strong
+                      id="diagAlgoConf"
+                      class="text-[#1D3D2B] dark:text-[#77B89A] font-bold"
+                      >Accuracy: 98%</strong
+                    ></span
+                  >
+                  <span
+                    ><strong
+                      id="diagAlgoPriority"
+                      class="text-[#A05B3A] dark:text-[#E4C99A] font-bold"
+                      >Priority: High</strong
+                    ></span
+                  >
                 </div>
               </div>
             </div>
-            <div class="md:col-span-4 flex flex-col justify-center items-stretch gap-3 border-t md:border-t-0 md:border-l border-[#B8AA98]/30 dark:border-[#B8AA98]/20 pt-6 md:pt-0 md:pl-8">
-              <a id="diagBookBtn" href="service.html?issue=No%20Cooling" class="btn-accent !py-3.5 !px-6 rounded-2xl text-xs font-bold shadow-md transition text-center flex items-center justify-center gap-2">
+            <div
+              class="md:col-span-4 flex flex-col justify-center items-stretch gap-3 border-t md:border-t-0 md:border-l border-[#B8AA98]/30 dark:border-[#B8AA98]/20 pt-6 md:pt-0 md:pl-8"
+            >
+              <a
+                id="diagBookBtn"
+                href="service.html?issue=No%20Cooling"
+                class="btn-accent py-3!.5 px-6! rounded-2xl text-xs font-bold shadow-md transition text-center flex items-center justify-center gap-2"
+              >
                 <span>🛠️ Book This Repair Now</span>
               </a>
-              <a href="tel:+917977805245" class="bg-[#FDFBF7] dark:bg-[#342C27] hover:bg-white dark:hover:bg-[#3D342F] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 font-bold py-3.5 px-6 rounded-2xl text-xs transition text-center flex items-center justify-center gap-2">
+              <a
+                href="tel:+917977805245"
+                class="bg-[#FDFBF7] dark:bg-[#342C27] hover:bg-white dark:hover:bg-[#3D342F] text-[#342C27] dark:text-[#F2EDE3] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 font-bold py-3.5 px-6 rounded-2xl text-xs transition text-center flex items-center justify-center gap-2"
+              >
                 <span>📞&nbsp;Speak&nbsp;to&nbsp;Engineer</span>
               </a>
             </div>
@@ -739,31 +1166,65 @@
     </section>
 
     <!-- 2. INTERACTIVE AC TONNAGE & ENERGY SAVINGS CALCULATOR -->
-    <section id="calculator" class="py-24 bg-[#F2EDE3] dark:bg-[#1A1412] relative overflow-hidden border-b border-[#B8AA98]/30 dark:border-[#3D342F]">
+    <section
+      id="calculator"
+      class="py-24 bg-[#F2EDE3] dark:bg-[#1A1412] relative overflow-hidden border-b border-[#B8AA98]/30 dark:border-[#3D342F]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 reveal">
-          <span class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-2xs font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3">
+          <span
+            class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-2xs font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3"
+          >
             🧮 Smart Buying Assistant
           </span>
-          <h2 class="text-3xl md:text-5xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-4">
-            AC Tonnage &amp; <span class="text-[#A05B3A] dark:text-[#E4C99A]">Power Calculator</span>
+          <h2
+            class="text-3xl md:text-5xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-4"
+          >
+            AC Tonnage &amp;
+            <span class="text-[#A05B3A] dark:text-[#E4C99A]"
+              >Power Calculator</span
+            >
           </h2>
-          <p class="text-[#655448] dark:text-[#B8AA98] text-base max-w-2xl mx-auto font-medium">
-            Calculate the exact cooling tonnage required for your room size and estimate your annual electricity savings.
+          <p
+            class="text-[#655448] dark:text-[#B8AA98] text-base max-w-2xl mx-auto font-medium"
+          >
+            Calculate the exact cooling tonnage required for your room size and
+            estimate your annual electricity savings.
           </p>
         </div>
 
-        <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl border border-[#B8AA98]/40 dark:border-[#3D342F] shadow-md p-8 md:p-12 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 reveal">
-
+        <div
+          class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl border border-[#B8AA98]/40 dark:border-[#3D342F] shadow-md p-8 md:p-12 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 reveal"
+        >
           <!-- Inputs Column -->
           <div class="lg:col-span-7 space-y-6">
             <div>
               <div class="flex justify-between items-center mb-2">
-                <label class="text-xs font-black uppercase text-[#342C27] dark:text-[#F2EDE3]">1. Room Floor Area (sq. ft)</label>
-                <span id="roomAreaDisplay" class="text-sm font-black text-[#342C27] dark:text-[#F2EDE3] bg-[#EBE4D8] dark:bg-[#342C27] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 px-3 py-1 rounded-lg">150 sq ft</span>
+                <label
+                  for="roomAreaSlider"
+                  class="text-xs font-black uppercase text-[#342C27] dark:text-[#F2EDE3] cursor-pointer"
+                  >1. Room Floor Area (sq. ft)</label
+                >
+                <span
+                  id="roomAreaDisplay"
+                  class="text-sm font-black text-[#342C27] dark:text-[#F2EDE3] bg-[#EBE4D8] dark:bg-[#342C27] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 px-3 py-1 rounded-lg"
+                  >150 sq ft</span
+                >
               </div>
-              <input type="range" id="roomAreaSlider" min="80" max="400" step="10" value="150" class="w-full accent-[#A05B3A] cursor-pointer">
-              <div class="flex justify-between text-[11px] font-bold text-[#655448] dark:text-[#B8AA98] mt-1">
+              <input
+                type="range"
+                id="roomAreaSlider"
+                name="roomAreaSlider"
+                title="Room Floor Area in square feet"
+                aria-label="Room Floor Area in square feet"
+                min="80"
+                max="400"
+                step="10"
+                value="150"
+                class="w-full accent-[#A05B3A] cursor-pointer">
+              <div
+                class="flex justify-between text-[11px] font-bold text-[#655448] dark:text-[#B8AA98] mt-1"
+              >
                 <span>80 sq ft (Small Bedroom)</span>
                 <span>200 sq ft (Master Bedroom)</span>
                 <span>400 sq ft (Living Hall)</span>
@@ -772,16 +1233,36 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-black uppercase text-[#342C27] dark:text-[#F2EDE3] mb-2">2. Floor &amp; Direct Sunlight</label>
-                <select id="sunlightSelect" class="w-full bg-white dark:bg-[#342C27] border border-[#B8AA98]/50 dark:border-[#B8AA98]/25 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] outline-none focus:ring-2 focus:ring-[#A05B3A]">
+                <label
+                  for="sunlightSelect"
+                  class="block text-xs font-black uppercase text-[#342C27] dark:text-[#F2EDE3] mb-2"
+                  >2. Floor &amp; Direct Sunlight</label
+                >
+                <select
+                  id="sunlightSelect"
+                  name="sunlightSelect"
+                  title="Floor &amp; Direct Sunlight"
+                  aria-label="Floor &amp; Direct Sunlight"
+                  class="w-full bg-white dark:bg-[#342C27] border border-[#B8AA98]/50 dark:border-[#B8AA98]/25 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] outline-none focus:ring-2 focus:ring-[#A05B3A]"
+                >
                   <option value="normal">Standard Floor / Moderate Sun</option>
                   <option value="top">Top Floor / Direct West Sunlight</option>
                   <option value="glass">Large Glass Windows / High Heat</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-black uppercase text-[#342C27] dark:text-[#F2EDE3] mb-2">3. People / Occupancy</label>
-                <select id="peopleSelect" class="w-full bg-white dark:bg-[#342C27] border border-[#B8AA98]/50 dark:border-[#B8AA98]/25 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] outline-none focus:ring-2 focus:ring-[#A05B3A]">
+                <label
+                  for="peopleSelect"
+                  class="block text-xs font-black uppercase text-[#342C27] dark:text-[#F2EDE3] mb-2"
+                  >3. People / Occupancy</label
+                >
+                <select
+                  id="peopleSelect"
+                  name="peopleSelect"
+                  title="People / Occupancy"
+                  aria-label="People / Occupancy"
+                  class="w-full bg-white dark:bg-[#342C27] border border-[#B8AA98]/50 dark:border-[#B8AA98]/25 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#342C27] dark:text-[#F2EDE3] outline-none focus:ring-2 focus:ring-[#A05B3A]"
+                >
                   <option value="1-2">1 to 2 Persons</option>
                   <option value="3-4">3 to 4 Persons</option>
                   <option value="5+">5+ Persons / Commercial</option>
@@ -791,71 +1272,128 @@
           </div>
 
           <!-- Output Display Column -->
-          <div class="lg:col-span-5 bg-[#27211D] dark:bg-[#1A1412] text-white rounded-2xl p-8 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden border border-[#3D342F]">
+          <div
+            class="lg:col-span-5 bg-[#27211D] dark:bg-[#1A1412] text-white rounded-2xl p-8 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden border border-[#3D342F]"
+          >
             <div>
-              <span class="text-[11px] font-extrabold text-[#E4C99A] uppercase tracking-widest block mb-1">Recommended AC Spec</span>
-              <h3 id="calcTonnageResult" class="text-3xl font-black text-white leading-tight">1.5 Ton 5-Star Inverter</h3>
-              <p id="calcBtuResult" class="text-xs text-[#B8AA98] mt-1">Cooling Capacity: ~18,000 BTU/hr</p>
+              <span
+                class="text-[11px] font-extrabold text-[#E4C99A] uppercase tracking-widest block mb-1"
+                >Recommended AC Spec</span
+              >
+              <h3
+                id="calcTonnageResult"
+                class="text-3xl font-black text-white leading-tight"
+              >
+                1.5 Ton 5-Star Inverter
+              </h3>
+              <p id="calcBtuResult" class="text-xs text-[#B8AA98] mt-1">
+                Cooling Capacity: ~18,000 BTU/hr
+              </p>
             </div>
 
-            <div class="bg-white/5 p-4 rounded-xl border border-white/10 space-y-2">
+            <div
+              class="bg-white/5 p-4 rounded-xl border border-white/10 space-y-2"
+            >
               <div class="flex justify-between items-center text-xs">
                 <span class="text-[#B8AA98]">Est. Power Savings:</span>
-                <span id="calcSavingsResult" class="font-black text-[#77B89A] text-base">₹6,400 / Year</span>
+                <span
+                  id="calcSavingsResult"
+                  class="font-black text-[#77B89A] text-base"
+                  >₹6,400 / Year</span
+                >
               </div>
               <div class="flex justify-between items-center text-xs">
                 <span class="text-[#B8AA98]">Noise Level:</span>
-                <span class="font-bold text-[#F2EDE3]">Ultra-Quiet (&lt; 28 dB)</span>
+                <span class="font-bold text-[#F2EDE3]"
+                  >Ultra-Quiet (&lt; 28 dB)</span
+                >
               </div>
             </div>
 
             <!-- EMI Calculator -->
             <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-              <span class="text-[10px] font-extrabold text-[#E4C99A] uppercase tracking-widest block mb-2">EMI Estimate (No-Cost)</span>
+              <label
+                for="emiTenureSelect"
+                class="text-[10px] font-extrabold text-[#E4C99A] uppercase tracking-widest block mb-2 cursor-pointer"
+                >EMI Estimate (No-Cost)</label
+              >
               <div class="flex gap-2 items-center">
-                <select id="emiTenureSelect" class="flex-1 bg-[#342C27] border border-[#655448] rounded-lg px-2 py-1.5 text-xs font-bold text-white outline-none focus:ring-1 focus:ring-[#A05B3A]">
+                <select
+                  id="emiTenureSelect"
+                  name="emiTenureSelect"
+                  title="EMI Tenure in Months"
+                  aria-label="EMI Tenure in Months"
+                  class="flex-1 bg-[#342C27] border border-[#655448] rounded-lg px-2 py-1.5 text-xs font-bold text-white outline-none focus:ring-1 focus:ring-[#A05B3A]"
+                >
                   <option value="6">6 Months</option>
                   <option value="9">9 Months</option>
                   <option value="12" selected>12 Months</option>
                   <option value="18">18 Months</option>
                   <option value="24">24 Months</option>
                 </select>
-                <span id="calcEmiResult" class="font-black text-[#E4C99A] text-sm whitespace-nowrap">₹3,083/mo</span>
+                <span
+                  id="calcEmiResult"
+                  class="font-black text-[#E4C99A] text-sm whitespace-nowrap"
+                  >₹3,083/mo</span
+                >
               </div>
             </div>
 
-            <a href="products.html" class="btn-accent !py-3.5 !px-6 text-white font-bold rounded-xl text-xs shadow-md transition text-center flex items-center justify-center gap-2">
+            <a
+              href="products.html"
+              class="btn-accent py-3!.5 px-6! text-white font-bold rounded-xl text-xs shadow-md transition text-center flex items-center justify-center gap-2"
+            >
               <span>📦 Shop Recommended Units &rarr;</span>
             </a>
           </div>
-
         </div>
       </div>
     </section>
 
     <!-- 3. TRUST & QUALITY COMPARISON MATRIX -->
-    <section id="comparison" class="py-24 bg-[#EBE4D8] dark:bg-[#1F1916] relative border-b border-[#B8AA98]/30 dark:border-[#3D342F]">
+    <section
+      id="comparison"
+      class="py-24 bg-[#EBE4D8] dark:bg-[#1F1916] relative border-b border-[#B8AA98]/30 dark:border-[#3D342F]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 reveal">
-          <span class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-2xs font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3">
+          <span
+            class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-2xs font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3"
+          >
             🛡️ Verified Service Standards
           </span>
-          <h2 class="text-3xl md:text-5xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-4">
-            Extreme S&amp;S vs <span class="text-[#A05B3A] dark:text-[#E4C99A]">Local Mechanics</span>
+          <h2
+            class="text-3xl md:text-5xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-4"
+          >
+            Extreme S&amp;S vs
+            <span class="text-[#A05B3A] dark:text-[#E4C99A]"
+              >Local Mechanics</span
+            >
           </h2>
-          <p class="text-[#655448] dark:text-[#B8AA98] text-base max-w-2xl mx-auto font-medium">
-            Explore the standard of service engineered for modern homes and enterprise facilities.
+          <p
+            class="text-[#655448] dark:text-[#B8AA98] text-base max-w-2xl mx-auto font-medium"
+          >
+            Explore the standard of service engineered for modern homes and
+            enterprise facilities.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto reveal-stagger">
-
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto reveal-stagger"
+        >
           <!-- Extreme S&S Card (Deep Espresso Monolith) -->
-          <div class="comparison-card pro-card bg-[#27211D] border border-[#3D342F] text-white p-8 md:p-10 space-y-6 rounded-3xl shadow-xl">
+          <div
+            class="comparison-card pro-card bg-[#27211D] border border-[#3D342F] text-white p-8 md:p-10 space-y-6 rounded-3xl shadow-xl"
+          >
             <div class="flex justify-between items-center">
               <div>
-                <span class="bg-[#A05B3A] text-white text-[10px] font-black uppercase px-3 py-1 rounded-md">Official Certified Fleet</span>
-                <h3 class="text-2xl font-black text-white mt-2">Extreme Sales &amp; Services</h3>
+                <span
+                  class="bg-[#A05B3A] text-white text-[10px] font-black uppercase px-3 py-1 rounded-md"
+                  >Official Certified Fleet</span
+                >
+                <h3 class="text-2xl font-black text-white mt-2">
+                  Extreme Sales &amp; Services
+                </h3>
               </div>
               <span class="text-3xl">⭐</span>
             </div>
@@ -863,89 +1401,169 @@
             <ul class="space-y-4 text-xs font-semibold text-[#F2EDE3]">
               <li class="flex items-center gap-3">
                 <span class="text-[#77B89A] text-base">✅</span>
-                <span><strong>90-Day Free Service Guarantee</strong> on parts and labor.</span>
+                <span
+                  ><strong>90-Day Free Service Guarantee</strong> on parts and
+                  labor.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-[#77B89A] text-base">✅</span>
-                <span><strong>100% Virgin Refrigerant Gas</strong> with hologram seal verification.</span>
+                <span
+                  ><strong>100% Virgin Refrigerant Gas</strong> with hologram
+                  seal verification.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-[#77B89A] text-base">✅</span>
-                <span><strong>Transparent Digital Upfront Rates</strong> — zero surprise charges.</span>
+                <span
+                  ><strong>Transparent Digital Upfront Rates</strong> — zero
+                  surprise charges.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-[#77B89A] text-base">✅</span>
-                <span><strong>Background-Verified Engineers</strong> in uniform with ID cards.</span>
+                <span
+                  ><strong>Background-Verified Engineers</strong> in uniform
+                  with ID cards.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-[#77B89A] text-base">✅</span>
-                <span><strong>Live 4-Stage GPS Tracking</strong> for your engineer visit.</span>
+                <span
+                  ><strong>Live 4-Stage GPS Tracking</strong> for your engineer
+                  visit.</span
+                >
               </li>
             </ul>
 
-            <a href="service.html" class="btn-accent text-center block !py-3.5 !px-6 rounded-2xl font-bold shadow-md">
+            <a
+              href="service.html"
+              class="btn-accent text-center block py-3!.5 px-6! rounded-2xl font-bold shadow-md"
+            >
               Book Verified Service &rarr;
             </a>
           </div>
 
           <!-- Local Mechanic Card (Raised Porcelain) -->
-          <div class="comparison-card bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#3D342F] p-8 md:p-10 space-y-6 rounded-3xl shadow-xs">
+          <div
+            class="comparison-card bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#3D342F] p-8 md:p-10 space-y-6 rounded-3xl shadow-xs"
+          >
             <div class="flex justify-between items-center">
               <div>
-                <span class="bg-[#EBE4D8] dark:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] text-[10px] font-black uppercase px-3 py-1 rounded-md">Unverified Local Mechanic</span>
-                <h3 class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mt-2">Traditional Mechanics</h3>
+                <span
+                  class="bg-[#EBE4D8] dark:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] text-[10px] font-black uppercase px-3 py-1 rounded-md"
+                  >Unverified Local Mechanic</span
+                >
+                <h3
+                  class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mt-2"
+                >
+                  Traditional Mechanics
+                </h3>
               </div>
               <span class="text-3xl">⚠️</span>
             </div>
 
-            <ul class="space-y-4 text-xs font-semibold text-[#655448] dark:text-[#B8AA98]">
+            <ul
+              class="space-y-4 text-xs font-semibold text-[#655448] dark:text-[#B8AA98]"
+            >
               <li class="flex items-center gap-3">
                 <span class="text-red-500 text-base">❌</span>
-                <span><strong class="text-[#342C27] dark:text-[#F2EDE3]">0-Day Warranty</strong> — disappears if AC leaks 2 days later.</span>
+                <span
+                  ><strong class="text-[#342C27] dark:text-[#F2EDE3]"
+                    >0-Day Warranty</strong
+                  >
+                  — disappears if AC leaks 2 days later.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-red-500 text-base">❌</span>
-                <span><strong class="text-[#342C27] dark:text-[#F2EDE3]">Recycled or Impure Gas</strong> causing compressor burnout.</span>
+                <span
+                  ><strong class="text-[#342C27] dark:text-[#F2EDE3]"
+                    >Recycled or Impure Gas</strong
+                  >
+                  causing compressor burnout.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-red-500 text-base">❌</span>
-                <span><strong class="text-[#342C27] dark:text-[#F2EDE3]">Unpredictable "Guesswork" Charges</strong> added post-job.</span>
+                <span
+                  ><strong class="text-[#342C27] dark:text-[#F2EDE3]"
+                    >Unpredictable "Guesswork" Charges</strong
+                  >
+                  added post-job.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-red-500 text-base">❌</span>
-                <span><strong class="text-[#342C27] dark:text-[#F2EDE3]">Anonymous Technicians</strong> without identity checks.</span>
+                <span
+                  ><strong class="text-[#342C27] dark:text-[#F2EDE3]"
+                    >Anonymous Technicians</strong
+                  >
+                  without identity checks.</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <span class="text-red-500 text-base">❌</span>
-                <span><strong class="text-[#342C27] dark:text-[#F2EDE3]">No Tracking</strong> — constant phone follow-ups required.</span>
+                <span
+                  ><strong class="text-[#342C27] dark:text-[#F2EDE3]"
+                    >No Tracking</strong
+                  >
+                  — constant phone follow-ups required.</span
+                >
               </li>
             </ul>
 
-            <a href="tel:+917977805245" class="bg-[#342C27] dark:bg-[#342C27] hover:bg-[#3D342F] text-white font-bold py-3.5 px-6 rounded-2xl text-xs transition text-center block shadow-xs border border-transparent dark:border-[#B8AA98]/20">
+            <a
+              href="tel:+917977805245"
+              class="bg-[#342C27] dark:bg-[#342C27] hover:bg-[#3D342F] text-white font-bold py-3.5 px-6 rounded-2xl text-xs transition text-center block shadow-xs border border-transparent dark:border-[#B8AA98]/20"
+            >
               Call&nbsp;Hotline&nbsp;Instead
             </a>
           </div>
-
         </div>
       </div>
     </section>
 
     <!-- 4. LIVE SERVICE AREA PINCODE CHECKER -->
-    <section id="coverage" class="py-16 bg-[#27211D] dark:bg-[#1A1412] text-white relative border-b border-[#3D342F]">
+    <section
+      id="coverage"
+      class="py-16 bg-[#27211D] dark:bg-[#1A1412] text-white relative border-b border-[#3D342F]"
+    >
       <div class="max-w-4xl mx-auto px-4 text-center reveal">
-        <h3 class="text-2xl md:text-3xl font-black mb-2 text-white">Check Live Technician Availability in Your Area</h3>
-        <p class="text-xs text-[#B8AA98] mb-2">Enter your 6-digit Mumbai / Navi Mumbai / Thane pincode (e.g. 400013, 400703)</p>
+        <h3 class="text-2xl md:text-3xl font-black mb-2 text-white">
+          Check Live Technician Availability in Your Area
+        </h3>
+        <p class="text-xs text-[#B8AA98] mb-2">
+          Enter your 6-digit Mumbai / Navi Mumbai / Thane pincode (e.g. 400013,
+          400703)
+        </p>
 
         <!-- Keyboard shortcut hint + saved pincode -->
         <div class="flex justify-center items-center gap-4 mb-6 flex-wrap">
           <span class="kbd-hint text-[#B8AA98]/70">
-            Press <kbd class="kbd bg-[#342C27] border-[#655448] text-white">/</kbd> to focus search
+            Press
+            <kbd class="kbd bg-[#342C27] border-[#655448] text-white">/</kbd> to
+            focus search
           </span>
           <span id="savedPincodeChip" class="pincode-saved-chip hidden"></span>
         </div>
-        <div class="flex flex-col sm:flex-row justify-center gap-3 max-w-md mx-auto">
-          <input type="text" id="pincodeInput" placeholder="Enter Pincode (e.g. 400013)" maxlength="6" inputmode="numeric" pattern="[0-9]*" class="bg-[#342C27] border border-[#655448] rounded-xl px-4 py-3 text-xs text-white placeholder-[#B8AA98]/60 outline-none focus:ring-2 focus:ring-[#A05B3A]">
-          <button type="button" onclick="checkPincodeCoverage()" id="pincodeCheckBtn" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold px-6 py-3 rounded-xl text-xs transition shadow-md whitespace-nowrap">
+        <div
+          class="flex flex-col sm:flex-row justify-center gap-3 max-w-md mx-auto"
+        >
+          <input
+            type="text"
+            id="pincodeInput" title="Service Pincode"
+            placeholder="Enter Pincode (e.g. 400013)"
+            maxlength="6"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            class="bg-[#342C27] border border-[#655448] rounded-xl px-4 py-3 text-xs text-white placeholder-[#B8AA98]/60 outline-none focus:ring-2 focus:ring-[#A05B3A]">
+          <button
+            type="button"
+            onclick="checkPincodeCoverage()"
+            id="pincodeCheckBtn"
+            class="bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold px-6 py-3 rounded-xl text-xs transition shadow-md whitespace-nowrap"
+          >
             Check Service Slots &rarr;
           </button>
         </div>
@@ -956,26 +1574,34 @@
 
     <!-- FLOATING QUICK ACTION DOCK -->
     <div class="floating-quick-dock">
-        <a href="tel:+917977805245" class="dock-item">
-            <span>📞</span>
-            <span class="dock-tooltip">Emergency&nbsp;Call</span>
-        </a>
-        <a href="https://wa.me/917977805245" target="_blank" class="dock-item bg-green-600">
-            <span>💬</span>
-            <span class="dock-tooltip">WhatsApp Chat</span>
-        </a>
-        <a href="service.html" class="dock-item bg-[#A05B3A]">
-            <span>🛠️</span>
-            <span class="dock-tooltip">Book Service</span>
-        </a>
-        <a href="status.html" class="dock-item">
-            <span>📍</span>
-            <span class="dock-tooltip">Track Booking</span>
-        </a>
+      <a href="tel:+917977805245" class="dock-item">
+        <span>📞</span>
+        <span class="dock-tooltip">Emergency&nbsp;Call</span>
+      </a>
+      <a
+        href="https://wa.me/917977805245"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="dock-item bg-green-600"
+      >
+        <span>💬</span>
+        <span class="dock-tooltip">WhatsApp Chat</span>
+      </a>
+      <a href="service.html" class="dock-item bg-[#A05B3A]">
+        <span>🛠️</span>
+        <span class="dock-tooltip">Book Service</span>
+      </a>
+      <a href="status.html" class="dock-item">
+        <span>📍</span>
+        <span class="dock-tooltip">Track Booking</span>
+      </a>
     </div>
 
     <!-- HOW IT WORKS -->
-    <section id="process" class="py-32 bg-[#F2EDE3] dark:bg-[#1A1412] relative overflow-hidden border-b border-[#B8AA98]/30 dark:border-[#3D342F]">
+    <section
+      id="process"
+      class="py-32 bg-[#F2EDE3] dark:bg-[#1A1412] relative overflow-hidden border-b border-[#B8AA98]/30 dark:border-[#3D342F]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center gap-20">
           <div class="lg:w-1/2 reveal">
@@ -986,11 +1612,14 @@
             <h2
               class="text-4xl md:text-6xl font-black text-[#342C27] dark:text-[#F2EDE3] leading-tight mb-8"
             >
-              Stress-Free Service<br><span class="text-[#A05B3A] dark:text-[#E4C99A]"
+              Stress-Free Service<br><span
+                class="text-[#A05B3A] dark:text-[#E4C99A]"
                 >in 3 Simple Steps</span
               >
             </h2>
-            <p class="text-[#655448] dark:text-[#B8AA98] text-lg font-medium leading-relaxed mb-10">
+            <p
+              class="text-[#655448] dark:text-[#B8AA98] text-lg font-medium leading-relaxed mb-10"
+            >
               We've redesigned the service experience to be digital-first, fast,
               and completely transparent. No hidden calls, no waiting.
             </p>
@@ -1001,7 +1630,10 @@
             >
           </div>
 
-          <div class="relative lg:w-1/2 space-y-12 reveal-stagger" id="processStepsList">
+          <div
+            class="relative lg:w-1/2 space-y-12 reveal-stagger"
+            id="processStepsList"
+          >
             <!-- Continuous scroll-driven progress line -->
             <div class="process-line-track">
               <div class="process-line-fill"></div>
@@ -1009,7 +1641,7 @@
 
             <!-- Step 1 -->
             <div class="flex gap-8 group process-step-item" data-step="1">
-              <div class="relative flex-shrink-0 flex flex-col items-center">
+              <div class="relative shrink-0 flex flex-col items-center">
                 <div
                   class="w-16 h-16 bg-[#A05B3A] text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-lg shadow-[#A05B3A]/25 step-badge process-step-node z-10 relative"
                 >
@@ -1031,7 +1663,7 @@
 
             <!-- Step 2 -->
             <div class="flex gap-8 group process-step-item" data-step="2">
-              <div class="relative flex-shrink-0 flex flex-col items-center">
+              <div class="relative shrink-0 flex flex-col items-center">
                 <div
                   class="w-16 h-16 bg-[#A05B3A] text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-lg shadow-[#A05B3A]/25 step-badge process-step-node z-10 relative"
                 >
@@ -1053,7 +1685,7 @@
 
             <!-- Step 3 -->
             <div class="flex gap-8 group process-step-item" data-step="3">
-              <div class="relative flex-shrink-0 flex flex-col items-center">
+              <div class="relative shrink-0 flex flex-col items-center">
                 <div
                   class="w-16 h-16 bg-[#A05B3A] text-white rounded-3xl flex items-center justify-center text-2xl font-black shadow-lg shadow-[#A05B3A]/25 step-badge process-step-node z-10 relative"
                 >
@@ -1078,22 +1710,41 @@
     </section>
 
     <!-- 5. FAQ ACCORDION -->
-    <section id="faq" class="py-24 bg-[#EBE4D8] dark:bg-[#1F1916] border-b border-[#B8AA98]/30 dark:border-[#3D342F]">
+    <section
+      id="faq"
+      class="py-24 bg-[#EBE4D8] dark:bg-[#1F1916] border-b border-[#B8AA98]/30 dark:border-[#3D342F]"
+    >
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-12 reveal">
-          <span class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-2xs font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3">❓ Common Questions</span>
-          <h2 class="text-3xl md:text-4xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-3">Frequently Asked <span class="text-[#A05B3A] dark:text-[#E4C99A]">Questions</span></h2>
-          <p class="text-[#655448] dark:text-[#B8AA98] text-sm max-w-xl mx-auto font-medium">Everything you need to know before booking your service with us.</p>
+          <span
+            class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-2xs font-extrabold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full inline-block mb-3"
+            >❓ Common Questions</span
+          >
+          <h2
+            class="text-3xl md:text-4xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] mb-3"
+          >
+            Frequently Asked
+            <span class="text-[#A05B3A] dark:text-[#E4C99A]">Questions</span>
+          </h2>
+          <p
+            class="text-[#655448] dark:text-[#B8AA98] text-sm max-w-xl mx-auto font-medium"
+          >
+            Everything you need to know before booking your service with us.
+          </p>
         </div>
 
         <div class="space-y-3 reveal-stagger" id="faqAccordion">
-
           <div class="faq-item">
             <button type="button" class="faq-trigger" onclick="toggleFaq(this)">
               <span>How long does an AC service / deep clean take?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-body">A standard deep service (jet wash + filter clean + coil check) takes between 35–60 minutes depending on the AC type and how long since the last service. Our technician will give you a precise ETA after the initial check.</div>
+            <div class="faq-body">
+              A standard deep service (jet wash + filter clean + coil check)
+              takes between 35–60 minutes depending on the AC type and how long
+              since the last service. Our technician will give you a precise ETA
+              after the initial check.
+            </div>
           </div>
 
           <div class="faq-item">
@@ -1101,7 +1752,12 @@
               <span>Do you use original / virgin refrigerant gas?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-body">Yes — 100% guaranteed. We only use sealed, hologram-verified R32 or R410A virgin gas directly from authorised distributors. Recycled or mixed gas degrades your compressor and voids its warranty.</div>
+            <div class="faq-body">
+              Yes — 100% guaranteed. We only use sealed, hologram-verified R32
+              or R410A virgin gas directly from authorised distributors.
+              Recycled or mixed gas degrades your compressor and voids its
+              warranty.
+            </div>
           </div>
 
           <div class="faq-item">
@@ -1109,7 +1765,11 @@
               <span>What warranty do repairs and parts come with?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-body">All repairs include a 90-Day Free Service Guarantee. If the same fault reoccurs within 90 days of our repair, we come back and fix it at zero additional cost — parts and labour included.</div>
+            <div class="faq-body">
+              All repairs include a 90-Day Free Service Guarantee. If the same
+              fault reoccurs within 90 days of our repair, we come back and fix
+              it at zero additional cost — parts and labour included.
+            </div>
           </div>
 
           <div class="faq-item">
@@ -1117,7 +1777,12 @@
               <span>How do I track my technician's live location?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-body">Once your service is confirmed, you receive a unique Request ID via WhatsApp/SMS. Visit our Track Status page and enter your Request ID to see real-time 4-stage job progress: Confirmed → Dispatched → En Route → Completed.</div>
+            <div class="faq-body">
+              Once your service is confirmed, you receive a unique Request ID
+              via WhatsApp/SMS. Visit our Track Status page and enter your
+              Request ID to see real-time 4-stage job progress: Confirmed →
+              Dispatched → En Route → Completed.
+            </div>
           </div>
 
           <div class="faq-item">
@@ -1125,7 +1790,12 @@
               <span>Can I book a service for the same day?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-body">Yes! Same-day service is available for most of our core zones (Mumbai 400013–400100, Navi Mumbai, Thane). Emergency dispatch is typically within 45–90 minutes for priority service zones. Use the Pincode Checker above to confirm availability in your area.</div>
+            <div class="faq-body">
+              Yes! Same-day service is available for most of our core zones
+              (Mumbai 400013–400100, Navi Mumbai, Thane). Emergency dispatch is
+              typically within 45–90 minutes for priority service zones. Use the
+              Pincode Checker above to confirm availability in your area.
+            </div>
           </div>
 
           <div class="faq-item">
@@ -1133,15 +1803,21 @@
               <span>Is there any hidden charge after the job?</span>
               <span class="faq-icon">+</span>
             </button>
-            <div class="faq-body">Never. We follow a Transparent Digital Pricing policy — all estimates are shared with you before work begins. You only pay what was agreed. Digital invoices are sent automatically once the job is marked complete.</div>
+            <div class="faq-body">
+              Never. We follow a Transparent Digital Pricing policy — all
+              estimates are shared with you before work begins. You only pay
+              what was agreed. Digital invoices are sent automatically once the
+              job is marked complete.
+            </div>
           </div>
-
         </div>
       </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-[#1F1916] dark:bg-[#140F0D] text-[#F2EDE3] pt-20 pb-12 border-t border-[#342C27]/60 dark:border-[#27211D]">
+    <footer
+      class="bg-[#1F1916] dark:bg-[#140F0D] text-[#F2EDE3] pt-20 pb-12 border-t border-[#342C27]/60 dark:border-[#27211D]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
           <div class="col-span-1 md:col-span-1">
@@ -1152,14 +1828,16 @@
             >
             <p class="text-[#B8AA98] font-medium leading-relaxed mb-8">
               Your one-stop destination for AC sales, precision installation,
-              and certified maintenance. Available across the city for residential and commercial spaces.
+              and certified maintenance. Available across the city for
+              residential and commercial spaces.
             </p>
             <div class="flex gap-4">
               <a
                 href="#"
                 aria-label="Facebook"
                 class="w-10 h-10 bg-[#342C27]/50 rounded-xl flex items-center justify-center text-[#B8AA98] hover:text-white hover:bg-[#A05B3A] transition border border-[#B8AA98]/20"
-                ><span class="sr-only">Facebook</span><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                ><span class="sr-only">Facebook</span
+                ><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
                   ></path></svg
@@ -1213,8 +1891,10 @@
                 >
               </li>
               <li>
-                <a href="login.html" class="hover:text-[#F2EDE3] transition"
-                  >Staff Access</a
+                <a
+                  href="login.html"
+                  class="hover:text-[#E4C99A] text-[#E4C99A]/90 transition font-bold flex items-center gap-1.5"
+                  ><span>🔒</span> Staff &amp; Admin Access</a
                 >
               </li>
             </ul>
@@ -1246,7 +1926,9 @@
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <span class="text-xs">Shop no 40, Shell Colony, Chembur (E), Mumbai - 400071</span>
+                <span class="text-xs"
+                  >Shop no 40, Shell Colony, Chembur (E), Mumbai - 400071</span
+                >
               </li>
               <li class="flex items-center gap-3">
                 <svg
@@ -1264,7 +1946,11 @@
                 </svg>
                 <div class="text-xs">
                   <div>+91 7977805245 / 9969423500</div>
-                  <div class="text-[10px] text-[#A05B3A] dark:text-[#E4C99A] font-bold">Deepak Panchal (Desk)</div>
+                  <div
+                    class="text-[10px] text-[#A05B3A] dark:text-[#E4C99A] font-bold"
+                  >
+                    Deepak Panchal (Desk)
+                  </div>
                 </div>
               </li>
               <li class="flex items-center gap-3">
@@ -1281,7 +1967,13 @@
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=extremess0121@gmail.com" target="_blank" rel="noopener noreferrer" class="hover:text-[#F2EDE3] transition break-all sm:break-normal text-xs sm:text-sm">extremess0121@gmail.com</a>
+                <a
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=extremess0121@gmail.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:text-[#F2EDE3] transition break-all sm:break-normal text-xs sm:text-sm"
+                  >extremess0121@gmail.com</a
+                >
               </li>
               <li class="flex items-center gap-3">
                 <svg
@@ -1297,7 +1989,12 @@
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span class="text-xs">GSTIN: <strong class="font-mono text-[#E4C99A]">27ANTPP9778J1ZO</strong></span>
+                <span class="text-xs"
+                  >GSTIN:
+                  <strong class="font-mono text-[#E4C99A]"
+                    >27ANTPP9778J1ZO</strong
+                  ></span
+                >
               </li>
             </ul>
           </div>
@@ -1308,10 +2005,18 @@
           <p class="text-xs font-bold text-[#8C7A6B] uppercase tracking-widest">
             &copy; 2026 Extreme S&amp;S. All Rights Reserved.
           </p>
-          <div class="flex items-center gap-6 text-xs text-[#B8AA98] font-semibold">
-            <a href="privacy.html" class="hover:text-[#E4C99A] transition">Privacy Policy</a>
-            <a href="terms.html" class="hover:text-[#E4C99A] transition">Terms &amp; Conditions</a>
-            <a href="contact.html" class="hover:text-[#E4C99A] transition">Contact Us</a>
+          <div
+            class="flex items-center gap-6 text-xs text-[#B8AA98] font-semibold"
+          >
+            <a href="privacy.html" class="hover:text-[#E4C99A] transition"
+              >Privacy Policy</a
+            >
+            <a href="terms.html" class="hover:text-[#E4C99A] transition"
+              >Terms &amp; Conditions</a
+            >
+            <a href="contact.html" class="hover:text-[#E4C99A] transition"
+              >Contact Us</a
+            >
           </div>
         </div>
       </div>

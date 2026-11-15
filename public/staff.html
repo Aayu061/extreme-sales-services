@@ -11,6 +11,7 @@
       };
     </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <!-- Anti-flicker: apply dark class ONLY if explicitly saved as dark -->
     <script>
@@ -27,7 +28,7 @@
   <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] min-h-screen font-sans antialiased selection:bg-[#B86E4B] selection:text-white transition-colors duration-200">
 
     <!-- TOP NAVIGATION BAR -->
-    <header class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 backdrop-blur-md">
+    <header class="bg-linear-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center gap-3">
@@ -44,7 +45,7 @@
           </div>
 
           <div class="flex gap-2.5 items-center">
-            <a href="index.html" target="_blank" class="hidden sm:inline-flex text-[#B8AA98] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-white/10 transition items-center gap-1">
+            <a href="index.html" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex text-[#B8AA98] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-white/10 transition items-center gap-1">
               <span>View Site</span>
               <span class="text-xs">↗</span>
             </a>
@@ -201,7 +202,7 @@
               <div class="relative w-full sm:w-64">
                 <input
                   type="text"
-                  id="searchRequestInput"
+                  id="searchRequestInput" title="Search Service Requests"
                   oninput="handleSearch(this.value)"
                   placeholder="Search name, phone, ID..."
                   class="w-full bg-[#E6DFD3]/50 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl px-3.5 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-[#FDFBF7] dark:focus:bg-[#27211D] text-[#342C27] dark:text-[#F2EDE3] placeholder-[#879581] outline-none transition"
@@ -257,10 +258,10 @@
     </main>
 
     <!-- ALGORITHM MODAL: MULTI-OBJECTIVE WEIGHTED GREEDY DISPATCH (MOW-GDM) -->
-    <div id="algoModal" class="fixed inset-0 z-50 hidden bg-[#1A1412]/75 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="algoModal" class="flex-toggle fixed inset-0 z-50 hidden bg-[#1A1412]/75 backdrop-blur-md items-center justify-center p-4">
       <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl max-w-2xl w-full border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white p-6 border-b border-[#B8AA98]/30 flex justify-between items-start">
+        <div class="bg-linear-to-r from-[#27211D] via-[#342C27] to-[#3D342F] text-white p-6 border-b border-[#B8AA98]/30 flex justify-between items-start">
           <div>
             <div class="flex items-center gap-2">
               <span class="bg-[#77B89A]/20 text-[#77B89A] border border-[#77B89A]/40 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Portal | Extreme Sales &amp; Services</title>
+    <meta name="description" content="View your registered AC equipment, service records, digital job cards, and active AMC maintenance schedules.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+      (function(){
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e){}
+      })();
+    </script>
+  </head>
+  <body class="bg-[#F2EDE3] dark:bg-[#1A1412] text-[#342C27] dark:text-[#F2EDE3] font-sans flex flex-col min-h-screen antialiased">
+
+    <!-- NAVBAR -->
+    <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#F2EDE3]/90 dark:bg-[#1A1412]/90 backdrop-blur-md shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+          <div class="shrink-0 flex items-center">
+            <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5">
+              <span class="bg-[#A05B3A] text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-xs">ES</span>
+              <span>Extreme <span class="text-[#A05B3A] dark:text-[#E4C99A]">S&amp;S</span></span>
+            </a>
+          </div>
+          <div class="hidden md:flex space-x-6 items-center">
+            <a href="index.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Home</a>
+            <a href="products.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Products</a>
+            <a href="status.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Track Status</a>
+            <a href="amc.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">AMC Plans</a>
+            <a href="customer-portal.html" class="nav-link active text-[#A05B3A] dark:text-[#E4C99A] font-extrabold text-sm border-b-2 border-[#A05B3A] dark:border-[#E4C99A] pb-0.5">Customer Portal</a>
+            <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs px-4 py-2 font-bold rounded-xl shadow-sm transition">Book Service</a>
+
+            <!-- Theme Toggle Button -->
+            <button
+              type="button"
+              class="theme-toggle-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition p-2 rounded-xl hover:bg-[#E6DFD3]/60 dark:hover:bg-[#27211D] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30"
+              aria-label="Toggle Theme"
+            >
+              <svg class="theme-icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+              <svg class="theme-icon-sun w-4 h-4 hidden text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="grow pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <!-- NOTIFICATION BANNER -->
+      <div id="portalAlert" class="flex-toggle hidden mb-6 p-4 rounded-2xl text-sm font-semibold items-center justify-between border"></div>
+
+      <!-- VIEW 1: AUTHENTICATION / LOGIN -->
+      <section id="authSection" class="max-w-lg mx-auto mt-6">
+        <div class="bg-white/80 dark:bg-[#27211D]/80 backdrop-blur-md p-8 rounded-3xl border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-xl">
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-black">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </div>
+            <h1 class="text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3]">Customer Self-Service Portal</h1>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-2">
+              Access your registered AC units, service history, digital job cards, and AMC visits in real-time.
+            </p>
+          </div>
+
+          <form id="loginForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider mb-1.5">
+                Registered Mobile Number
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-sm font-bold text-[#655448] dark:text-[#B8AA98]">+91</span>
+                <input
+                  type="tel"
+                  id="loginPhone" title="Registered Mobile Number"
+                  maxlength="10"
+                  placeholder="9820123456"
+                  required
+                  class="w-full pl-14 pr-4 py-3 rounded-xl border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 bg-white/90 dark:bg-[#1A1412]/90 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#A05B3A] transition"
+                >
+              </div>
+            </div>
+
+            <div id="newCustomerFields" class="hidden">
+              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider mb-1.5">
+                Your Full Name (First-Time Registration)
+              </label>
+              <input
+                type="text"
+                id="loginName" title="Account Full Name"
+                placeholder="e.g. Ramesh Patel"
+                class="w-full px-4 py-3 rounded-xl border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 bg-white/90 dark:bg-[#1A1412]/90 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#A05B3A] transition"
+              >
+            </div>
+
+            <button
+              type="submit"
+              id="loginSubmitBtn"
+              class="w-full py-3.5 px-4 bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] font-bold text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2"
+            >
+              <span>View My Equipment &amp; Records</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </button>
+          </form>
+
+          <div class="mt-6 pt-6 border-t border-[#B8AA98]/30 text-center">
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-2 font-medium">Quick Demo Testing:</p>
+            <button
+              type="button"
+              id="quickDemoBtn"
+              class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A] hover:underline"
+            >
+              Fill Demo Customer (9820123456)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: LOGGED-IN CUSTOMER DASHBOARD -->
+      <section id="dashboardSection" class="hidden space-y-6">
+        <!-- CUSTOMER PROFILE BANNER -->
+        <div class="bg-white/80 dark:bg-[#27211D]/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-linear-to-br from-[#A05B3A] to-[#655448] text-white flex items-center justify-center text-xl font-black shadow-inner">
+              <span id="custAvatarLetters">CU</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2.5">
+                <h1 id="custName" class="text-xl sm:text-2xl font-black text-[#342C27] dark:text-[#F2EDE3]">Customer Name</h1>
+                <span id="custCodeBadge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] border border-[#A05B3A]/20">CUST-000000</span>
+              </div>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-1 flex items-center gap-3">
+                <span id="custPhone">📞 +91 00000 00000</span>
+                <span id="custCity">📍 Mumbai</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              id="openBookServiceModalBtn"
+              class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>Book New Service</span>
+            </button>
+            <button
+              type="button"
+              id="logoutBtn"
+              class="border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 hover:bg-[#E6DFD3]/60 dark:hover:bg-[#342C27] text-[#655448] dark:text-[#B8AA98] px-4 py-2.5 rounded-xl font-bold text-xs transition"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- METRICS COUNTER BAR -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Registered ACs</span>
+            <div id="statTotalAssets" class="text-2xl font-black text-[#A05B3A] dark:text-[#E4C99A] mt-1">0</div>
+          </div>
+          <div class="bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Service Tickets</span>
+            <div id="statTotalTickets" class="text-2xl font-black text-[#342C27] dark:text-[#F2EDE3] mt-1">0</div>
+          </div>
+          <div class="bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Active AMC Plans</span>
+            <div id="statActiveAmc" class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">0</div>
+          </div>
+          <div class="bg-white/60 dark:bg-[#27211D]/60 p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Pending Dues</span>
+            <div id="statPendingDues" class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">₹0</div>
+          </div>
+        </div>
+
+        <!-- PORTAL TAB NAVIGATION -->
+        <div class="border-b border-[#B8AA98]/40 flex space-x-2 sm:space-x-6 overflow-x-auto">
+          <button
+            type="button"
+            data-tab="equipment"
+            class="portal-tab-btn active font-black text-sm pb-3 text-[#A05B3A] dark:text-[#E4C99A] border-b-2 border-[#A05B3A] dark:border-[#E4C99A] flex items-center gap-2 whitespace-nowrap cursor-pointer"
+          >
+            <span>❄️ My AC Equipment</span>
+            <span id="tabCountAssets" class="bg-[#A05B3A]/20 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+          <button
+            type="button"
+            data-tab="history"
+            class="portal-tab-btn font-bold text-sm pb-3 text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] flex items-center gap-2 whitespace-nowrap cursor-pointer"
+          >
+            <span>🔧 Service History &amp; Job Cards</span>
+            <span id="tabCountHistory" class="bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+          <button
+            type="button"
+            data-tab="amc"
+            class="portal-tab-btn font-bold text-sm pb-3 text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] flex items-center gap-2 whitespace-nowrap cursor-pointer"
+          >
+            <span>🛡️ AMC Maintenance Contracts</span>
+            <span id="tabCountAmc" class="bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+          <button
+            type="button"
+            data-tab="invoices"
+            class="portal-tab-btn font-bold text-sm pb-3 text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] flex items-center gap-2 whitespace-nowrap cursor-pointer"
+          >
+            <span>📄 Invoices &amp; Billing</span>
+            <span id="tabCountInvoices" class="bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+        </div>
+
+        <!-- TAB CONTENT 1: EQUIPMENT REGISTER -->
+        <div id="tabPanelEquipment" class="portal-tab-panel">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#F2EDE3]">Installed AC Units at Your Address</h2>
+            <button
+              type="button"
+              id="openRegisterAssetModalBtn"
+              class="border border-[#A05B3A] text-[#A05B3A] dark:text-[#E4C99A] hover:bg-[#A05B3A]/10 px-3.5 py-1.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5"
+            >
+              <span>+ Register New AC</span>
+            </button>
+          </div>
+          <div id="assetsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamic AC equipment cards rendered here -->
+          </div>
+        </div>
+
+        <!-- TAB CONTENT 2: SERVICE HISTORY & REPORTS -->
+        <div id="tabPanelHistory" class="portal-tab-panel hidden space-y-4">
+          <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#F2EDE3]">Doorstep Service Tickets &amp; Job Cards</h2>
+          <div class="bg-white/80 dark:bg-[#27211D]/80 rounded-2xl border border-[#B8AA98]/40 overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-[#F2EDE3]/70 dark:bg-[#1A1412]/70 uppercase text-[#655448] dark:text-[#B8AA98] font-bold border-b border-[#B8AA98]/40">
+                  <tr>
+                    <th class="p-3.5">Ticket #</th>
+                    <th class="p-3.5">Date</th>
+                    <th class="p-3.5">AC Unit / Issue</th>
+                    <th class="p-3.5">Technician</th>
+                    <th class="p-3.5">Status</th>
+                    <th class="p-3.5 text-right">Job Card</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody" class="divide-y divide-[#B8AA98]/20">
+                  <!-- Dynamic rows rendered here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB CONTENT 3: AMC CONTRACTS -->
+        <div id="tabPanelAmc" class="portal-tab-panel hidden space-y-4">
+          <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#F2EDE3]">Active Annual Maintenance Contracts</h2>
+          <div id="amcCardsContainer" class="space-y-4">
+            <!-- Dynamic AMC cards rendered here -->
+          </div>
+        </div>
+
+        <!-- TAB CONTENT 4: INVOICES -->
+        <div id="tabPanelInvoices" class="portal-tab-panel hidden space-y-4">
+          <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#F2EDE3]">Tax Invoices &amp; Receipts</h2>
+          <div class="bg-white/80 dark:bg-[#27211D]/80 rounded-2xl border border-[#B8AA98]/40 overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-[#F2EDE3]/70 dark:bg-[#1A1412]/70 uppercase text-[#655448] dark:text-[#B8AA98] font-bold border-b border-[#B8AA98]/40">
+                  <tr>
+                    <th class="p-3.5">Invoice #</th>
+                    <th class="p-3.5">Date</th>
+                    <th class="p-3.5">Subtotal</th>
+                    <th class="p-3.5">GST</th>
+                    <th class="p-3.5">Total Amount</th>
+                    <th class="p-3.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="invoicesTableBody" class="divide-y divide-[#B8AA98]/20">
+                  <!-- Dynamic invoice rows rendered here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- MODAL 1: BOOK SERVICE REQUEST -->
+    <div id="bookServiceModal" class="flex-toggle fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs items-center justify-center p-4">
+      <div class="bg-white dark:bg-[#27211D] max-w-md w-full p-6 rounded-3xl shadow-2xl border border-[#B8AA98]/40">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-black text-[#342C27] dark:text-[#F2EDE3]">Book Doorstep Service</h3>
+          <button type="button" class="closeModalBtn text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+        </div>
+        <form id="bookServiceForm" class="space-y-4">
+          <div>
+            <label for="bookAssetSelect" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Select AC Unit</label>
+            <select id="bookAssetSelect" name="bookAssetSelect" title="Select AC Unit"  class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+              <option value="">General Service / Any AC</option>
+            </select>
+          </div>
+          <div>
+            <label for="bookRequestType" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Service Type</label>
+            <select id="bookRequestType" name="bookRequestType" title="Service Type"  class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+              <option value="BREAKDOWN">Breakdown / Not Cooling</option>
+              <option value="PREVENTIVE">Routine Wet / Jet Pump Service</option>
+              <option value="GAS_REFILL">Gas Charging / Refrigerant Top-up</option>
+              <option value="INSTALLATION">AC Installation</option>
+              <option value="UNINSTALLATION">AC Uninstallation</option>
+              <option value="OTHER">Other Inspection</option>
+            </select>
+          </div>
+          <div>
+            <label for="bookPreferredDate" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Preferred Date</label>
+            <input type="date" id="bookPreferredDate" name="bookPreferredDate" title="Preferred Date"  class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+          </div>
+          <div>
+            <label for="bookDescription" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Describe the Issue</label>
+            <textarea id="bookDescription" name="bookDescription" rows="3" required placeholder="e.g. AC is making loud vibration noise and air is not cold" title="Describe the Issue" class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]"></textarea>
+          </div>
+          <button type="submit" class="w-full py-3 bg-[#A05B3A] hover:bg-[#8B4D2F] text-white font-bold text-xs rounded-xl shadow-md transition">
+            Confirm Booking
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 2: REGISTER NEW AC -->
+    <div id="registerAssetModal" class="flex-toggle fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs items-center justify-center p-4">
+      <div class="bg-white dark:bg-[#27211D] max-w-md w-full p-6 rounded-3xl shadow-2xl border border-[#B8AA98]/40">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-black text-[#342C27] dark:text-[#F2EDE3]">Register New AC Unit</h3>
+          <button type="button" class="closeModalBtn text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+        </div>
+        <form id="registerAssetForm" class="space-y-3.5">
+          <div>
+            <label for="regBrand" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">AC Brand</label>
+            <input type="text" id="regBrand" name="regBrand" required placeholder="e.g. Daikin, Voltas, Blue Star" title="AC Brand" class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+          </div>
+          <div>
+            <label for="regModelNumber" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Model Number</label>
+            <input type="text" id="regModelNumber" name="regModelNumber" required placeholder="e.g. FTKF50TV16U" title="Model Number" class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="regAcType" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">AC Type</label>
+              <select id="regAcType" name="regAcType" title="AC Type" class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+                <option value="Split AC">Split AC</option>
+                <option value="Window AC">Window AC</option>
+                <option value="Cassette AC">Cassette AC</option>
+                <option value="Tower AC">Tower AC</option>
+              </select>
+            </div>
+            <div>
+              <label for="regTonnage" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Capacity (Tons)</label>
+              <select id="regTonnage" name="regTonnage" title="Capacity in Tons" class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+                <option value="1.0">1.0 Ton</option>
+                <option value="1.5" selected>1.5 Ton</option>
+                <option value="2.0">2.0 Ton</option>
+                <option value="2.5">2.5 Ton</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="regRoomLocation" class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] mb-1">Room / Location</label>
+            <input type="text" id="regRoomLocation" name="regRoomLocation" placeholder="e.g. Master Bedroom, Living Hall" title="Room Location" class="w-full p-2.5 rounded-xl border border-[#B8AA98]/40 text-xs bg-white dark:bg-[#1A1412]">
+          </div>
+          <button type="submit" class="w-full py-3 bg-[#A05B3A] hover:bg-[#8B4D2F] text-white font-bold text-xs rounded-xl shadow-md transition">
+            Save to Asset Register
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 3: DIGITAL JOB CARD VIEWER -->
+    <div id="jobCardModal" class="flex-toggle fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs items-center justify-center p-4">
+      <div class="bg-white dark:bg-[#27211D] max-w-lg w-full p-6 rounded-3xl shadow-2xl border border-[#B8AA98]/40 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-[#B8AA98]/30 mb-4">
+          <div>
+            <h3 class="text-base font-black text-[#342C27] dark:text-[#F2EDE3]">Digital Service Job Card</h3>
+            <span id="jcReportNumber" class="text-xs font-mono text-[#A05B3A] font-bold">REP-0000</span>
+          </div>
+          <button type="button" class="closeModalBtn text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+        </div>
+        <div id="jcContent" class="space-y-4 text-xs">
+          <!-- Dynamic job card inspection details rendered here -->
+        </div>
+        <div class="mt-6 pt-4 border-t border-[#B8AA98]/30 flex justify-end">
+          <button type="button" class="closeModalBtn bg-[#655448] hover:bg-[#342C27] text-white px-4 py-2 rounded-xl text-xs font-bold">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER WITH PROTECTED STAFF ACCESS -->
+    <footer class="bg-[#27211D] text-[#B8AA98] py-8 border-t border-[#B8AA98]/20 mt-auto text-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <span class="font-bold text-[#F2EDE3]">Extreme Sales &amp; Services</span> — Certified Multi-Brand HVAC Care
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="index.html" class="hover:text-white transition">Home</a>
+          <a href="service.html" class="hover:text-white transition">Book Service</a>
+          <a href="status.html" class="hover:text-white transition">Track Status</a>
+          <a href="login.html" class="hover:text-[#E4C99A] text-[#E4C99A]/90 transition font-bold flex items-center gap-1.5">
+            <span>🔒</span> Staff &amp; Admin Access
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/customer-portal.js"></script>
+  </body>
+</html>

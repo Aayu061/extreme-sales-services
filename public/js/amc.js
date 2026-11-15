@@ -506,11 +506,11 @@ function renderPlans() {
             </div>
 
             <!-- Feature Scope & Inclusions -->
-            <div class="px-6 pb-6 pt-2 flex flex-col flex-grow border-t ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
+            <div class="px-6 pb-6 pt-2 flex flex-col grow border-t ${isPopular ? 'border-[#B8AA98]/20' : 'border-[#B8AA98]/30 dark:border-[#B8AA98]/20'}">
                 <span class="text-[10px] uppercase tracking-widest font-black text-[#A05B3A] dark:text-[#E4C99A] my-3 block">
                     Service Scope &amp; Deliverables
                 </span>
-                <ul class="space-y-3 mb-6 flex-grow">
+                <ul class="space-y-3 mb-6 grow">
                     ${featureHtml}
                 </ul>
 

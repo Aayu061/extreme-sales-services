@@ -429,7 +429,7 @@ function renderTable() {
                     <button type="button" onclick="openAdminInvoice('${safeReqId}')" class="bg-[#342C27] hover:bg-[#433932] dark:bg-white/10 dark:hover:bg-white/20 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer" title="Generate Work Order / Tax Invoice">
                         <span>📄</span> Invoice
                     </button>
-                    <a href="https://wa.me/91${String(req.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name || '')},%20regarding%20your%20Extreme%20AC%20service%20request%20${encodeURIComponent(req.request_id || '')}" target="_blank" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition">
+                    <a href="https://wa.me/91${String(req.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(req.name || '')},%20regarding%20your%20Extreme%20AC%20service%20request%20${encodeURIComponent(req.request_id || '')}" target="_blank" rel="noopener noreferrer" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-2.5 py-1 rounded-lg text-xs font-bold transition">
                         💬 WhatsApp
                     </a>
                 </div>
@@ -1449,7 +1449,7 @@ async function fetchEnquiries() {
                     <td class="px-5 py-3.5 font-bold text-[#A05B3A] dark:text-[#E4C99A] text-xs">${safeProd}</td>
                     <td class="px-5 py-3.5 text-xs text-[#655448] dark:text-[#B8AA98] italic">"${safeMsg}"</td>
                     <td class="px-5 py-3.5">
-                        <a href="https://wa.me/91${String(enq.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name || '')},%20regarding%20your%20enquiry%20for%20${encodeURIComponent(enq.product_name || '')}" target="_blank" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-3 py-1 rounded-lg text-xs font-bold transition">
+                        <a href="https://wa.me/91${String(enq.phone || '').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(enq.name || '')},%20regarding%20your%20enquiry%20for%20${encodeURIComponent(enq.product_name || '')}" target="_blank" rel="noopener noreferrer" class="bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] hover:bg-[#77B89A] hover:text-white border border-[#77B89A]/30 px-3 py-1 rounded-lg text-xs font-bold transition">
                             💬 Message
                         </a>
                     </td>
@@ -1529,7 +1529,7 @@ function renderActivityFeed(requests) {
                 <p class="font-bold text-[#342C27] dark:text-[#FDFBF7]">Live Fleet Telemetry Active</p>
                 <p class="text-[11px] leading-relaxed">System is listening for customer bookings and technician check-ins. Real-time events will stream here automatically.</p>
                 <div class="pt-2">
-                    <a href="service.html" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#A05B3A] dark:text-[#E4C99A] hover:underline">
+                    <a href="service.html" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#A05B3A] dark:text-[#E4C99A] hover:underline">
                         <span>Book a Service to test live intake</span>
                         <span>↗</span>
                     </a>

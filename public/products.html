@@ -15,6 +15,7 @@
       };
     </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <!-- Anti-flicker: apply dark class BEFORE first paint if saved -->
     <script>
@@ -38,7 +39,7 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
-          <div class="flex-shrink-0 flex items-center">
+          <div class="shrink-0 flex items-center">
             <a
               href="index.html"
               class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5"
@@ -213,14 +214,14 @@
             <div class="flex items-center gap-3 w-full lg:w-auto">
               <div class="relative flex-1">
                 <input
-                  id="productSearch"
+                  id="productSearch" title="Search HVAC Systems"
                   type="search"
                   placeholder="Search brand or part..."
                   class="w-full lg:w-56 px-4 py-2 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1F1916] border border-[#B8AA98]/50 text-[#342C27] dark:text-[#F2EDE3] text-xs font-semibold focus:bg-white dark:focus:bg-[#1F1916] focus:border-[#A05B3A] focus:outline-none focus:ring-1 focus:ring-[#A05B3A] transition-all placeholder:text-[#655448]/60"
                 >
               </div>
               <select
-                id="productSort"
+                id="productSort" title="Sort Products"
                 aria-label="Sort options"
                 class="px-3.5 py-2 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1F1916] border border-[#B8AA98]/50 text-[#342C27] dark:text-[#F2EDE3] text-xs font-bold uppercase tracking-wider focus:bg-white dark:focus:bg-[#1F1916] focus:border-[#A05B3A] focus:outline-none transition-all cursor-pointer"
               >
@@ -235,9 +236,9 @@
             class="flex flex-wrap items-center gap-6 text-[11px] font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider pt-4 border-t border-[#B8AA98]/30"
           >
             <div class="flex items-center gap-3">
-              <span
+              <label for="minPrice" class="cursor-pointer"
                 >Min Price:
-                <span id="minPriceValue" class="text-[#342C27] dark:text-[#F2EDE3] font-mono">₹0</span></span
+                <span id="minPriceValue" class="text-[#342C27] dark:text-[#F2EDE3] font-mono">₹0</span></label
               >
               <input
                 id="minPrice"
@@ -246,15 +247,16 @@
                 max="100000"
                 step="500"
                 value="0"
+                title="Minimum Price"
                 class="h-1.5 w-24 bg-[#E6DFD3] dark:bg-[#3D342F] rounded-full accent-[#A05B3A]"
               >
             </div>
             <div class="flex items-center gap-3">
-              <span
+              <label for="maxPrice" class="cursor-pointer"
                 >Max Price:
                 <span id="maxPriceValue" class="text-[#342C27] dark:text-[#F2EDE3] font-mono"
                   >₹1,00,000</span
-                ></span
+                ></label
               >
               <input
                 id="maxPrice"
@@ -263,12 +265,13 @@
                 max="100000"
                 step="500"
                 value="100000"
+                title="Maximum Price"
                 class="h-1.5 w-24 bg-[#E6DFD3] dark:bg-[#3D342F] rounded-full accent-[#A05B3A]"
               >
             </div>
             <label class="flex items-center gap-2 cursor-pointer group">
               <input
-                id="inStockOnly"
+                id="inStockOnly" title="Show In-Stock Only"
                 type="checkbox"
                 class="w-4 h-4 rounded border-[#B8AA98]/60 text-[#A05B3A] accent-[#A05B3A] focus:ring-0"
               >
@@ -290,7 +293,7 @@
     </div>
 
     <!-- PRODUCT GRID -->
-    <main class="flex-grow bg-[#F2EDE3] dark:bg-[#1A1412] pb-32">
+    <main class="grow bg-[#F2EDE3] dark:bg-[#1A1412] pb-32">
       <div class="max-w-7xl mx-auto px-4 -mt-16">
         <!-- Sticky Quick Filter Pills + result count -->
         <div class="product-filter-bar mb-6 -mx-4 px-4 flex flex-wrap items-center gap-2 justify-between">
@@ -325,14 +328,14 @@
     <!-- ENQUIRY MODAL -->
     <div
       id="enquiryModal"
-      class="fixed inset-0 bg-[#27211D]/75 backdrop-blur-md z-[100] flex items-center justify-center hidden opacity-0 transition-all duration-300 p-4"
+      class="flex-toggle fixed inset-0 bg-[#27211D]/75 backdrop-blur-md z-100 items-center justify-center hidden opacity-0 transition-all duration-300 p-4"
     >
       <div
         class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform scale-95 transition-all duration-300 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
         id="modalContent"
       >
         <div
-          class="bg-gradient-to-r from-[#27211D] via-[#342C27] to-[#3D342F] p-8 flex justify-between items-center relative overflow-hidden border-b border-[#B8AA98]/30"
+          class="bg-linear-to-r from-[#27211D] via-[#342C27] to-[#3D342F] p-8 flex justify-between items-center relative overflow-hidden border-b border-[#B8AA98]/30"
         >
           <div class="relative z-10">
             <h3 class="font-black text-white text-2xl tracking-tight">
@@ -380,15 +383,15 @@
           <form id="enquiryForm" class="space-y-4">
             <input type="hidden" id="modalProductId">
             <div class="form-field">
-              <input type="text" id="enqName" required placeholder=" ">
+              <input type="text" id="enqName" title="Full Name" required placeholder=" ">
               <label for="enqName">Your Full Name *</label>
             </div>
             <div class="form-field">
-              <input type="tel" id="enqPhone" required placeholder=" ">
+              <input type="tel" id="enqPhone" title="Phone Number" required placeholder=" ">
               <label for="enqPhone">Phone Number *</label>
             </div>
             <div class="form-field">
-              <textarea id="enqMessage" rows="2" placeholder=" "></textarea>
+              <textarea id="enqMessage" title="Inquiry Message" rows="2" placeholder=" "></textarea>
               <label for="enqMessage">Message / Specific Requirements</label>
             </div>
             <button
@@ -409,19 +412,23 @@
     </div>
 
     <!-- FOOTER -->
+    <!-- FOOTER WITH PROTECTED STAFF ACCESS -->
     <footer
-      class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] py-10 text-center border-t border-[#B8AA98]/30 mt-auto"
+      class="bg-[#FDFBF7] dark:bg-[#27211D] text-[#655448] dark:text-[#B8AA98] py-8 border-t border-[#B8AA98]/30 mt-auto text-xs"
     >
-      <p
-        class="font-semibold text-xs tracking-wide mb-3"
-      >
-        &copy; 2026 Extreme Sales &amp; Services • Verified Multi-Brand HVAC Sales &amp; Certified Spares
-      </p>
-      <a
-        href="index.html"
-        class="text-[#A05B3A] hover:underline font-bold text-xs"
-        >&larr; Return to Homepage</a
-      >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="font-semibold text-xs tracking-wide">
+          &copy; 2026 Extreme Sales &amp; Services • Verified Multi-Brand HVAC Sales &amp; Certified Spares
+        </p>
+        <div class="flex items-center gap-5">
+          <a href="index.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold transition">Home</a>
+          <a href="service.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold transition">Book Service</a>
+          <a href="customer-portal.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold transition">Customer Portal</a>
+          <a href="login.html" class="hover:text-[#E4C99A] text-[#A05B3A] dark:text-[#E4C99A] font-bold flex items-center gap-1.5 transition">
+            <span>🔒</span> Staff &amp; Admin Access
+          </a>
+        </div>
+      </div>
     </footer>
 
     <!-- SCRIPTS -->

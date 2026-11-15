@@ -12,6 +12,7 @@
       };
     </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <!-- Anti-flicker: apply dark class BEFORE first paint if saved -->
     <script>
@@ -31,7 +32,7 @@
     <nav id="mainNav" class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav py-3.5 border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#F2EDE3]/90 dark:bg-[#1A1412]/90 backdrop-blur-md shadow-xs">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center">
-          <div class="flex-shrink-0 flex items-center">
+          <div class="shrink-0 flex items-center">
             <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-[#342C27] dark:text-[#F2EDE3] hover:opacity-90 transition flex items-center gap-2.5">
               <span class="bg-[#342C27] dark:bg-[#27211D] border border-transparent dark:border-[#B8AA98]/20 text-[#F2EDE3] w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-xs">ES</span>
               <span>Extreme <span class="text-[#A05B3A] dark:text-[#E4C99A]">S&amp;S</span></span>
@@ -41,6 +42,7 @@
             <a href="index.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Home</a>
             <a href="products.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Products</a>
             <a href="status.html" class="nav-link active text-[#A05B3A] dark:text-[#E4C99A] font-bold text-sm">Track Service</a>
+            <a href="customer-portal.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Customer Portal</a>
             <a href="amc.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">AMC Plans</a>
             <a href="contact.html" class="nav-link text-[#655448] dark:text-[#B8AA98] hover:text-[#A05B3A] dark:hover:text-[#E4C99A] font-semibold text-sm transition">Contact Us</a>
             <a href="service.html" class="bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs px-5 py-2.5 font-bold rounded-xl shadow-sm transition">Book Service</a>
@@ -82,7 +84,7 @@
           </div>
         </div>
       </div>
-      <div id="mobileMenu" class="hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 md:hidden text-center flex flex-col space-y-3 font-semibold mt-2">
+      <div id="mobileMenu" class="flex-toggle hidden absolute top-full left-4 right-4 bg-[#FDFBF7]/95 dark:bg-[#27211D]/95 backdrop-blur-xl rounded-2xl shadow-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 p-5 md:hidden text-center flex-col space-y-3 font-semibold mt-2">
         <a href="index.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] py-2">Home</a>
         <a href="products.html" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-[#F2EDE3] py-2">Products</a>
         <a href="status.html" class="text-[#A05B3A] dark:text-[#E4C99A] py-2">Track Service</a>
@@ -93,7 +95,7 @@
     </nav>
 
     <!-- HERO HEADER -->
-    <header class="pt-32 pb-14 text-center relative overflow-hidden border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-gradient-to-b from-[#EAE3D6] to-[#F2EDE3] dark:from-[#1A1412] dark:to-[#27211D]">
+    <header class="pt-32 pb-14 text-center relative overflow-hidden border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-linear-to-b from-[#EAE3D6] to-[#F2EDE3] dark:from-[#1A1412] dark:to-[#27211D]">
       <div class="max-w-3xl mx-auto px-4 relative z-10">
         <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FDFBF7]/90 dark:bg-[#27211D]/90 backdrop-blur-sm text-[#A05B3A] dark:text-[#E4C99A] border border-[#B8AA98]/50 dark:border-[#B8AA98]/20 shadow-xs mb-4">
           <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span> Live Dispatch &amp; Telemetry
@@ -108,7 +110,7 @@
     </header>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-grow py-12 px-4 relative">
+    <main class="grow py-12 px-4 relative">
       <div class="max-w-2xl mx-auto space-y-8 relative z-10">
 
         <!-- Tracking Form Card -->
@@ -127,11 +129,11 @@
 
           <form id="trackingForm" class="space-y-5">
             <div class="form-field">
-              <input type="text" id="requestId" required placeholder=" " class="font-mono uppercase">
+              <input type="text" id="requestId" title="Service Request ID" required placeholder=" " class="font-mono uppercase">
               <label for="requestId">Request ID (e.g. AC-1024) *</label>
             </div>
             <div class="form-field">
-              <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder=" ">
+              <input type="tel" id="phone" title="Registered Phone Number" required pattern="[0-9]{10}" placeholder=" ">
               <label for="phone">10-Digit Phone Number *</label>
             </div>
             <button type="submit" class="w-full bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition active:scale-[0.99]">
@@ -176,10 +178,11 @@
     <footer class="bg-[#FDFBF7] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-center py-8 border-t border-[#B8AA98]/40 dark:border-[#B8AA98]/20 mt-auto">
       <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <p>&copy; 2026 Extreme Sales &amp; Services • Verified Live Tracking</p>
-        <div class="flex gap-4">
+        <div class="flex flex-wrap items-center gap-5">
           <a href="index.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Home</a>
           <a href="service.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Book Service</a>
-          <a href="contact.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Contact</a>
+          <a href="customer-portal.html" class="hover:text-[#A05B3A] dark:hover:text-[#E4C99A] transition">Customer Portal</a>
+          <a href="login.html" class="hover:text-[#E4C99A] text-[#E4C99A]/90 transition font-bold flex items-center gap-1.5"><span>🔒</span> Staff &amp; Admin Access</a>
         </div>
       </div>
     </footer>

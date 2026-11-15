@@ -382,6 +382,7 @@ class DispatchEngine {
 
     /**
      * Executes real-time MOW-GDM algorithm across entire fleet
+     * Excludes OFF_DUTY, ON_LEAVE, and INACTIVE technicians
      * Returns sorted ranking (top candidate at index 0)
      */
     findOptimalTechnician(request, technicians = []) {
@@ -390,7 +391,17 @@ class DispatchEngine {
             return null;
         }
 
-        const rankings = technicians.map(tech => this.scoreTechnician(tech, request));
+        // Exclude technicians who are currently OFF_DUTY, ON_LEAVE, or INACTIVE
+        const eligibleTechs = technicians.filter(tech => {
+            const st = String(tech.status || tech.duty_status || tech.dutyStatus || 'AVAILABLE').toUpperCase();
+            return st !== 'OFF_DUTY' && st !== 'ON_LEAVE' && st !== 'INACTIVE' && st !== 'SUSPENDED';
+        });
+
+        if (eligibleTechs.length === 0) {
+            return null;
+        }
+
+        const rankings = eligibleTechs.map(tech => this.scoreTechnician(tech, request));
 
         // Sort descending by compositeScore, break ties by earliest ETA
         rankings.sort((a, b) => {

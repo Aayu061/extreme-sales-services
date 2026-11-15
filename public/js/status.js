@@ -126,6 +126,18 @@ async function fetchStatus(id, phone) {
     } catch(_) {}
 }
 
+// ─── Status Normalization Helper ─────────────────────────────
+function normalizeStageIndex(status) {
+    if (!status) return 0;
+    const s = String(status).toUpperCase().trim();
+    if (s === 'PENDING' || s === 'NEW') return 0;
+    if (s === 'ASSIGNED' || s === 'SCHEDULED') return 1;
+    if (s === 'IN_PROGRESS' || s === 'IN PROGRESS' || s === 'ON-SITE' || s === 'ONSITE') return 2;
+    if (s === 'COMPLETED' || s === 'RESOLVED') return 3;
+    if (s === 'CANCELLED') return -1;
+    return 0;
+}
+
 // ─── Master Render ───────────────────────────────────────────────
 function renderAll(status, techName, serviceType, customerName) {
     const stateKey = `${status}|${techName}|${serviceType}|${customerName}`;
@@ -143,7 +155,8 @@ function renderAll(status, techName, serviceType, customerName) {
     const oldEta = document.getElementById('etaCard');
     if (oldEta) oldEta.remove();
 
-    if (status === 'Completed' && changed) {
+    const isDone = normalizeStageIndex(status) === 3;
+    if (isDone && changed) {
         launchConfetti();
         renderRatingWidget();
     }
@@ -166,7 +179,7 @@ function renderStepper(currentStatus) {
         timelineContent.insertAdjacentElement('beforebegin', el);
     }
 
-    const currentIdx = STAGES.findIndex(s => s.key === currentStatus);
+    const currentIdx = normalizeStageIndex(currentStatus);
     const pct = currentIdx < 0 ? 0 : Math.round(((currentIdx) / (STAGES.length - 1)) * 100);
 
     el.innerHTML = STAGES.map((s, i) => {
@@ -228,11 +241,11 @@ function injectShareBar(id, phone) {
     const trackUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(id)}&phone=${encodeURIComponent(phone)}`;
     bar.innerHTML = `
         <div class="flex-1 bg-[#F2EDE3] border border-[#B8AA98]/40 rounded-xl px-3 py-2 text-xs text-[#655448] font-mono truncate">${trackUrl}</div>
-        <button onclick="copyTrackLink('${trackUrl}')" class="flex-shrink-0 bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+        <button onclick="copyTrackLink('${trackUrl}')" class="shrink-0 bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
             <span>📋</span> Copy Link
         </button>
-        <a href="https://wa.me/?text=Track my AC service: ${encodeURIComponent(trackUrl)}" target="_blank"
-           class="flex-shrink-0 bg-[#1D3D2B] hover:bg-[#163022] text-[#F2EDE3] text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
+        <a href="https://wa.me/?text=Track my AC service: ${encodeURIComponent(trackUrl)}" target="_blank" rel="noopener noreferrer"
+           class="shrink-0 bg-[#1D3D2B] hover:bg-[#163022] text-[#F2EDE3] text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
             <span>💬</span> Share on WA
         </a>`;
     resultsCard.querySelector('.flex').after(bar);
@@ -257,7 +270,7 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
         { key: 'Completed',   title: 'Service Completed & Tested',      desc: 'All electrical, pressure, and cooling temperature tests verified. Warranty and invoice issued.' }
     ];
 
-    const currentIndex = stages.findIndex(s => s.key === currentStatus);
+    const currentIndex = normalizeStageIndex(currentStatus);
 
     let html = `
         <div class="mb-6 p-4 bg-[#F2EDE3] dark:bg-[#1A1412] rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -291,7 +304,7 @@ function renderTimeline(currentStatus, techName, serviceType, customerName) {
 
         html += `
             <div class="flex items-start gap-4 mb-8 relative">
-                <div class="flex-shrink-0 mt-0.5">${dotHtml}</div>
+                <div class="shrink-0 mt-0.5">${dotHtml}</div>
                 <div class="flex-1">
                     <div class="flex items-center flex-wrap gap-1">
                         <h4 class="text-sm ${textClass}">${stage.title}</h4>

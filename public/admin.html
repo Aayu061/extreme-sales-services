@@ -7,48 +7,81 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
-        darkMode: 'class'
+        darkMode: "class",
       };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <!-- Anti-flicker: apply dark class ONLY if explicitly saved as dark -->
     <script>
-      (function(){
+      (function () {
         try {
-          var saved = localStorage.getItem('theme');
-          if (saved === 'dark') {
-            document.documentElement.classList.add('dark');
+          var saved = localStorage.getItem("theme");
+          if (saved === "dark") {
+            document.documentElement.classList.add("dark");
           }
-        } catch(e){}
+        } catch (e) {}
       })();
     </script>
   </head>
-  <body class="bg-[#F2EDE3] text-[#342C27] dark:bg-[#1A1412] dark:text-[#FDFBF7] min-h-screen font-sans antialiased selection:bg-[#A05B3A] selection:text-white transition-colors duration-200">
-
+  <body
+    class="bg-[#F2EDE3] text-[#342C27] dark:bg-[#1A1412] dark:text-[#FDFBF7] min-h-screen font-sans antialiased selection:bg-[#A05B3A] selection:text-white transition-colors duration-200"
+  >
     <!-- TOP NAVIGATION BAR -->
-    <header class="bg-[#342C27] dark:bg-[#27211D] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/15 backdrop-blur-md transition-colors duration-200">
+    <header
+      class="bg-[#342C27] dark:bg-[#27211D] text-white sticky top-0 z-50 shadow-md border-b border-[#B8AA98]/30 dark:border-[#B8AA98]/15 backdrop-blur-md transition-colors duration-200"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-[#A05B3A] rounded-xl flex items-center justify-center shadow-sm">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <div
+              class="w-9 h-9 bg-[#A05B3A] rounded-xl flex items-center justify-center shadow-sm"
+            >
+              <svg
+                class="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
             </div>
             <div>
               <div class="flex items-center gap-1.5">
-                <span class="text-base sm:text-lg font-black tracking-tight text-white whitespace-nowrap">Extreme S&amp;S</span>
-                <span class="text-[#E4C99A] font-bold text-[10px] sm:text-xs bg-[#655448]/60 px-2 py-0.5 rounded-full border border-[#B8AA98]/40 whitespace-nowrap">Admin</span>
+                <span
+                  class="text-base sm:text-lg font-black tracking-tight text-white whitespace-nowrap"
+                  >Extreme S&amp;S</span
+                >
+                <span
+                  class="text-[#E4C99A] font-bold text-[10px] sm:text-xs bg-[#655448]/60 px-2 py-0.5 rounded-full border border-[#B8AA98]/40 whitespace-nowrap"
+                  >Admin</span
+                >
               </div>
-              <div class="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#B8AA98]">
-                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
+              <div
+                class="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#B8AA98]"
+              >
+                <span
+                  class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#77B89A] animate-pulse"
+                ></span>
                 <span class="truncate">Live Fleet Sync</span>
               </div>
             </div>
           </div>
 
           <div class="flex gap-1.5 sm:gap-2.5 items-center">
-            <a href="index.html" target="_blank" class="hidden sm:inline-flex text-[#B8AA98] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-white/10 transition items-center gap-1">
+            <a
+              href="index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hidden sm:inline-flex text-[#B8AA98] hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-white/10 transition items-center gap-1"
+            >
               <span>View Site</span>
               <span class="text-xs">↗</span>
             </a>
@@ -57,26 +90,64 @@
               class="theme-toggle-btn text-[#B8AA98] hover:text-white transition p-2 rounded-lg hover:bg-white/10"
               aria-label="Toggle Theme"
             >
-              <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              <svg
+                class="theme-icon-moon w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
               </svg>
-              <svg class="theme-icon-sun w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/>
+              <svg
+                class="theme-icon-sun w-5 h-5 hidden text-amber-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </button>
-            <button type="button" onclick="openExecutiveReport()" class="bg-[#77B89A]/20 hover:bg-[#77B89A] text-[#77B89A] hover:text-[#1A1412] border border-[#77B89A]/40 p-2 sm:px-3 sm:py-1.5 rounded-lg font-bold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer" title="Generate comprehensive printable executive audit briefing for examiners">
+            <button
+              type="button"
+              onclick="openExecutiveReport()"
+              class="bg-[#77B89A]/20 hover:bg-[#77B89A] text-[#77B89A] hover:text-[#1A1412] border border-[#77B89A]/40 p-2 sm:px-3 sm:py-1.5 rounded-lg font-bold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+              title="Generate comprehensive printable executive audit briefing for examiners"
+            >
               <span>📋</span>
               <span class="hidden md:inline">Executive Briefing</span>
             </button>
-            <button type="button" id="exportBtn" onclick="exportDataCsv()" class="bg-[#3D342F] hover:bg-[#655448] text-white border border-[#B8AA98]/40 p-2 sm:px-3 sm:py-1.5 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow-xs">
+            <button
+              type="button"
+              id="exportBtn"
+              onclick="exportDataCsv()"
+              class="bg-[#3D342F] hover:bg-[#655448] text-white border border-[#B8AA98]/40 p-2 sm:px-3 sm:py-1.5 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow-xs"
+            >
               <span>📊</span>
               <span class="hidden sm:inline">Export CSV</span>
             </button>
-            <button type="button" id="refreshBtn" class="bg-[#A05B3A] hover:bg-[#854224] text-white px-2.5 sm:px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+            <button
+              type="button"
+              id="refreshBtn"
+              class="bg-[#A05B3A] hover:bg-[#854224] text-white px-2.5 sm:px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm transition flex items-center gap-1.5"
+            >
               <span id="refreshIcon" class="inline-block transition">↻</span>
               <span class="hidden sm:inline">Sync Now</span>
             </button>
-            <button type="button" onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white border border-red-500/30 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-xs transition">
+            <button
+              type="button"
+              onclick="handleLogout()"
+              class="bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white border border-red-500/30 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-xs transition"
+            >
               Logout
             </button>
           </div>
@@ -85,42 +156,90 @@
     </header>
 
     <!-- CROSS-PLATFORM ECOSYSTEM NAVIGATION BAR -->
-    <div class="bg-[#FDFBF7] dark:bg-[#27211D] border-b border-[#B8AA98]/30 px-4 py-2.5 shadow-2xs">
-      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div class="flex items-center gap-1.5 text-[#655448] dark:text-[#B8AA98] font-bold">
+    <div
+      class="bg-[#FDFBF7] dark:bg-[#27211D] border-b border-[#B8AA98]/30 px-4 py-2.5 shadow-2xs"
+    >
+      <div
+        class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs"
+      >
+        <div
+          class="flex items-center gap-1.5 text-[#655448] dark:text-[#B8AA98] font-bold"
+        >
           <span class="text-sm">🌐</span>
-          <span class="uppercase tracking-wider text-[11px]">Platform Ecosystem:</span>
+          <span class="uppercase tracking-wider text-[11px]"
+            >Platform Ecosystem:</span
+          >
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <a href="service.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
-            <span>🛠️</span> <span>Service Booking Portal</span> <span class="text-[10px] text-stone-400">↗</span>
+          <a
+            href="service.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1"
+          >
+            <span>🛠️</span> <span>Service Booking Portal</span>
+            <span class="text-[10px] text-stone-400">↗</span>
           </a>
-          <a href="staff.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
-            <span>📡</span> <span>Staff Dispatch Console</span> <span class="text-[10px] text-stone-400">↗</span>
+          <a
+            href="staff.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1"
+          >
+            <span>📡</span> <span>Staff Dispatch Console</span>
+            <span class="text-[10px] text-stone-400">↗</span>
           </a>
-          <a href="vendor.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
-            <span>🏭</span> <span>Vendor Partner Portal</span> <span class="text-[10px] text-stone-400">↗</span>
+          <a
+            href="vendor.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1"
+          >
+            <span>🏭</span> <span>Vendor Partner Portal</span>
+            <span class="text-[10px] text-stone-400">↗</span>
           </a>
-          <a href="status.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
-            <span>📍</span> <span>Public Order Tracking</span> <span class="text-[10px] text-stone-400">↗</span>
+          <a
+            href="status.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1"
+          >
+            <span>📍</span> <span>Public Order Tracking</span>
+            <span class="text-[10px] text-stone-400">↗</span>
           </a>
-          <a href="amc.html" target="_blank" class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1">
-            <span>🛡️</span> <span>AMC Contracts</span> <span class="text-[10px] text-stone-400">↗</span>
+          <a
+            href="amc.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1 rounded-lg bg-[#E6DFD3]/60 dark:bg-[#1F1916] hover:bg-[#E6DFD3] dark:hover:bg-[#342C27] text-[#342C27] dark:text-[#FDFBF7] font-semibold border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 transition flex items-center gap-1"
+          >
+            <span>🛡️</span> <span>AMC Contracts</span>
+            <span class="text-[10px] text-stone-400">↗</span>
           </a>
         </div>
       </div>
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
       <!-- PAGE HEADER -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div>
-          <h1 class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7] tracking-tight">Executive Dashboard</h1>
-          <p class="text-[#655448] dark:text-[#B8AA98] text-sm mt-0.5">Real-time telemetry, service dispatching, field technicians &amp; contracts</p>
+          <h1
+            class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7] tracking-tight"
+          >
+            Executive Dashboard
+          </h1>
+          <p class="text-[#655448] dark:text-[#B8AA98] text-sm mt-0.5">
+            Real-time telemetry, service dispatching, field technicians &amp;
+            contracts
+          </p>
         </div>
         <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30">
+          <span
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] border border-[#77B89A]/30"
+          >
             <span class="w-2 h-2 rounded-full bg-[#77B89A]"></span>
             Live Fleet Sync
           </span>
@@ -131,115 +250,250 @@
       <div id="todayStrip" class="today-strip">
         <div class="today-stat">
           <div class="text-white font-black text-xl">--</div>
-          <div class="text-[#E4C99A] text-[10px] font-bold uppercase tracking-widest">Completed Today</div>
+          <div
+            class="text-[#E4C99A] text-[10px] font-bold uppercase tracking-widest"
+          >
+            Completed Today
+          </div>
         </div>
         <div class="today-stat">
           <div class="text-[#E4C99A] font-black text-xl">--</div>
-          <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">Pending Queue</div>
+          <div
+            class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest"
+          >
+            Pending Queue
+          </div>
         </div>
         <div class="today-stat">
           <div class="text-[#77B89A] font-black text-xl">--</div>
-          <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">On-Site Now</div>
+          <div
+            class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest"
+          >
+            On-Site Now
+          </div>
         </div>
         <div class="today-stat">
           <div class="text-emerald-300 font-black text-xl">--</div>
-          <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">Est. Revenue</div>
+          <div
+            class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest"
+          >
+            Est. Revenue
+          </div>
         </div>
         <div class="today-stat">
           <div class="text-white font-black text-xl">--</div>
-          <div class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest">Engineers Active</div>
+          <div
+            class="text-[#B8AA98] text-[10px] font-bold uppercase tracking-widest"
+          >
+            Engineers Active
+          </div>
         </div>
       </div>
 
       <!-- KPI METRIC CARDS DECK -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Metric 1 -->
-        <div class="kpi-card shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md">
+        <div
+          class="kpi-card shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md"
+        >
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Active Service Jobs</span>
-            <div class="w-8 h-8 rounded-lg bg-[#E4C99A]/30 dark:bg-[#A05B3A]/25 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center font-bold text-sm">🛠️</div>
+            <span
+              class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]"
+              >Active Service Jobs</span
+            >
+            <div
+              class="w-8 h-8 rounded-lg bg-[#E4C99A]/30 dark:bg-[#A05B3A]/25 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center font-bold text-sm"
+            >
+              🛠️
+            </div>
           </div>
           <div class="flex items-baseline gap-2">
-            <span id="kpiActiveJobs" class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]">--</span>
-            <span class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A]">Pending / Active</span>
+            <span
+              id="kpiActiveJobs"
+              class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]"
+              >--</span
+            >
+            <span class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A]"
+              >Pending / Active</span
+            >
           </div>
-          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">Dispatches requiring technician attention</p>
+          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">
+            Dispatches requiring technician attention
+          </p>
         </div>
 
         <!-- Metric 2 -->
-        <div class="kpi-card kpi-emerald shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md">
+        <div
+          class="kpi-card kpi-emerald shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md"
+        >
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Active AMC Contracts</span>
-            <div class="w-8 h-8 rounded-lg bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] flex items-center justify-center font-bold text-sm">📑</div>
+            <span
+              class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]"
+              >Active AMC Contracts</span
+            >
+            <div
+              class="w-8 h-8 rounded-lg bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] flex items-center justify-center font-bold text-sm"
+            >
+              📑
+            </div>
           </div>
           <div class="flex items-baseline gap-2">
-            <span id="kpiActiveAmc" class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]">--</span>
-            <span class="text-xs font-bold text-[#1D3D2B] dark:text-[#77B89A]">Active</span>
+            <span
+              id="kpiActiveAmc"
+              class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]"
+              >--</span
+            >
+            <span class="text-xs font-bold text-[#1D3D2B] dark:text-[#77B89A]"
+              >Active</span
+            >
           </div>
-          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">Annual recurring maintenance packages</p>
+          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">
+            Annual recurring maintenance packages
+          </p>
         </div>
 
         <!-- Metric 3 -->
-        <div class="kpi-card kpi-amber shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md">
+        <div
+          class="kpi-card kpi-amber shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md"
+        >
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Fleet Availability</span>
-            <div class="w-8 h-8 rounded-lg bg-[#E4C99A]/30 dark:bg-[#E4C99A]/20 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center font-bold text-sm">🧑‍🔧</div>
+            <span
+              class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]"
+              >Fleet Availability</span
+            >
+            <div
+              class="w-8 h-8 rounded-lg bg-[#E4C99A]/30 dark:bg-[#E4C99A]/20 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center font-bold text-sm"
+            >
+              🧑‍🔧
+            </div>
           </div>
           <div class="flex items-baseline gap-2">
-            <span id="kpiFleetSize" class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]">--</span>
-            <span class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A]">Engineers</span>
+            <span
+              id="kpiFleetSize"
+              class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]"
+              >--</span
+            >
+            <span class="text-xs font-bold text-[#A05B3A] dark:text-[#E4C99A]"
+              >Engineers</span
+            >
           </div>
-          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">Certified field engineers online</p>
+          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">
+            Certified field engineers online
+          </p>
         </div>
 
         <!-- Metric 4 -->
-        <div class="kpi-card kpi-purple shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md">
+        <div
+          class="kpi-card kpi-purple shadow-sm border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#FDFBF7] dark:bg-[#27211D] p-5 rounded-2xl transition hover:shadow-md"
+        >
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]">Monthly Run-Rate</span>
-            <div class="w-8 h-8 rounded-lg bg-[#655448]/15 dark:bg-[#B8AA98]/20 text-[#342C27] dark:text-[#E4C99A] flex items-center justify-center font-bold text-sm">₹</div>
+            <span
+              class="text-xs font-extrabold uppercase tracking-wider text-[#655448] dark:text-[#B8AA98]"
+              >Monthly Run-Rate</span
+            >
+            <div
+              class="w-8 h-8 rounded-lg bg-[#655448]/15 dark:bg-[#B8AA98]/20 text-[#342C27] dark:text-[#E4C99A] flex items-center justify-center font-bold text-sm"
+            >
+              ₹
+            </div>
           </div>
           <div class="flex items-baseline gap-2">
-            <span id="kpiRevenue" class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]">--</span>
-            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]">Billed</span>
+            <span
+              id="kpiRevenue"
+              class="text-3xl font-black text-[#342C27] dark:text-[#FDFBF7]"
+              >--</span
+            >
+            <span class="text-xs font-bold text-[#655448] dark:text-[#B8AA98]"
+              >Billed</span
+            >
           </div>
-          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">Combined service fees and contracts</p>
+          <p class="text-[11px] text-[#655448] dark:text-[#B8AA98]/80 mt-2">
+            Combined service fees and contracts
+          </p>
         </div>
       </div>
 
       <!-- LOW STOCK ALERT -->
-      <div id="lowStockAlert" class="hidden bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 flex flex-wrap items-center gap-2">
-        <span class="text-amber-600 dark:text-amber-400 font-black text-sm">⚠️ Low Stock Alert</span>
+      <div
+        id="lowStockAlert"
+        class="flex-toggle hidden bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 flex-wrap items-center gap-2"
+      >
+        <span class="text-amber-600 dark:text-amber-400 font-black text-sm"
+          >⚠️ Low Stock Alert</span
+        >
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
         <!-- Activity Feed Panel (4 cols) -->
-        <div class="chart-card lg:col-span-4 flex flex-col bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+        <div
+          class="chart-card lg:col-span-4 flex flex-col bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm"
+        >
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Live Activity Feed</h2>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Real-time events from the fleet</p>
+              <h2
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+              >
+                Live Activity Feed
+              </h2>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">
+                Real-time events from the fleet
+              </p>
             </div>
-            <span class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"></span>
+            <span
+              class="w-2 h-2 rounded-full bg-[#77B89A] animate-pulse"
+            ></span>
           </div>
-          <div id="activityFeed" class="flex-1 overflow-y-auto max-h-64 space-y-2">
-            <p class="text-xs text-[#655448] dark:text-[#B8AA98] text-center py-6">Loading activity...</p>
+          <div
+            id="activityFeed"
+            class="flex-1 overflow-y-auto max-h-64 space-y-2"
+          >
+            <p
+              class="text-xs text-[#655448] dark:text-[#B8AA98] text-center py-6"
+            >
+              Loading activity...
+            </p>
           </div>
         </div>
 
         <!-- Chart 1: 7-Day Service Volume Trend (8 cols) -->
-        <div class="chart-card lg:col-span-8 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+        <div
+          class="chart-card lg:col-span-8 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm"
+        >
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Service Volume &amp; Completion Trends</h2>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Intake telemetry vs verified field completions</p>
+              <h2
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+              >
+                Service Volume &amp; Completion Trends
+              </h2>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">
+                Intake telemetry vs verified field completions
+              </p>
             </div>
             <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1 bg-[#E6DFD3]/60 dark:bg-[#1A1412] p-1 rounded-xl border border-[#B8AA98]/30">
-                <button type="button" id="btnTrend7d" onclick="switchTrendTimeframe(7)" class="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-[#A05B3A] text-white shadow-xs transition">7D</button>
-                <button type="button" id="btnTrend30d" onclick="switchTrendTimeframe(30)" class="px-2.5 py-1 text-[10px] font-bold rounded-lg text-[#655448] dark:text-[#B8AA98] hover:text-black dark:hover:text-white transition">30D</button>
+              <div
+                class="flex items-center gap-1 bg-[#E6DFD3]/60 dark:bg-[#1A1412] p-1 rounded-xl border border-[#B8AA98]/30"
+              >
+                <button
+                  type="button"
+                  id="btnTrend7d"
+                  onclick="switchTrendTimeframe(7)"
+                  class="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-[#A05B3A] text-white shadow-xs transition"
+                >
+                  7D
+                </button>
+                <button
+                  type="button"
+                  id="btnTrend30d"
+                  onclick="switchTrendTimeframe(30)"
+                  class="px-2.5 py-1 text-[10px] font-bold rounded-lg text-[#655448] dark:text-[#B8AA98] hover:text-black dark:hover:text-white transition"
+                >
+                  30D
+                </button>
               </div>
-              <span class="hidden sm:inline-block text-[10px] font-extrabold bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#A05B3A] dark:text-[#E4C99A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#E4C99A]/60 dark:border-[#E4C99A]/30">
+              <span
+                class="hidden sm:inline-block text-[10px] font-extrabold bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#A05B3A] dark:text-[#E4C99A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#E4C99A]/60 dark:border-[#E4C99A]/30"
+              >
                 Live Stream
               </span>
             </div>
@@ -250,13 +504,24 @@
         </div>
 
         <!-- Chart 2: Job Status Distribution (4 cols) -->
-        <div class="chart-card lg:col-span-4 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+        <div
+          class="chart-card lg:col-span-4 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm"
+        >
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Status Breakdown</h2>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Distribution of queue stages</p>
+              <h2
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+              >
+                Status Breakdown
+              </h2>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">
+                Distribution of queue stages
+              </p>
             </div>
-            <span class="text-[10px] font-extrabold bg-[#F2EDE3] dark:bg-[#342C27] text-[#342C27] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 px-2 py-0.5 rounded-full uppercase">Queue</span>
+            <span
+              class="text-[10px] font-extrabold bg-[#F2EDE3] dark:bg-[#342C27] text-[#342C27] dark:text-[#B8AA98] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 px-2 py-0.5 rounded-full uppercase"
+              >Queue</span
+            >
           </div>
           <div class="chart-wrapper">
             <canvas id="chartJobStatus"></canvas>
@@ -264,13 +529,24 @@
         </div>
 
         <!-- Chart 3: Technician Fleet Workload (6 cols) -->
-        <div class="chart-card lg:col-span-6 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+        <div
+          class="chart-card lg:col-span-6 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm"
+        >
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Technician Fleet Performance</h2>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Active assigned jobs vs completed services</p>
+              <h2
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+              >
+                Technician Fleet Performance
+              </h2>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">
+                Active assigned jobs vs completed services
+              </p>
             </div>
-            <span class="text-[10px] font-extrabold bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#655448] dark:text-[#E4C99A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">Workload</span>
+            <span
+              class="text-[10px] font-extrabold bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#655448] dark:text-[#E4C99A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+              >Workload</span
+            >
           </div>
           <div class="chart-wrapper">
             <canvas id="chartTechWorkload"></canvas>
@@ -278,48 +554,89 @@
         </div>
 
         <!-- Chart 4: Service Type Breakdown (6 cols) -->
-        <div class="chart-card lg:col-span-6 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm">
+        <div
+          class="chart-card lg:col-span-6 flex flex-col justify-between bg-[#FDFBF7] dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-2xl p-6 shadow-sm"
+        >
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h2 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Service Category Distribution</h2>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Repair, deep cleaning, installation &amp; gas refills</p>
+              <h2
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+              >
+                Service Category Distribution
+              </h2>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">
+                Repair, deep cleaning, installation &amp; gas refills
+              </p>
             </div>
-            <span class="text-[10px] font-extrabold bg-[#77B89A]/20 dark:bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#77B89A]/40 dark:border-[#77B89A]/30">Categories</span>
+            <span
+              class="text-[10px] font-extrabold bg-[#77B89A]/20 dark:bg-[#77B89A]/15 text-[#1D3D2B] dark:text-[#77B89A] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#77B89A]/40 dark:border-[#77B89A]/30"
+              >Categories</span
+            >
           </div>
           <div class="chart-wrapper">
             <canvas id="chartServiceTypes"></canvas>
           </div>
         </div>
-
       </div>
 
       <!-- TABBED MANAGEMENT CONSOLES -->
-      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm overflow-hidden transition-colors duration-200">
-
+      <div
+        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-sm overflow-hidden transition-colors duration-200"
+      >
         <!-- Navigation Tabs Bar -->
-        <div class="flex border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#EBE4D8] dark:bg-[#1A1412] px-4 overflow-x-auto gap-2 py-2.5">
-          <button type="button" onclick="switchTab('tab-dispatch', this)" class="tab-btn active bg-[#A05B3A] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap">
+        <div
+          class="flex border-b border-[#B8AA98]/40 dark:border-[#B8AA98]/20 bg-[#EBE4D8] dark:bg-[#1A1412] px-4 overflow-x-auto gap-2 py-2.5"
+        >
+          <button
+            type="button"
+            onclick="switchTab('tab-dispatch', this)"
+            class="tab-btn active bg-[#A05B3A] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-2 whitespace-nowrap"
+          >
             <span>🛠️</span>
             <span>Service Dispatch</span>
-            <span id="badgeQueueCount" class="bg-[#854224] text-white text-[10px] px-1.5 py-0.2 rounded-full font-black">--</span>
+            <span
+              id="badgeQueueCount"
+              class="bg-[#854224] text-white text-[10px] px-1.5 py-0.2 rounded-full font-black"
+              >--</span
+            >
           </button>
-          <button type="button" onclick="switchTab('tab-users', this)" class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap">
+          <button
+            type="button"
+            onclick="switchTab('tab-users', this)"
+            class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap"
+          >
             <span>🧑‍🔧</span>
             <span>Fleet &amp; Users</span>
           </button>
-          <button type="button" onclick="switchTab('tab-products', this)" class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap">
+          <button
+            type="button"
+            onclick="switchTab('tab-products', this)"
+            class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap"
+          >
             <span>📦</span>
             <span>Products &amp; Spares</span>
           </button>
-          <button type="button" onclick="switchTab('tab-amc', this)" class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap">
+          <button
+            type="button"
+            onclick="switchTab('tab-amc', this)"
+            class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap"
+          >
             <span>📑</span>
             <span>AMC Contracts</span>
           </button>
-          <button type="button" onclick="switchTab('tab-enquiries', this)" class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap">
+          <button
+            type="button"
+            onclick="switchTab('tab-enquiries', this)"
+            class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap"
+          >
             <span>💬</span>
             <span>Customer Enquiries</span>
           </button>
-          <button type="button" onclick="switchTab('tab-analytics', this)" class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap">
+          <button
+            type="button"
+            onclick="switchTab('tab-analytics', this)"
+            class="tab-btn text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-white/60 dark:hover:bg-white/5 transition flex items-center gap-2 whitespace-nowrap"
+          >
             <span>📊</span>
             <span>Analytics &amp; Profit</span>
           </button>
@@ -328,40 +645,91 @@
         <!-- 1. SERVICE DISPATCH TAB -->
         <div id="tab-dispatch" class="tab-content p-6 block">
           <!-- SPATIAL MUMBAI ZONE DISPATCH HEATMAP -->
-          <div id="adminZoneHeatmap" class="mb-6 p-4 rounded-2xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+          <div
+            id="adminZoneHeatmap"
+            class="mb-6 p-4 rounded-2xl bg-[#E6DFD3]/40 dark:bg-[#1F1916] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs"
+          >
             <div class="flex items-center justify-between mb-2.5">
-              <span class="text-xs font-black uppercase tracking-wider text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5">
+              <span
+                class="text-xs font-black uppercase tracking-wider text-[#342C27] dark:text-[#F2EDE3] flex items-center gap-1.5"
+              >
                 <span>🗺️</span> Mumbai Metropolitan Spatial Dispatch Density
               </span>
-              <span id="zoneActiveSummary" class="text-[11px] font-bold text-[#A05B3A] dark:text-[#E4C99A]">Computing fleet zones...</span>
+              <span
+                id="zoneActiveSummary"
+                class="text-[11px] font-bold text-[#A05B3A] dark:text-[#E4C99A]"
+                >Computing fleet zones...</span
+              >
             </div>
-            <div id="zoneDensityGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <div
+              id="zoneDensityGrid"
+              class="grid grid-cols-2 sm:grid-cols-5 gap-2.5"
+            >
               <!-- Dynamically rendered zone breakdown pills -->
             </div>
           </div>
 
           <!-- Filters Toolbar -->
-          <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
+          <div
+            class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6"
+          >
             <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-              <button type="button" onclick="filterStatus('All', this)" class="filter-pill active bg-[#342C27] dark:bg-[#A05B3A] text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">All</button>
-              <button type="button" onclick="filterStatus('Pending', this)" class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition">Pending</button>
-              <button type="button" onclick="filterStatus('Assigned', this)" class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition">Assigned</button>
-              <button type="button" onclick="filterStatus('In Progress', this)" class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition">In Progress</button>
-              <button type="button" onclick="filterStatus('Completed', this)" class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition">Completed</button>
+              <button
+                type="button"
+                onclick="filterStatus('All', this)"
+                class="filter-pill active bg-[#342C27] dark:bg-[#A05B3A] text-white text-xs font-bold px-3 py-1.5 rounded-lg transition"
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onclick="filterStatus('Pending', this)"
+                class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition"
+              >
+                Pending
+              </button>
+              <button
+                type="button"
+                onclick="filterStatus('Assigned', this)"
+                class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition"
+              >
+                Assigned
+              </button>
+              <button
+                type="button"
+                onclick="filterStatus('In Progress', this)"
+                class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition"
+              >
+                In Progress
+              </button>
+              <button
+                type="button"
+                onclick="filterStatus('Completed', this)"
+                class="filter-pill bg-white dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 hover:bg-[#F2EDE3] dark:hover:bg-[#27211D] transition"
+              >
+                Completed
+              </button>
             </div>
 
             <div class="flex items-center gap-2.5 w-full sm:w-auto">
               <div class="relative flex-1 sm:w-72">
                 <input
                   type="text"
-                  id="searchRequestInput"
+                  id="searchRequestInput" title="Search Service Requests"
                   oninput="handleSearch(this.value)"
                   placeholder="Search customer, phone, ID..."
-                  class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 rounded-xl pl-3.5 pr-10 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-white dark:focus:bg-[#1A1412] text-[#342C27] dark:text-white outline-none transition placeholder:text-[#655448]/60 dark:placeholder:text-[#B8AA98]/50"
+                  class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/60 dark:border-[#B8AA98]/30 rounded-xl pl-3.5 pr-10 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] focus:bg-white dark:focus:bg-[#1A1412] text-[#342C27] dark:text-white outline-none transition placeholder:text-[#655448]/60 dark:placeholder:text-[#B8AA98]/50">
+                <kbd
+                  class="hidden sm:inline-block absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono bg-black/5 dark:bg-white/10 text-[#655448] dark:text-[#B8AA98] rounded border border-black/10 dark:border-white/10 select-none pointer-events-none"
+                  >/</kbd
                 >
-                <kbd class="hidden sm:inline-block absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono bg-black/5 dark:bg-white/10 text-[#655448] dark:text-[#B8AA98] rounded border border-black/10 dark:border-white/10 select-none pointer-events-none">/</kbd>
               </div>
-              <button type="button" onclick="exportDispatchCSV()" title="Export all service dispatches to CSV spreadsheet" class="bg-[#342C27] dark:bg-[#3D342F] hover:bg-[#3D342F] dark:hover:bg-[#655448] text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm border border-[#B8AA98]/30 dark:border-[#B8AA98]/20">
+              <button
+                type="button"
+                onclick="exportDispatchCSV()"
+                title="Export all service dispatches to CSV spreadsheet"
+                class="bg-[#342C27] dark:bg-[#3D342F] hover:bg-[#3D342F] dark:hover:bg-[#655448] text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm border border-[#B8AA98]/30 dark:border-[#B8AA98]/20"
+              >
                 <span>📥</span>
                 <span>Export CSV</span>
               </button>
@@ -369,9 +737,15 @@
           </div>
 
           <!-- Dispatch Table -->
-          <div class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
-            <table class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs">
-              <thead class="bg-[#EBE4D8] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider">
+          <div
+            class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+          >
+            <table
+              class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs"
+            >
+              <thead
+                class="bg-[#EBE4D8] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider"
+              >
                 <tr>
                   <th class="px-5 py-3.5">Customer &amp; Request ID</th>
                   <th class="px-5 py-3.5">Service Details</th>
@@ -381,136 +755,364 @@
                   <th class="px-5 py-3.5">Actions</th>
                 </tr>
               </thead>
-              <tbody id="requestTableBody" class="divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/15 bg-white dark:bg-[#27211D] font-medium text-[#342C27] dark:text-[#FDFBF7]">
+              <tbody
+                id="requestTableBody"
+                class="divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/15 bg-white dark:bg-[#27211D] font-medium text-[#342C27] dark:text-[#FDFBF7]"
+              >
                 <!-- Dynamically Populated -->
               </tbody>
             </table>
           </div>
-
         </div>
 
         <!-- 2. FLEET & USERS TAB (Algorithmic Onboarding & Unified Team Directory) -->
         <div id="tab-users" class="tab-content p-6 hidden">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Create User Form -->
-            <div class="lg:col-span-1 bg-[#FDFBF7] dark:bg-[#27211D] p-6 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
-              <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-1">Add Team Member</h3>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-4">Provision credentials for dispatchers or field technicians</p>
+            <div
+              class="lg:col-span-1 bg-[#FDFBF7] dark:bg-[#27211D] p-6 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs"
+            >
+              <h3
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-1"
+              >
+                Add Team Member
+              </h3>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-4">
+                Provision credentials for dispatchers or field technicians
+              </p>
 
               <form id="createUserForm" class="space-y-3">
                 <div>
-                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Full Name</label>
-                  <input type="text" id="newUserName" required placeholder="Enter full legal name" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <label
+                    for="newUserName"
+                    class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >Full Name</label
+                  >
+                  <input
+                    type="text"
+                    id="newUserName"
+                    name="newUserName"
+                    required
+                    placeholder="Enter full legal name"
+                    title="Full Legal Name"
+                    class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Email Address</label>
-                  <input type="email" id="newUserEmail" required placeholder="official@company.com" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <label
+                    for="newUserEmail"
+                    class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >Email Address</label
+                  >
+                  <input
+                    type="email"
+                    id="newUserEmail"
+                    name="newUserEmail"
+                    required
+                    placeholder="official@company.com"
+                    title="Email Address"
+                    class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Phone Number</label>
-                  <input type="tel" id="newUserPhone" placeholder="10-digit mobile number" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                  <label
+                    for="newUserPhone"
+                    class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >Phone Number</label
+                  >
+                  <input
+                    type="tel"
+                    id="newUserPhone"
+                    name="newUserPhone"
+                    placeholder="10-digit mobile number"
+                    title="Phone Number"
+                    class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">System Role</label>
-                  <select id="newUserRole" onchange="onUserRoleChange()" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-                    <option value="vendor" selected>Vendor / Supplier Partner</option>
+                  <label
+                    for="newUserRole"
+                    class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >System Role</label
+                  >
+                  <select
+                    id="newUserRole"
+                    name="newUserRole"
+                    title="System Role"
+                    onchange="onUserRoleChange()"
+                    class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+                  >
+                    <option value="vendor" selected>
+                      Vendor / Supplier Partner
+                    </option>
                     <option value="staff">Staff Operations</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
 
                 <!-- TECHNICIAN ALGORITHMIC ONBOARDING FIELDS -->
-                <div id="techAlgoFields" class="space-y-3 pt-2 border-t border-[#B8AA98]/20 dark:border-[#B8AA98]/10">
+                <div
+                  id="techAlgoFields"
+                  class="space-y-3 pt-2 border-t border-[#B8AA98]/20 dark:border-[#B8AA98]/10"
+                >
                   <div>
-                    <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1 flex items-center justify-between">
+                    <label
+                      for="newUserZone"
+                      class="flex items-center justify-between text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >
                       <span>MMR Operational Base Zone</span>
-                      <span class="text-[10px] text-[#A05B3A] dark:text-[#E4C99A] font-bold">35% Heuristic</span>
+                      <span
+                        class="text-[10px] text-[#A05B3A] dark:text-[#E4C99A] font-bold"
+                        >35% Heuristic</span
+                      >
                     </label>
-                    <select id="newUserZone" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-                      <option value="WESTERN_SUBURBS" selected>Western Suburbs (Bandra, Andheri, Borivali)</option>
-                      <option value="CENTRAL_MUMBAI">Central Mumbai (Dadar, Kurla, Chembur)</option>
-                      <option value="SOUTH_MUMBAI">South Mumbai (Colaba, Worli, Lower Parel)</option>
-                      <option value="THANE_ZONE">Thane &amp; Central Belt (Thane, Mulund, Kalyan)</option>
-                      <option value="NAVI_MUMBAI">Navi Mumbai (Vashi, Nerul, Belapur)</option>
+                    <select
+                      id="newUserZone"
+                      name="newUserZone"
+                      title="MMR Operational Base Zone"
+                      class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+                    >
+                      <option value="WESTERN_SUBURBS" selected>
+                        Western Suburbs (Bandra, Andheri, Borivali)
+                      </option>
+                      <option value="CENTRAL_MUMBAI">
+                        Central Mumbai (Dadar, Kurla, Chembur)
+                      </option>
+                      <option value="SOUTH_MUMBAI">
+                        South Mumbai (Colaba, Worli, Lower Parel)
+                      </option>
+                      <option value="THANE_ZONE">
+                        Thane &amp; Central Belt (Thane, Mulund, Kalyan)
+                      </option>
+                      <option value="NAVI_MUMBAI">
+                        Navi Mumbai (Vashi, Nerul, Belapur)
+                      </option>
                     </select>
                   </div>
 
                   <div>
-                    <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1 flex items-center justify-between">
+                    <label
+                      class="flex items-center justify-between text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >
                       <span>Certified Skill Taxonomy</span>
-                      <span class="text-[10px] text-[#77B89A] font-bold">20% Affinity</span>
+                      <span class="text-[10px] text-[#77B89A] font-bold"
+                        >20% Affinity</span
+                      >
                     </label>
-                    <div class="grid grid-cols-2 gap-1.5 text-[11px]" id="techSkillsContainer">
-                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
-                        <input type="checkbox" name="techSkills[]" value="PCB_ELECTRONICS" checked class="rounded text-[#A05B3A] focus:ring-0">
-                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Inverter PCB</span>
+                    <div
+                      class="grid grid-cols-2 gap-1.5 text-[11px]"
+                      id="techSkillsContainer"
+                    >
+                      <label
+                        class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition"
+                      >
+                        <input
+                          type="checkbox"
+                          id="skillPcb"
+                          name="techSkills[]"
+                          value="PCB_ELECTRONICS"
+                          title="Inverter PCB Skill"
+                          checked
+                          class="rounded text-[#A05B3A] focus:ring-0">
+                        <span
+                          class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight"
+                          >Inverter PCB</span
+                        >
                       </label>
-                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
-                        <input type="checkbox" name="techSkills[]" value="JET_WASH" checked class="rounded text-[#A05B3A] focus:ring-0">
-                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Jet Wash</span>
+                      <label
+                        class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition"
+                      >
+                        <input
+                          type="checkbox"
+                          id="skillJet"
+                          name="techSkills[]"
+                          value="JET_WASH"
+                          title="Jet Wash Skill"
+                          checked
+                          class="rounded text-[#A05B3A] focus:ring-0">
+                        <span
+                          class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight"
+                          >Jet Wash</span
+                        >
                       </label>
-                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
-                        <input type="checkbox" name="techSkills[]" value="REFRIGERATION_GAS" checked class="rounded text-[#A05B3A] focus:ring-0">
-                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Gas Brazing</span>
+                      <label
+                        class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition"
+                      >
+                        <input
+                          type="checkbox"
+                          id="skillGas"
+                          name="techSkills[]"
+                          value="REFRIGERATION_GAS"
+                          title="Gas Brazing Skill"
+                          checked
+                          class="rounded text-[#A05B3A] focus:ring-0">
+                        <span
+                          class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight"
+                          >Gas Brazing</span
+                        >
                       </label>
-                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
-                        <input type="checkbox" name="techSkills[]" value="SPLIT_INSTALLATION" class="rounded text-[#A05B3A] focus:ring-0">
-                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Installation</span>
+                      <label
+                        class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition"
+                      >
+                        <input
+                          type="checkbox"
+                          id="skillInstall"
+                          name="techSkills[]"
+                          value="SPLIT_INSTALLATION"
+                          title="Split Installation Skill"
+                          class="rounded text-[#A05B3A] focus:ring-0">
+                        <span
+                          class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight"
+                          >Installation</span
+                        >
                       </label>
-                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
-                        <input type="checkbox" name="techSkills[]" value="COMMERCIAL_VRV" class="rounded text-[#A05B3A] focus:ring-0">
-                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">VRV Chillers</span>
+                      <label
+                        class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition"
+                      >
+                        <input
+                          type="checkbox"
+                          id="skillVrv"
+                          name="techSkills[]"
+                          value="COMMERCIAL_VRV"
+                          title="VRV Chillers Skill"
+                          class="rounded text-[#A05B3A] focus:ring-0">
+                        <span
+                          class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight"
+                          >VRV Chillers</span
+                        >
                       </label>
-                      <label class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition">
-                        <input type="checkbox" name="techSkills[]" value="GENERAL_HVAC" checked class="rounded text-[#A05B3A] focus:ring-0">
-                        <span class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight">Diagnostics</span>
+                      <label
+                        class="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 bg-white/50 dark:bg-[#1A1412]/50 cursor-pointer hover:border-[#A05B3A] transition"
+                      >
+                        <input
+                          type="checkbox"
+                          id="skillDiag"
+                          name="techSkills[]"
+                          value="GENERAL_HVAC"
+                          title="Diagnostics Skill"
+                          checked
+                          class="rounded text-[#A05B3A] focus:ring-0">
+                        <span
+                          class="text-[#342C27] dark:text-[#FDFBF7] font-medium leading-tight"
+                          >Diagnostics</span
+                        >
                       </label>
                     </div>
                   </div>
 
                   <div class="grid grid-cols-2 gap-2">
                     <div>
-                      <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Max Daily Load</label>
-                      <input type="number" id="newUserCapacity" min="2" max="8" value="4" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                      <label
+                        for="newUserCapacity"
+                        class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                        >Max Daily Load</label
+                      >
+                      <input
+                        type="number"
+                        id="newUserCapacity"
+                        name="newUserCapacity"
+                        min="2"
+                        max="8"
+                        value="4"
+                        placeholder="4"
+                        title="Max Daily Load Capacity"
+                        class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                     </div>
                     <div>
-                      <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">QA Score Target</label>
-                      <input type="number" id="newUserRating" min="4.0" max="5.0" step="0.1" value="4.8" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                      <label
+                        for="newUserRating"
+                        class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                        >QA Score Target</label
+                      >
+                      <input
+                        type="number"
+                        id="newUserRating"
+                        name="newUserRating"
+                        min="4.0"
+                        max="5.0"
+                        step="0.1"
+                        value="4.8"
+                        placeholder="4.8"
+                        title="QA Score Target"
+                        class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
                     </div>
                   </div>
 
                   <!-- Live Algorithm Preview Card -->
-                  <div class="p-2.5 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1A1412]/70 border border-[#B8AA98]/30 dark:border-[#B8AA98]/15 text-[11px] space-y-1">
-                    <div class="flex items-center justify-between text-[#342C27] dark:text-[#FDFBF7] font-extrabold">
+                  <div
+                    class="p-2.5 rounded-xl bg-[#F2EDE3]/70 dark:bg-[#1A1412]/70 border border-[#B8AA98]/30 dark:border-[#B8AA98]/15 text-[11px] space-y-1"
+                  >
+                    <div
+                      class="flex items-center justify-between text-[#342C27] dark:text-[#FDFBF7] font-extrabold"
+                    >
                       <span class="flex items-center gap-1">
                         <span class="text-amber-500">⚡</span>
                         <span>MOW-GDM Heuristic Ready</span>
                       </span>
-                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] font-bold">Live Heuristic</span>
+                      <span
+                        class="text-[9px] px-1.5 py-0.5 rounded bg-[#77B89A]/20 text-[#1D3D2B] dark:text-[#77B89A] font-bold"
+                        >Live Heuristic</span
+                      >
                     </div>
-                    <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] leading-tight">
-                      Spatial proximity (35%), load balancing (30%), skill affinity (20%), and QA seniority (15%) are computed automatically.
+                    <p
+                      class="text-[10px] text-[#655448] dark:text-[#B8AA98] leading-tight"
+                    >
+                      Spatial proximity (35%), load balancing (30%), skill
+                      affinity (20%), and QA seniority (15%) are computed
+                      automatically.
                     </p>
                   </div>
                 </div>
 
                 <!-- STAFF FIELDS (Shown only when role === 'staff') -->
-                <div id="staffFields" class="hidden space-y-3 pt-2 border-t border-[#B8AA98]/20 dark:border-[#B8AA98]/10">
+                <div
+                  id="staffFields"
+                  class="hidden space-y-3 pt-2 border-t border-[#B8AA98]/20 dark:border-[#B8AA98]/10"
+                >
                   <div>
-                    <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Department / Operations Scope</label>
-                    <select id="newUserDept" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-                      <option value="Dispatch Coordination" selected>Dispatch Coordination (Service Queue &amp; Auto-Match)</option>
-                      <option value="Commercial &amp; Enquiries">Commercial &amp; Enquiries (Product Catalog &amp; Quotes)</option>
-                      <option value="Operations &amp; Quality">Operations &amp; Quality (SLA &amp; Customer Relations)</option>
+                    <label
+                      for="newUserDept"
+                      class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                      >Department / Operations Scope</label
+                    >
+                    <select
+                      id="newUserDept"
+                      name="newUserDept"
+                      title="Department / Operations Scope"
+                      class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+                    >
+                      <option value="Dispatch Coordination" selected>
+                        Dispatch Coordination (Service Queue &amp; Auto-Match)
+                      </option>
+                      <option value="Commercial &amp; Enquiries">
+                        Commercial &amp; Enquiries (Product Catalog &amp;
+                        Quotes)
+                      </option>
+                      <option value="Operations &amp; Quality">
+                        Operations &amp; Quality (SLA &amp; Customer Relations)
+                      </option>
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Temporary Password</label>
-                  <input type="password" id="newUserPass" required placeholder="Temporary secure password (min 8 chars)" autocomplete="new-password" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none font-mono text-[#342C27] dark:text-white">
+                  <label
+                    for="newUserPass"
+                    class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                    >Temporary Password</label
+                  >
+                  <input
+                    type="password"
+                    id="newUserPass"
+                    name="newUserPass"
+                    required
+                    placeholder="Temporary secure password (min 8 chars)"
+                    title="Temporary Password"
+                    autocomplete="new-password"
+                    class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none font-mono text-[#342C27] dark:text-white">
                 </div>
-                <button type="submit" id="btnCreateUser" class="w-full bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-2.5 rounded-lg text-xs shadow-sm transition mt-2 flex items-center justify-center gap-1.5">
+                <button
+                  type="submit"
+                  id="btnCreateUser"
+                  class="w-full bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-2.5 rounded-lg text-xs shadow-sm transition mt-2 flex items-center justify-center gap-1.5"
+                >
                   <span>+</span>
                   <span>Create Account</span>
                 </button>
@@ -519,40 +1121,79 @@
 
             <!-- Unified Team Directory & Active Fleet List -->
             <div class="lg:col-span-2 space-y-4">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              >
                 <div>
-                  <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-0.5">Team Directory &amp; Fleet Telemetry</h3>
-                  <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Active system credentials, geographic dispatch base, and workload telemetry</p>
+                  <h3
+                    class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-0.5"
+                  >
+                    Team Directory &amp; Fleet Telemetry
+                  </h3>
+                  <p class="text-xs text-[#655448] dark:text-[#B8AA98]">
+                    Active system credentials, geographic dispatch base, and
+                    workload telemetry
+                  </p>
                 </div>
                 <div class="flex items-center gap-2">
                   <div class="relative">
-                    <input type="text" id="teamSearchInput" oninput="filterTeamDirectory()" placeholder="Filter by name, zone, role..." class="bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl px-3 py-1.5 text-xs text-[#342C27] dark:text-[#FDFBF7] placeholder-[#655448]/60 dark:placeholder-[#B8AA98]/60 focus:ring-1 focus:ring-[#A05B3A] outline-none w-48 sm:w-56">
+                    <input
+                      type="text"
+                      id="teamSearchInput" title="Search Team Members"
+                      oninput="filterTeamDirectory()"
+                      placeholder="Filter by name, zone, role..."
+                      class="bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 rounded-xl px-3 py-1.5 text-xs text-[#342C27] dark:text-[#FDFBF7] placeholder-[#655448]/60 dark:placeholder-[#B8AA98]/60 focus:ring-1 focus:ring-[#A05B3A] outline-none w-48 sm:w-56">
                   </div>
                 </div>
               </div>
 
               <!-- Directory Filter Tabs -->
-              <div class="flex flex-wrap items-center gap-2 p-1.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/30 dark:border-[#B8AA98]/15">
-                <button type="button" id="tabFilterAll" onclick="setTeamRoleFilter('all', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-black bg-[#A05B3A] text-white shadow-xs transition">
+              <div
+                class="flex flex-wrap items-center gap-2 p-1.5 bg-[#FDFBF7] dark:bg-[#27211D] rounded-xl border border-[#B8AA98]/30 dark:border-[#B8AA98]/15"
+              >
+                <button
+                  type="button"
+                  id="tabFilterAll"
+                  onclick="setTeamRoleFilter('all', this)"
+                  class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-black bg-[#A05B3A] text-white shadow-xs transition"
+                >
                   All Directory (<span id="countTeamAll">0</span>)
                 </button>
-                <button type="button" id="tabFilterVendor" onclick="setTeamRoleFilter('vendor', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
-                  🏭 Suppliers &amp; Vendors (<span id="countTeamVendor">0</span>)
+                <button
+                  type="button"
+                  id="tabFilterVendor"
+                  onclick="setTeamRoleFilter('vendor', this)"
+                  class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition"
+                >
+                  🏭 Suppliers &amp; Vendors (<span id="countTeamVendor">0</span
+                  >)
                 </button>
-                <button type="button" id="tabFilterStaff" onclick="setTeamRoleFilter('staff', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
+                <button
+                  type="button"
+                  id="tabFilterStaff"
+                  onclick="setTeamRoleFilter('staff', this)"
+                  class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition"
+                >
                   🎧 Staff Operations (<span id="countTeamStaff">0</span>)
                 </button>
-                <button type="button" id="tabFilterAdmin" onclick="setTeamRoleFilter('admin', this)" class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition">
+                <button
+                  type="button"
+                  id="tabFilterAdmin"
+                  onclick="setTeamRoleFilter('admin', this)"
+                  class="team-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition"
+                >
                   👑 Administrators (<span id="countTeamAdmin">0</span>)
                 </button>
               </div>
 
               <!-- Dynamic Team Cards Container -->
-              <div id="techniciansGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div
+                id="techniciansGrid"
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
                 <!-- Dynamically Populated with rich user cards -->
               </div>
             </div>
-
           </div>
         </div>
 
@@ -560,16 +1201,33 @@
         <div id="tab-products" class="tab-content p-6 hidden">
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Inventory &amp; Certified Spare Parts</h3>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Live stock and catalog management</p>
+              <h3
+                class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+              >
+                Inventory &amp; Certified Spare Parts
+              </h3>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98]">
+                Live stock and catalog management
+              </p>
             </div>
-            <button type="button" onclick="document.getElementById('addProductModal').classList.remove('hidden')" class="bg-[#A05B3A] hover:bg-[#854224] text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition flex items-center gap-1">
+            <button
+              type="button"
+              onclick="
+                document
+                  .getElementById('addProductModal')
+                  .classList.remove('hidden')
+              "
+              class="bg-[#A05B3A] hover:bg-[#854224] text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition flex items-center gap-1"
+            >
               <span>+</span>
               <span>Add Product</span>
             </button>
           </div>
 
-          <div id="productGridAdmin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div
+            id="productGridAdmin"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
             <!-- Dynamically Populated -->
           </div>
         </div>
@@ -577,33 +1235,85 @@
         <!-- 4. AMC CONTRACTS TAB -->
         <div id="tab-amc" class="tab-content p-6 hidden space-y-8">
           <!-- Add Tier Form -->
-          <div class="bg-[#FDFBF7] dark:bg-[#27211D] p-6 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
-            <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-1">Create AMC Tier Package</h3>
-            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-4">Define pricing, annual free services, and covered parts</p>
+          <div
+            class="bg-[#FDFBF7] dark:bg-[#27211D] p-6 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs"
+          >
+            <h3
+              class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7] mb-1"
+            >
+              Create AMC Tier Package
+            </h3>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-4">
+              Define pricing, annual free services, and covered parts
+            </p>
 
-            <form id="addAmcPlanForm" class="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <input type="text" id="amcPlanName" required placeholder="Tier Name (e.g. Platinum 4-Season)" class="bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-              <input type="number" id="amcPlanPrice" required placeholder="Yearly Price (₹)" class="bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-              <input type="number" id="amcPlanServices" required placeholder="Free Services/Year" class="bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-              <button type="submit" class="bg-[#A05B3A] hover:bg-[#854224] text-white font-bold py-2 rounded-lg text-xs shadow-sm transition">Add Tier</button>
+            <form
+              id="addAmcPlanForm"
+              class="grid grid-cols-1 md:grid-cols-4 gap-3"
+            >
+              <input
+                type="text"
+                id="amcPlanName" title="AMC Plan Name"
+                required
+                placeholder="Tier Name (e.g. Platinum 4-Season)"
+                class="bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <input
+                type="number"
+                id="amcPlanPrice" title="AMC Annual Price"
+                required
+                placeholder="Yearly Price (₹)"
+                class="bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <input
+                type="number"
+                id="amcPlanServices" title="Number of AMC Services"
+                required
+                placeholder="Free Services/Year"
+                class="bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <button
+                type="submit"
+                class="bg-[#A05B3A] hover:bg-[#854224] text-white font-bold py-2 rounded-lg text-xs shadow-sm transition"
+              >
+                Add Tier
+              </button>
               <div class="md:col-span-4">
-                <input type="text" id="amcPlanDesc" placeholder="Features &amp; Coverage (e.g. Unlimited emergency visits, 20% off compressor parts)" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+                <input
+                  type="text"
+                  id="amcPlanDesc" title="AMC Plan Description"
+                  placeholder="Features &amp; Coverage (e.g. Unlimited emergency visits, 20% off compressor parts)"
+                  class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
               </div>
             </form>
           </div>
 
           <!-- Active Tiers Grid -->
           <div>
-            <h4 class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider mb-3">Published AMC Packages</h4>
-            <div id="amcPlansGridAdmin" class="grid grid-cols-1 sm:grid-cols-3 gap-5"></div>
+            <h4
+              class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider mb-3"
+            >
+              Published AMC Packages
+            </h4>
+            <div
+              id="amcPlansGridAdmin"
+              class="grid grid-cols-1 sm:grid-cols-3 gap-5"
+            ></div>
           </div>
 
           <!-- Customer Subscriptions Table -->
           <div>
-            <h4 class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider mb-3">Customer AMC Subscriptions &amp; Activations</h4>
-            <div class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
-              <table class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs">
-                <thead class="bg-[#EBE4D8] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider">
+            <h4
+              class="text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase tracking-wider mb-3"
+            >
+              Customer AMC Subscriptions &amp; Activations
+            </h4>
+            <div
+              class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+            >
+              <table
+                class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs"
+              >
+                <thead
+                  class="bg-[#EBE4D8] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider"
+                >
                   <tr>
                     <th class="px-5 py-3">Purchased</th>
                     <th class="px-5 py-3">Customer</th>
@@ -612,23 +1322,37 @@
                     <th class="px-5 py-3">Action</th>
                   </tr>
                 </thead>
-                <tbody id="amcTableBody" class="divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/15 bg-white dark:bg-[#27211D] font-medium text-[#342C27] dark:text-[#FDFBF7]"></tbody>
+                <tbody
+                  id="amcTableBody"
+                  class="divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/15 bg-white dark:bg-[#27211D] font-medium text-[#342C27] dark:text-[#FDFBF7]"
+                ></tbody>
               </table>
             </div>
           </div>
-
         </div>
 
         <!-- 5. ENQUIRIES TAB -->
         <div id="tab-enquiries" class="tab-content p-6 hidden">
           <div class="mb-4">
-            <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Customer Purchase &amp; Service Enquiries</h3>
-            <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Inbound sales leads and commercial queries</p>
+            <h3
+              class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+            >
+              Customer Purchase &amp; Service Enquiries
+            </h3>
+            <p class="text-xs text-[#655448] dark:text-[#B8AA98]">
+              Inbound sales leads and commercial queries
+            </p>
           </div>
 
-          <div class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20">
-            <table class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs">
-              <thead class="bg-[#EBE4D8] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider">
+          <div
+            class="overflow-x-auto rounded-xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20"
+          >
+            <table
+              class="min-w-full divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/20 text-left text-xs"
+            >
+              <thead
+                class="bg-[#EBE4D8] dark:bg-[#1A1412] text-[#655448] dark:text-[#B8AA98] font-extrabold uppercase tracking-wider"
+              >
                 <tr>
                   <th class="px-5 py-3.5">Received Date</th>
                   <th class="px-5 py-3.5">Customer &amp; Phone</th>
@@ -637,7 +1361,10 @@
                   <th class="px-5 py-3.5">Contact Action</th>
                 </tr>
               </thead>
-              <tbody id="enquiryTableBody" class="divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/15 bg-white dark:bg-[#27211D] font-medium text-[#342C27] dark:text-[#FDFBF7]"></tbody>
+              <tbody
+                id="enquiryTableBody"
+                class="divide-y divide-[#B8AA98]/30 dark:divide-[#B8AA98]/15 bg-white dark:bg-[#27211D] font-medium text-[#342C27] dark:text-[#FDFBF7]"
+              ></tbody>
             </table>
           </div>
         </div>
@@ -646,97 +1373,283 @@
         <div id="tab-analytics" class="tab-content p-6 hidden space-y-8">
           <!-- 6-Tile Executive Statistical Summary Grid (Mineral Architecture Palette) -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
-              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Total Volume</span>
-              <span id="statStatTotalVolume" class="text-xl sm:text-2xl font-black font-mono text-[#342C27] dark:text-[#FDFBF7] block mt-0.5">0</span>
-              <span class="text-[9px] text-[#2E6B52] dark:text-[#77B89A] font-bold">100% Live DB</span>
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition"
+            >
+              <span
+                class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block"
+                >Total Volume</span
+              >
+              <span
+                id="statStatTotalVolume"
+                class="text-xl sm:text-2xl font-black font-mono text-[#342C27] dark:text-[#FDFBF7] block mt-0.5"
+                >0</span
+              >
+              <span
+                class="text-[9px] text-[#2E6B52] dark:text-[#77B89A] font-bold"
+                >100% Live DB</span
+              >
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
-              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Mean MTTR</span>
-              <span id="statStatMttr" class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5">--</span>
-              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Turnaround Mins</span>
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition"
+            >
+              <span
+                class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block"
+                >Mean MTTR</span
+              >
+              <span
+                id="statStatMttr"
+                class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5"
+                >--</span
+              >
+              <span
+                class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium"
+                >Turnaround Mins</span
+              >
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
-              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">SLA Compliance</span>
-              <span id="statStatSla" class="text-xl sm:text-2xl font-black font-mono text-[#2E6B52] dark:text-[#77B89A] block mt-0.5">--%</span>
-              <span class="text-[9px] text-[#2E6B52] dark:text-[#77B89A] font-bold">&lt;45m Target</span>
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition"
+            >
+              <span
+                class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block"
+                >SLA Compliance</span
+              >
+              <span
+                id="statStatSla"
+                class="text-xl sm:text-2xl font-black font-mono text-[#2E6B52] dark:text-[#77B89A] block mt-0.5"
+                >--%</span
+              >
+              <span
+                class="text-[9px] text-[#2E6B52] dark:text-[#77B89A] font-bold"
+                >&lt;45m Target</span
+              >
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
-              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">First-Time Fix</span>
-              <span id="statStatFtfr" class="text-xl sm:text-2xl font-black font-mono text-[#0284C7] dark:text-sky-400 block mt-0.5">--%</span>
-              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Single Visit Rate</span>
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition"
+            >
+              <span
+                class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block"
+                >First-Time Fix</span
+              >
+              <span
+                id="statStatFtfr"
+                class="text-xl sm:text-2xl font-black font-mono text-[#0284C7] dark:text-sky-400 block mt-0.5"
+                >--%</span
+              >
+              <span
+                class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium"
+                >Single Visit Rate</span
+              >
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
-              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Avg Ticket Rev</span>
-              <span id="statStatArpt" class="text-xl sm:text-2xl font-black font-mono text-[#C27A23] dark:text-amber-400 block mt-0.5">₹0</span>
-              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Blended Realized</span>
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition"
+            >
+              <span
+                class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block"
+                >Avg Ticket Rev</span
+              >
+              <span
+                id="statStatArpt"
+                class="text-xl sm:text-2xl font-black font-mono text-[#C27A23] dark:text-amber-400 block mt-0.5"
+                >₹0</span
+              >
+              <span
+                class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium"
+                >Blended Realized</span
+              >
             </div>
-            <div class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition">
-              <span class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block">Fleet Capacity</span>
-              <span id="statStatFleetUtil" class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5">--</span>
-              <span class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium">Active Engineers</span>
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#1A1412] p-4 rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-2xs hover:border-[#A05B3A]/40 transition"
+            >
+              <span
+                class="text-[9px] font-black uppercase text-[#655448] dark:text-[#B8AA98] tracking-wider block"
+                >Fleet Capacity</span
+              >
+              <span
+                id="statStatFleetUtil"
+                class="text-xl sm:text-2xl font-black font-mono text-[#A05B3A] dark:text-[#E4C99A] block mt-0.5"
+                >--</span
+              >
+              <span
+                class="text-[9px] text-[#655448] dark:text-[#B8AA98] font-medium"
+                >Active Engineers</span
+              >
             </div>
           </div>
 
           <!-- Profit Margin & Unit Economics Calculator (Deep Espresso Architectural Monolith) -->
-          <div class="bg-[#27211D] dark:bg-[#1A1412] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden border border-[#3D342F] dark:border-[#B8AA98]/20">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-white/10">
+          <div
+            class="bg-[#27211D] dark:bg-[#1A1412] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden border border-[#3D342F] dark:border-[#B8AA98]/20"
+          >
+            <div
+              class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-white/10"
+            >
               <div>
-                <span class="text-[#E4C99A] text-[10px] font-black uppercase tracking-widest block">Executive Finance &amp; Operations</span>
-                <h3 class="text-xl font-black text-white mt-1">HVAC Profit Margin &amp; Revenue Simulator</h3>
-                <p class="text-xs text-[#B8AA98] mt-0.5">Real-time unit economics calculated against your live dispatch volume</p>
+                <span
+                  class="text-[#E4C99A] text-[10px] font-black uppercase tracking-widest block"
+                  >Executive Finance &amp; Operations</span
+                >
+                <h3 class="text-xl font-black text-white mt-1">
+                  HVAC Profit Margin &amp; Revenue Simulator
+                </h3>
+                <p class="text-xs text-[#B8AA98] mt-0.5">
+                  Real-time unit economics calculated against your live dispatch
+                  volume
+                </p>
               </div>
-              <div class="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl border border-white/10">
-                <span class="text-xs text-[#E4C99A] font-medium">Completed Jobs:</span>
-                <span id="calcCompletedCount" class="font-mono font-black text-[#77B89A] text-sm">--</span>
+              <div
+                class="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl border border-white/10"
+              >
+                <span class="text-xs text-[#E4C99A] font-medium"
+                  >Completed Jobs:</span
+                >
+                <span
+                  id="calcCompletedCount"
+                  class="font-mono font-black text-[#77B89A] text-sm"
+                  >--</span
+                >
               </div>
             </div>
 
             <!-- Simulator Controls -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            >
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
-                <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Avg Ticket Price (₹)</label>
-                <input type="number" id="simTicketPrice" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
-                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Labor + parts billed</span>
+                <label
+                  for="simTicketPrice"
+                  class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1"
+                  >Avg Ticket Price (₹)</label
+                >
+                <input
+                  type="number"
+                  id="simTicketPrice"
+                  name="simTicketPrice"
+                  value="0"
+                  placeholder="0"
+                  title="Avg Ticket Price"
+                  oninput="runProfitSimulator()"
+                  class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block"
+                  >Labor + parts billed</span
+                >
               </div>
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
-                <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Parts COGS / Job (₹)</label>
-                <input type="number" id="simPartsCogs" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
-                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Gas, capacitor, copper</span>
+                <label
+                  for="simPartsCogs"
+                  class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1"
+                  >Parts COGS / Job (₹)</label
+                >
+                <input
+                  type="number"
+                  id="simPartsCogs"
+                  name="simPartsCogs"
+                  value="0"
+                  placeholder="0"
+                  title="Parts COGS Per Job"
+                  oninput="runProfitSimulator()"
+                  class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block"
+                  >Gas, capacitor, copper</span
+                >
               </div>
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
-                <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Tech Incentive / Job (₹)</label>
-                <input type="number" id="simTechPayout" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
-                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Per-job completion bonus</span>
+                <label
+                  for="simTechPayout"
+                  class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1"
+                  >Tech Incentive / Job (₹)</label
+                >
+                <input
+                  type="number"
+                  id="simTechPayout"
+                  name="simTechPayout"
+                  value="0"
+                  placeholder="0"
+                  title="Tech Incentive Per Job"
+                  oninput="runProfitSimulator()"
+                  class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block"
+                  >Per-job completion bonus</span
+                >
               </div>
               <div class="bg-white/5 p-3.5 rounded-xl border border-white/10">
-                <label class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1">Monthly Overhead (₹)</label>
-                <input type="number" id="simOverhead" value="0" oninput="runProfitSimulator()" class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
-                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block">Shop rent &amp; utilities</span>
+                <label
+                  for="simOverhead"
+                  class="block text-[11px] font-bold text-[#B8AA98] uppercase mb-1"
+                  >Monthly Overhead (₹)</label
+                >
+                <input
+                  type="number"
+                  id="simOverhead"
+                  name="simOverhead"
+                  value="0"
+                  placeholder="0"
+                  title="Monthly Overhead"
+                  oninput="runProfitSimulator()"
+                  class="w-full bg-[#342C27] border border-[#655448] rounded-lg px-3 py-1.5 text-xs text-white font-mono font-bold focus:ring-1 focus:ring-[#A05B3A] outline-none">
+                <span class="text-[10px] text-[#B8AA98]/80 mt-1 block"
+                  >Shop rent &amp; utilities</span
+                >
               </div>
             </div>
 
             <!-- Dynamic Simulator Output Metric Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-                <span class="text-[10px] font-black text-[#E4C99A] uppercase tracking-widest block">Gross Revenue</span>
-                <span id="simGrossRev" class="text-2xl font-black text-white font-mono block mt-1">₹0</span>
-                <span class="text-[10px] text-[#B8AA98]/70 mt-1 block">Excl. taxes</span>
+                <span
+                  class="text-[10px] font-black text-[#E4C99A] uppercase tracking-widest block"
+                  >Gross Revenue</span
+                >
+                <span
+                  id="simGrossRev"
+                  class="text-2xl font-black text-white font-mono block mt-1"
+                  >₹0</span
+                >
+                <span class="text-[10px] text-[#B8AA98]/70 mt-1 block"
+                  >Excl. taxes</span
+                >
               </div>
               <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-                <span class="text-[10px] font-black text-amber-300 uppercase tracking-widest block">Total Direct COGS</span>
-                <span id="simTotalCogs" class="text-2xl font-black text-amber-200 font-mono block mt-1">₹0</span>
-                <span class="text-[10px] text-amber-300/70 mt-1 block">Materials + tech pay</span>
+                <span
+                  class="text-[10px] font-black text-amber-300 uppercase tracking-widest block"
+                  >Total Direct COGS</span
+                >
+                <span
+                  id="simTotalCogs"
+                  class="text-2xl font-black text-amber-200 font-mono block mt-1"
+                  >₹0</span
+                >
+                <span class="text-[10px] text-amber-300/70 mt-1 block"
+                  >Materials + tech pay</span
+                >
               </div>
               <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-                <span class="text-[10px] font-black text-[#77B89A] uppercase tracking-widest block">Net Operating Profit</span>
-                <span id="simNetProfit" class="text-2xl font-black text-[#77B89A] font-mono block mt-1">₹0</span>
-                <span class="text-[10px] text-[#77B89A]/70 mt-1 block">After monthly overhead</span>
+                <span
+                  class="text-[10px] font-black text-[#77B89A] uppercase tracking-widest block"
+                  >Net Operating Profit</span
+                >
+                <span
+                  id="simNetProfit"
+                  class="text-2xl font-black text-[#77B89A] font-mono block mt-1"
+                  >₹0</span
+                >
+                <span class="text-[10px] text-[#77B89A]/70 mt-1 block"
+                  >After monthly overhead</span
+                >
               </div>
               <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-                <span class="text-[10px] font-black text-[#E4C99A] uppercase tracking-widest block">Gross Profit Margin</span>
-                <span id="simMarginPct" class="text-2xl font-black text-white font-mono block mt-1">0%</span>
-                <span class="text-[10px] text-[#B8AA98]/70 mt-1 block">Target: &gt; 45%</span>
+                <span
+                  class="text-[10px] font-black text-[#E4C99A] uppercase tracking-widest block"
+                  >Gross Profit Margin</span
+                >
+                <span
+                  id="simMarginPct"
+                  class="text-2xl font-black text-white font-mono block mt-1"
+                  >0%</span
+                >
+                <span class="text-[10px] text-[#B8AA98]/70 mt-1 block"
+                  >Target: &gt; 45%</span
+                >
               </div>
             </div>
           </div>
@@ -745,16 +1658,28 @@
           <div>
             <div class="flex justify-between items-center mb-4">
               <div>
-                <h4 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Field Engineer Performance Leaderboard</h4>
-                <p class="text-xs text-[#655448] dark:text-[#B8AA98]">Ranked by verified on-site job completions, customer ratings &amp; SLA compliance</p>
+                <h4
+                  class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+                >
+                  Field Engineer Performance Leaderboard
+                </h4>
+                <p class="text-xs text-[#655448] dark:text-[#B8AA98]">
+                  Ranked by verified on-site job completions, customer ratings
+                  &amp; SLA compliance
+                </p>
               </div>
-              <span class="bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#655448] dark:text-[#E4C99A] text-xs font-black px-3 py-1 rounded-full border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 flex items-center gap-1.5">
+              <span
+                class="bg-[#E4C99A]/30 dark:bg-[#E4C99A]/15 text-[#655448] dark:text-[#E4C99A] text-xs font-black px-3 py-1 rounded-full border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 flex items-center gap-1.5"
+              >
                 <span>🏆</span>
                 <span>Active Leaderboard</span>
               </span>
             </div>
 
-            <div id="techLeaderboardGrid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div
+              id="techLeaderboardGrid"
+              class="grid grid-cols-1 md:grid-cols-3 gap-5"
+            >
               <!-- Dynamically populated -->
             </div>
           </div>
@@ -762,88 +1687,204 @@
           <!-- 2-Column Analytical Insights: Category Share & FMEA Risk Severity -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Service Distribution Breakdown -->
-            <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs">
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs"
+            >
               <div class="flex items-center justify-between mb-1">
-                <h4 class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Service Demand &amp; Category Share</h4>
-                <span class="text-[10px] font-black px-2 py-0.5 bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] rounded-full border border-[#A05B3A]/30">Demand</span>
+                <h4
+                  class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+                >
+                  Service Demand &amp; Category Share
+                </h4>
+                <span
+                  class="text-[10px] font-black px-2 py-0.5 bg-[#A05B3A]/15 text-[#A05B3A] dark:text-[#E4C99A] rounded-full border border-[#A05B3A]/30"
+                  >Demand</span
+                >
               </div>
-              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-5">Proportion of incoming tickets across service categories</p>
+              <p class="text-xs text-[#655448] dark:text-[#B8AA98] mb-5">
+                Proportion of incoming tickets across service categories
+              </p>
               <div id="serviceDemandBreakdown" class="space-y-4">
                 <!-- Dynamically populated progress bars -->
               </div>
             </div>
 
             <!-- FMEA Diagnostic Risk Distribution -->
-            <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs flex flex-col justify-between">
+            <div
+              class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl p-6 border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 shadow-xs flex flex-col justify-between"
+            >
               <div class="flex items-center justify-between mb-1">
                 <div>
-                  <h4 class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]">FMEA Predictive Reliability Breakdown</h4>
-                  <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">Risk Priority Number distribution across complaint taxonomy</p>
+                  <h4
+                    class="text-sm font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+                  >
+                    FMEA Predictive Reliability Breakdown
+                  </h4>
+                  <p class="text-xs text-[#655448] dark:text-[#B8AA98] mt-0.5">
+                    Risk Priority Number distribution across complaint taxonomy
+                  </p>
                 </div>
-                <span class="text-[10px] font-black px-2 py-0.5 bg-red-500/15 text-red-600 dark:text-red-400 rounded-full border border-red-500/30">FMEA AI</span>
+                <span
+                  class="text-[10px] font-black px-2 py-0.5 bg-red-500/15 text-red-600 dark:text-red-400 rounded-full border border-red-500/30"
+                  >FMEA AI</span
+                >
               </div>
               <div class="h-56 mt-2 relative flex items-center justify-center">
                 <canvas id="chartFmeaRisk"></canvas>
               </div>
             </div>
           </div>
-
         </div>
-
       </div>
-
     </main>
 
     <!-- ADD PRODUCT MODAL -->
-    <div id="addProductModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]">
+    <div
+      id="addProductModal"
+      class="flex-toggle fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]"
+      >
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Add New Inventory Item</h3>
-          <button type="button" onclick="document.getElementById('addProductModal').classList.add('hidden')" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg">✕</button>
+          <h3
+            class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+          >
+            Add New Inventory Item
+          </h3>
+          <button
+            type="button"
+            onclick="
+              document.getElementById('addProductModal').classList.add('hidden')
+            "
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg"
+          >
+            ✕
+          </button>
         </div>
         <form id="addProductForm" class="space-y-3">
           <div>
-            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Item Name</label>
-            <input type="text" id="prodName" required placeholder="e.g. LG Dual Inverter 1.5 Ton Split AC" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            <label
+              for="prodName"
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Item Name</label
+            >
+            <input
+              type="text"
+              id="prodName"
+              name="prodName"
+              required
+              placeholder="e.g. LG Dual Inverter 1.5 Ton Split AC"
+              title="Item Name"
+              class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Brand</label>
-              <input type="text" id="prodBrand" placeholder="e.g. Daikin, Voltas, LG" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="prodBrand"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Brand</label
+              >
+              <input
+                type="text"
+                id="prodBrand"
+                name="prodBrand"
+                placeholder="e.g. Daikin, Voltas, LG"
+                title="Brand"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Model Code</label>
-              <input type="text" id="prodModel" placeholder="e.g. MTKM50U" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="prodModel"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Model Code</label
+              >
+              <input
+                type="text"
+                id="prodModel"
+                name="prodModel"
+                placeholder="e.g. MTKM50U"
+                title="Model Code"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
           </div>
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Category</label>
-              <select id="prodCategory" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="prodCategory"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Category</label
+              >
+              <select
+                id="prodCategory"
+                name="prodCategory"
+                title="Product Category"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+              >
                 <option value="new_ac">Brand New AC</option>
                 <option value="used_ac">Certified 2nd Hand AC</option>
                 <option value="spare_part">Genuine Spare Part</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Price (₹)</label>
-              <input type="number" id="prodPrice" required placeholder="29990" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="prodPrice"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Price (₹)</label
+              >
+              <input
+                type="number"
+                id="prodPrice"
+                name="prodPrice"
+                required
+                placeholder="29990"
+                title="Price in Rupees"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Initial Stock</label>
-              <input type="number" id="prodQuantity" value="5" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="prodQuantity"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Initial Stock</label
+              >
+              <input
+                type="number"
+                id="prodQuantity"
+                name="prodQuantity"
+                value="5"
+                placeholder="5"
+                title="Initial Stock Quantity"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
           </div>
 
           <!-- PRODUCT PHOTO UPLOAD FROM PC / URL -->
-          <div class="border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 rounded-xl p-3 bg-[#F2EDE3]/40 dark:bg-[#1A1412]/40">
+          <div
+            class="border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 rounded-xl p-3 bg-[#F2EDE3]/40 dark:bg-[#1A1412]/40"
+          >
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase">Product Image</label>
-              <div class="flex items-center bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/30 rounded-lg p-0.5 text-[10px] font-bold">
-                <button type="button" id="tabAddImgFile" onclick="switchProductImgMode('add', 'file')" class="px-2.5 py-1 rounded-md bg-[#A05B3A] text-white transition flex items-center gap-1 shadow-xs">
+              <label
+                for="prodImageFile"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase"
+                >Product Image</label
+              >
+              <div
+                class="flex items-center bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/30 rounded-lg p-0.5 text-[10px] font-bold"
+              >
+                <button
+                  type="button"
+                  id="tabAddImgFile"
+                  onclick="switchProductImgMode('add', 'file')"
+                  class="px-2.5 py-1 rounded-md bg-[#A05B3A] text-white transition flex items-center gap-1 shadow-xs"
+                >
                   <span>📁</span> From PC
                 </button>
-                <button type="button" id="tabAddImgUrl" onclick="switchProductImgMode('add', 'url')" class="px-2.5 py-1 rounded-md text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition flex items-center gap-1">
+                <button
+                  type="button"
+                  id="tabAddImgUrl"
+                  onclick="switchProductImgMode('add', 'url')"
+                  class="px-2.5 py-1 rounded-md text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition flex items-center gap-1"
+                >
                   <span>🔗</span> Image URL
                 </button>
               </div>
@@ -851,104 +1892,279 @@
 
             <!-- Upload from PC Dropzone -->
             <div id="addImgFileMode">
-              <input type="file" id="prodImageFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="hidden">
-              <div id="addImgDropzone" onclick="document.getElementById('prodImageFile').click()" class="border-2 border-dashed border-[#B8AA98]/60 dark:border-[#B8AA98]/40 hover:border-[#A05B3A] dark:hover:border-[#E4C99A] rounded-xl p-3.5 text-center cursor-pointer transition bg-white/70 dark:bg-[#1A1412]/60 hover:bg-[#A05B3A]/5 group">
+              <input
+                type="file"
+                id="prodImageFile"
+                name="prodImageFile"
+                title="Upload Product Image File from Computer"
+                accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                class="hidden">
+              <div
+                id="addImgDropzone"
+                onclick="document.getElementById('prodImageFile').click()"
+                class="border-2 border-dashed border-[#B8AA98]/60 dark:border-[#B8AA98]/40 hover:border-[#A05B3A] dark:hover:border-[#E4C99A] rounded-xl p-3.5 text-center cursor-pointer transition bg-white/70 dark:bg-[#1A1412]/60 hover:bg-[#A05B3A]/5 group"
+              >
                 <div class="flex flex-col items-center justify-center gap-1">
-                  <div class="w-8 h-8 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center text-sm group-hover:scale-110 transition">
+                  <div
+                    class="w-8 h-8 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center text-sm group-hover:scale-110 transition"
+                  >
                     📸
                   </div>
-                  <p class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7]">Click to browse image from your PC</p>
-                  <p class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Select any photo from your computer (JPG, PNG, WEBP)</p>
+                  <p
+                    class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7]"
+                  >
+                    Click to browse image from your PC
+                  </p>
+                  <p class="text-[10px] text-[#655448] dark:text-[#B8AA98]">
+                    Select any photo from your computer (JPG, PNG, WEBP)
+                  </p>
                 </div>
               </div>
             </div>
 
             <!-- Image URL Input Mode -->
             <div id="addImgUrlMode" class="hidden">
-              <input type="text" id="prodImage" placeholder="https://images.unsplash.com/... or /images/products/my-ac.jpg" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-              <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1">Paste web image link or local path (e.g. <code class="text-[#A05B3A]">/images/products/my-ac.jpg</code>)</p>
+              <input
+                type="text"
+                id="prodImage"
+                name="prodImage"
+                placeholder="https://images.unsplash.com/... or /images/products/my-ac.jpg"
+                title="Product Image URL or Path"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1">
+                Paste web image link or local path (e.g.
+                <code class="text-[#A05B3A]">/images/products/my-ac.jpg</code>)
+              </p>
             </div>
 
             <!-- Image Preview Box -->
-            <div id="addImgPreviewBox" class="hidden mt-2 relative rounded-lg overflow-hidden border border-[#B8AA98]/40 bg-white/80 dark:bg-[#1A1412]/80 flex items-center justify-between p-2">
+            <div
+              id="addImgPreviewBox"
+              class="flex-toggle hidden mt-2 relative rounded-lg overflow-hidden border border-[#B8AA98]/40 bg-white/80 dark:bg-[#1A1412]/80 items-center justify-between p-2"
+            >
               <div class="flex items-center gap-2.5 overflow-hidden">
-                <img id="addImgPreviewThumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Preview" class="w-12 h-12 object-cover rounded-md border border-[#B8AA98]/30 flex-shrink-0 bg-[#F2EDE3]">
+                <img
+                  id="addImgPreviewThumb"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+                  alt="Preview"
+                  class="w-12 h-12 object-cover rounded-md border border-[#B8AA98]/30 shrink-0 bg-[#F2EDE3]">
                 <div class="text-left overflow-hidden">
-                  <div id="addImgPreviewName" class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7] truncate">selected-image.jpg</div>
-                  <div id="addImgPreviewMeta" class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Ready to save</div>
+                  <div
+                    id="addImgPreviewName"
+                    class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7] truncate"
+                  >
+                    selected-image.jpg
+                  </div>
+                  <div
+                    id="addImgPreviewMeta"
+                    class="text-[10px] text-[#655448] dark:text-[#B8AA98]"
+                  >
+                    Ready to save
+                  </div>
                 </div>
               </div>
-              <button type="button" onclick="clearProductImage('add')" class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-500/10 px-2 py-1 rounded transition flex-shrink-0">
+              <button
+                type="button"
+                onclick="clearProductImage('add')"
+                class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-500/10 px-2 py-1 rounded transition shrink-0"
+              >
                 ✕ Remove
               </button>
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Description / Key Specs</label>
-            <textarea id="prodDesc" rows="2" placeholder="Copper coil, 5 Star, 10-year compressor warranty..." class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"></textarea>
+            <label
+              for="prodDesc"
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Description / Key Specs</label
+            >
+            <textarea
+              id="prodDesc"
+              name="prodDesc"
+              rows="2"
+              placeholder="Copper coil, 5 Star, 10-year compressor warranty..."
+              title="Product Description and Specifications"
+              class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+            ></textarea>
           </div>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="document.getElementById('addProductModal').classList.add('hidden')" class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition">Cancel</button>
-            <button type="submit" class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition">Save Product</button>
+            <button
+              type="button"
+              onclick="
+                document
+                  .getElementById('addProductModal')
+                  .classList.add('hidden')
+              "
+              class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition"
+            >
+              Save Product
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- EDIT PRODUCT MODAL -->
-    <div id="editProductModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]">
+    <div
+      id="editProductModal"
+      class="flex-toggle fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]"
+      >
         <div class="flex justify-between items-center mb-4">
           <div>
-            <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Edit Product / Spare Part</h3>
-            <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-0.5">Modify pricing, specifications, stock, and photos</p>
+            <h3
+              class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+            >
+              Edit Product / Spare Part
+            </h3>
+            <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-0.5">
+              Modify pricing, specifications, stock, and photos
+            </p>
           </div>
-          <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg">✕</button>
+          <button
+            type="button"
+            onclick="
+              document
+                .getElementById('editProductModal')
+                .classList.add('hidden')
+            "
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg"
+          >
+            ✕
+          </button>
         </div>
         <form id="editProductForm" class="space-y-3">
-          <input type="hidden" id="editProdId">
+          <input type="hidden" id="editProdId" name="editProdId">
           <div>
-            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Item Name</label>
-            <input type="text" id="editProdName" required placeholder="e.g. Daikin Inverter Split AC" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            <label
+              for="editProdName"
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Item Name</label
+            >
+            <input
+              type="text"
+              id="editProdName"
+              name="editProdName"
+              required
+              placeholder="e.g. Daikin Inverter Split AC"
+              title="Item Name"
+              class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Brand</label>
-              <input type="text" id="editProdBrand" placeholder="e.g. Daikin, Voltas, LG" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editProdBrand"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Brand</label
+              >
+              <input
+                type="text"
+                id="editProdBrand"
+                name="editProdBrand"
+                placeholder="e.g. Daikin, Voltas, LG"
+                title="Brand"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Model Code</label>
-              <input type="text" id="editProdModel" placeholder="e.g. MTKM50U" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editProdModel"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Model Code</label
+              >
+              <input
+                type="text"
+                id="editProdModel"
+                name="editProdModel"
+                placeholder="e.g. MTKM50U"
+                title="Model Code"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
           </div>
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Category</label>
-              <select id="editProdCategory" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editProdCategory"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Category</label
+              >
+              <select
+                id="editProdCategory"
+                name="editProdCategory"
+                title="Product Category"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+              >
                 <option value="new_ac">Brand New AC</option>
                 <option value="used_ac">Certified 2nd Hand AC</option>
                 <option value="spare_part">Genuine Spare Part</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Price (₹)</label>
-              <input type="number" id="editProdPrice" required placeholder="29990" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editProdPrice"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Price (₹)</label
+              >
+              <input
+                type="number"
+                id="editProdPrice"
+                name="editProdPrice"
+                required
+                placeholder="29990"
+                title="Price in Rupees"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Stock Quantity</label>
-              <input type="number" id="editProdQuantity" required class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editProdQuantity"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Stock Quantity</label
+              >
+              <input
+                type="number"
+                id="editProdQuantity"
+                name="editProdQuantity"
+                required
+                placeholder="0"
+                title="Stock Quantity"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
           </div>
 
           <!-- PRODUCT PHOTO UPLOAD FROM PC / URL (EDIT) -->
-          <div class="border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 rounded-xl p-3 bg-[#F2EDE3]/40 dark:bg-[#1A1412]/40">
+          <div
+            class="border border-[#B8AA98]/30 dark:border-[#B8AA98]/20 rounded-xl p-3 bg-[#F2EDE3]/40 dark:bg-[#1A1412]/40"
+          >
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase">Product Image</label>
-              <div class="flex items-center bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/30 rounded-lg p-0.5 text-[10px] font-bold">
-                <button type="button" id="tabEditImgFile" onclick="switchProductImgMode('edit', 'file')" class="px-2.5 py-1 rounded-md bg-[#A05B3A] text-white transition flex items-center gap-1 shadow-xs">
+              <label
+                for="editProdImageFile"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase"
+                >Product Image</label
+              >
+              <div
+                class="flex items-center bg-white dark:bg-[#27211D] border border-[#B8AA98]/40 dark:border-[#B8AA98]/30 rounded-lg p-0.5 text-[10px] font-bold"
+              >
+                <button
+                  type="button"
+                  id="tabEditImgFile"
+                  onclick="switchProductImgMode('edit', 'file')"
+                  class="px-2.5 py-1 rounded-md bg-[#A05B3A] text-white transition flex items-center gap-1 shadow-xs"
+                >
                   <span>📁</span> From PC
                 </button>
-                <button type="button" id="tabEditImgUrl" onclick="switchProductImgMode('edit', 'url')" class="px-2.5 py-1 rounded-md text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition flex items-center gap-1">
+                <button
+                  type="button"
+                  id="tabEditImgUrl"
+                  onclick="switchProductImgMode('edit', 'url')"
+                  class="px-2.5 py-1 rounded-md text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white transition flex items-center gap-1"
+                >
                   <span>🔗</span> Image URL
                 </button>
               </div>
@@ -956,88 +2172,241 @@
 
             <!-- Upload from PC Dropzone (Edit) -->
             <div id="editImgFileMode">
-              <input type="file" id="editProdImageFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="hidden">
-              <div id="editImgDropzone" onclick="document.getElementById('editProdImageFile').click()" class="border-2 border-dashed border-[#B8AA98]/60 dark:border-[#B8AA98]/40 hover:border-[#A05B3A] dark:hover:border-[#E4C99A] rounded-xl p-3.5 text-center cursor-pointer transition bg-white/70 dark:bg-[#1A1412]/60 hover:bg-[#A05B3A]/5 group">
+              <input
+                type="file"
+                id="editProdImageFile"
+                name="editProdImageFile"
+                title="Choose New Product Image File from Computer"
+                accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                class="hidden">
+              <div
+                id="editImgDropzone"
+                onclick="document.getElementById('editProdImageFile').click()"
+                class="border-2 border-dashed border-[#B8AA98]/60 dark:border-[#B8AA98]/40 hover:border-[#A05B3A] dark:hover:border-[#E4C99A] rounded-xl p-3.5 text-center cursor-pointer transition bg-white/70 dark:bg-[#1A1412]/60 hover:bg-[#A05B3A]/5 group"
+              >
                 <div class="flex flex-col items-center justify-center gap-1">
-                  <div class="w-8 h-8 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center text-sm group-hover:scale-110 transition">
+                  <div
+                    class="w-8 h-8 rounded-full bg-[#A05B3A]/10 text-[#A05B3A] dark:text-[#E4C99A] flex items-center justify-center text-sm group-hover:scale-110 transition"
+                  >
                     📸
                   </div>
-                  <p class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7]">Click to choose a new image from your PC</p>
-                  <p class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Select any photo from your computer (JPG, PNG, WEBP)</p>
+                  <p
+                    class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7]"
+                  >
+                    Click to choose a new image from your PC
+                  </p>
+                  <p class="text-[10px] text-[#655448] dark:text-[#B8AA98]">
+                    Select any photo from your computer (JPG, PNG, WEBP)
+                  </p>
                 </div>
               </div>
             </div>
 
             <!-- Image URL Input Mode (Edit) -->
             <div id="editImgUrlMode" class="hidden">
-              <input type="text" id="editProdImage" placeholder="https://images.unsplash.com/... or /images/products/my-ac.jpg" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
-              <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1">Paste web image link or local path (e.g. <code class="text-[#A05B3A]">/images/products/my-ac.jpg</code>)</p>
+              <input
+                type="text"
+                id="editProdImage"
+                name="editProdImage"
+                placeholder="https://images.unsplash.com/... or /images/products/my-ac.jpg"
+                title="Edit Product Image URL"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <p class="text-[10px] text-[#655448] dark:text-[#B8AA98] mt-1">
+                Paste web image link or local path (e.g.
+                <code class="text-[#A05B3A]">/images/products/my-ac.jpg</code>)
+              </p>
             </div>
 
             <!-- Image Preview Box (Edit) -->
-            <div id="editImgPreviewBox" class="hidden mt-2 relative rounded-lg overflow-hidden border border-[#B8AA98]/40 bg-white/80 dark:bg-[#1A1412]/80 flex items-center justify-between p-2">
+            <div
+              id="editImgPreviewBox"
+              class="flex-toggle hidden mt-2 relative rounded-lg overflow-hidden border border-[#B8AA98]/40 bg-white/80 dark:bg-[#1A1412]/80 items-center justify-between p-2"
+            >
               <div class="flex items-center gap-2.5 overflow-hidden">
-                <img id="editImgPreviewThumb" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Preview" class="w-12 h-12 object-cover rounded-md border border-[#B8AA98]/30 flex-shrink-0 bg-[#F2EDE3]">
+                <img
+                  id="editImgPreviewThumb"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+                  alt="Preview"
+                  class="w-12 h-12 object-cover rounded-md border border-[#B8AA98]/30 shrink-0 bg-[#F2EDE3]">
                 <div class="text-left overflow-hidden">
-                  <div id="editImgPreviewName" class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7] truncate">current-image.jpg</div>
-                  <div id="editImgPreviewMeta" class="text-[10px] text-[#655448] dark:text-[#B8AA98]">Current photo</div>
+                  <div
+                    id="editImgPreviewName"
+                    class="text-xs font-bold text-[#342C27] dark:text-[#FDFBF7] truncate"
+                  >
+                    current-image.jpg
+                  </div>
+                  <div
+                    id="editImgPreviewMeta"
+                    class="text-[10px] text-[#655448] dark:text-[#B8AA98]"
+                  >
+                    Current photo
+                  </div>
                 </div>
               </div>
-              <button type="button" onclick="clearProductImage('edit')" class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-500/10 px-2 py-1 rounded transition flex-shrink-0">
+              <button
+                type="button"
+                onclick="clearProductImage('edit')"
+                class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-500/10 px-2 py-1 rounded transition shrink-0"
+              >
                 ✕ Remove
               </button>
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Description / Key Specs</label>
-            <textarea id="editProdDesc" rows="2" placeholder="Specifications..." class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"></textarea>
+            <label
+              for="editProdDesc"
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Description / Key Specs</label
+            >
+            <textarea
+              id="editProdDesc"
+              name="editProdDesc"
+              rows="2"
+              placeholder="Specifications..."
+              title="Product Description and Specifications"
+              class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+            ></textarea>
           </div>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="document.getElementById('editProductModal').classList.add('hidden')" class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition">Cancel</button>
-            <button type="submit" class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition">Update Product</button>
+            <button
+              type="button"
+              onclick="
+                document
+                  .getElementById('editProductModal')
+                  .classList.add('hidden')
+              "
+              class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition"
+            >
+              Update Product
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- EDIT AMC CONTRACT MODAL -->
-    <div id="editAmcModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]">
+    <div
+      id="editAmcModal"
+      class="flex-toggle fixed inset-0 bg-[#1A1412]/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 text-[#342C27] dark:text-[#FDFBF7]"
+      >
         <div class="flex justify-between items-center mb-4">
           <div>
-            <h3 class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]">Edit AMC Contract Tier</h3>
-            <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-0.5">Update contract pricing, free maintenance visits, and deliverables</p>
+            <h3
+              class="text-base font-extrabold text-[#342C27] dark:text-[#FDFBF7]"
+            >
+              Edit AMC Contract Tier
+            </h3>
+            <p class="text-[11px] text-[#655448] dark:text-[#B8AA98] mt-0.5">
+              Update contract pricing, free maintenance visits, and deliverables
+            </p>
           </div>
-          <button type="button" onclick="document.getElementById('editAmcModal').classList.add('hidden')" class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg">✕</button>
+          <button
+            type="button"
+            onclick="
+              document.getElementById('editAmcModal').classList.add('hidden')
+            "
+            class="text-[#655448] dark:text-[#B8AA98] hover:text-[#342C27] dark:hover:text-white font-bold text-lg"
+          >
+            ✕
+          </button>
         </div>
         <form id="editAmcForm" class="space-y-3">
-          <input type="hidden" id="editAmcId">
+          <input type="hidden" id="editAmcId" name="editAmcId">
           <div>
-            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Tier Name</label>
-            <input type="text" id="editAmcName" required placeholder="e.g. Eco Saver Plan" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+            <label
+              for="editAmcName"
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Tier Name</label
+            >
+            <input
+              type="text"
+              id="editAmcName"
+              name="editAmcName"
+              required
+              placeholder="e.g. Eco Saver Plan"
+              title="AMC Tier Name"
+              class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Yearly Price (₹)</label>
-              <input type="number" id="editAmcPrice" required min="0" placeholder="1200" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editAmcPrice"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Yearly Price (₹)</label
+              >
+              <input
+                type="number"
+                id="editAmcPrice"
+                name="editAmcPrice"
+                required
+                min="0"
+                placeholder="1200"
+                title="Yearly Price"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
             <div>
-              <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Free Services/Year</label>
-              <input type="number" id="editAmcServices" required min="1" max="12" placeholder="2" class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
+              <label
+                for="editAmcServices"
+                class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+                >Free Services/Year</label
+              >
+              <input
+                type="number"
+                id="editAmcServices"
+                name="editAmcServices"
+                required
+                min="1"
+                max="12"
+                placeholder="2"
+                title="Free Services Per Year"
+                class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white">
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1">Deliverables &amp; Coverage</label>
-            <textarea id="editAmcDesc" rows="3" required placeholder="Service deliverables, chemical wet washes, breakdown coverage..." class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"></textarea>
+            <label
+              for="editAmcDesc"
+              class="block text-xs font-bold text-[#655448] dark:text-[#B8AA98] uppercase mb-1"
+              >Deliverables &amp; Coverage</label
+            >
+            <textarea
+              id="editAmcDesc"
+              name="editAmcDesc"
+              rows="3"
+              required
+              placeholder="Service deliverables, chemical wet washes, breakdown coverage..."
+              title="Deliverables and Coverage"
+              class="w-full bg-white dark:bg-[#1A1412] border border-[#B8AA98]/50 dark:border-[#B8AA98]/30 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#A05B3A] outline-none text-[#342C27] dark:text-white"
+            ></textarea>
           </div>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="document.getElementById('editAmcModal').classList.add('hidden')" class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition">Cancel</button>
-            <button type="submit" class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition">Update Tier</button>
+            <button
+              type="button"
+              onclick="
+                document.getElementById('editAmcModal').classList.add('hidden')
+              "
+              class="px-4 py-2 rounded-lg text-xs font-bold text-[#655448] dark:text-[#B8AA98] hover:bg-[#EBE4D8] dark:hover:bg-[#1A1412] transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-[#A05B3A] hover:bg-[#854224] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition"
+            >
+              Update Tier
+            </button>
           </div>
         </form>
       </div>
     </div>
-
 
     <!-- SCRIPTS -->
     <script src="js/config.js"></script>
@@ -1048,95 +2417,207 @@
     <script src="js/animations.js"></script>
     <script src="js/charts.js"></script>
     <!-- PRINT-READY EXECUTIVE BRIEFING REPORT MODAL (Examiner Viva Audit) -->
-    <div id="executiveReportModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-white text-slate-800 rounded-3xl max-w-4xl w-full p-6 sm:p-10 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]">
+    <div
+      id="executiveReportModal"
+      class="flex-toggle fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white text-slate-800 rounded-3xl max-w-4xl w-full p-6 sm:p-10 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]"
+      >
         <!-- Top Bar -->
-        <div class="flex justify-between items-start pb-4 border-b border-slate-200 mb-6">
+        <div
+          class="flex justify-between items-start pb-4 border-b border-slate-200 mb-6"
+        >
           <div>
             <div class="flex items-center gap-2">
-              <span class="bg-[#A05B3A] text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-sm">ES</span>
+              <span
+                class="bg-[#A05B3A] text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black shadow-sm"
+                >ES</span
+              >
               <div>
-                <h2 class="text-xl font-black tracking-tight text-slate-900">Extreme Sales &amp; Services</h2>
-                <p class="text-xs text-slate-500 font-medium">Enterprise Climate Control • Executive Telemetry &amp; Field Operations Audit</p>
+                <h2 class="text-xl font-black tracking-tight text-slate-900">
+                  Extreme Sales &amp; Services
+                </h2>
+                <p class="text-xs text-slate-500 font-medium">
+                  Enterprise Climate Control • Executive Telemetry &amp; Field
+                  Operations Audit
+                </p>
               </div>
             </div>
           </div>
           <div class="text-right">
-            <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-black tracking-wide border border-amber-200">
+            <span
+              class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-black tracking-wide border border-amber-200"
+            >
               AUDIT BRIEFING
             </span>
-            <p id="execReportDate" class="text-xs font-mono font-bold text-slate-600 mt-1">2026-11-01</p>
-            <p class="text-[10px] text-slate-400 font-mono">CONFIDENTIAL • EXAMINER VIVA</p>
+            <p
+              id="execReportDate"
+              class="text-xs font-mono font-bold text-slate-600 mt-1"
+            >
+              2026-11-01
+            </p>
+            <p class="text-[10px] text-slate-400 font-mono">
+              CONFIDENTIAL • EXAMINER VIVA
+            </p>
           </div>
         </div>
 
         <!-- 6 KPI Snapshot -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center"
+        >
           <div>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Total Volume</span>
-            <span id="repTotalVolume" class="text-lg font-black font-mono text-slate-800 block mt-0.5">0</span>
+            <span
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block"
+              >Total Volume</span
+            >
+            <span
+              id="repTotalVolume"
+              class="text-lg font-black font-mono text-slate-800 block mt-0.5"
+              >0</span
+            >
           </div>
           <div>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Mean MTTR</span>
-            <span id="repMttr" class="text-lg font-black font-mono text-[#A05B3A] block mt-0.5">--</span>
+            <span
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block"
+              >Mean MTTR</span
+            >
+            <span
+              id="repMttr"
+              class="text-lg font-black font-mono text-[#A05B3A] block mt-0.5"
+              >--</span
+            >
           </div>
           <div>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">SLA Compliance</span>
-            <span id="repSla" class="text-lg font-black font-mono text-emerald-600 block mt-0.5">--%</span>
+            <span
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block"
+              >SLA Compliance</span
+            >
+            <span
+              id="repSla"
+              class="text-lg font-black font-mono text-emerald-600 block mt-0.5"
+              >--%</span
+            >
           </div>
           <div>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">First-Time Fix</span>
-            <span id="repFtfr" class="text-lg font-black font-mono text-blue-600 block mt-0.5">--%</span>
+            <span
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block"
+              >First-Time Fix</span
+            >
+            <span
+              id="repFtfr"
+              class="text-lg font-black font-mono text-blue-600 block mt-0.5"
+              >--%</span
+            >
           </div>
           <div>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Est. Revenue</span>
-            <span id="repRev" class="text-lg font-black font-mono text-slate-800 block mt-0.5">₹0</span>
+            <span
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block"
+              >Est. Revenue</span
+            >
+            <span
+              id="repRev"
+              class="text-lg font-black font-mono text-slate-800 block mt-0.5"
+              >₹0</span
+            >
           </div>
           <div>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Active Fleet</span>
-            <span id="repFleet" class="text-lg font-black font-mono text-purple-600 block mt-0.5">0 Techs</span>
+            <span
+              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block"
+              >Active Fleet</span
+            >
+            <span
+              id="repFleet"
+              class="text-lg font-black font-mono text-purple-600 block mt-0.5"
+              >0 Techs</span
+            >
           </div>
         </div>
 
         <!-- Financial Statement Snapshot -->
         <div class="mb-6 p-5 bg-slate-50 rounded-2xl border border-slate-200">
-          <h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">Unit Economics &amp; P&amp;L Summary</h4>
+          <h4
+            class="text-xs font-black uppercase tracking-wider text-slate-500 mb-3"
+          >
+            Unit Economics &amp; P&amp;L Summary
+          </h4>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
             <div>
-              <span class="text-[10px] text-slate-400 uppercase block font-bold">Gross Revenue</span>
-              <span id="repGrossRev" class="text-sm font-black font-mono text-slate-800 block mt-0.5">₹0</span>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold"
+                >Gross Revenue</span
+              >
+              <span
+                id="repGrossRev"
+                class="text-sm font-black font-mono text-slate-800 block mt-0.5"
+                >₹0</span
+              >
             </div>
             <div>
-              <span class="text-[10px] text-slate-400 uppercase block font-bold">Direct COGS</span>
-              <span id="repCogs" class="text-sm font-black font-mono text-amber-600 block mt-0.5">₹0</span>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold"
+                >Direct COGS</span
+              >
+              <span
+                id="repCogs"
+                class="text-sm font-black font-mono text-amber-600 block mt-0.5"
+                >₹0</span
+              >
             </div>
             <div>
-              <span class="text-[10px] text-slate-400 uppercase block font-bold">Net Operating Profit</span>
-              <span id="repNet" class="text-sm font-black font-mono text-emerald-600 block mt-0.5">₹0</span>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold"
+                >Net Operating Profit</span
+              >
+              <span
+                id="repNet"
+                class="text-sm font-black font-mono text-emerald-600 block mt-0.5"
+                >₹0</span
+              >
             </div>
             <div>
-              <span class="text-[10px] text-slate-400 uppercase block font-bold">Gross Margin %</span>
-              <span id="repMargin" class="text-sm font-black font-mono text-slate-800 block mt-0.5">0%</span>
+              <span class="text-[10px] text-slate-400 uppercase block font-bold"
+                >Gross Margin %</span
+              >
+              <span
+                id="repMargin"
+                class="text-sm font-black font-mono text-slate-800 block mt-0.5"
+                >0%</span
+              >
             </div>
           </div>
         </div>
 
         <!-- Field Operations Leaderboard -->
         <div class="mb-6">
-          <h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Field Technician Performance Ranking</h4>
+          <h4
+            class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2"
+          >
+            Field Technician Performance Ranking
+          </h4>
           <div id="repTechRanking" class="text-xs text-slate-600">
             <!-- Dynamically populated -->
           </div>
         </div>
 
         <!-- Modal Actions (Hidden in Print) -->
-        <div class="pt-4 border-t border-slate-200 flex justify-between items-center print:hidden">
-          <span class="text-xs text-slate-400">Press Esc to close • Print optimized layout</span>
+        <div
+          class="pt-4 border-t border-slate-200 flex justify-between items-center print:hidden"
+        >
+          <span class="text-xs text-slate-400"
+            >Press Esc to close • Print optimized layout</span
+          >
           <div class="flex gap-2.5">
-            <button type="button" onclick="closeExecutiveReport()" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition cursor-pointer">
+            <button
+              type="button"
+              onclick="closeExecutiveReport()"
+              class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition cursor-pointer"
+            >
               Close
             </button>
-            <button type="button" onclick="window.print()" class="px-5 py-2 bg-[#A05B3A] hover:bg-[#854224] text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+            <button
+              type="button"
+              onclick="window.print()"
+              class="px-5 py-2 bg-[#A05B3A] hover:bg-[#854224] text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer"
+            >
               <span>🖨️</span>
               <span>Print Audit Briefing</span>
             </button>
@@ -1145,47 +2626,103 @@
       </div>
     </div>
     <!-- PRINTABLE WORK ORDER & GST TAX INVOICE MODAL -->
-    <div id="adminInvoiceModal" class="fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-white text-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]">
+    <div
+      id="adminInvoiceModal"
+      class="flex-toggle fixed inset-0 bg-[#1A1412]/80 backdrop-blur-md z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white text-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative print:m-0 print:p-0 print:border-none print:shadow-none overflow-y-auto max-h-[90vh]"
+      >
         <!-- Invoice Header -->
-        <div class="flex justify-between items-start pb-4 border-b border-slate-200 mb-6">
+        <div
+          class="flex justify-between items-start pb-4 border-b border-slate-200 mb-6"
+        >
           <div>
             <div class="flex items-center gap-2">
-              <span class="bg-[#A05B3A] text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black">ES</span>
-              <span class="text-xl font-black tracking-tight text-slate-900">Extreme Sales &amp; Services</span>
+              <span
+                class="bg-[#A05B3A] text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black"
+                >ES</span
+              >
+              <span class="text-xl font-black tracking-tight text-slate-900"
+                >Extreme Sales &amp; Services</span
+              >
             </div>
-            <p class="text-xs text-slate-500 mt-1">Authorized HVAC Sales, Repair &amp; Maintenance Operations</p>
-            <p class="text-[11px] text-slate-500 font-mono mt-0.5">GSTIN: 27AABCE1234F1Z5 • Mumbai, Maharashtra</p>
+            <p class="text-xs text-slate-500 mt-1">
+              Authorized HVAC Sales, Repair &amp; Maintenance Operations
+            </p>
+            <p class="text-[11px] text-slate-500 font-mono mt-0.5">
+              GSTIN: 27AABCE1234F1Z5 • Mumbai, Maharashtra
+            </p>
           </div>
           <div class="text-right">
-            <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-black tracking-wide border border-emerald-200">
+            <span
+              class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-black tracking-wide border border-emerald-200"
+            >
               TAX INVOICE / WORK ORDER
             </span>
-            <p id="invNumber" class="text-xs font-mono font-bold text-slate-700 mt-1.5">INV-2026-0001</p>
-            <p id="invDate" class="text-[11px] text-slate-500 font-mono mt-0.5"></p>
+            <p
+              id="invNumber"
+              class="text-xs font-mono font-bold text-slate-700 mt-1.5"
+            >
+              INV-2026-0001
+            </p>
+            <p
+              id="invDate"
+              class="text-[11px] text-slate-500 font-mono mt-0.5"
+            ></p>
           </div>
         </div>
 
         <!-- Bill To & Service Info -->
-        <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+        <div
+          class="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs"
+        >
           <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Customer / Bill To</span>
-            <span id="invCustName" class="font-extrabold text-slate-900 text-sm block mt-0.5">Customer Name</span>
-            <span id="invCustPhone" class="text-slate-600 block mt-0.5">📞 +91 98200 00000</span>
-            <span id="invCustAddr" class="text-slate-600 block mt-0.5">Address on file</span>
+            <span
+              class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider"
+              >Customer / Bill To</span
+            >
+            <span
+              id="invCustName"
+              class="font-extrabold text-slate-900 text-sm block mt-0.5"
+              >Customer Name</span
+            >
+            <span id="invCustPhone" class="text-slate-600 block mt-0.5"
+              >📞 +91 98200 00000</span
+            >
+            <span id="invCustAddr" class="text-slate-600 block mt-0.5"
+              >Address on file</span
+            >
           </div>
           <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Service &amp; Engineer</span>
-            <span id="invServiceType" class="font-extrabold text-[#A05B3A] text-sm block mt-0.5">AC Repair</span>
-            <span id="invTechName" class="text-slate-700 font-medium block mt-0.5">Field Engineer: Assigned</span>
-            <span id="invTicketId" class="text-slate-500 font-mono text-[11px] block mt-0.5">Ticket: AC-XXXX</span>
+            <span
+              class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider"
+              >Service &amp; Engineer</span
+            >
+            <span
+              id="invServiceType"
+              class="font-extrabold text-[#A05B3A] text-sm block mt-0.5"
+              >AC Repair</span
+            >
+            <span
+              id="invTechName"
+              class="text-slate-700 font-medium block mt-0.5"
+              >Field Engineer: Assigned</span
+            >
+            <span
+              id="invTicketId"
+              class="text-slate-500 font-mono text-[11px] block mt-0.5"
+              >Ticket: AC-XXXX</span
+            >
           </div>
         </div>
 
         <!-- Line Items Table -->
         <div class="mb-6 rounded-xl border border-slate-200 overflow-hidden">
           <table class="w-full text-xs text-left">
-            <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px] tracking-wider">
+            <thead
+              class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px] tracking-wider"
+            >
               <tr>
                 <th class="p-3">Description</th>
                 <th class="p-3 text-center">HSN/SAC</th>
@@ -1205,7 +2742,9 @@
           <div class="w-64 space-y-1.5 text-xs text-slate-600">
             <div class="flex justify-between">
               <span>Subtotal:</span>
-              <span id="invSubtotal" class="font-mono font-bold text-slate-900">₹0.00</span>
+              <span id="invSubtotal" class="font-mono font-bold text-slate-900"
+                >₹0.00</span
+              >
             </div>
             <div class="flex justify-between text-[11px]">
               <span>CGST (9%):</span>
@@ -1215,21 +2754,37 @@
               <span>SGST (9%):</span>
               <span id="invSgst" class="font-mono">₹0.00</span>
             </div>
-            <div class="flex justify-between pt-2 border-t border-slate-300 text-sm font-black text-slate-900">
+            <div
+              class="flex justify-between pt-2 border-t border-slate-300 text-sm font-black text-slate-900"
+            >
               <span>Grand Total:</span>
-              <span id="invTotal" class="font-mono text-emerald-700">₹0.00</span>
+              <span id="invTotal" class="font-mono text-emerald-700"
+                >₹0.00</span
+              >
             </div>
           </div>
         </div>
 
         <!-- Footer / Print Action -->
-        <div class="pt-4 border-t border-slate-200 flex justify-between items-center print:hidden">
-          <span class="text-[11px] text-slate-500">System generated official document</span>
+        <div
+          class="pt-4 border-t border-slate-200 flex justify-between items-center print:hidden"
+        >
+          <span class="text-[11px] text-slate-500"
+            >System generated official document</span
+          >
           <div class="flex gap-2">
-            <button type="button" onclick="closeAdminInvoiceModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+            <button
+              type="button"
+              onclick="closeAdminInvoiceModal()"
+              class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+            >
               Close
             </button>
-            <button type="button" onclick="window.print()" class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+            <button
+              type="button"
+              onclick="window.print()"
+              class="bg-[#A05B3A] hover:bg-[#944E2E] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer"
+            >
               <span>🖨️</span>
               <span>Print Work Order / PDF</span>
             </button>

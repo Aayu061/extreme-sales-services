@@ -19,14 +19,15 @@ class PysIntegrationService {
     /**
      * Resilient HTTP/HTTPS request utility supporting both native fetch and Node https module.
      */
-    async _request(endpoint, method = 'GET', data = null) {
+    async _request(endpoint, method = 'GET', data = null, customHeaders = {}) {
         const fullUrl = `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
         const headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-API-Key': this.apiKey,
             'Authorization': `Bearer ${this.apiKey}`,
-            'User-Agent': 'ExtremeSalesServices-Integration/2.0'
+            'User-Agent': 'ExtremeSalesServices-Integration/2.0',
+            ...customHeaders
         };
 
         if (typeof globalThis.fetch === 'function') {
@@ -316,6 +317,76 @@ class PysIntegrationService {
             success: false,
             error: res.error || 'Unable to fetch PYS plans'
         };
+    }
+
+    /**
+     * Track live ticket from PYS Supabase database
+     */
+    async trackTicket(identifier, phone) {
+        try {
+            const query = [];
+            if (identifier) query.push(`ticket=${encodeURIComponent(identifier)}`);
+            if (phone) query.push(`phone=${encodeURIComponent(phone)}`);
+            const res = await this._request(`/portal/track?${query.join('&')}`, 'GET');
+            if (res.ok && res.data && res.data.success) {
+                return {
+                    success: true,
+                    data: res.data.data
+                };
+            }
+            return {
+                success: false,
+                error: (res.data && res.data.message) || res.error || 'Ticket not found in PYS'
+            };
+        } catch (err) {
+            return {
+                success: false,
+                error: err.message
+            };
+        }
+    }
+
+    /**
+     * Forward server crash or client exception to PYS Telemetry & Bug Inspector
+     */
+    async forwardCrashReport(crashPayload) {
+        try {
+            const res = await this._request('/admin/telemetry/crash-report', 'POST', {
+                service: 'ESS',
+                ...crashPayload
+            });
+            return res.ok;
+        } catch (err) {
+            console.error('[PYS Integration] Failed to forward crash report:', err.message);
+            return false;
+        }
+    }
+
+    /**
+     * Forward customer inquiry or contact message to PYS CRM contact_enquiries
+     */
+    async forwardEnquiry(enquiryData) {
+        try {
+            const res = await this._request('/contact-enquiries', 'POST', {
+                sourceChannel: 'EXTREME_SALES_SERVICES',
+                ...enquiryData
+            });
+            if (res.ok && res.data && res.data.success) {
+                return {
+                    success: true,
+                    data: res.data.data
+                };
+            }
+            return {
+                success: false,
+                error: (res.data && res.data.message) || res.error
+            };
+        } catch (err) {
+            return {
+                success: false,
+                error: err.message
+            };
+        }
     }
 
     /**
