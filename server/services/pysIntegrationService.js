@@ -288,16 +288,31 @@ class PysIntegrationService {
                 ticket.preferredDate || ticket.preferred_date ? `Preferred Slot: ${ticket.preferredDate || ticket.preferred_date}` : null
             ].filter(Boolean);
 
+            const rawPriority = String(ticket.priority || '').toLowerCase();
+            let mappedPriority = 'HIGH';
+            if (rawPriority === 'urgent' || rawPriority === 'critical') mappedPriority = 'URGENT';
+            else if (rawPriority === 'emergency') mappedPriority = 'EMERGENCY';
+            else if (rawPriority === 'low') mappedPriority = 'LOW';
+            else if (rawPriority === 'medium') mappedPriority = 'MEDIUM';
+
+            let validDate = null;
+            const rawDate = ticket.preferredDate || ticket.preferred_date;
+            if (rawDate && /^\d{4}-\d{2}-\d{2}/.test(String(rawDate))) {
+                validDate = String(rawDate).match(/^\d{4}-\d{2}-\d{2}/)[0];
+            } else {
+                validDate = new Date().toISOString().split('T')[0];
+            }
+
             const payload = {
                 customerId,
                 siteId,
                 assetId: null,
                 requestType: 'BREAKDOWN',
-                priority: ticket.priority === 'urgent' ? 'CRITICAL' : 'HIGH',
+                priority: mappedPriority,
                 description: descriptionParts.join(' | '),
                 sourceChannel: 'EXTREME_SALES_SERVICES',
                 externalReferenceId: ticket.request_id || ticket.id || ticket.ticketId || `SR-${Date.now()}`,
-                preferredDate: ticket.preferredDate || ticket.preferred_date || new Date().toISOString().split('T')[0]
+                preferredDate: validDate
             };
 
             const ticketRes = await this._request('/service-requests', 'POST', payload);
@@ -398,10 +413,10 @@ class PysIntegrationService {
                 sourceChannel: 'EXTREME_SALES_SERVICES',
                 ...enquiryData
             });
-            if (res.ok && res.data && res.data.success) {
+            if (res.ok && res.data && (res.data.success || res.data.data)) {
                 return {
                     success: true,
-                    data: res.data.data
+                    data: res.data.data || res.data
                 };
             }
             return {
