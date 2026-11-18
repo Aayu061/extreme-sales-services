@@ -4,42 +4,30 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-describe('SUITE: ESS Customer Self-Service Portal & Equipment Verification', () => {
-    it('customer-portal.html must exist with complete UI sections', () => {
-        const portalPath = path.join(__dirname, '../public/customer-portal.html');
-        assert.ok(fs.existsSync(portalPath), 'customer-portal.html should exist');
-
-        const html = fs.readFileSync(portalPath, 'utf8');
-        assert.ok(html.includes('id="authSection"'), 'Includes customer auth login section');
-        assert.ok(html.includes('id="dashboardSection"'), 'Includes customer dashboard section');
-        assert.ok(html.includes('id="tabPanelEquipment"'), 'Includes AC Equipment register tab');
-        assert.ok(html.includes('id="tabPanelHistory"'), 'Includes Service History & Reports tab');
-        assert.ok(html.includes('id="tabPanelAmc"'), 'Includes AMC Maintenance tab');
-        assert.ok(html.includes('id="tabPanelInvoices"'), 'Includes Invoices & Billing tab');
-        assert.ok(html.includes('id="bookServiceModal"'), 'Includes 1-click Book Service modal');
-        assert.ok(html.includes('id="registerAssetModal"'), 'Includes Register New AC modal');
-        assert.ok(html.includes('id="jobCardModal"'), 'Includes Digital Job Card inspection modal');
+// The phone-only customer portal is paused until verified (OTP) login ships.
+describe('SUITE: ESS Customer Portal (paused until secure login)', () => {
+    it('customer-portal.html shows the upgrade notice and loads no portal script', () => {
+        const html = fs.readFileSync(path.join(__dirname, '../public/customer-portal.html'), 'utf8');
+        assert.ok(html.includes('Customer portal is being upgraded'), 'shows the upgrade notice');
+        assert.ok(html.includes('status.html'), 'links to request tracking');
+        assert.equal(html.includes('customer-portal.js'), false, 'no portal script is loaded');
+        assert.equal(html.includes('quickDemoBtn'), false, 'no demo customer button');
     });
 
-    it('customer-portal.js must exist with API handlers', () => {
-        const jsPath = path.join(__dirname, '../public/js/customer-portal.js');
-        assert.ok(fs.existsSync(jsPath), 'customer-portal.js should exist');
-
-        const js = fs.readFileSync(jsPath, 'utf8');
-        assert.ok(js.includes('/overview'), 'Includes overview fetch');
-        assert.ok(js.includes('/auth/login'), 'Includes login handler');
-        assert.ok(js.includes('/book-service'), 'Includes service request booking handler');
-        assert.ok(js.includes('/register-asset'), 'Includes equipment register handler');
+    it('customer-portal.js (phone-only login client) has been removed', () => {
+        assert.equal(fs.existsSync(path.join(__dirname, '../public/js/customer-portal.js')), false);
     });
 
-    it('Navbars in index.html and status.html contain Customer Portal links', () => {
-        const indexPath = path.join(__dirname, '../public/index.html');
-        const statusPath = path.join(__dirname, '../public/status.html');
+    it('server.js has no catch-all proxy to PYS and answers /api/portal with 503', () => {
+        const src = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+        assert.equal(src.includes('pysEndpoint = `/portal${req.url}`'), false, 'catch-all proxy removed');
+        assert.ok(src.includes("app.all(['/api/portal', '/api/portal/*splat']"), 'paused handler present');
+    });
 
-        const indexHtml = fs.readFileSync(indexPath, 'utf8');
-        const statusHtml = fs.readFileSync(statusPath, 'utf8');
-
-        assert.ok(indexHtml.includes('customer-portal.html'), 'index.html links to customer-portal.html');
-        assert.ok(statusHtml.includes('customer-portal.html'), 'status.html links to customer-portal.html');
+    it('Navbars in index.html and status.html still link to the Customer Portal page', () => {
+        const indexHtml = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
+        const statusHtml = fs.readFileSync(path.join(__dirname, '../public/status.html'), 'utf8');
+        assert.ok(indexHtml.includes('customer-portal.html'));
+        assert.ok(statusHtml.includes('customer-portal.html'));
     });
 });

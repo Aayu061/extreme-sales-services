@@ -162,12 +162,13 @@ function renderProducts(productsArray) {
         const card = document.createElement('div');
         card.className = 'neuro-card bg-[#FDFBF7] dark:bg-[#27211D] rounded-2xl border border-[#B8AA98]/40 dark:border-[#B8AA98]/20 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative flex flex-col group';
 
-        const catMap = { 
-            new_ac: ['Brand New','bg-[#77B89A] text-[#1D3D2B]'], 
-            used_ac: ['Refurbished','bg-[#E4C99A] text-[#342C27]'], 
-            spare_part: ['Genuine Spare','bg-[#A05B3A] text-white'] 
+        const catMap = {
+            new_ac: ['Brand New','bg-[#77B89A] text-[#1D3D2B]'],
+            residential: ['Residential','bg-[#77B89A] text-[#1D3D2B]'],
+            commercial: ['Commercial','bg-[#E4C99A] text-[#342C27]'],
+            industrial: ['Industrial','bg-[#B8AA98] text-[#342C27]']
         };
-        const [badgeLabel, badgeClass] = catMap[p.category] || ['Item','bg-[#B8AA98] text-[#342C27]'];
+        const [badgeLabel, badgeClass] = catMap[p.category] || ['Brand New','bg-[#77B89A] text-[#1D3D2B]'];
 
         const stockVal  = p.stock ?? p.quantity ?? 10;
         const isLowStock = Number(stockVal) <= 3;
@@ -342,7 +343,7 @@ function clearFilters() {
     });
 
     // Restore the all button styles as active
-    const allBtn = [...categoryBtns].find(btn => btn.textContent.includes('All Items'));
+    const allBtn = [...categoryBtns].find(btn => btn.textContent.includes('All ACs'));
     if (allBtn) {
         allBtn.classList.add('active', 'bg-[#A05B3A]', 'text-white', 'shadow-xs');
         allBtn.classList.remove('bg-[#E6DFD3]/60', 'text-[#655448]');
@@ -499,8 +500,8 @@ window.viewProductDetails = function(encodedData) {
         const emi12 = Math.round((Number(p.price) || 0) / 12).toLocaleString('en-IN');
         const stockVal = p.stock ?? p.quantity ?? 10;
         const inStock = Number(stockVal) > 0;
-        const categoryMap = { new_ac: 'Brand New Inverter AC', used_ac: 'Certified Refurbished Unit', spare_part: 'Genuine OEM Spare Part' };
-        const catTitle = categoryMap[p.category] || 'HVAC Component';
+        const categoryMap = { new_ac: 'Brand New Air Conditioner', residential: 'Residential Air Conditioner', commercial: 'Commercial Air Conditioner', industrial: 'Industrial HVAC System' };
+        const catTitle = categoryMap[p.category] || 'Brand New Air Conditioner';
 
         const existingModal = document.getElementById('productDetailModal');
         if (existingModal) existingModal.remove();

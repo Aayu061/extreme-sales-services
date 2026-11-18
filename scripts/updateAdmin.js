@@ -1,7 +1,7 @@
 // scripts/updateAdmin.js
 // Seeds or updates the primary Admin credentials in Firestore.
 // Email: ESS0121@gmail.com (normalized to ess0121@gmail.com)
-// Password: ***REMOVED***
+// Password: read from ADMIN_SEED_PASSWORD (never stored in the repository)
 
 require('dotenv').config();
 const admin = require('firebase-admin');
@@ -34,7 +34,11 @@ const db = admin.firestore();
 
 async function setAdminCredentials() {
     const TARGET_EMAIL = process.env.ADMIN_SEED_EMAIL || "ess0121@gmail.com";
-    const TARGET_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "***REMOVED***";
+    const TARGET_PASSWORD = process.env.ADMIN_SEED_PASSWORD;
+    if (!TARGET_PASSWORD) {
+        console.error("Set ADMIN_SEED_PASSWORD in your local .env first.");
+        process.exit(1);
+    }
 
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(TARGET_PASSWORD, salt);
@@ -84,7 +88,7 @@ async function setAdminCredentials() {
 
     console.log("────────────────────────────────────────────────");
     console.log(`📧 Admin Email    : ESS0121@gmail.com`);
-    console.log(`🔑 Admin Password : ***REMOVED***`);
+    console.log(`🔑 Admin Password : (from ADMIN_SEED_PASSWORD, not shown)`);
     console.log(`🛡️  Role           : admin`);
     console.log("────────────────────────────────────────────────");
     process.exit(0);

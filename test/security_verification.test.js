@@ -6,6 +6,11 @@
 
 // Establish test environment secret before requiring server modules
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_secret_for_security_suite_12345678';
+// Local in-memory admin used only by this suite (no built-in passwords in server.js).
+process.env.ADMIN_SEED_EMAIL = 'ess0121@gmail.com';
+process.env.ADMIN_SEED_PASSWORD = 'test-only-admin-password-42';
+// Never call the real PYS API from tests.
+process.env.PYS_API_KEY = ''; // empty (not deleted) so dotenv can't load a real key
 
 const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert/strict');
@@ -486,7 +491,7 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: 'ess0121@gmail.com',
-                password: '***REMOVED***',
+                password: process.env.ADMIN_SEED_PASSWORD,
                 role: 'staff' // Mismatch!
             })
         });
@@ -502,7 +507,7 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: 'ess0121@gmail.com',
-                password: '***REMOVED***',
+                password: process.env.ADMIN_SEED_PASSWORD,
                 role: 'admin' // Match!
             })
         });

@@ -9,6 +9,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20
+      - key: NODE_ENV
+        value: production
       - key: JWT_SECRET
         generateValue: true
       - key: BUSINESS_NAME
@@ -17,7 +19,15 @@ services:
         value: "extremess0121@gmail.com"
       - key: APP_URL
         value: "https://extreme-sales-services.vercel.app"
-      - key: SENDGRID_API_KEY
+      - key: PYS_API_BASE_URL
+        value: "https://place-your-service-api.onrender.com/api/v1"
+      - key: PYS_API_KEY
+        sync: false
+      - key: PYS_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT
         sync: false

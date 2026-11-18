@@ -134,32 +134,19 @@ if (!isFirebaseMode) {
 // ═══════════════════════════════════════════════════════════
 // 2. IN-MEMORY DATA STORE (FOR LOCAL DEVELOPMENT & TESTING)
 // ═══════════════════════════════════════════════════════════
-let systemUsers = [
-    {
+// Local/test mode only (production uses Firestore users with bcrypt hashes).
+// No built-in passwords: an admin is created only when both env vars are set.
+let systemUsers = [];
+if (process.env.ADMIN_SEED_EMAIL && process.env.ADMIN_SEED_PASSWORD) {
+    systemUsers.push({
         id: "usr-super-admin",
         name: "Super Admin",
-        email: process.env.ADMIN_SEED_EMAIL || "ess0121@gmail.com",
+        email: process.env.ADMIN_SEED_EMAIL,
         role: "admin",
-        phone: "7977805245",
-        password: process.env.ADMIN_SEED_PASSWORD || "***REMOVED***"
-    },
-    {
-        id: "usr-staff",
-        name: "Staff Operations",
-        email: "staff@extremess.com",
-        role: "staff",
-        phone: "9820011000",
-        password: "***REMOVED***"
-    },
-    {
-        id: "usr-vendor-1",
-        name: "Authorized Equipment & Spares Vendor",
-        email: "vendor@extremess.com",
-        role: "vendor",
-        phone: "9820011223",
-        password: "***REMOVED***"
-    }
-];
+        phone: process.env.ADMIN_SEED_PHONE || "",
+        password: process.env.ADMIN_SEED_PASSWORD
+    });
+}
 
 let serviceRequests = [];
 const initialProducts = require('./server/data/products.js');
@@ -352,28 +339,15 @@ let customerFeedback = [];
 const requireAuth = (roles = []) => authMiddleware(roles);
 
 // ═══════════════════════════════════════════════════════════
-// 2B. CUSTOMER PORTAL PROXY (CONSOLIDATED PYS SUPABASE ENGINE)
+// 2B. CUSTOMER PORTAL — paused until verified (OTP) login ships.
+// The old catch-all proxy forwarded any path to PYS with the integration key
+// attached; it has been removed. Only an explicit "paused" response remains.
 // ═══════════════════════════════════════════════════════════
-app.use('/api/portal', async (req, res) => {
-    try {
-        const authHeader = req.headers.authorization;
-        const pysEndpoint = `/portal${req.url}`;
-        const customHeaders = {};
-        if (authHeader) {
-            customHeaders['Authorization'] = authHeader;
-        }
-        const result = await pysIntegrationService._request(
-            pysEndpoint,
-            req.method,
-            req.method !== 'GET' ? req.body : null,
-            customHeaders
-        );
-        return res.status(result.status || (result.ok ? 200 : 500)).json(
-            result.data || { success: false, error: result.error }
-        );
-    } catch (err) {
-        return res.status(500).json({ success: false, error: err.message });
-    }
+app.all(['/api/portal', '/api/portal/*splat'], (req, res) => {
+    res.status(503).json({
+        success: false,
+        message: 'The customer portal is being upgraded with secure login. Please call +91 7977805245 or use Track Request.'
+    });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1767,6 +1741,18 @@ app.get('/api/pricing/amc-roi', (req, res) => {
 // ═══════════════════════════════════════════════════════════
 // 6B. PRODUCTS & IN-MEMORY CACHE ACCELERATION (<1ms)
 // ═══════════════════════════════════════════════════════════
+// The storefront sells new air conditioners only — no refurbished/used units or spare parts.
+const BLOCKED_PRODUCT_CATEGORIES = ['refurbished', 'used_ac', 'used', 'spare_parts', 'spare_part'];
+function isBlockedProductCategory(category) {
+    return typeof category === 'string' && BLOCKED_PRODUCT_CATEGORIES.includes(category.trim().toLowerCase());
+}
+function isNewAcProduct(p) {
+    if (!p) return false;
+    if (isBlockedProductCategory(p.category)) return false;
+    const cond = String(p.condition || '').toLowerCase();
+    return !(cond.includes('refurb') || cond.includes('used') || cond.includes('pre-owned'));
+}
+
 app.get('/api/products', async (req, res) => {
     // 1. Check in-memory fast cache (O(1) Map lookup)
     const cachedProducts = fastCache.get('all_products');
@@ -1778,8 +1764,9 @@ app.get('/api/products', async (req, res) => {
     try {
         const pysRes = await pysIntegrationService._request('/ess-products', 'GET');
         if (pysRes.ok && pysRes.data && Array.isArray(pysRes.data.products) && pysRes.data.products.length > 0) {
-            fastCache.set('all_products', pysRes.data.products, 60000, ['products']);
-            return res.json({ success: true, products: pysRes.data.products, cached: false, source: 'PYS_SUPABASE' });
+            const newOnly = pysRes.data.products.filter(isNewAcProduct);
+            fastCache.set('all_products', newOnly, 60000, ['products']);
+            return res.json({ success: true, products: newOnly, cached: false, source: 'PYS_SUPABASE' });
         }
     } catch (_) {
         // Fallback gracefully to local mock if PYS API is starting up
@@ -1788,7 +1775,7 @@ app.get('/api/products', async (req, res) => {
     if (isFirebaseMode) {
         try {
             const snap = await db.collection('products').orderBy('created_at', 'desc').get();
-            const prods = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const prods = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(isNewAcProduct);
             fastCache.set('all_products', prods, 60000, ['products']);
             return res.json({ success: true, products: prods, cached: false });
         } catch(e) {
@@ -1796,8 +1783,9 @@ app.get('/api/products', async (req, res) => {
         }
     }
 
-    fastCache.set('all_products', products, 60000, ['products']);
-    res.json({ success: true, products, cached: false });
+    const newOnlyLocal = products.filter(isNewAcProduct);
+    fastCache.set('all_products', newOnlyLocal, 60000, ['products']);
+    res.json({ success: true, products: newOnlyLocal, cached: false });
 });
 
 app.post('/api/admin/products', authMiddleware(['admin']), async (req, res) => {
@@ -1807,6 +1795,9 @@ app.post('/api/admin/products', authMiddleware(['admin']), async (req, res) => {
     }
 
     const { name, category, condition, brand, description, image_url } = req.body;
+    if (!isNewAcProduct({ category, condition })) {
+        return res.status(400).json({ success: false, message: 'Only new air conditioners can be listed.' });
+    }
     const newProduct = {
         id: "prod-" + Date.now(),
         name: name.trim(),
@@ -1873,6 +1864,9 @@ app.put('/api/admin/products/:id', authMiddleware(['admin']), async (req, res) =
             return res.status(400).json({ success: false, message: "Stock must be a non-negative integer." });
         }
         updateData.stock = Math.floor(numStock);
+    }
+    if ((category !== undefined || condition !== undefined) && !isNewAcProduct({ category, condition })) {
+        return res.status(400).json({ success: false, message: 'Only new air conditioners can be listed.' });
     }
     if (category !== undefined) updateData.category = category;
     if (condition !== undefined) updateData.condition = condition;

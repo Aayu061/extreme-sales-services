@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 const https = require('https');
+const SITE_URL = (process.env.APP_URL || 'https://extreme-sales-services.vercel.app').replace(/\/$/, '');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const RESEND_FROM = process.env.RESEND_FROM_EMAIL || 'Extreme Sales & Services <onboarding@resend.dev>';
@@ -103,7 +104,7 @@ const emailService = {
           <p style="margin: 20px 0; color: #555;"><strong>Next Steps:</strong></p>
           <ul style="margin: 10px 0; color: #555; line-height: 1.6;">
             <li>Our dispatch coordinator is assigning the nearest certified technician.</li>
-            <li>You can track live milestone status here: <a href="http://localhost:5002/status.html?id=${requestId}" style="color: #2563eb; font-weight: bold;">Live Service Tracker</a></li>
+            <li>You can track live milestone status here: <a href="${SITE_URL}/status.html?id=${encodeURIComponent(requestId)}" style="color: #2563eb; font-weight: bold;">Live Service Tracker</a></li>
             <li>All services comply with Statutory SAC 998719 guidelines.</li>
           </ul>
 
@@ -166,7 +167,7 @@ const emailService = {
           </div>
 
           <p style="margin: 20px 0;">
-            <a href="http://localhost:5002/status.html?id=${requestId}" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            <a href="${SITE_URL}/status.html?id=${encodeURIComponent(requestId)}" style="display: inline-block; background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
               Track Your Service Live →
             </a>
           </p>

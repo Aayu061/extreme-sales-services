@@ -11,15 +11,23 @@ const { URL } = require('url');
 class PysIntegrationService {
     constructor() {
         this.baseUrl = (process.env.PYS_API_BASE_URL || 'https://place-your-service-api.onrender.com/api/v1').replace(/\/$/, '');
-        this.apiKey = process.env.PYS_API_KEY || '***REMOVED***';
-        this.webhookSecret = process.env.PYS_WEBHOOK_SECRET || '***REMOVED***';
+        this.apiKey = process.env.PYS_API_KEY || '';
+        this.webhookSecret = process.env.PYS_WEBHOOK_SECRET || '';
         this.timeoutMs = 30000;
     }
 
     /**
      * Resilient HTTP/HTTPS request utility supporting both native fetch and Node https module.
      */
+    isConfigured() {
+        return Boolean(this.apiKey);
+    }
+
     async _request(endpoint, method = 'GET', data = null, customHeaders = {}) {
+        // Fail closed: without a configured key, never call PYS (no built-in fallback keys).
+        if (!this.isConfigured()) {
+            return { ok: false, status: 503, data: null, error: 'PYS integration is not configured (PYS_API_KEY missing).' };
+        }
         const fullUrl = `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
         const headers = {
             'Content-Type': 'application/json',
@@ -436,8 +444,10 @@ class PysIntegrationService {
      */
     verifyWebhookAuth(req) {
         const incomingSecret = req.headers['x-webhook-secret'];
-        if (!incomingSecret) return false;
-        return incomingSecret === this.webhookSecret;
+        if (!incomingSecret || !this.webhookSecret) return false;
+        const a = Buffer.from(String(incomingSecret), 'utf8');
+        const b = Buffer.from(this.webhookSecret, 'utf8');
+        return a.length === b.length && require('crypto').timingSafeEqual(a, b);
     }
 }
 

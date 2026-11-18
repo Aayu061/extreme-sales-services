@@ -8,17 +8,9 @@
 
 ---
 
-## 1. Verified Live Portals & Access Credentials
+## 1. Live Portals
 
-| Role | Portal Link | Email | Password | Access Level |
-|---|---|---|---|---|
-| **Super Admin** | [/login.html](https://extreme-sales-services.vercel.app/login.html) | `extremess0121@gmail.com` | `***REMOVED***` | Full Access & Firestore Master |
-| **Admin (Demo)**| [/login.html](https://extreme-sales-services.vercel.app/login.html) | `admin@extremess.com` | `***REMOVED***` | Quick-Fill Demo Admin |
-| **Staff Dispatcher** | [/staff.html](https://extreme-sales-services.vercel.app/staff.html) | `staff@extremess.com` | `***REMOVED***` | Ticket Triage & Fleet Assignment |
-| **Field Technician** | [/technician.html](https://extreme-sales-services.vercel.app/technician.html) | `tech@extremess.com` | `***REMOVED***` | Mobile Job Board & Diagnostic Notes |
-| **Customer Tracking**| [/status.html](https://extreme-sales-services.vercel.app/status.html) | Request: `AC-1001` | Phone: `9876543210` | Real-time GPS Stepper & Review Widget |
-
----
+Logins are managed in Firestore (bcrypt-hashed). Credentials are never written in this repository.
 
 ## 2. Infrastructure Architecture & Critical Gotchas
 

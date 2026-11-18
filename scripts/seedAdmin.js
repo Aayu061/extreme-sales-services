@@ -26,8 +26,12 @@ admin.initializeApp({
 const db = admin.firestore();
 
 async function seedAdmin() {
-    const email = "extremess0121@gmail.com";
-    const password = "***REMOVED***";
+    const email = process.env.ADMIN_SEED_EMAIL;
+    const password = process.env.ADMIN_SEED_PASSWORD;
+    if (!email || !password) {
+        console.error("Set ADMIN_SEED_EMAIL and ADMIN_SEED_PASSWORD in your local .env first.");
+        process.exit(1);
+    }
     
     // Check if exists
     const snap = await db.collection('users').where('email', '==', email).get();

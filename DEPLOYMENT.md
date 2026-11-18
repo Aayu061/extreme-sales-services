@@ -12,8 +12,8 @@
 ### Render (`extreme-sales-services`)
 - `APP_URL`: `https://extreme-sales-services.vercel.app`
 - `PYS_API_BASE_URL`: `https://place-your-service-api.onrender.com/api/v1`
-- `PYS_API_KEY`: `***REMOVED***`
-- `PYS_WEBHOOK_SECRET`: `***REMOVED***`
+- `PYS_API_KEY`: Configured in Render (secret — never write the value here)
+- `PYS_WEBHOOK_SECRET`: Configured in Render (secret — never write the value here)
 - `PYS_FRONTEND_URL`: `https://place-your-service.vercel.app`
 - `RESEND_API_KEY`: Configured
 - `RESEND_FROM_EMAIL`: `Extreme Sales & Services <onboarding@resend.dev>`

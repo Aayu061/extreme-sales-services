@@ -171,11 +171,10 @@ describe('SUITE 3: Vendor Partner Portal Live Inquiries & Quoting', () => {
         assert.ok(serverSource.includes("app.post('/api/vendor/submit-bid'"), 'POST /api/vendor/submit-bid endpoint must be defined');
     });
 
-    test('public/js/vendor.js renders live inquiries and stores active inquiry for bid modal', () => {
-        const vendorJs = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'vendor.js'), 'utf-8');
-        assert.ok(vendorJs.includes('async function renderInquiries()'), 'renderInquiries must be async');
-        assert.ok(vendorJs.includes("fetch('/api/vendor/inquiries'"), 'renderInquiries must fetch /api/vendor/inquiries');
-        assert.ok(vendorJs.includes('activeInquiryForBid'), 'vendor.js must manage activeInquiryForBid');
+    test('vendor.html shows the seller-portal coming-soon notice (old demo portal with spare parts removed)', () => {
+        const vendorHtml = fs.readFileSync(path.join(__dirname, '..', 'public', 'vendor.html'), 'utf-8');
+        assert.ok(vendorHtml.includes('Seller portal is coming soon'));
+        assert.equal(fs.existsSync(path.join(__dirname, '..', 'public', 'js', 'vendor.js')), false, 'vendor.js removed');
     });
 });
 

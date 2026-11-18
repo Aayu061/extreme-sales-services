@@ -127,9 +127,26 @@ const ALLOWED_SERVICE_TYPES = [
     'jet_wash'
 ];
 
+// Exact option values sent by the booking form (public/service.html).
+const BOOKING_FORM_SERVICE_CODES = [
+    'pm_dry',
+    'pm_jet',
+    'pm_chemical',
+    'diagnostic_cooling',
+    'water_leakage',
+    'gas_refill',
+    'pcb_repair',
+    'compressor_issue',
+    'fan_noise',
+    'electrical_trip',
+    'installation',
+    'uninstallation'
+];
+
 function validateServiceType(serviceType) {
     if (!serviceType || typeof serviceType !== 'string') return false;
     const clean = serviceType.replace(' [✅ AMC Covered]', '').trim().toLowerCase();
+    if (BOOKING_FORM_SERVICE_CODES.includes(clean)) return true;
     return ALLOWED_SERVICE_TYPES.some(allowed => clean.includes(allowed.toLowerCase()));
 }
 
@@ -212,6 +229,7 @@ module.exports = {
     validateName,
     validateAddress,
     validateServiceType,
+    BOOKING_FORM_SERVICE_CODES,
     isValidStatusTransition,
     generateSecureRequestId,
     validateProductInput,

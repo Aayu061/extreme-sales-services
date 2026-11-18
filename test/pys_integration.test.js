@@ -9,6 +9,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
+process.env.PYS_WEBHOOK_SECRET = 'test-webhook-secret';
 const pysIntegrationService = require('../server/services/pysIntegrationService');
 
 describe('SUITE 1: PYS Indian GSTIN Compliance & Algorithmic Decoder', () => {
@@ -50,7 +51,7 @@ describe('SUITE 2: PYS Webhook Authentication & Security Guard', () => {
     test('Verifies valid webhook secret provided by PYS production deployment', () => {
         const mockValidReq = {
             headers: {
-                'x-webhook-secret': '***REMOVED***',
+                'x-webhook-secret': 'test-webhook-secret',
                 'user-agent': 'PlaceYourService-Webhook/1.0'
             }
         };
@@ -60,7 +61,7 @@ describe('SUITE 2: PYS Webhook Authentication & Security Guard', () => {
     test('Rejects forged or missing webhook secret', () => {
         const mockForgedReq = {
             headers: {
-                'x-webhook-secret': 'invalid_secret_attack'
+                'x-webhook-secret': 'forged-secret-value'
             }
         };
         const mockEmptyReq = { headers: {} };
@@ -78,11 +79,11 @@ describe('SUITE 3: Technician Portal Deprecation & File Integrity', () => {
         assert.equal(fs.existsSync(techJsPath), false, 'technician.js must not exist in public/js/');
     });
 
-    test('vendor.html and vendor.js must exist and be accessible', () => {
+    test('vendor.html exists (coming-soon notice) and the demo vendor.js is gone', () => {
         const vendorHtmlPath = path.join(__dirname, '..', 'public', 'vendor.html');
         const vendorJsPath = path.join(__dirname, '..', 'public', 'js', 'vendor.js');
         assert.equal(fs.existsSync(vendorHtmlPath), true, 'vendor.html must exist');
-        assert.equal(fs.existsSync(vendorJsPath), true, 'vendor.js must exist');
+        assert.equal(fs.existsSync(vendorJsPath), false, 'vendor.js must be removed');
     });
 
     test('login.html contains Vendor tab and no Field Tech tab', () => {

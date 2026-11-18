@@ -97,7 +97,11 @@ async function runCleanSlate() {
 
     // 3. Seed ONLY the Authoritative Original Super Admin
     const TARGET_EMAIL = process.env.ADMIN_SEED_EMAIL || "ess0121@gmail.com";
-    const TARGET_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "***REMOVED***";
+    const TARGET_PASSWORD = process.env.ADMIN_SEED_PASSWORD;
+    if (!TARGET_PASSWORD) {
+        console.error("Set ADMIN_SEED_PASSWORD in your local .env first.");
+        process.exit(1);
+    }
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(TARGET_PASSWORD, salt);
 

@@ -29,7 +29,7 @@ const roleMeta = {
     vendor: {
         label: 'Vendor',
         title: 'Supplier Partner Portal',
-        subtitle: 'Manage wholesale inventory, spare parts & commercial quotes',
+        subtitle: 'Seller marketplace for new air conditioners — coming soon',
         bodyClass: 'role-vendor',
         btnBg: 'bg-[#A05B3A]',
         hoverBtnBg: 'hover:bg-[#8D4B2D]',
@@ -216,23 +216,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 });
-
-window.fillVivaDemo = function() {
-    const currentRole = document.getElementById('selectedRole')?.value || 'admin';
-    const emailEl = document.getElementById('email');
-    const passEl = document.getElementById('password');
-    if (currentRole === 'admin') {
-        if (emailEl) emailEl.value = 'ess0121@gmail.com';
-        if (passEl) passEl.value = '***REMOVED***';
-    } else if (currentRole === 'staff') {
-        if (emailEl) emailEl.value = 'staff@extremess.com';
-        if (passEl) passEl.value = '***REMOVED***';
-    } else if (currentRole === 'vendor') {
-        if (emailEl) emailEl.value = 'vendor@extremess.com';
-        if (passEl) passEl.value = '***REMOVED***';
-    }
-    if (window.showToast) window.showToast(`Pre-filled credentials for ${currentRole.toUpperCase()}`, 'info');
-};
 
 async function checkApiHealth() {
     const healthText = document.getElementById('healthText');

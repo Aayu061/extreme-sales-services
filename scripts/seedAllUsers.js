@@ -35,7 +35,7 @@ const USERS_TO_SEED = [
     email: process.env.ADMIN_SEED_EMAIL || "ess0121@gmail.com",
     phone: "7977805245",
     role: "admin",
-    password: process.env.ADMIN_SEED_PASSWORD || "***REMOVED***"
+    password: process.env.ADMIN_SEED_PASSWORD
   },
   {
     docId: 'usr-admin',
@@ -43,7 +43,7 @@ const USERS_TO_SEED = [
     email: "admin@extremess.com",
     phone: "9820011000",
     role: "admin",
-    password: "***REMOVED***"
+    password: process.env.SEED_USER_PASSWORD
   },
   {
     docId: 'usr-staff',
@@ -51,7 +51,7 @@ const USERS_TO_SEED = [
     email: "staff@extremess.com",
     phone: "9833001122",
     role: "staff",
-    password: "***REMOVED***"
+    password: process.env.SEED_USER_PASSWORD
   },
   {
     docId: 'tech-1',
@@ -59,7 +59,7 @@ const USERS_TO_SEED = [
     email: "tech@extremess.com",
     phone: "9820011223",
     role: "technician",
-    password: "***REMOVED***"
+    password: process.env.SEED_USER_PASSWORD
   },
   {
     docId: 'tech-2',
@@ -67,7 +67,7 @@ const USERS_TO_SEED = [
     email: "ramesh@extremess.com",
     phone: "9820044556",
     role: "technician",
-    password: "***REMOVED***"
+    password: process.env.SEED_USER_PASSWORD
   },
   {
     docId: 'tech-3',
@@ -75,7 +75,7 @@ const USERS_TO_SEED = [
     email: "deepak@extremess.com",
     phone: "9820077889",
     role: "technician",
-    password: "***REMOVED***"
+    password: process.env.SEED_USER_PASSWORD
   }
 ];
 
@@ -125,6 +125,10 @@ const INITIAL_SERVICE_REQUESTS = [
 ];
 
 async function seed() {
+  if (!process.env.ADMIN_SEED_PASSWORD || !process.env.SEED_USER_PASSWORD) {
+    console.error('Set ADMIN_SEED_PASSWORD and SEED_USER_PASSWORD in your local .env first.');
+    process.exit(1);
+  }
   console.log("🚀 Seeding users and initial requests into Firestore...");
   const salt = await bcrypt.genSalt(10);
 

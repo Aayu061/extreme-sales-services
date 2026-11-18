@@ -55,10 +55,19 @@ window.addEventListener('DOMContentLoaded', () => {
             if (selectEl) {
                 const lower = serviceParam.toLowerCase();
                 let matchedVal = '';
-                if (lower.includes('gas') || lower.includes('refrigerant')) matchedVal = 'gas';
+                // Map estimator / homepage links to real <option> values in service.html
+                if (lower.includes('gas') || lower.includes('refrigerant')) matchedVal = 'gas_refill';
+                else if (lower.includes('uninstall') || lower.includes('dismantl') || lower.includes('pumpdown')) matchedVal = 'uninstallation';
                 else if (lower.includes('install')) matchedVal = 'installation';
-                else if (lower.includes('jet') || lower.includes('wash') || lower.includes('clean') || lower.includes('service')) matchedVal = 'service';
-                else if (lower.includes('repair') || lower.includes('cooling') || lower.includes('leak')) matchedVal = 'repair';
+                else if (lower.includes('foam') || lower.includes('chemical')) matchedVal = 'pm_chemical';
+                else if (lower.includes('jet') || lower.includes('wash') || lower.includes('clean')) matchedVal = 'pm_jet';
+                else if (lower.includes('pcb') || lower.includes('circuit')) matchedVal = 'pcb_repair';
+                else if (lower.includes('leak') || lower.includes('drain')) matchedVal = 'water_leakage';
+                else if (lower.includes('noise') || lower.includes('fan')) matchedVal = 'fan_noise';
+                else if (lower.includes('trip') || lower.includes('mcb') || lower.includes('electric')) matchedVal = 'electrical_trip';
+                else if (lower.includes('compressor')) matchedVal = 'compressor_issue';
+                else if (lower.includes('repair') || lower.includes('cooling')) matchedVal = 'diagnostic_cooling';
+                else if (lower.includes('service') || lower.includes('dry')) matchedVal = 'pm_dry';
 
                 if (matchedVal) {
                     selectEl.value = matchedVal;

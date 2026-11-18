@@ -914,8 +914,8 @@ async function fetchProducts() {
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-[#27211D] border border-[#B8AA98]/20 dark:border-white/10 rounded-xl overflow-hidden shadow-2xs hover:shadow-md transition flex flex-col justify-between";
                 
-                const catLabels = { new_ac: 'Brand New AC', used_ac: 'Certified 2nd Hand', spare_part: 'Genuine Spare' };
-                const catColors = { new_ac: 'bg-[#A05B3A]', used_ac: 'bg-[#655448]', spare_part: 'bg-[#879581]' };
+                const catLabels = { new_ac: 'Brand New AC', residential: 'Residential', commercial: 'Commercial', industrial: 'Industrial' };
+                const catColors = { new_ac: 'bg-[#A05B3A]', residential: 'bg-[#A05B3A]', commercial: 'bg-[#655448]', industrial: 'bg-[#879581]' };
 
                 const safeImg = escapeHtml(sanitizeProductImage(p.image_url || ''));
                 const safeName = escapeHtml(p.name || '');
@@ -1178,7 +1178,7 @@ document.getElementById('editProductForm')?.addEventListener('submit', async (e)
         price: Number(document.getElementById('editProdPrice').value),
         stock: Number(document.getElementById('editProdQuantity').value),
         description: document.getElementById('editProdDesc').value || '',
-        condition: document.getElementById('editProdCategory').value === 'used_ac' ? 'Certified 2nd Hand' : 'Brand New'
+        condition: 'Brand New'
     };
     const elBrand = document.getElementById('editProdBrand');
     if (elBrand && elBrand.value.trim()) payload.brand = elBrand.value.trim();
@@ -1220,7 +1220,7 @@ document.getElementById('addProductForm')?.addEventListener('submit', async (e) 
         model: document.getElementById('prodModel')?.value || '',
         image_url: finalImageUrl,
         description: document.getElementById('prodDesc').value || '',
-        condition: document.getElementById('prodCategory').value === 'used_ac' ? 'Certified 2nd Hand' : 'Brand New'
+        condition: 'Brand New'
     };
 
     try {
