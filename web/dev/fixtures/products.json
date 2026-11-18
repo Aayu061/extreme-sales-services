@@ -1,0 +1,634 @@
+[
+ {
+  "id": "prod-1794761315308",
+  "name": "Mitsubishi",
+  "category": "new_ac",
+  "brand": "Mitsubishi",
+  "modelNumber": "1234",
+  "tonnage": null,
+  "starRating": null,
+  "price": 50000,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": null,
+  "specs": {
+   "coolingCapacity": null,
+   "powerConsumption": null,
+   "refrigerant": null,
+   "noiseLevel": null,
+   "dimensions": null
+  },
+  "warranty": null,
+  "keyFeatures": [],
+  "imageUrl": "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=600&q=80",
+  "spaceType": "all",
+  "idealFor": null,
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "oI1UpVLd2kug7WqY1ecF",
+  "name": "Double Skin Air Handling Unit (AHU) 5000 - 15000 CFM",
+  "category": "industrial",
+  "brand": "ESS Engineered",
+  "modelNumber": "ESS-AHU-10K",
+  "tonnage": "10,000 CFM",
+  "starRating": "Cleanroom Grade",
+  "price": null,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": true,
+  "description": "Heavy-duty double-skin air handling unit for controlled atmosphere cleanrooms, surgical theatres, and corporate central ventilation.",
+  "specs": {
+   "coolingCapacity": "Engineered to Chilled Water / DX Coil Matrix",
+   "powerConsumption": "IE3 High Efficiency Fan Motor",
+   "refrigerant": "Chilled Water / DX Coil Compatible",
+   "noiseLevel": "Acoustically Insulated Double Skin Panels",
+   "dimensions": "Custom Modular Section Assembly"
+  },
+  "warranty": "Industrial 2-Year Mechanical Warranty",
+  "keyFeatures": [
+   "Thermal Break Aluminum Profile with PUF Insulation",
+   "Multi-Stage HEPA & Carbon Air Filtration Options",
+   "Variable Frequency Drive (VFD) Fan Modulation",
+   "100% Condensate Drain Stainless Steel SS304 Tray"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "clinics",
+  "idealFor": "Hospitals, Clean Rooms, Laboratories & Food Processing",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "gtNRa1xNFp2d2LWyHsTk",
+  "name": "Air-Cooled Modular Scroll Chiller System (20 TR to 100 TR)",
+  "category": "industrial",
+  "brand": "Carrier / Blue Star",
+  "modelNumber": "30RB Modular Scroll",
+  "tonnage": "20 TR - 100 TR",
+  "starRating": "Industrial Heavy Duty",
+  "price": null,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": true,
+  "description": "High-reliability chilled water central cooling system for industrial manufacturing, IT data centers, and large-scale industrial complexes.",
+  "specs": {
+   "coolingCapacity": "70 kW to 350 kW Chilled Water Output",
+   "powerConsumption": "Industrial 415V 3-Phase Multi-Stage Compressors",
+   "refrigerant": "R134a / R410A Chiller Safe",
+   "noiseLevel": "Industrial Acoustic Enclosure",
+   "dimensions": "Rooftop / Ground Mechanical Plant Installation"
+  },
+  "warranty": "Turnkey Project Guarantee + Industrial SLA Support",
+  "keyFeatures": [
+   "Precision Chilled Water Temperature Control (±0.5°C)",
+   "Microchannel Aluminum Heat Exchangers",
+   "Automated Dual Compressor Redundancy Fail-Safe",
+   "SCADA & Modbus Industrial Protocol Compatible"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "factories",
+  "idealFor": "Manufacturing Plants, Data Centers, Pharmaceuticals & Processing Units",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "TLRbwbHUxbXgBIJ9eCZM",
+  "name": "Blue Star 4.0 TR Floor Standing Tower AC",
+  "category": "commercial",
+  "brand": "Blue Star",
+  "modelNumber": "FAC481DB Tower",
+  "tonnage": "4.0 TR",
+  "starRating": "Heavy Duty Commercial",
+  "price": 98500,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "High-capacity vertical standing unit designed for large public spaces and halls without needing extensive ceiling ductwork.",
+  "specs": {
+   "coolingCapacity": "14,000 Watts (48,000 BTU/hr)",
+   "powerConsumption": "3-Phase Heavy Duty Scroll Compressor",
+   "refrigerant": "R410A Refrigerant",
+   "noiseLevel": "44 dB High Air Velocity",
+   "dimensions": "580 x 1870 x 380 mm (Vertical Upright Design)"
+  },
+  "warranty": "1 Year Unit + 5 Years Compressor",
+  "keyFeatures": [
+   "Extra Long 15-Meter Air Throw Capacity",
+   "Touch Screen Digital Display on Front Fascia",
+   "Auto Horizontal & Vertical Motorized Louvers",
+   "No False Ceiling Required — Quick Installation"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "offices",
+  "idealFor": "Hotel Lobbies, Conference Halls, Showrooms & Auditoriums",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "IDqLgM9KhzYZATyksQBH",
+  "name": "Voltas 2.0 Ton 3-Star Heavy Duty Inverter Split AC",
+  "category": "residential",
+  "brand": "Voltas",
+  "modelNumber": "243V Vectra Prism",
+  "tonnage": "2.0 TR",
+  "starRating": "3 Star",
+  "price": 51990,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Designed for intense Indian summer conditions with high ambient cooling performance and robust copper tubes.",
+  "specs": {
+   "coolingCapacity": "6,400 Watts (21,800 BTU/hr)",
+   "powerConsumption": "1,120 kWh / year (ISEER 3.8)",
+   "refrigerant": "R32 Eco Gas",
+   "noiseLevel": "32 dB",
+   "dimensions": "Indoor: 315 x 1080 x 235 mm | Outdoor: 600 x 860 x 320 mm"
+  },
+  "warranty": "1 Year Comprehensive + 10 Years Compressor",
+  "keyFeatures": [
+   "High Ambient Cooling up to 52°C",
+   "Turbo Cool Technology for rapid drop",
+   "Superdry Mode for humid monsoon seasons",
+   "Anti-Dust & Anti-Microbial Filters"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "homes",
+  "idealFor": "Large Halls, Drawing Rooms & Duplexes (190 - 270 sq. ft.)",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "nlbvy46fALr4txUIZfqr",
+  "name": "Daikin 1.0 Ton 3-Star Inverter Split AC (FTKL Series)",
+  "category": "residential",
+  "brand": "Daikin",
+  "modelNumber": "FTKL35TV",
+  "tonnage": "1.0 TR",
+  "starRating": "3 Star",
+  "price": 33990,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Equipped with patented Coanda airflow technology that sends cold air towards the ceiling for even, comfortable cooling.",
+  "specs": {
+   "coolingCapacity": "3,520 Watts (12,000 BTU/hr)",
+   "powerConsumption": "680 kWh / year (ISEER 3.9)",
+   "refrigerant": "R32 Green Refrigerant",
+   "noiseLevel": "26 dB",
+   "dimensions": "Indoor: 283 x 800 x 198 mm | Outdoor: 550 x 658 x 273 mm"
+  },
+  "warranty": "1 Year Product + 5 Years PCB + 10 Years Compressor",
+  "keyFeatures": [
+   "Coanda Airflow for draft-free comfort",
+   "Econo Mode for reduced power usage",
+   "PM 2.5 Air Purification Filter",
+   "Self-Diagnosis Error Code System"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1585338107529-13afc5f02586?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "homes",
+  "idealFor": "Small Bedrooms & Study Rooms (Up to 110 sq. ft.)",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "pQvUYJuwkoLD1H551bY0",
+  "name": "Carrier 2.5 TR Ceiling Suspended Commercial Unit",
+  "category": "commercial",
+  "brand": "Carrier",
+  "modelNumber": "40QNC030 Ceiling",
+  "tonnage": "2.5 TR",
+  "starRating": "Commercial Grade",
+  "price": 76000,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Suspends directly below the ceiling, making it ideal for exposed-ceiling commercial decors, fitness studios, and open workspaces.",
+  "specs": {
+   "coolingCapacity": "8,800 Watts (30,000 BTU/hr)",
+   "powerConsumption": "Commercial High Power Factor",
+   "refrigerant": "R32 Safe Refrigerant",
+   "noiseLevel": "36 dB",
+   "dimensions": "1280 x 660 x 205 mm (Ceiling Suspended)"
+  },
+  "warranty": "1 Year Unit + 5 Years Compressor",
+  "keyFeatures": [
+   "Direct Ceiling Mounting without False Ceiling",
+   "Dual Auto-Swing Wide Angle Louvers",
+   "Long Distance High Static Throw",
+   "Easy Washable High-Density Air Filter"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "offices",
+  "idealFor": "Gyms, Co-working Spaces & High-Ceiling Workshops",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "lG89uta1wBEtQx5kearo",
+  "name": "Mitsubishi Electric City Multi VRF / VRV System (10 HP to 50 HP)",
+  "category": "industrial",
+  "brand": "Mitsubishi Electric",
+  "modelNumber": "PUHY-P / PURY-P Series",
+  "tonnage": "10 HP - 50 HP (Modular)",
+  "starRating": "Inverter Multi-Zone HVAC",
+  "price": null,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": true,
+  "description": "State-of-the-art Variable Refrigerant Flow system that connects a single outdoor modular plant to dozens of individual indoor units with precision zone cooling.",
+  "specs": {
+   "coolingCapacity": "28 kW up to 140 kW per modular outdoor unit",
+   "powerConsumption": "Variable Refrigerant Flow (Up to 45% Energy Savings)",
+   "refrigerant": "R410A / R32 Eco VRF",
+   "noiseLevel": "Ultra Quiet Low-Vibration Inverter",
+   "dimensions": "Modular Outdoor Stacking + 50+ Indoor Unit Combinations"
+  },
+  "warranty": "Comprehensive Turnkey Project Warranty & AMC Options",
+  "keyFeatures": [
+   "Individual Temperature Control in up to 64 Indoor Zones",
+   "Centralized Touch BMS (Building Management System) Integration",
+   "Simultaneous Heating & Cooling Heat Recovery Technology",
+   "Piping Length up to 1,000 Meters Total Run"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "factories",
+  "idealFor": "Multi-Floor Corporate Buildings, Hotels, Hospitals & Luxury Villas",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "jfcbrtE1r0jcoowPIba4",
+  "name": "Daikin 3.0 TR Slim Concealed Ductable Inverter AC",
+  "category": "commercial",
+  "brand": "Daikin",
+  "modelNumber": "FDBNQ30MV1",
+  "tonnage": "3.0 TR",
+  "starRating": "Commercial Inverter",
+  "price": 88000,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Designed for premium architecture where air conditioning equipment remains invisible, delivering conditioned air via modern linear grilles.",
+  "specs": {
+   "coolingCapacity": "10,500 Watts (36,000 BTU/hr)",
+   "powerConsumption": "Variable Speed Scroll Inverter",
+   "refrigerant": "R410A / R32",
+   "noiseLevel": "34 dB (Hidden inside ceiling duct)",
+   "dimensions": "Slim Profile 245 mm Height for Low Ceilings"
+  },
+  "warranty": "1 Year Comprehensive + 5 Years Compressor",
+  "keyFeatures": [
+   "Completely Concealed with Architectural Grilles",
+   "High External Static Pressure (ESP) for Long Ducts",
+   "Wired Touch LCD Controller with Weekly Timer",
+   "Even Air Distribution Across Multiple Rooms"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "restaurants",
+  "idealFor": "Restaurants, Banquet Halls & Luxury Residences (300 - 450 sq. ft.)",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "CbGQjrQkG6M0D4zx9553",
+  "name": "Voltas 1.5 Ton 3-Star Window AC (Copper Condenser)",
+  "category": "residential",
+  "brand": "Voltas",
+  "modelNumber": "183 WZA Window",
+  "tonnage": "1.5 TR",
+  "starRating": "3 Star",
+  "price": 28990,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Sturdy and economical window air conditioner with instant cooling and minimal maintenance requirements.",
+  "specs": {
+   "coolingCapacity": "4,850 Watts (16,500 BTU/hr)",
+   "powerConsumption": "1,180 kWh / year",
+   "refrigerant": "R32 Refrigerant",
+   "noiseLevel": "52 dB",
+   "dimensions": "660 x 430 x 705 mm"
+  },
+  "warranty": "1 Year Unit + 5 Years Compressor",
+  "keyFeatures": [
+   "Easy Slide-in Cleanable Chassis",
+   "Self Diagnosis & Glow Remote",
+   "Turbo Cooling High-Static Blower",
+   "Hydrophilic Blue Fin Condenser"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "homes",
+  "idealFor": "Standard Bedrooms with Window Aperture (120 - 160 sq. ft.)",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "3uIYWD7NjAoXK1Zwd3Ri",
+  "name": "Mitsubishi Electric 2.0 TR 4-Way Ceiling Cassette Inverter AC",
+  "category": "commercial",
+  "brand": "Mitsubishi Electric",
+  "modelNumber": "PLY-SP24VE (Mr. Slim)",
+  "tonnage": "2.0 TR",
+  "starRating": "Inverter Commercial",
+  "price": 68500,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "The gold standard for modern open-plan offices and boutique retail stores. Mounts cleanly in false ceilings with uniform 4-way dispersion.",
+  "specs": {
+   "coolingCapacity": "7,100 Watts (24,200 BTU/hr)",
+   "powerConsumption": "High Efficiency 3-Phase / 1-Phase Inverter",
+   "refrigerant": "R32 Eco Gas",
+   "noiseLevel": "28 dB (Whisper Quiet for Meetings)",
+   "dimensions": "Panel: 950 x 950 mm | Body: 840 x 840 x 298 mm"
+  },
+  "warranty": "1 Year Comprehensive + 5 Years Compressor",
+  "keyFeatures": [
+   "360° Circular Airflow Pattern (Zero Dead Spots)",
+   "Built-in High Lift Drain Pump (850mm Lift)",
+   "Optional 3D i-See Sensor (Detects Occupancy)",
+   "Flush False Ceiling Fit with Sleek Decor Panel"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "offices",
+  "idealFor": "Offices, Retail Showrooms, Cafes & Clinics (200 - 300 sq. ft.)",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "eHerqnAtAO41WGbFQvYX",
+  "name": "Mitsubishi Electric 1.5 Ton 5-Star Inverter Split AC (MSY-GR Series)",
+  "category": "residential",
+  "brand": "Mitsubishi Electric",
+  "modelNumber": "MSY-GR18VF",
+  "tonnage": "1.5 TR",
+  "starRating": "5 Star",
+  "price": 48990,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Premium Japanese engineering with dual barrier coating that prevents dust and oily dirt from sticking inside the AC.",
+  "specs": {
+   "coolingCapacity": "5,200 Watts (17,742 BTU/hr)",
+   "powerConsumption": "840 kWh / year (ISEER 5.2)",
+   "refrigerant": "R32 Eco Green Gas",
+   "noiseLevel": "19 dB (Ultra Quiet Sleep Mode)",
+   "dimensions": "Indoor: 280 x 838 x 228 mm | Outdoor: 538 x 699 x 249 mm"
+  },
+  "warranty": "1 Year Comprehensive + 5 Years PCB + 10 Years Compressor",
+  "keyFeatures": [
+   "Fast Cooling with Dual Barrier Coating",
+   "Micro Particle Catching Filter (PM 2.5)",
+   "Long Airflow Throw up to 12 Meters",
+   "100% Grooved Copper Condenser & Tubes"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "homes",
+  "idealFor": "Master Bedrooms & Living Rooms (120 - 180 sq. ft.)",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ },
+ {
+  "id": "mshFR9nCPOXd40thBJyD",
+  "name": "O-General 1.5 Ton Multi-Split Dual Indoor System",
+  "category": "residential",
+  "brand": "O-General",
+  "modelNumber": "AOHG18LAC2 Multi",
+  "tonnage": "1.5 TR x 2 (Dual)",
+  "starRating": "5 Star Inverter",
+  "price": 74990,
+  "mrp": null,
+  "inStock": true,
+  "isCustomQuote": false,
+  "description": "Single compact outdoor unit powering two separate indoor units. Ideal for apartments where outdoor mounting space is limited.",
+  "specs": {
+   "coolingCapacity": "7,000 Watts Total (24,000 BTU/hr)",
+   "powerConsumption": "High Efficiency Variable DC Inverter",
+   "refrigerant": "R410A / R32 High Pressure",
+   "noiseLevel": "21 dB",
+   "dimensions": "1 Compact Outdoor Unit + 2 Slim High-Wall Indoor Units"
+  },
+  "warranty": "1 Year Full + 5 Years Compressor Warranty",
+  "keyFeatures": [
+   "Saves Balcony / Exterior Wall Space",
+   "Independent Temperature Control per Room",
+   "Hyper Tropical Rotary Compressor",
+   "Long Piping Capability up to 30 Meters"
+  ],
+  "imageUrl": "https://images.unsplash.com/photo-1614633833026-062045db109a?auto=format&fit=crop&w=800&q=80",
+  "spaceType": "homes",
+  "idealFor": "2 Independent Bedrooms from 1 Outdoor Condenser",
+  "countryOfOrigin": null,
+  "displayOrder": 100,
+  "seller": {
+   "code": "ESS",
+   "name": "Extreme Sales & Services",
+   "legalName": "Extreme Sales & Services",
+   "gstin": "27ANTPP9778J1ZO",
+   "address": "Chembur, Mumbai, Maharashtra",
+   "phone": "+91 7977805245",
+   "email": "extremess0121@gmail.com",
+   "grievanceOfficer": {
+    "name": null,
+    "email": "extremess0121@gmail.com",
+    "phone": "+91 7977805245"
+   },
+   "returnPolicy": null,
+   "isFirstParty": true
+  }
+ }
+]

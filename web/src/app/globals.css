@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/*
+ * ESS "Cool Air" design tokens (plan §5A.2). Colours sampled from the ESS logo (sky ≈ #1BA3E0,
+ * navy ≈ #0B3C78) and tuned for contrast; every text/background pair meets WCAG AA.
+ * Cyan is an accent (temperature numeral, focus ring, selection) — never small text.
+ * Copper is the sparing "heat / problem" signal (copper is the AC coil metal).
+ */
+:root {
+  --frost: #f3f7fa;
+  --paper: #ffffff;
+  --navy: #0f2340;
+  --slate: #4a5b70;
+  --line: #d6e1ea;
+  --cyan: #1aa7c9;
+  --deep-cyan: #0b7a99;
+  --deep-cyan-hover: #08647e;
+  --copper: #9a5224;
+  --success: #1e7f55;
+  --warning: #b7791f;
+  --danger: #b42318;
+  --cyan-wash: #e6f5f9;
+  --copper-wash: #f7ece4;
+  --focus: #1aa7c9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --frost: #0b1a30;
+    --paper: #132a47;
+    --navy: #eaf2f8;
+    --slate: #a9bbcd;
+    --line: #26406a;
+    --deep-cyan: #46c3e0;
+    --deep-cyan-hover: #7ad6eb;
+    --copper: #e09a68;
+    --cyan-wash: #10344a;
+    --copper-wash: #3a2a20;
+  }
+}
+:root[data-theme="dark"] {
+  --frost: #0b1a30;
+  --paper: #132a47;
+  --navy: #eaf2f8;
+  --slate: #a9bbcd;
+  --line: #26406a;
+  --deep-cyan: #46c3e0;
+  --deep-cyan-hover: #7ad6eb;
+  --copper: #e09a68;
+  --cyan-wash: #10344a;
+  --copper-wash: #3a2a20;
+}
+
+@theme inline {
+  --color-frost: var(--frost);
+  --color-paper: var(--paper);
+  --color-navy: var(--navy);
+  --color-slate: var(--slate);
+  --color-line: var(--line);
+  --color-cyan: var(--cyan);
+  --color-deep-cyan: var(--deep-cyan);
+  --color-deep-cyan-hover: var(--deep-cyan-hover);
+  --color-copper: var(--copper);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-cyan-wash: var(--cyan-wash);
+  --color-copper-wash: var(--copper-wash);
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  /* Type scale 14 / 16 / 18 / 22 / 28 / 36 / 48 / 96 (hero numeral) */
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+  --text-numeral: 6rem;
+
+  /* Radius by hierarchy, not one radius everywhere */
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-sheet: 20px;
+
+  /* Motion tokens (plan §5B) */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--frost);
+  color: var(--navy);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+/* Headings use the expanded width of the same family: an engineering, spec-sheet feel. */
+h1,
+h2,
+h3,
+.display {
+  font-stretch: 125%;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Prices, tonnage, dates and codes line up in tables and lists. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 50;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-control);
+  background: var(--navy);
+  color: var(--paper);
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

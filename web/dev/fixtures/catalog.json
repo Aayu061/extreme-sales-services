@@ -1,0 +1,872 @@
+{
+ "version": 3,
+ "generatedAt": "2026-11-18T20:03:13.043Z",
+ "currency": "INR",
+ "services": [
+  {
+   "code": "SVC-DRY",
+   "name": "Dry service",
+   "shortDescription": "Filter and coil cleaning without water wash.",
+   "includes": [
+    "Filter cleaning",
+    "Indoor coil dry cleaning",
+    "Cooling check"
+   ],
+   "excludes": [
+    "Gas top-up",
+    "Spare parts"
+   ],
+   "category": "CLEANING",
+   "requestType": "GENERAL_SERVICE",
+   "serviceType": "DRY_SERVICE",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 399,
+    "gstRatePercent": 18,
+    "gst": 71.82,
+    "total": 470.82
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 30,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 10
+  },
+  {
+   "code": "SVC-JET-WASH",
+   "name": "Jet wash",
+   "shortDescription": "High-pressure water wash of the indoor coil to remove deep dirt and grease.",
+   "includes": [
+    "Indoor coil jet wash",
+    "Filter cleaning",
+    "Drain check",
+    "Cooling check"
+   ],
+   "excludes": [
+    "Gas top-up",
+    "Spare parts"
+   ],
+   "category": "CLEANING",
+   "requestType": "GENERAL_SERVICE",
+   "serviceType": "JET_SERVICE",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 1199,
+    "gstRatePercent": 18,
+    "gst": 215.82,
+    "total": 1414.82
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 60,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [
+    "STANDALONE-JET"
+   ],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 20
+  },
+  {
+   "code": "SVC-FOAM",
+   "name": "Foam jet wash & sanitisation",
+   "shortDescription": "Foam chemical clean followed by jet wash and sanitising spray.",
+   "includes": [
+    "Foam chemical clean",
+    "Jet wash",
+    "Sanitising spray"
+   ],
+   "excludes": [
+    "Gas top-up",
+    "Spare parts"
+   ],
+   "category": "CLEANING",
+   "requestType": "GENERAL_SERVICE",
+   "serviceType": "JET_SERVICE",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 999,
+    "gstRatePercent": 18,
+    "gst": 179.82,
+    "total": 1178.82
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 75,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 30
+  },
+  {
+   "code": "SVC-PUMPDOWN",
+   "name": "Pump down",
+   "shortDescription": "Gas recovery and pump down, e.g. before shifting or repair.",
+   "includes": [
+    "Refrigerant recovery into the outdoor unit",
+    "Pressure check"
+   ],
+   "excludes": [
+    "Gas top-up (charged extra if needed)"
+   ],
+   "category": "GAS",
+   "requestType": "GENERAL_SERVICE",
+   "serviceType": "PUMPDOWN_SERVICE",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 1299,
+    "gstRatePercent": 18,
+    "gst": 233.82,
+    "total": 1532.82
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 45,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [
+    "STANDALONE-PUMP"
+   ],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 40
+  },
+  {
+   "code": "SVC-GAS",
+   "name": "Gas leak test & charging",
+   "shortDescription": "Find and fix the leak point, then charge refrigerant to the correct pressure.",
+   "includes": [
+    "Leak test",
+    "Gas charging",
+    "Pressure and cooling check"
+   ],
+   "excludes": [
+    "Coil replacement",
+    "Brazing of major leaks"
+   ],
+   "category": "GAS",
+   "requestType": "REPAIR",
+   "serviceType": "GAS_RECHARGE",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 1850,
+    "gstRatePercent": 18,
+    "gst": 333,
+    "total": 2183
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 90,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 50
+  },
+  {
+   "code": "SVC-INSTALL",
+   "name": "Installation",
+   "shortDescription": "Standard installation of a split or window AC.",
+   "includes": [
+    "Indoor and outdoor unit mounting",
+    "Standard piping connection",
+    "Test run"
+   ],
+   "excludes": [
+    "Extra copper piping",
+    "Stand / bracket",
+    "Core cutting"
+   ],
+   "category": "INSTALLATION",
+   "requestType": "INSTALLATION",
+   "serviceType": "GENERAL_REPAIR",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 1450,
+    "gstRatePercent": 18,
+    "gst": 261,
+    "total": 1711
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 120,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 60
+  },
+  {
+   "code": "SVC-UNINSTALL",
+   "name": "Uninstallation",
+   "shortDescription": "Safe removal of the AC with gas pump down.",
+   "includes": [
+    "Pump down",
+    "Dismounting indoor and outdoor units"
+   ],
+   "excludes": [
+    "Transport",
+    "Reinstallation"
+   ],
+   "category": "INSTALLATION",
+   "requestType": "UNINSTALLATION",
+   "serviceType": "PUMPDOWN_SERVICE",
+   "pricingModel": "FIXED",
+   "price": {
+    "base": 800,
+    "gstRatePercent": 18,
+    "gst": 144,
+    "total": 944
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 60,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 70
+  },
+  {
+   "code": "SVC-DIAG",
+   "name": "Diagnosis visit",
+   "shortDescription": "Technician visit to find the cause: no cooling, leak, noise, tripping or smell.",
+   "includes": [
+    "Full check-up",
+    "Written findings and repair quote"
+   ],
+   "excludes": [
+    "Repair work and parts (quoted separately)"
+   ],
+   "category": "DIAGNOSIS",
+   "requestType": "BREAKDOWN",
+   "serviceType": "DIAGNOSTIC_INSPECTION",
+   "pricingModel": "FROM",
+   "price": {
+    "base": 449,
+    "gstRatePercent": 18,
+    "gst": 80.82,
+    "total": 529.82
+   },
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": 45,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 80
+  },
+  {
+   "code": "SVC-PCB",
+   "name": "PCB repair",
+   "shortDescription": "Repair of the AC control board.",
+   "includes": [],
+   "excludes": [],
+   "category": "REPAIR",
+   "requestType": "REPAIR",
+   "serviceType": "PCB_REPAIR",
+   "pricingModel": "QUOTE_AFTER_DIAGNOSIS",
+   "price": null,
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": null,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 90
+  },
+  {
+   "code": "SVC-CAP",
+   "name": "Capacitor replacement",
+   "shortDescription": "Replacement of a failed fan or compressor capacitor.",
+   "includes": [],
+   "excludes": [],
+   "category": "REPAIR",
+   "requestType": "REPAIR",
+   "serviceType": "CAPACITOR_REPLACE",
+   "pricingModel": "QUOTE_AFTER_DIAGNOSIS",
+   "price": null,
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": null,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 100
+  },
+  {
+   "code": "SVC-FAN",
+   "name": "Fan motor repair",
+   "shortDescription": "Repair or replacement of the indoor or outdoor fan motor.",
+   "includes": [],
+   "excludes": [],
+   "category": "REPAIR",
+   "requestType": "REPAIR",
+   "serviceType": "MOTOR_REPAIR",
+   "pricingModel": "QUOTE_AFTER_DIAGNOSIS",
+   "price": null,
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": null,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 110
+  },
+  {
+   "code": "SVC-COMP",
+   "name": "Compressor repair",
+   "shortDescription": "Compressor diagnosis, repair or replacement.",
+   "includes": [],
+   "excludes": [],
+   "category": "REPAIR",
+   "requestType": "REPAIR",
+   "serviceType": "COMPRESSOR_REPAIR",
+   "pricingModel": "QUOTE_AFTER_DIAGNOSIS",
+   "price": null,
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": null,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 120
+  },
+  {
+   "code": "SVC-ELEC",
+   "name": "Electrical repair",
+   "shortDescription": "Tripping, wiring and power-supply faults.",
+   "includes": [],
+   "excludes": [],
+   "category": "REPAIR",
+   "requestType": "REPAIR",
+   "serviceType": "ELECTRICAL_FIX",
+   "pricingModel": "QUOTE_AFTER_DIAGNOSIS",
+   "price": null,
+   "priceMatrix": [],
+   "sacCode": "9987",
+   "durationMinutes": null,
+   "warrantyDays": null,
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "formSchema": {
+    "blocks": [
+     "contact",
+     "address",
+     "ac",
+     "request",
+     "consent"
+    ]
+   },
+   "legacyCodes": [],
+   "isPublic": true,
+   "isActive": true,
+   "displayOrder": 130
+  }
+ ],
+ "amcPlans": [
+  {
+   "code": "SAMC-1",
+   "planCode": "SEMI-COMP-SPLIT",
+   "name": "Semi-Comprehensive AMC (Non-Inverter Split)",
+   "category": "SEMI_COMPREHENSIVE",
+   "description": "Includes 4 routine services, unlimited complaints attend, capacitor replacement, motor winding, and PCB repair (refrigerant gas charging excluded).",
+   "coverageSummary": "4 Services, Unlimited Complaints, Capacitor, Motor Winding & PCB Repair (No Gas)",
+   "visitsPerYear": 4,
+   "frequency": "QUARTERLY",
+   "appliesToAcTypes": [
+    "SPLIT"
+   ],
+   "maxEquipmentAgeYears": null,
+   "hasGasCharging": false,
+   "hasSpareParts": true,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "TIERED_TONNAGE",
+   "rates": {
+    "splitSmall": {
+     "base": 2999,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 2999
+    },
+    "splitLarge": {
+     "base": 3999,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 3999
+    },
+    "windowSmall": null,
+    "windowLarge": null,
+    "flat": null
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "SEMI-COMP-SPLIT",
+    "SAMC 1"
+   ]
+  },
+  {
+   "code": "SAMC-2",
+   "planCode": "SAMC-1-SPLIT",
+   "name": "Special Comprehensive AMC (SAMC 1) - Split",
+   "category": "SPECIAL_COMPREHENSIVE",
+   "description": "Special comprehensive protection for Split ACs under 3 years old. Includes 4 services, unlimited complaints, capacitor, PCB repair, motor winding, and gas charging.",
+   "coverageSummary": "4 Services, Unlimited Complaints, Capacitor, PCB Repair, Motor Winding & Gas Charging Included",
+   "visitsPerYear": 4,
+   "frequency": "QUARTERLY",
+   "appliesToAcTypes": [
+    "SPLIT"
+   ],
+   "maxEquipmentAgeYears": 3,
+   "hasGasCharging": true,
+   "hasSpareParts": true,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "TIERED_TONNAGE",
+   "rates": {
+    "splitSmall": {
+     "base": 4499,
+     "gstRatePercent": 28,
+     "gst": 1259.72,
+     "total": 5758.72
+    },
+    "splitLarge": {
+     "base": 5499,
+     "gstRatePercent": 28,
+     "gst": 1539.72,
+     "total": 7038.72
+    },
+    "windowSmall": null,
+    "windowLarge": null,
+    "flat": null
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "SAMC 2",
+    "SAMC-1-SPLIT"
+   ]
+  },
+  {
+   "code": "SAMC-3",
+   "planCode": "SAMC-2-WINDOW",
+   "name": "Special Comprehensive AMC (SAMC 2) - Window",
+   "category": "SPECIAL_COMPREHENSIVE",
+   "description": "Special comprehensive protection for Window ACs under 3 years old. Includes 4 services, unlimited complaints, capacitor, PCB repair, motor winding, and gas charging.",
+   "coverageSummary": "4 Services, Unlimited Complaints, Capacitor, PCB Repair, Motor Winding & Gas Charging Included",
+   "visitsPerYear": 4,
+   "frequency": "QUARTERLY",
+   "appliesToAcTypes": [
+    "WINDOW"
+   ],
+   "maxEquipmentAgeYears": 3,
+   "hasGasCharging": true,
+   "hasSpareParts": true,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "TIERED_TONNAGE",
+   "rates": {
+    "splitSmall": null,
+    "splitLarge": null,
+    "windowSmall": {
+     "base": 3499,
+     "gstRatePercent": 28,
+     "gst": 979.72,
+     "total": 4478.72
+    },
+    "windowLarge": {
+     "base": 4499,
+     "gstRatePercent": 28,
+     "gst": 1259.72,
+     "total": 5758.72
+    },
+    "flat": null
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "SAMC-2-WINDOW"
+   ]
+  },
+  {
+   "code": "ORD-3",
+   "planCode": "ORD-3-VISIT",
+   "name": "Ordinary AMC (3 Services / Visits)",
+   "category": "ORDINARY",
+   "description": "Standard non-comprehensive routine care with 3 scheduled visits per year across 4-month intervals.",
+   "coverageSummary": "3 Scheduled Services / Visits per Year",
+   "visitsPerYear": 3,
+   "frequency": "FOUR_MONTHLY",
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "maxEquipmentAgeYears": null,
+   "hasGasCharging": false,
+   "hasSpareParts": false,
+   "hasUnlimitedComplaints": false,
+   "pricingModel": "TIERED_TONNAGE",
+   "rates": {
+    "splitSmall": {
+     "base": 1500,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1500
+    },
+    "splitLarge": {
+     "base": 1500,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1500
+    },
+    "windowSmall": {
+     "base": 1000,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1000
+    },
+    "windowLarge": {
+     "base": 1000,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1000
+    },
+    "flat": null
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "ORD-3-VISIT"
+   ]
+  },
+  {
+   "code": "ORD-4",
+   "planCode": "ORD-4-VISIT",
+   "name": "Ordinary AMC (4 Services + Complaints)",
+   "category": "ORDINARY",
+   "description": "Quarterly maintenance with 4 scheduled services and unlimited normal complaints. Window units include 1 wet wash.",
+   "coverageSummary": "4 Services & Unlimited Normal Complaints (Window Includes 1 Wet Wash)",
+   "visitsPerYear": 4,
+   "frequency": "QUARTERLY",
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "maxEquipmentAgeYears": null,
+   "hasGasCharging": false,
+   "hasSpareParts": false,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "TIERED_TONNAGE",
+   "rates": {
+    "splitSmall": {
+     "base": 1800,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1800
+    },
+    "splitLarge": {
+     "base": 1800,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1800
+    },
+    "windowSmall": {
+     "base": 1300,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1300
+    },
+    "windowLarge": {
+     "base": 1300,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1300
+    },
+    "flat": null
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "ORD-4-VISIT"
+   ]
+  },
+  {
+   "code": "ORD-6",
+   "planCode": "ORD-6-VISIT",
+   "name": "Ordinary AMC (6 Services / Bi-Monthly)",
+   "category": "ORDINARY",
+   "description": "Bi-monthly high-cadence maintenance with 6 scheduled services and unlimited normal complaints. Window units include 1 wet wash.",
+   "coverageSummary": "6 Services & Unlimited Normal Complaints (Window Includes 1 Wet Wash)",
+   "visitsPerYear": 6,
+   "frequency": "BI_MONTHLY",
+   "appliesToAcTypes": [
+    "SPLIT",
+    "WINDOW"
+   ],
+   "maxEquipmentAgeYears": null,
+   "hasGasCharging": false,
+   "hasSpareParts": false,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "TIERED_TONNAGE",
+   "rates": {
+    "splitSmall": {
+     "base": 2200,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 2200
+    },
+    "splitLarge": {
+     "base": 2200,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 2200
+    },
+    "windowSmall": {
+     "base": 1700,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1700
+    },
+    "windowLarge": {
+     "base": 1700,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 1700
+    },
+    "flat": null
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "ORD-6-VISIT"
+   ]
+  },
+  {
+   "code": "JKT-2",
+   "planCode": "JACKET-2-SERVICE",
+   "name": "Premium Jacket AMC (2 Services)",
+   "category": "PREMIUM_JACKET",
+   "description": "Deep clean jacket wash preventive care. Includes 2 jacket chemical cleans and unlimited breakdown complaint attendance.",
+   "coverageSummary": "2 Jacket Deep Cleaning Services & Unlimited Complaints",
+   "visitsPerYear": 2,
+   "frequency": "HALF_YEARLY",
+   "appliesToAcTypes": [
+    "SPLIT"
+   ],
+   "maxEquipmentAgeYears": null,
+   "hasGasCharging": false,
+   "hasSpareParts": false,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "FLAT_PER_UNIT",
+   "rates": {
+    "splitSmall": null,
+    "splitLarge": null,
+    "windowSmall": null,
+    "windowLarge": null,
+    "flat": {
+     "base": 2599,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 2599
+    }
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "JACKET-2-SERVICE"
+   ]
+  },
+  {
+   "code": "JKT-3",
+   "planCode": "JACKET-3-SERVICE",
+   "name": "Premium Jacket AMC (3 Services)",
+   "category": "PREMIUM_JACKET",
+   "description": "Maximum preventive care with 3 jacket deep chemical wash services per year and unlimited complaint attendance.",
+   "coverageSummary": "3 Jacket Deep Cleaning Services & Unlimited Complaints",
+   "visitsPerYear": 3,
+   "frequency": "FOUR_MONTHLY",
+   "appliesToAcTypes": [
+    "SPLIT"
+   ],
+   "maxEquipmentAgeYears": null,
+   "hasGasCharging": false,
+   "hasSpareParts": false,
+   "hasUnlimitedComplaints": true,
+   "pricingModel": "FLAT_PER_UNIT",
+   "rates": {
+    "splitSmall": null,
+    "splitLarge": null,
+    "windowSmall": null,
+    "windowLarge": null,
+    "flat": {
+     "base": 3599,
+     "gstRatePercent": 0,
+     "gst": 0,
+     "total": 3599
+    }
+   },
+   "sacCode": "9987",
+   "legacyCodes": [
+    "JACKET-3-SERVICE"
+   ]
+  }
+ ]
+}
