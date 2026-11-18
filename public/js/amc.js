@@ -647,7 +647,10 @@ if (form) {
                 if (successMsg) successMsg.classList.remove('hidden');
 
                 if (window.showToast) {
-                    window.showToast("AMC subscription registered! Our Chembur desk will call you shortly.", "success");
+                    const amcRef = String(data.trackingCode || "").replace(/[^A-Za-z0-9_.:-]/g, "");
+                    window.showToast(amcRef
+                        ? `AMC request ${amcRef} registered! Our Chembur desk will call you shortly.`
+                        : "We received your AMC request! Our Chembur desk will call you shortly.", "success");
                 }
 
                 setTimeout(() => {

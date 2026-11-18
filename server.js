@@ -31,6 +31,10 @@ const {
     validateProductInput
 } = require('./server/middleware/security');
 const pysIntegrationService = require('./server/services/pysIntegrationService');
+// Signed PYS intake API (used instead of the legacy M2M calls once the integration key is configured)
+const pysIntakeForwarder = require('./server/services/pysIntakeForwarder');
+const pysIntakeMapper = require('./server/services/pysIntakeMapper');
+const pysSignedClient = require('./server/services/pysSignedClient');
 
 const app = express();
 const PORT = process.env.PORT || 5002;
@@ -495,9 +499,26 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
         const cleanCustomerPhone = cleanPhone(phone);
         const formattedPhone = cleanCustomerPhone.length === 10 ? cleanCustomerPhone : phone.trim();
         const requestId = generateSecureRequestId();
+        const signedPysMode = pysIntakeForwarder.isSignedMode();
+
+        // Extra booking-form details (AC brand / tonnage / slot / date) kept so PYS gets structured data.
+        const bookingExtras = {};
+        const pickText = (v, max) => (typeof v === 'string' || typeof v === 'number') ? String(v).trim().slice(0, max) : '';
+        if (pickText(req.body.brand || req.body.acBrand, 60)) bookingExtras.ac_brand = pickText(req.body.brand || req.body.acBrand, 60);
+        if (pickText(req.body.tons || req.body.acTons || req.body.tonnage, 20)) bookingExtras.ac_tonnage = pickText(req.body.tons || req.body.acTons || req.body.tonnage, 20);
+        if (pickText(req.body.timeSlot || req.body.time_slot, 60)) bookingExtras.time_slot = pickText(req.body.timeSlot || req.body.time_slot, 60);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(pickText(req.body.preferredDate || req.body.preferred_date, 10))) {
+            bookingExtras.preferred_date = pickText(req.body.preferredDate || req.body.preferred_date, 10);
+        }
+        if (signedPysMode) {
+            bookingExtras.pys_sync_status = 'PENDING_SYNC';
+            bookingExtras.pys_idempotency_key = pysIntakeMapper.idempotencyKeyFor('SERVICE_BOOKING', requestId);
+        }
 
         if (isFirebaseMode) {
             let amcNote = "";
+            let newReqDocId = null;
+            let savedRequest = null;
 
             // Phase 5: Atomic Firestore Transaction for AMC verification & ticket creation
             await db.runTransaction(async (transaction) => {
@@ -534,10 +555,13 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
                     status: "Pending",
                     technician_id: "",
                     technician_name: "",
-                    created_at: new Date().toISOString()
+                    created_at: new Date().toISOString(),
+                    ...bookingExtras
                 };
 
                 transaction.set(newReqRef, newRequest);
+                newReqDocId = newReqRef.id;
+                savedRequest = newRequest;
             });
 
             // Phase 8: Asynchronous booking confirmation email (does not fail booking on error)
@@ -557,7 +581,13 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
                 });
             }
 
-            // Dual-Platform Sync: Auto-forward service inquiry to Place Your Service (PYS) REST Engine
+            // Signed PYS intake (when PYS_INTEGRATION_KEY_ID + PYS_INTEGRATION_SECRET are set)
+            if (signedPysMode) {
+                return forwardBookingAndRespond(res, requestId, savedRequest,
+                    (update) => db.collection('service_requests').doc(newReqDocId).update(update));
+            }
+
+            // Legacy Dual-Platform Sync: Auto-forward service inquiry to Place Your Service (PYS) REST Engine
             Promise.resolve().then(async () => {
                 try {
                     const ticketForPys = {
@@ -574,7 +604,8 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
                     const syncRes = await pysIntegrationService.forwardServiceRequest(ticketForPys);
                     if (syncRes.success) {
                         console.log(`[PYS Live Sync] Successfully forwarded ${requestId} to PYS: ${syncRes.pysRequestNumber || syncRes.pysRequestId}`);
-                        await db.collection('service_requests').doc(requestId).update({
+                        // The Firestore doc id is auto-generated (not requestId), so update by that id.
+                        await db.collection('service_requests').doc(newReqDocId).update({
                             status: 'Forwarded to PYS',
                             pys_request_id: syncRes.pysRequestId || '',
                             pys_request_number: syncRes.pysRequestNumber || '',
@@ -613,9 +644,14 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
             status: "Pending",
             technician_id: "",
             technician_name: "",
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            ...bookingExtras
         };
         serviceRequests.unshift(newReq);
+
+        if (signedPysMode) {
+            return forwardBookingAndRespond(res, requestId, newReq, (update) => { Object.assign(newReq, update); });
+        }
 
         // Local Dual-Platform Sync
         Promise.resolve().then(async () => {
@@ -644,6 +680,93 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
         res.status(500).json({ success: false, message: "Unable to process service booking. Please try again." });
     }
 });
+
+// ── Signed PYS intake helpers ─────────────────────────────────────────────
+// How long the customer waits for PYS before we confirm with "we received your request".
+// The intake call keeps running in the background and still saves its result.
+const PYS_CUSTOMER_WAIT_MS = 20000;
+const PYS_RECEIVED_MESSAGE = 'We received your request. Our team will contact you shortly.';
+
+async function forwardBookingAndRespond(res, requestId, record, persist) {
+    let outcome = null;
+    try {
+        outcome = await pysIntakeForwarder.withDeadline(
+            pysIntakeForwarder.syncRecord('SERVICE_BOOKING', record, persist),
+            PYS_CUSTOMER_WAIT_MS
+        );
+    } catch (err) {
+        console.warn('[PYS Intake] Booking forward error:', err.message);
+    }
+    if (outcome && outcome.success && outcome.trackingCode) {
+        return res.status(201).json({
+            success: true,
+            requestId,
+            trackingCode: outcome.trackingCode,
+            intakeNumber: outcome.intakeNumber,
+            syncStatus: 'SYNCED',
+            message: 'Booking confirmed. Use your tracking code to follow your request.'
+        });
+    }
+    return res.status(201).json({ success: true, requestId, syncStatus: 'PENDING_SYNC', message: PYS_RECEIVED_MESSAGE });
+}
+
+// Where each ESS record type lives, for saving sync results and the retry sweep.
+const PYS_SYNC_STORES = {
+    SERVICE_BOOKING: { collection: 'service_requests', memory: () => serviceRequests },
+    AMC_REQUEST: { collection: 'customer_amc', memory: () => customerAmcSubscriptions },
+    ENQUIRY: { collection: 'enquiries', memory: () => enquiries }
+};
+
+function pysPersistFor(recordType, docId, memoryRecord) {
+    return async (update) => {
+        if (memoryRecord) Object.assign(memoryRecord, update);
+        if (isFirebaseMode && docId) {
+            await db.collection(PYS_SYNC_STORES[recordType].collection).doc(docId).update(update);
+        }
+    };
+}
+
+/**
+ * Re-send every PENDING_SYNC record (same Idempotency-Key, so PYS never duplicates).
+ * Used by the periodic sweep and by POST /api/integrations/pys/retry-pending.
+ */
+const PYS_MAX_SYNC_ATTEMPTS = 20;
+let pysRetryInFlight = false;
+async function retryPendingPysSyncs(limitPerType = 25) {
+    const summary = { attempted: 0, synced: 0, stillPending: 0, failed: 0 };
+    if (!pysIntakeForwarder.isSignedMode() || pysRetryInFlight) return summary;
+    pysRetryInFlight = true;
+    try {
+        for (const recordType of Object.keys(PYS_SYNC_STORES)) {
+            const store = PYS_SYNC_STORES[recordType];
+            let pending = [];
+            if (isFirebaseMode) {
+                const snap = await db.collection(store.collection)
+                    .where('pys_sync_status', '==', 'PENDING_SYNC').limit(limitPerType).get();
+                pending = snap.docs.map((d) => ({ docId: d.id, record: d.data(), memoryRecord: null }));
+            } else {
+                pending = store.memory()
+                    .filter((r) => r.pys_sync_status === 'PENDING_SYNC')
+                    .slice(0, limitPerType)
+                    .map((r) => ({ docId: null, record: r, memoryRecord: r }));
+            }
+            for (const item of pending) {
+                if ((Number(item.record.pys_sync_attempts) || 0) >= PYS_MAX_SYNC_ATTEMPTS) continue;
+                summary.attempted++;
+                const out = await pysIntakeForwarder.syncRecord(
+                    recordType, item.record, pysPersistFor(recordType, item.docId, item.memoryRecord));
+                if (out.success) summary.synced++;
+                else if (out.update.pys_sync_status === 'PENDING_SYNC') summary.stillPending++;
+                else summary.failed++;
+            }
+        }
+    } catch (err) {
+        console.warn('[PYS Intake] Retry sweep error:', err.message);
+    } finally {
+        pysRetryInFlight = false;
+    }
+    return summary;
+}
 
 function enrichRequestWithDiagnostics(r) {
     let fmea = null;
@@ -1300,8 +1423,21 @@ app.post('/api/compliance/gstin/lookup', async (req, res) => {
 
 // PYS Enterprise Connection Health & Latency Telemetry
 app.get('/api/integrations/pys/health', authMiddleware(['admin']), async (req, res) => {
+    if (pysIntakeForwarder.isSignedMode()) {
+        const health = await pysSignedClient.ping();
+        return res.json({ success: true, mode: 'signed', health });
+    }
     const health = await pysIntegrationService.checkHealth();
-    res.json({ success: true, health });
+    res.json({ success: true, mode: 'legacy', health });
+});
+
+// Admin: re-send every booking / AMC request / enquiry still waiting for PYS (PENDING_SYNC).
+app.post('/api/integrations/pys/retry-pending', authMiddleware(['admin', 'staff']), async (req, res) => {
+    if (!pysIntakeForwarder.isSignedMode()) {
+        return res.status(503).json({ success: false, message: 'Signed PYS integration is not configured.' });
+    }
+    const summary = await retryPendingPysSyncs();
+    res.json({ success: true, summary });
 });
 
 // Staff / Admin 1-Click Service Inquiry Forwarding to PYS Enterprise
@@ -1336,6 +1472,30 @@ app.post('/api/inquiries/forward-to-pys', authMiddleware(['admin', 'staff']), as
 
     if (!targetTicket) {
         return res.status(404).json({ success: false, message: 'Ticket not found.' });
+    }
+
+    // Signed intake: same Idempotency-Key as the original booking ('ess-booking-' + request_id),
+    // so re-forwarding returns the existing PYS intake instead of creating a duplicate.
+    if (pysIntakeForwarder.isSignedMode()) {
+        const record = { ...targetTicket, request_id: targetTicket.request_id || ticketId };
+        const memoryRecord = isFirebaseMode ? null : targetTicket;
+        const out = await pysIntakeForwarder.syncRecord('SERVICE_BOOKING', record,
+            pysPersistFor('SERVICE_BOOKING', targetDocId, memoryRecord));
+        if (out.success) {
+            return res.json({
+                success: true,
+                message: `Service Inquiry ${ticketId} is in PYS as ${out.intakeNumber}.`,
+                pysRequestNumber: out.intakeNumber,
+                intakeNumber: out.intakeNumber,
+                trackingCode: out.trackingCode,
+                duplicate: Boolean(out.duplicate)
+            });
+        }
+        return res.status(502).json({
+            success: false,
+            syncStatus: out.update.pys_sync_status,
+            message: out.error || 'Failed to forward to PYS.'
+        });
     }
 
     const syncResult = await pysIntegrationService.forwardServiceRequest(targetTicket);
@@ -1930,8 +2090,10 @@ app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
         const effectiveSubject = subject ? subject.trim() : (product_name ? `Product Inquiry: ${product_name}` : (effectiveServiceType ? `Inquiry for ${effectiveServiceType}` : 'General AC Service Consultation'));
         const effectiveMessage = (message || `Customer inquired about ${productOfInterest || product_name || effectiveServiceType || 'Extreme Sales & Services offerings'}.`).trim().slice(0, 1000);
 
+        const signedPysMode = pysIntakeForwarder.isSignedMode();
         const newEnq = {
-            id: "enq-" + Date.now(),
+            // Random suffix: this id is the PYS externalReferenceId / Idempotency-Key, so it must be unique.
+            id: "enq-" + Date.now() + "-" + require('crypto').randomBytes(3).toString('hex'),
             product_id: product_id || "general",
             product_name: (product_name || effectiveSubject).trim(),
             name: name.trim(),
@@ -1943,15 +2105,47 @@ app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
             status: "Open",
             created_at: new Date().toISOString()
         };
+        // The signed PYS intake needs a 10-digit mobile; email-only enquiries stay on the legacy path.
+        const useSignedIntake = signedPysMode && Boolean(pysIntakeMapper.normalizeIndianMobile(newEnq.phone));
+        if (useSignedIntake) {
+            newEnq.pys_sync_status = 'PENDING_SYNC';
+            newEnq.pys_idempotency_key = pysIntakeMapper.idempotencyKeyFor('CONTACT', newEnq.id);
+        }
 
+        let enqDocId = null;
         if (isFirebaseMode) {
             try {
-                await db.collection('enquiries').add(newEnq);
+                const enqRef = await db.collection('enquiries').add(newEnq);
+                enqDocId = enqRef.id;
             } catch (e) {
                 console.warn('Local Firebase enquiry insert deferred:', e.message);
             }
         }
         enquiries.unshift(newEnq);
+
+        if (useSignedIntake) {
+            let outcome = null;
+            try {
+                outcome = await pysIntakeForwarder.withDeadline(
+                    pysIntakeForwarder.syncRecord('ENQUIRY', newEnq, pysPersistFor('ENQUIRY', enqDocId, newEnq)),
+                    PYS_CUSTOMER_WAIT_MS
+                );
+            } catch (fwdErr) {
+                console.warn('[PYS Intake] Enquiry forward error:', fwdErr.message);
+            }
+            const synced = Boolean(outcome && outcome.success && outcome.trackingCode);
+            return res.status(201).json({
+                success: true,
+                message: synced
+                    ? "Thank you! Your inquiry has been received. Our technical representative will contact you shortly."
+                    : PYS_RECEIVED_MESSAGE,
+                enquiryNumber: synced ? outcome.trackingCode : null,
+                trackingCode: synced ? outcome.trackingCode : undefined,
+                intakeNumber: synced ? outcome.intakeNumber : undefined,
+                syncStatus: synced ? 'SYNCED' : 'PENDING_SYNC',
+                syncedWithPys: synced
+            });
+        }
 
         // Forward to central PYS CRM contact_enquiries table
         const forwardResult = await pysIntegrationService.forwardEnquiry({
@@ -1964,9 +2158,10 @@ app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
             productOfInterest: productOfInterest || product_name || undefined
         });
 
+        // Only show a number PYS actually issued (no made-up fallback numbers).
         const assignedNumber = forwardResult.success && forwardResult.data
-            ? (forwardResult.data.enquiryNumber || forwardResult.data.enquiry_number)
-            : `ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
+            ? (forwardResult.data.enquiryNumber || forwardResult.data.enquiry_number || null)
+            : null;
 
         return res.status(201).json({
             success: true,
@@ -2234,8 +2429,10 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
     }
     const formattedPhone = cleanPhone(phone) || phone.trim();
 
+    const signedPysMode = pysIntakeForwarder.isSignedMode();
     const newSub = {
-        id: "sub-" + Date.now(),
+        // Random suffix: this id is the PYS externalReferenceId / Idempotency-Key, so it must be unique.
+        id: "sub-" + Date.now() + "-" + require('crypto').randomBytes(3).toString('hex'),
         customer_name: finalName,
         phone: formattedPhone,
         email: email ? email.trim().toLowerCase() : '',
@@ -2249,9 +2446,35 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
         remaining_services: Number(services_per_year) || 4,
         created_at: new Date().toISOString()
     };
+    if (signedPysMode) {
+        newSub.pys_sync_status = 'PENDING_SYNC';
+        newSub.pys_idempotency_key = pysIntakeMapper.idempotencyKeyFor('AMC_REQUEST', newSub.id);
+    }
 
-    // Forward AMC Subscription lead to central PYS CRM contact_enquiries table
-    Promise.resolve().then(async () => {
+    // Signed mode: send the saved AMC request to PYS as an AMC_REQUEST intake and build the reply.
+    const forwardAmcAndRespond = async (docId) => {
+        let outcome = null;
+        try {
+            outcome = await pysIntakeForwarder.withDeadline(
+                pysIntakeForwarder.syncRecord('AMC_REQUEST', newSub, pysPersistFor('AMC_REQUEST', docId, newSub)),
+                PYS_CUSTOMER_WAIT_MS
+            );
+        } catch (fwdErr) {
+            console.warn('[PYS Intake] AMC forward error:', fwdErr.message);
+        }
+        const synced = Boolean(outcome && outcome.success && outcome.trackingCode);
+        return res.json({
+            success: true,
+            message: synced ? "AMC Purchase request registered" : PYS_RECEIVED_MESSAGE,
+            trackingCode: synced ? outcome.trackingCode : undefined,
+            intakeNumber: synced ? outcome.intakeNumber : undefined,
+            syncStatus: synced ? 'SYNCED' : 'PENDING_SYNC',
+            subscription: newSub
+        });
+    };
+
+    // Forward AMC Subscription lead to central PYS CRM contact_enquiries table (legacy path)
+    if (!signedPysMode) Promise.resolve().then(async () => {
         try {
             await pysIntegrationService.forwardEnquiry({
                 name: finalName,
@@ -2269,7 +2492,7 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
 
     if (isFirebaseMode) {
         try {
-            await db.collection('customer_amc').add(newSub);
+            const subRef = await db.collection('customer_amc').add(newSub);
 
             // Phase 8: Async email notification
             if (email && emailService) {
@@ -2287,6 +2510,7 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
                 });
             }
 
+            if (signedPysMode) return forwardAmcAndRespond(subRef.id);
             return res.json({ success: true, message: "AMC Purchase request registered", subscription: newSub });
         } catch(e) {
             return res.status(500).json({ success: false, message: "Error registering AMC purchase." });
@@ -2294,6 +2518,7 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
     }
 
     customerAmcSubscriptions.unshift(newSub);
+    if (signedPysMode) return forwardAmcAndRespond(null);
     res.json({ success: true, message: "AMC Purchase request registered", subscription: newSub });
 });
 
@@ -2437,6 +2662,10 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
             } else {
                 snap = await db.collection('service_requests').where('phone', '==', cleanPhone(phone) || phone).get();
             }
+            if (snap.empty && id) {
+                // Customers may enter the PYS tracking code shown on their booking confirmation.
+                snap = await db.collection('service_requests').where('pys_tracking_code', '==', id).get();
+            }
 
             if (snap.empty) return res.status(404).json({ success: false, message: "No service request found." });
             const data = snap.docs[0].data();
@@ -2470,7 +2699,7 @@ app.get(['/api/track', '/api/track/status'], async (req, res) => {
 
     const cleanInputPhone = cleanPhone(phone);
     const match = serviceRequests.find(r => 
-        (id && r.request_id === id) || 
+        (id && (r.request_id === id || String(r.pys_tracking_code || '').toUpperCase() === id)) ||
         (phone && (r.phone === phone || (cleanInputPhone && cleanPhone(r.phone) === cleanInputPhone)))
     );
 
@@ -2892,6 +3121,14 @@ if (require.main === module) {
     app.listen(PORT, () => {
         console.log(` Extreme Sales & Services Server running on http://localhost:${PORT}`);
     });
+
+    // Retry bookings / AMC requests / enquiries that could not reach PYS (e.g. Render cold start).
+    // Same Idempotency-Key each time, so PYS never creates duplicates.
+    if (pysIntakeForwarder.isSignedMode()) {
+        const PYS_RETRY_INTERVAL_MS = 10 * 60 * 1000;
+        setTimeout(() => { retryPendingPysSyncs(); }, 60 * 1000).unref();
+        setInterval(() => { retryPendingPysSyncs(); }, PYS_RETRY_INTERVAL_MS).unref();
+    }
 }
 
 module.exports = app;

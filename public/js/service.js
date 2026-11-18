@@ -154,7 +154,16 @@ form.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (data.success) {
-            trackingIdDisplay.innerText = data.requestId;
+            // Prefer the tracking code issued by PYS; otherwise show our own booking reference.
+            trackingIdDisplay.innerText = data.trackingCode || data.requestId;
+            if (data.syncStatus === 'PENDING_SYNC') {
+                const heading = modal.querySelector('h2');
+                if (heading) heading.innerText = 'We received your request';
+                const note = heading ? heading.nextElementSibling : null;
+                if (note) note.innerText = data.message || 'Our team will contact you shortly.';
+                const label = trackingIdDisplay.previousElementSibling;
+                if (label) label.innerText = 'Your Booking Reference';
+            }
             const trackBtn = modal.querySelector('a[href^="status.html"]');
             if (trackBtn) {
                 trackBtn.href = `status.html?id=${encodeURIComponent(data.requestId)}&phone=${encodeURIComponent(formData.phone)}`;

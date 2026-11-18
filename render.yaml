@@ -25,6 +25,10 @@ services:
         sync: false
       - key: PYS_WEBHOOK_SECRET
         sync: false
+      - key: PYS_INTEGRATION_KEY_ID
+        sync: false
+      - key: PYS_INTEGRATION_SECRET
+        sync: false
       - key: RESEND_API_KEY
         sync: false
       - key: RESEND_FROM_EMAIL

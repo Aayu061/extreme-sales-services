@@ -1088,15 +1088,18 @@
             });
             const data = await res.json();
             if (res.ok && data.success) {
+              const enqRef = String(data.trackingCode || data.enquiryNumber || "").replace(/[^A-Za-z0-9_.:-]/g, "");
               if (alertEl) {
                 alertEl.className =
                   "p-4 rounded-xl text-xs font-bold border bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800";
-                alertEl.innerHTML = `✅ Thank you! Your inquiry <strong>${data.enquiryNumber || ""}</strong> has been logged in our central CRM. A technician specialist will contact you shortly.`;
+                alertEl.innerHTML = enqRef
+                  ? `✅ Thank you! Your inquiry <strong>${enqRef}</strong> has been logged. A technician specialist will contact you shortly.`
+                  : `✅ Thank you! We received your request. A technician specialist will contact you shortly.`;
                 alertEl.classList.remove("hidden");
               }
               if (window.showToast) {
                 window.showToast(
-                  `Inquiry ${data.enquiryNumber || ""} submitted successfully!`,
+                  enqRef ? `Inquiry ${enqRef} submitted successfully!` : "We received your request!",
                   "success",
                 );
               }

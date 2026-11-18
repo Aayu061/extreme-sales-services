@@ -11,6 +11,8 @@ process.env.ADMIN_SEED_EMAIL = 'ess0121@gmail.com';
 process.env.ADMIN_SEED_PASSWORD = 'test-only-admin-password-42';
 // Never call the real PYS API from tests.
 process.env.PYS_API_KEY = ''; // empty (not deleted) so dotenv can't load a real key
+process.env.PYS_INTEGRATION_KEY_ID = ''; // keep the signed intake path off in this suite
+process.env.PYS_INTEGRATION_SECRET = '';
 
 const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert/strict');
