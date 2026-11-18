@@ -596,6 +596,9 @@ if (form) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Privacy consent must be ticked before any personal data is sent.
+        if (window.EssConsent && !window.EssConsent.check(form)) return;
+
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         const email = document.getElementById('custEmail').value.trim();
@@ -618,7 +621,8 @@ if (form) {
             ac_type,
             tonnage,
             price,
-            services_per_year
+            services_per_year,
+            ...(window.EssConsent ? window.EssConsent.values(form) : {})
         };
 
         const submitBtn = form.querySelector('button[type="submit"]');
@@ -659,6 +663,10 @@ if (form) {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }, 3000);
+            } else if (data.field === 'consent_privacy' && window.EssConsent) {
+                window.EssConsent.showServerError(form, data.message);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             } else {
                 if (window.showToast) window.showToast(data.message || "Failed to register AMC.", "error");
                 else alert(data.message || "Failed to register AMC.");

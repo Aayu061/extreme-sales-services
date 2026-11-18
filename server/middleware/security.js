@@ -150,6 +150,38 @@ function validateServiceType(serviceType) {
     return ALLOWED_SERVICE_TYPES.some(allowed => clean.includes(allowed.toLowerCase()));
 }
 
+// ── Privacy consent (public customer forms) ─────────────────────────────────
+// Bump this date whenever public/privacy.html changes in a way customers must re-accept.
+const PRIVACY_NOTICE_VERSION = '2026-11-19';
+const CONSENT_REQUIRED_MESSAGE = 'Please tick the box to agree to the Privacy Notice so we can handle your request.';
+
+function isTicked(value) {
+    return value === true || value === 'true' || value === 'on' || value === '1' || value === 1;
+}
+
+/**
+ * Reads consent from a public form submission. Accepts flat fields
+ * (consent_privacy / consent_marketing, or camelCase) or a nested { consent: { privacy, marketing } }.
+ * Returns { ok: false, message } when privacy consent is not given, otherwise the
+ * fields to store on the record.
+ */
+function readConsent(body) {
+    const b = body || {};
+    const nested = (b.consent && typeof b.consent === 'object') ? b.consent : {};
+    const privacy = isTicked(b.consent_privacy) || isTicked(b.consentPrivacy) || isTicked(nested.privacy);
+    if (!privacy) return { ok: false, message: CONSENT_REQUIRED_MESSAGE };
+    const marketing = isTicked(b.consent_marketing) || isTicked(b.consentMarketing) || isTicked(nested.marketing);
+    return {
+        ok: true,
+        fields: {
+            consent_privacy: true,
+            consent_marketing: marketing,
+            consent_at: new Date().toISOString(),
+            privacy_notice_version: PRIVACY_NOTICE_VERSION
+        }
+    };
+}
+
 // Legal Lifecycle State Transitions
 const LEGAL_TRANSITIONS = {
     'Pending': ['Assigned', 'Cancelled'],
@@ -230,6 +262,9 @@ module.exports = {
     validateAddress,
     validateServiceType,
     BOOKING_FORM_SERVICE_CODES,
+    PRIVACY_NOTICE_VERSION,
+    CONSENT_REQUIRED_MESSAGE,
+    readConsent,
     isValidStatusTransition,
     generateSecureRequestId,
     validateProductInput,

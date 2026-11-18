@@ -396,12 +396,16 @@ function closeModal() {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Privacy consent must be ticked before any personal data is sent.
+    if (window.EssConsent && !window.EssConsent.check(form)) return;
+
     const payload = {
         product_id: document.getElementById('modalProductId').value,
         product_name: document.getElementById('modalProductName').innerText,
         name: document.getElementById('enqName').value,
         phone: document.getElementById('enqPhone').value,
-        message: document.getElementById('enqMessage').value
+        message: document.getElementById('enqMessage').value,
+        ...(window.EssConsent ? window.EssConsent.values(form) : {})
     };
 
     const btn = form.querySelector('button[type="submit"]');
@@ -421,6 +425,10 @@ form.addEventListener('submit', async (e) => {
             setTimeout(closeModal, 2000);
         } else {
             const data = await res.json().catch(() => ({}));
+            if (data.field === 'consent_privacy' && window.EssConsent) {
+                window.EssConsent.showServerError(form, data.message);
+                return;
+            }
             if (window.showToast) window.showToast(data.message || "Something went wrong saving the enquiry.", 'error');
             else alert(data.message || "Something went wrong saving the enquiry.");
         }

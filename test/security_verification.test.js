@@ -32,7 +32,10 @@ const {
     isValidStatusTransition,
     generateSecureRequestId,
     VALID_STATUS_TRANSITIONS,
-    escapeHtml
+    escapeHtml,
+    readConsent,
+    PRIVACY_NOTICE_VERSION,
+    CONSENT_REQUIRED_MESSAGE
 } = require('../server/middleware/security');
 const dispatchEngine = require('../server/services/dispatchEngine');
 const diagnosticsEngine = require('../server/services/diagnosticsEngine');
@@ -462,13 +465,47 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
                 name: 'John Doe',
                 phone: '12345', // invalid phone
                 service_type: 'AC Repair',
-                address: 'Bandra West, Mumbai'
+                address: 'Bandra West, Mumbai',
+                consent_privacy: true
             })
         });
         assert.equal(res.status, 400);
         const data = await res.json();
         assert.equal(data.success, false);
         assert.match(data.message, /mobile|phone/i);
+    });
+
+    test('POST /api/services, /api/enquiries and /api/amc/purchase reject submissions without privacy consent', async () => {
+        const cases = [
+            ['/api/services', { name: 'John Doe', phone: '9876543210', service_type: 'AC Repair', address: 'Bandra West, Mumbai' }],
+            ['/api/enquiries', { name: 'John Doe', phone: '9876543210', message: 'Quote please', consent_marketing: true }],
+            ['/api/amc/purchase', { name: 'John Doe', phone: '9876543210', plan_name: 'SAMC 1', consent_privacy: false }]
+        ];
+        for (const [path, body] of cases) {
+            const res = await fetch(`${baseUrl}${path}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            assert.equal(res.status, 400, path);
+            const data = await res.json();
+            assert.equal(data.success, false);
+            assert.equal(data.field, 'consent_privacy');
+            assert.equal(data.message, CONSENT_REQUIRED_MESSAGE);
+        }
+    });
+
+    test('readConsent() requires privacy, keeps marketing optional and stamps the notice version', () => {
+        assert.equal(readConsent({}).ok, false);
+        assert.equal(readConsent({ consent_privacy: 'false' }).ok, false);
+        assert.equal(readConsent({ consent_marketing: true }).ok, false);
+        const ok = readConsent({ consent: { privacy: true } });
+        assert.equal(ok.ok, true);
+        assert.equal(ok.fields.consent_privacy, true);
+        assert.equal(ok.fields.consent_marketing, false);
+        assert.equal(ok.fields.privacy_notice_version, PRIVACY_NOTICE_VERSION);
+        assert.equal(ok.fields.consent_at, new Date(ok.fields.consent_at).toISOString());
+        assert.equal(readConsent({ consent_privacy: true, consent_marketing: 'on' }).fields.consent_marketing, true);
     });
 
     test('POST /api/auth/login rejects invalid credentials without leaking user existence', async () => {
@@ -529,7 +566,8 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
                 phone: '9876543210',
                 service_type: 'AC Repair',
                 address: 'Bandra West, Mumbai',
-                issue: 'Checking state machine'
+                issue: 'Checking state machine',
+                consent_privacy: true
             })
         });
         const bookData = await bookRes.json();
@@ -696,7 +734,8 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
                 name: 'Test Assignee Customer',
                 phone: '9876543211',
                 service_type: 'AC Repair',
-                address: 'Andheri West, Mumbai'
+                address: 'Andheri West, Mumbai',
+                consent_privacy: true
             })
         });
         const bookData = await bookRes.json();
@@ -827,7 +866,8 @@ describe('PHASE 2, 3, 6, 10.2: HTTP API Endpoints & Security Integration', () =>
                     name: 'Test AMC Customer',
                     phone: testPhone,
                     service_type: 'AC General Service',
-                    address: 'Juhu Tara Road, Mumbai'
+                    address: 'Juhu Tara Road, Mumbai',
+                    consent_privacy: true
                 })
             });
             const bookData = await bookRes.json();

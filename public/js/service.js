@@ -98,6 +98,9 @@ window.addEventListener('DOMContentLoaded', () => {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Privacy consent must be ticked before any personal data is sent.
+    if (window.EssConsent && !window.EssConsent.check(form)) return;
+
     // Check if these IDs exist in your HTML exactly as written here
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
@@ -127,7 +130,8 @@ form.addEventListener('submit', async (e) => {
         address: addressInput.value,
         timeSlot: selectedSlot,
         message: combinedMessage,
-        estimatedTotal: document.getElementById('estTotalPrice')?.textContent?.replace('₹', '') || '824.82'
+        estimatedTotal: document.getElementById('estTotalPrice')?.textContent?.replace('₹', '') || '824.82',
+        ...(window.EssConsent ? window.EssConsent.values(form) : {})
     };
 
     const submitBtn = form.querySelector('button[type="submit"]');
@@ -188,6 +192,8 @@ form.addEventListener('submit', async (e) => {
                 successIcon.classList.add('scale-100');
             }
             lastCreatedRequestId = data.requestId;
+        } else if (data.field === 'consent_privacy' && window.EssConsent) {
+            window.EssConsent.showServerError(form, data.message);
         } else {
             const errMsg = "Booking failed: " + (data.message || "Please check the details entered.");
             if (window.showToast) window.showToast(errMsg, 'error');

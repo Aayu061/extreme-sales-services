@@ -185,9 +185,37 @@ function compact(obj) {
     return out;
 }
 
-function finalize(intake) {
+// Records saved before the privacy-consent checkbox existed (ESS forms before
+// notice version 2026-11-19) carry no consent fields at all. Some of them are
+// still PENDING_SYNC and get re-sent by the retry sweep / admin "forward" button.
+// Decision: keep the old behaviour for those records only -- send privacy: true
+// (the customer submitted the form to get exactly this request handled) but mark
+// it with noticeVersion 'LEGACY_IMPLIED' so PYS can tell it apart from explicit
+// consent. Marketing is never implied, so it is omitted (PYS stores false).
+const LEGACY_NOTICE_VERSION = 'LEGACY_IMPLIED';
+
+/** consent block for PYS from the record's stored consent fields. */
+function consentFromRecord(record) {
+    const r = record || {};
+    const hasConsentFields = (r.consent_privacy !== undefined && r.consent_privacy !== null)
+        || Boolean(r.privacy_notice_version);
+    if (!hasConsentFields) {
+        return { ok: true, consent: { privacy: true, noticeVersion: LEGACY_NOTICE_VERSION } };
+    }
+    if (r.consent_privacy !== true) {
+        return { ok: false, error: 'Customer did not give privacy consent; this record cannot be sent to PYS.' };
+    }
+    const consent = { privacy: true, marketing: r.consent_marketing === true };
+    const version = clean(r.privacy_notice_version, 40);
+    if (version) consent.noticeVersion = version;
+    return { ok: true, consent };
+}
+
+function finalize(intake, record) {
     const body = compact(intake);
-    body.consent = { privacy: true };
+    const consent = consentFromRecord(record);
+    if (!consent.ok) return { ok: false, error: consent.error };
+    body.consent = consent.consent;
     if (!body.contact || !body.contact.name || body.contact.name.length < 2 || !body.contact.phone) {
         return { ok: false, error: 'A valid name and 10-digit Indian mobile number are required for PYS intake.' };
     }
@@ -224,7 +252,7 @@ function buildServiceBookingIntake(booking) {
             preferredDate: parsePreferredDate(b.preferred_date || b.preferredDate),
             preferredSlot: parseSlot(b.time_slot || b.timeSlot || hints.slot)
         }
-    });
+    }, b);
 }
 
 /** ESS AMC purchase -> AMC_REQUEST intake. */
@@ -247,7 +275,7 @@ function buildAmcRequestIntake(sub) {
         address: parseAddress(s.address),
         ac: { type: parseAcType(acTypeRaw), tonnage: parseTonnage(s.tonnage) },
         request: { amcPlanCode, serviceCode, message: clean(parts.join('. '), 1000) }
-    });
+    }, s);
 }
 
 /** ESS enquiry -> PRODUCT_ENQUIRY (product page) or CONTACT (contact page). */
@@ -265,7 +293,7 @@ function buildEnquiryIntake(enq) {
         externalReferenceId: clean(e.id, 100),
         contact: buildContact(e.name, e.phone, e.email),
         request: { serviceCode, message: clean(parts.join(' | '), 1000) }
-    });
+    }, e);
 }
 
 const IDEMPOTENCY_PREFIX = {
@@ -297,5 +325,7 @@ module.exports = {
     buildServiceBookingIntake,
     buildAmcRequestIntake,
     buildEnquiryIntake,
+    consentFromRecord,
+    LEGACY_NOTICE_VERSION,
     idempotencyKeyFor
 };

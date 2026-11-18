@@ -584,6 +584,18 @@
             ></textarea>
           </div>
 
+          <div class="consent-group" role="group" aria-label="Privacy consent">
+            <div class="consent-row">
+              <input type="checkbox" id="enqConsentPrivacy" name="consent_privacy" value="true" class="consent-check" data-consent="privacy" aria-required="true" aria-describedby="enqConsentPrivacyError">
+              <label for="enqConsentPrivacy">I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Notice<span class="sr-only"> (opens in a new tab)</span></a> and allow Extreme Sales &amp; Services to use these details to handle this request. <span aria-hidden="true">*</span></label>
+            </div>
+            <p id="enqConsentPrivacyError" class="consent-error" data-consent-error aria-live="polite"></p>
+            <div class="consent-row">
+              <input type="checkbox" id="enqConsentMarketing" name="consent_marketing" value="true" class="consent-check" data-consent="marketing">
+              <label for="enqConsentMarketing">Send me service reminders and offers by email (optional).</label>
+            </div>
+          </div>
+
           <div
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2"
           >
@@ -853,6 +865,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/consent.js"></script>
     <script>
       // Star Rating Interactive Selection
       const starPicker = document.getElementById("starRatingPicker");
@@ -1060,6 +1073,8 @@
       if (enqForm) {
         enqForm.addEventListener("submit", async (e) => {
           e.preventDefault();
+          // Privacy consent must be ticked before any personal data is sent.
+          if (window.EssConsent && !window.EssConsent.check(enqForm)) return;
           const btn = document.getElementById("enqSubmitBtn");
           const alertEl = document.getElementById("enqAlert");
           const origHtml = btn ? btn.innerHTML : "";
@@ -1078,6 +1093,7 @@
             subject:
               document.getElementById("enqSubject").value.trim() || undefined,
             message: document.getElementById("enqMessage").value.trim(),
+            ...(window.EssConsent ? window.EssConsent.values(enqForm) : {}),
           };
 
           try {
@@ -1104,6 +1120,8 @@
                 );
               }
               enqForm.reset();
+            } else if (data.field === "consent_privacy" && window.EssConsent) {
+              window.EssConsent.showServerError(enqForm, data.message);
             } else {
               if (alertEl) {
                 alertEl.className =

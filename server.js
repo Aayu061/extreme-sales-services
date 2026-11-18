@@ -26,6 +26,7 @@ const {
     validateName,
     validateAddress,
     validateServiceType,
+    readConsent,
     isValidStatusTransition,
     generateSecureRequestId,
     validateProductInput
@@ -495,6 +496,11 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
         if (email && !validateEmail(email)) {
             return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
         }
+        // Public booking form: privacy consent is required (admin-created records use authenticated routes).
+        const consent = readConsent(req.body);
+        if (!consent.ok) {
+            return res.status(400).json({ success: false, field: 'consent_privacy', message: consent.message });
+        }
 
         const cleanCustomerPhone = cleanPhone(phone);
         const formattedPhone = cleanCustomerPhone.length === 10 ? cleanCustomerPhone : phone.trim();
@@ -502,7 +508,7 @@ app.post('/api/services', bookingLimiter, async (req, res) => {
         const signedPysMode = pysIntakeForwarder.isSignedMode();
 
         // Extra booking-form details (AC brand / tonnage / slot / date) kept so PYS gets structured data.
-        const bookingExtras = {};
+        const bookingExtras = { ...consent.fields };
         const pickText = (v, max) => (typeof v === 'string' || typeof v === 'number') ? String(v).trim().slice(0, max) : '';
         if (pickText(req.body.brand || req.body.acBrand, 60)) bookingExtras.ac_brand = pickText(req.body.brand || req.body.acBrand, 60);
         if (pickText(req.body.tons || req.body.acTons || req.body.tonnage, 20)) bookingExtras.ac_tonnage = pickText(req.body.tons || req.body.acTons || req.body.tonnage, 20);
@@ -2084,6 +2090,10 @@ app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
         if (!phone && !email) {
             return res.status(400).json({ success: false, message: "Please provide a valid phone number or email address." });
         }
+        const consent = readConsent(req.body);
+        if (!consent.ok) {
+            return res.status(400).json({ success: false, field: 'consent_privacy', message: consent.message });
+        }
 
         const cleanCustomerPhone = phone ? (cleanPhone(phone) || phone.trim()) : '';
         const effectiveServiceType = serviceType || service_type || undefined;
@@ -2103,7 +2113,8 @@ app.post('/api/enquiries', enquiryLimiter, async (req, res) => {
             serviceType: effectiveServiceType,
             message: effectiveMessage,
             status: "Open",
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            ...consent.fields
         };
         // The signed PYS intake needs a 10-digit mobile; email-only enquiries stay on the legacy path.
         const useSignedIntake = signedPysMode && Boolean(pysIntakeMapper.normalizeIndianMobile(newEnq.phone));
@@ -2427,6 +2438,10 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
     if (!validatePhone(phone)) {
         return res.status(400).json({ success: false, message: "Please provide a valid 10-digit mobile number." });
     }
+    const consent = readConsent(req.body);
+    if (!consent.ok) {
+        return res.status(400).json({ success: false, field: 'consent_privacy', message: consent.message });
+    }
     const formattedPhone = cleanPhone(phone) || phone.trim();
 
     const signedPysMode = pysIntakeForwarder.isSignedMode();
@@ -2444,7 +2459,8 @@ app.post('/api/amc/purchase', bookingLimiter, async (req, res) => {
         price: Number(price) || 0,
         status: "Pending",
         remaining_services: Number(services_per_year) || 4,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        ...consent.fields
     };
     if (signedPysMode) {
         newSub.pys_sync_status = 'PENDING_SYNC';

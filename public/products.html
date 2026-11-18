@@ -390,6 +390,17 @@
               <textarea id="enqMessage" title="Inquiry Message" rows="2" placeholder=" "></textarea>
               <label for="enqMessage">Message / Specific Requirements</label>
             </div>
+            <div class="consent-group" role="group" aria-label="Privacy consent">
+              <div class="consent-row">
+                <input type="checkbox" id="prodConsentPrivacy" name="consent_privacy" value="true" class="consent-check" data-consent="privacy" aria-required="true" aria-describedby="prodConsentPrivacyError">
+                <label for="prodConsentPrivacy">I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Notice<span class="sr-only"> (opens in a new tab)</span></a> and allow Extreme Sales &amp; Services to use these details to handle this request. <span aria-hidden="true">*</span></label>
+              </div>
+              <p id="prodConsentPrivacyError" class="consent-error" data-consent-error aria-live="polite"></p>
+              <div class="consent-row">
+                <input type="checkbox" id="prodConsentMarketing" name="consent_marketing" value="true" class="consent-check" data-consent="marketing">
+                <label for="prodConsentMarketing">Send me service reminders and offers by email (optional).</label>
+              </div>
+            </div>
             <button
               type="submit"
               class="w-full bg-[#A05B3A] hover:bg-[#944E2E] text-white font-bold py-3.5 rounded-xl shadow-[0_4px_14px_rgba(160,91,58,0.35)] transition"
@@ -434,6 +445,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/consent.js"></script>
     <script src="js/products.js"></script>
   </body>
 </html>

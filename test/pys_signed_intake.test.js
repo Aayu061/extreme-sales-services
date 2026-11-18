@@ -18,6 +18,7 @@ const jwt = require('jsonwebtoken');
 const client = require('../server/services/pysSignedClient');
 const mapper = require('../server/services/pysIntakeMapper');
 const forwarder = require('../server/services/pysIntakeForwarder');
+const { PRIVACY_NOTICE_VERSION } = require('../server/middleware/security');
 
 const KEY_ID = 'ess-web-test-key';
 const SECRET = 'unit-test-secret';
@@ -230,7 +231,8 @@ describe('pysIntakeMapper: ESS -> PYS field mapping', () => {
             request_id: 'AC-20261118-ABC234', name: ' Ravi Kumar ', phone: '9876543210', email: 'Ravi@Example.com',
             address: 'B-12, Chembur, Mumbai 400071', service_type: 'gas_refill',
             issue_description: '[Slot: Afternoon (12 PM - 4 PM)] [Brand: Voltas] [1.5T] Not cooling',
-            ac_brand: 'Voltas', ac_tonnage: '1.5', time_slot: 'Afternoon (12 PM - 4 PM)'
+            ac_brand: 'Voltas', ac_tonnage: '1.5', time_slot: 'Afternoon (12 PM - 4 PM)',
+            consent_privacy: true, consent_marketing: true, consent_at: '2026-11-19T10:00:00.000Z', privacy_notice_version: '2026-11-19'
         });
         assert.equal(r.ok, true);
         assert.deepEqual(r.body, {
@@ -244,7 +246,7 @@ describe('pysIntakeMapper: ESS -> PYS field mapping', () => {
                 message: '[Slot: Afternoon (12 PM - 4 PM)] [Brand: Voltas] [1.5T] Not cooling',
                 preferredSlot: 'AFTERNOON'
             },
-            consent: { privacy: true }
+            consent: { privacy: true, marketing: true, noticeVersion: '2026-11-19' }
         });
         assert.equal(mapper.idempotencyKeyFor('SERVICE_BOOKING', 'AC-20261118-ABC234'), 'ess-booking-AC-20261118-ABC234');
     });
@@ -286,6 +288,34 @@ describe('pysIntakeMapper: ESS -> PYS field mapping', () => {
         assert.equal(c.body.request.serviceCode, 'SVC-INSTALL');
         const e = mapper.buildEnquiryIntake({ id: 'enq-3', name: 'Sam', email: 'sam@example.com', message: 'hi' });
         assert.equal(e.ok, false);
+    });
+
+    test('consent: the record\'s real values are sent (marketing off by default)', () => {
+        const consentFields = { consent_privacy: true, consent_marketing: false, consent_at: '2026-11-19T10:00:00.000Z', privacy_notice_version: '2026-11-19' };
+        const amc = mapper.buildAmcRequestIntake({ id: 'sub-2', customer_name: 'Meera', phone: '9123456780', plan_name: 'SAMC 2', ...consentFields });
+        assert.deepEqual(amc.body.consent, { privacy: true, marketing: false, noticeVersion: '2026-11-19' });
+        const enq = mapper.buildEnquiryIntake({ id: 'enq-4', name: 'Sam', phone: '9876543210', message: 'hi', ...consentFields, consent_marketing: true });
+        assert.deepEqual(enq.body.consent, { privacy: true, marketing: true, noticeVersion: '2026-11-19' });
+    });
+
+    test('consent: a record saved without privacy consent is never forwarded', () => {
+        const r = mapper.buildServiceBookingIntake({
+            request_id: 'AC-NOCONSENT', name: 'Ravi', phone: '9876543210', address: 'Chembur', service_type: 'pm_dry',
+            consent_privacy: false, consent_marketing: true, privacy_notice_version: '2026-11-19'
+        });
+        assert.equal(r.ok, false);
+        assert.match(r.error, /privacy consent/i);
+        const versionOnly = mapper.buildEnquiryIntake({ id: 'enq-5', name: 'Sam', phone: '9876543210', privacy_notice_version: '2026-11-19' });
+        assert.equal(versionOnly.ok, false);
+    });
+
+    test('consent: legacy records (saved before the checkbox) keep implied privacy, marked LEGACY_IMPLIED', () => {
+        const r = mapper.buildServiceBookingIntake({ request_id: 'AC-OLD', name: 'Ravi', phone: '9876543210', address: 'Chembur', service_type: 'pm_dry' });
+        assert.equal(r.ok, true);
+        assert.deepEqual(r.body.consent, { privacy: true, noticeVersion: 'LEGACY_IMPLIED' });
+        assert.equal(mapper.LEGACY_NOTICE_VERSION, 'LEGACY_IMPLIED');
+        const old = mapper.buildAmcRequestIntake({ id: 'sub-old', customer_name: 'Meera', phone: '9123456780', plan_name: 'SAMC 1' });
+        assert.equal(old.body.consent.marketing, undefined, 'marketing is never implied');
     });
 });
 
@@ -345,7 +375,8 @@ describe('server.js: booking flow end to end (in-memory store, stubbed PYS)', ()
     const booking = {
         name: 'Ravi Kumar', email: 'ravi@example.com', phone: '9876543210', serviceType: 'pm_jet',
         brand: 'Voltas', tons: '1.5', address: 'B-12, Chembur, Mumbai 400071',
-        timeSlot: 'Morning (9 AM - 12 PM)', message: '[Slot: Morning (9 AM - 12 PM)] [Brand: Voltas] [1.5T] Water dripping'
+        timeSlot: 'Morning (9 AM - 12 PM)', message: '[Slot: Morning (9 AM - 12 PM)] [Brand: Voltas] [1.5T] Water dripping',
+        consent_privacy: true, consent_marketing: false
     };
 
     before(async () => {
@@ -399,6 +430,7 @@ describe('server.js: booking flow end to end (in-memory store, stubbed PYS)', ()
         assert.deepEqual(sent.ac, { brand: 'Voltas', tonnage: 1.5 });
         assert.equal(call.init.headers['Idempotency-Key'], `ess-booking-${res.body.requestId}`);
         assert.ok(verifySignature(call.init.headers, 'POST', '/api/v1/ess/intakes', call.init.body));
+        assert.deepEqual(sent.consent, { privacy: true, marketing: false, noticeVersion: PRIVACY_NOTICE_VERSION });
 
         // The tracking code works on the ESS status page lookup.
         const track = await request('GET', '/api/track?id=TRK-7Q2M');
@@ -436,13 +468,15 @@ describe('server.js: booking flow end to end (in-memory store, stubbed PYS)', ()
         process.env.PYS_INTEGRATION_KEY_ID = KEY_ID;
         process.env.PYS_INTEGRATION_SECRET = SECRET;
         pysMode = 'up';
-        const ok = await request('POST', '/api/enquiries', { name: 'Sam', phone: '9876543210', message: 'Need AMC quote' });
+        const ok = await request('POST', '/api/enquiries', { name: 'Sam', phone: '9876543210', message: 'Need AMC quote', consent_privacy: true, consent_marketing: true });
         assert.equal(ok.status, 201);
         assert.equal(ok.body.enquiryNumber, 'TRK-7Q2M');
-        assert.equal(JSON.parse(pysCalls[pysCalls.length - 1].init.body).kind, 'CONTACT');
+        const sentEnq = JSON.parse(pysCalls[pysCalls.length - 1].init.body);
+        assert.equal(sentEnq.kind, 'CONTACT');
+        assert.deepEqual(sentEnq.consent, { privacy: true, marketing: true, noticeVersion: PRIVACY_NOTICE_VERSION });
 
         pysMode = 'down';
-        const pending = await request('POST', '/api/enquiries', { name: 'Sam', phone: '9876543210', message: 'Need AMC quote' });
+        const pending = await request('POST', '/api/enquiries', { name: 'Sam', phone: '9876543210', message: 'Need AMC quote', consent_privacy: true });
         assert.equal(pending.status, 201);
         assert.equal(pending.body.enquiryNumber, null);
         assert.equal(pending.body.syncStatus, 'PENDING_SYNC');
@@ -454,7 +488,7 @@ describe('server.js: booking flow end to end (in-memory store, stubbed PYS)', ()
         pysMode = 'up';
         const res = await request('POST', '/api/amc/purchase', {
             name: 'Meera', phone: '9123456780', plan_id: 'amc-ord-4', plan_name: 'Ordinary 4 Services & Unlimited Complaints',
-            ac_type: 'split', tonnage: '1.5', price: 3000, address: 'Ghatkopar, Mumbai'
+            ac_type: 'split', tonnage: '1.5', price: 3000, address: 'Ghatkopar, Mumbai', consent: { privacy: true }
         });
         assert.equal(res.status, 200);
         assert.equal(res.body.trackingCode, 'TRK-7Q2M');
@@ -462,5 +496,45 @@ describe('server.js: booking flow end to end (in-memory store, stubbed PYS)', ()
         assert.equal(sent.kind, 'AMC_REQUEST');
         assert.equal(sent.request.amcPlanCode, 'ORD-4');
         assert.equal(pysCalls[pysCalls.length - 1].init.headers['Idempotency-Key'], `ess-amc-${res.body.subscription.id}`);
+        assert.deepEqual(sent.consent, { privacy: true, marketing: false, noticeVersion: PRIVACY_NOTICE_VERSION });
+        assert.equal(res.body.subscription.consent_privacy, true);
+        assert.equal(res.body.subscription.privacy_notice_version, PRIVACY_NOTICE_VERSION);
+    });
+
+    test('public forms without privacy consent are rejected with 400 and nothing is sent to PYS', async () => {
+        process.env.PYS_INTEGRATION_KEY_ID = KEY_ID;
+        process.env.PYS_INTEGRATION_SECRET = SECRET;
+        pysMode = 'up';
+        const before = pysCalls.length;
+        const { consent_privacy, ...noConsentBooking } = booking;
+        const submissions = [
+            ['/api/services', noConsentBooking],
+            ['/api/services', { ...booking, consent_privacy: false, consent_marketing: true }],
+            ['/api/enquiries', { name: 'Sam', phone: '9876543210', message: 'Need AMC quote' }],
+            ['/api/enquiries', { name: 'Sam', phone: '9876543210', message: 'Need AMC quote', consent: { privacy: false } }],
+            ['/api/amc/purchase', { name: 'Meera', phone: '9123456780', plan_name: 'SAMC 1', consent_privacy: 'no' }]
+        ];
+        for (const [path, body] of submissions) {
+            const res = await request('POST', path, body);
+            assert.equal(res.status, 400, `${path} must reject missing consent`);
+            assert.equal(res.body.success, false);
+            assert.equal(res.body.field, 'consent_privacy');
+            assert.match(res.body.message, /Privacy Notice/);
+        }
+        assert.equal(pysCalls.length, before, 'no PYS call for rejected submissions');
+    });
+
+    test('with consent: the booking stores consent_privacy, consent_marketing, consent_at and the notice version', async () => {
+        process.env.PYS_INTEGRATION_KEY_ID = '';
+        process.env.PYS_INTEGRATION_SECRET = '';
+        const res = await request('POST', '/api/services', { ...booking, consent_privacy: 'true', consent_marketing: 'on' });
+        assert.equal(res.status, 201);
+        const token = jwt.sign({ id: 'admin-1', role: 'admin', name: 'Admin' }, process.env.JWT_SECRET, { algorithm: 'HS256' });
+        const list = await request('GET', `/api/admin/requests?search=${res.body.requestId}`, null, token);
+        const rec = list.body.requests.find((r) => r.request_id === res.body.requestId);
+        assert.equal(rec.consent_privacy, true);
+        assert.equal(rec.consent_marketing, true);
+        assert.equal(rec.privacy_notice_version, PRIVACY_NOTICE_VERSION);
+        assert.equal(rec.consent_at, new Date(rec.consent_at).toISOString());
     });
 });

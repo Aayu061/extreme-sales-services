@@ -591,6 +591,18 @@
               <label for="custAddress">Complete Address &amp; Pincode (Mumbai / Thane / Navi Mumbai) *</label>
             </div>
 
+            <div class="consent-group" role="group" aria-label="Privacy consent">
+              <div class="consent-row">
+                <input type="checkbox" id="amcConsentPrivacy" name="consent_privacy" value="true" class="consent-check" data-consent="privacy" aria-required="true" aria-describedby="amcConsentPrivacyError">
+                <label for="amcConsentPrivacy">I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Notice<span class="sr-only"> (opens in a new tab)</span></a> and allow Extreme Sales &amp; Services to use these details to handle this request. <span aria-hidden="true">*</span></label>
+              </div>
+              <p id="amcConsentPrivacyError" class="consent-error" data-consent-error aria-live="polite"></p>
+              <div class="consent-row">
+                <input type="checkbox" id="amcConsentMarketing" name="consent_marketing" value="true" class="consent-check" data-consent="marketing">
+                <label for="amcConsentMarketing">Send me service reminders and offers by email (optional).</label>
+              </div>
+            </div>
+
             <button
               type="submit"
               class="w-full bg-[#A05B3A] hover:bg-[#8B4D2F] text-[#F2EDE3] py-3.5 rounded-xl text-sm font-bold shadow-md transition active:scale-[0.99] cursor-pointer"
@@ -618,6 +630,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/consent.js"></script>
     <script src="js/amc.js"></script>
   </body>
 </html>
