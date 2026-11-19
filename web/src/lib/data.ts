@@ -1,7 +1,8 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { pysRequest } from '@/lib/pys/client';
-import type { BusinessIdentity, Catalog, ContentBlock, HomeHero, Product, ServiceArea } from '@/lib/pys/types';
+import { activeOffers } from '@/lib/offers';
+import type { BusinessIdentity, Catalog, ContentBlock, HomeHero, HomeOffer, Product, ServiceArea } from '@/lib/pys/types';
 
 /**
  * Cached reads from PYS. Each read is kept for 5 minutes and served stale while it refreshes,
@@ -71,6 +72,18 @@ export const FALLBACK_HERO: HomeHero = {
   headline: 'What does your AC need?',
   subline: 'Servicing, repairs, AMC plans and new ACs across Mumbai, Thane and Navi Mumbai.',
 };
+
+/**
+ * Offers for the home banner: well-formed items that link inside the site and have not ended
+ * (India date). Cached like the rest, so an ended offer disappears within 5 minutes of midnight.
+ */
+export async function getHomeOffers(): Promise<HomeOffer[]> {
+  'use cache';
+  cacheLife(SITE_DATA_LIFE);
+  cacheTag('content');
+  const blocks = await getContentBlocks(['home.offers']);
+  return activeOffers((blocks['home.offers']?.body as { items?: unknown } | undefined)?.items, new Date());
+}
 
 export async function getSiteBasics(): Promise<{ identity: BusinessIdentity; hero: HomeHero }> {
   const blocks = await getContentBlocks(['business.identity', 'home.hero']);

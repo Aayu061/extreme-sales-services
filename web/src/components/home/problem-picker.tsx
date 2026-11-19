@@ -38,7 +38,7 @@ export function ProblemPicker({ chips, services }: { chips: ProblemChip[]; servi
           </p>
         )}
         {selected && (
-          <div className="rounded-card border border-line bg-paper p-5">
+          <div key={selected.id} className="pop-in rounded-card border border-sky/60 bg-cyan-wash/40 p-5">
             {'href' in selected ? (
               <>
                 <p className="text-lg font-semibold text-navy">{selected.label}</p>

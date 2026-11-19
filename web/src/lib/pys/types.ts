@@ -141,6 +141,17 @@ export interface HomeHero {
   subline: string;
 }
 
+/** One item of the "home.offers" content block (edited in ESS admin). Empty list = no banner. */
+export interface HomeOffer {
+  title: string;
+  text?: string | null;
+  /** Where the banner leads, e.g. "/amc" or "/book?service=SVC-JET-WASH". Site paths only. */
+  href?: string | null;
+  linkLabel?: string | null;
+  /** Last day of the offer (YYYY-MM-DD); the banner hides itself after this date. */
+  endsOn?: string | null;
+}
+
 export interface ServiceArea {
   pincodePrefix: string;
   label: string;

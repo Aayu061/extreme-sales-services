@@ -7,7 +7,8 @@ export function SiteFooter({ identity }: { identity: BusinessIdentity }) {
   const grievance = identity.grievanceOfficer;
   return (
     <footer className="mt-10 border-t border-line bg-paper">
-      <Container className="grid gap-8 py-10 text-sm text-slate sm:grid-cols-2 lg:grid-cols-4">
+      {/* Extra bottom space on phones so the floating Call / WhatsApp buttons never cover the links. */}
+      <Container className="grid gap-8 pt-10 pb-28 sm:pb-10 text-sm text-slate sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-1">
           <p className="font-semibold text-navy">{identity.legalName}</p>
           {identity.tradeName !== identity.legalName && <p>Trading as {identity.tradeName}</p>}

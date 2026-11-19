@@ -3,6 +3,8 @@ import { Archivo } from 'next/font/google';
 import { getSiteBasics, FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
+import { FloatingContact } from '@/components/site/floating-contact';
+import { THEME_SCRIPT } from '@/components/theme/theme-toggle';
 import './globals.css';
 
 /** One family, two widths: Archivo (body) and Archivo at 125% width (headings, hero numeral). */
@@ -39,10 +41,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#132a47' },
-  ],
+  themeColor: '#ffffff',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -51,7 +50,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { identity } = await getSiteBasics().catch(() => ({ identity: FALLBACK_IDENTITY, hero: FALLBACK_HERO }));
 
   return (
-    <html lang="en-IN" className={archivo.variable}>
+    // Light by default; the inline script applies a saved dark choice before the first paint.
+    <html lang="en-IN" data-theme="light" className={archivo.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh antialiased">
         <a href="#main" className="skip-link">
           Skip to content
@@ -59,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <SiteHeader phone={identity.phone} />
         <main id="main">{children}</main>
         <SiteFooter identity={identity} />
+        <FloatingContact phone={identity.phone} whatsapp={identity.whatsapp} />
       </body>
     </html>
   );

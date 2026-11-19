@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind's dark: follows the moon toggle (data-theme on <html>), not the device setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /*
  * ESS "Cool Air" design tokens (plan §5A.2). Colours sampled from the ESS logo (sky ≈ #1BA3E0,
  * navy ≈ #0B3C78) and tuned for contrast; every text/background pair meets WCAG AA.
@@ -22,22 +25,25 @@
   --cyan-wash: #e6f5f9;
   --copper-wash: #f7ece4;
   --focus: #1aa7c9;
+  /* Bright Cool Air: the bold blue of the ESS logo for the hero and call-to-action bands. */
+  --hero: #0b5aa8;
+  --hero-deep: #083f7a;
+  --sky: #1ba3e0;
+  --whatsapp: #1c8a4b;
+  /* Service icon tints (background) and inks (icon colour), one pair per kind of work. */
+  --tint-sky: #e3f3fc;
+  --tint-violet: #eeebfd;
+  --tint-mint: #e2f6ee;
+  --tint-amber: #fdf3dc;
+  --tint-coral: #fde9e6;
+  --ink-sky: #0a6fa8;
+  --ink-violet: #5b45c9;
+  --ink-mint: #177a52;
+  --ink-amber: #94600a;
+  --ink-coral: #b2392c;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --frost: #0b1a30;
-    --paper: #132a47;
-    --navy: #eaf2f8;
-    --slate: #a9bbcd;
-    --line: #26406a;
-    --deep-cyan: #46c3e0;
-    --deep-cyan-hover: #7ad6eb;
-    --copper: #e09a68;
-    --cyan-wash: #10344a;
-    --copper-wash: #3a2a20;
-  }
-}
 :root[data-theme="dark"] {
   --frost: #0b1a30;
   --paper: #132a47;
@@ -49,6 +55,19 @@
   --copper: #e09a68;
   --cyan-wash: #10344a;
   --copper-wash: #3a2a20;
+  --hero: #0b4a8f;
+  --hero-deep: #083a70;
+  --tint-sky: #12395c;
+  --tint-violet: #2a2550;
+  --tint-mint: #10392f;
+  --tint-amber: #3a2e12;
+  --tint-coral: #3d2124;
+  --ink-sky: #7cc8f0;
+  --ink-violet: #b4a8f5;
+  --ink-mint: #6fd6ad;
+  --ink-amber: #f0c060;
+  --ink-coral: #f3a19a;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -66,6 +85,20 @@
   --color-danger: var(--danger);
   --color-cyan-wash: var(--cyan-wash);
   --color-copper-wash: var(--copper-wash);
+  --color-hero: var(--hero);
+  --color-hero-deep: var(--hero-deep);
+  --color-sky: var(--sky);
+  --color-whatsapp: var(--whatsapp);
+  --color-tint-sky: var(--tint-sky);
+  --color-tint-violet: var(--tint-violet);
+  --color-tint-mint: var(--tint-mint);
+  --color-tint-amber: var(--tint-amber);
+  --color-tint-coral: var(--tint-coral);
+  --color-ink-sky: var(--ink-sky);
+  --color-ink-violet: var(--ink-violet);
+  --color-ink-mint: var(--ink-mint);
+  --color-ink-amber: var(--ink-amber);
+  --color-ink-coral: var(--ink-coral);
 
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 
@@ -145,7 +178,78 @@ p {
   top: 1rem;
 }
 
+/* Light is the default; the moon toggle sets data-theme="dark" on <html>. Show the matching logo. */
+.logo-dark {
+  display: none;
+}
+:root[data-theme="dark"] .logo-light {
+  display: none;
+}
+:root[data-theme="dark"] .logo-dark {
+  display: inline-block;
+}
+
+/* Cool air leaving the AC in the hero: dashes travel down each airflow line. */
+@keyframes airflow {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+.airflow path {
+  stroke-dasharray: 18 22;
+  animation: airflow 2.8s linear infinite;
+}
+.airflow path:nth-child(2) { animation-duration: 3.4s; }
+.airflow path:nth-child(3) { animation-duration: 2.4s; }
+.airflow path:nth-child(4) { animation-duration: 3.1s; }
+
+/* The picker's answer card appears where the customer tapped (answers their action). */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.pop-in {
+  animation: pop-in 220ms var(--ease-enter) both;
+}
+
+/* Brand strip: one slow, continuous scroll; pauses when the pointer is over it. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Sections rise in gently as they scroll into view (browsers without scroll timelines show them as is). */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .airflow path,
+  .marquee-track {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {
