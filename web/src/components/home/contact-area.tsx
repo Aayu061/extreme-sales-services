@@ -42,9 +42,11 @@ export function ContactArea({ identity }: { identity: BusinessIdentity }) {
               WhatsApp
             </a>
           </div>
-          <Link href="/book" className={`${buttonStyles({ size: 'lg' })} mt-auto self-start max-lg:mt-6`}>
-            Book a service
-          </Link>
+          <div className="mt-auto pt-8">
+            <Link href="/book" className={buttonStyles({ size: 'lg' })}>
+              Book a service
+            </Link>
+          </div>
         </div>
       </Container>
     </section>
