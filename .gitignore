@@ -38,3 +38,6 @@ yarn-error.log*
 ~$*.docx
 ~$*
 
+
+# Brainstorm mockups (local only)
+.superpowers/
