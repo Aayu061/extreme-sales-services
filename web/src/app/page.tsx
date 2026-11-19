@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ProductArt } from '@/components/shop/product-art';
-import { CalendarCheck, Phone, Tag } from 'lucide-react';
+import { CalendarCheck, Clock, Phone, Receipt, ShieldCheck, Tag } from 'lucide-react';
 import { Container } from '@/components/site/container';
 import { WhatsAppIcon } from '@/components/site/whatsapp-icon';
 import { HeroAc } from '@/components/home/hero-ac';
@@ -13,12 +13,15 @@ import { formatInr, lowestTotal, servicePriceText } from '@/lib/format';
 import { PROBLEM_CHIPS } from '@/lib/problems';
 import { cn } from '@/lib/cn';
 
-const STEPS = [
-  { title: 'Tell us what is wrong', text: 'Pick a problem or a service. You see the price before you book.' },
-  { title: 'We confirm your visit', text: 'Our team confirms the date and time with you.' },
-  { title: 'A technician comes over', text: 'The work is done at your home or office. Any extra repair is quoted first.' },
-  { title: 'Follow it online', text: 'Your tracking code shows every step, from booked to done.' },
-];
+function visitSteps(warrantyDays: number) {
+  const warranty = warrantyDays > 0 ? ` Our work has a ${warrantyDays}-day warranty.` : '';
+  return [
+    { title: 'Tell us what is wrong', text: 'Pick a problem or a service. You see the price before you book.' },
+    { title: 'We confirm your visit', text: 'Our team confirms the date and time with you.' },
+    { title: 'A technician comes over', text: `The work is done at your home or office. Any extra repair is quoted first.${warranty}` },
+    { title: 'Follow it online', text: 'Your tracking code shows every step, from booked to done.' },
+  ];
+}
 
 /**
  * Home, "Bright Cool Air": blue hero with the cooling AC, the problem picker, services with real
@@ -88,7 +91,22 @@ export default async function HomePage() {
                 WhatsApp
               </a>
             </div>
-            <p className="mt-6 text-white/75">Open {identity.hours}. All prices include GST.</p>
+            <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-white/90">
+              {identity.warrantyDays > 0 && (
+                <li className="inline-flex items-center gap-2">
+                  <ShieldCheck aria-hidden="true" size={20} className="text-[#8fdcf5]" />
+                  {identity.warrantyDays}-day warranty on our service work
+                </li>
+              )}
+              <li className="inline-flex items-center gap-2">
+                <Receipt aria-hidden="true" size={20} className="text-[#8fdcf5]" />
+                All prices include GST
+              </li>
+              <li className="inline-flex items-center gap-2">
+                <Clock aria-hidden="true" size={20} className="text-[#8fdcf5]" />
+                Open {identity.hours}
+              </li>
+            </ul>
           </div>
           <div className="mx-auto flex w-full max-w-80 justify-center sm:max-w-md lg:max-w-none lg:justify-end">
             <HeroAc />
@@ -289,7 +307,7 @@ export default async function HomePage() {
             How a visit works
           </h2>
           <ol className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((step, i) => (
+            {visitSteps(identity.warrantyDays).map((step, i) => (
               <li key={step.title} className="relative">
                 <span className="display tabular flex size-12 items-center justify-center rounded-full bg-hero text-xl text-white">
                   {i + 1}

@@ -64,7 +64,7 @@ export const FALLBACK_IDENTITY: BusinessIdentity = {
   whatsapp: '+91 7977805245',
   email: 'extremess0121@gmail.com',
   hours: 'Mon–Sat, 9:00 am – 7:00 pm',
-  warrantyDays: 30,
+  warrantyDays: 45,
   grievanceOfficer: { name: null, email: 'extremess0121@gmail.com', phone: '+91 7977805245' },
 };
 
