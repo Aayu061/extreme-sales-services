@@ -4,17 +4,13 @@ import type { Product } from '@/lib/pys/types';
 import { kindOf, type AcKind } from '@/lib/ac-kind';
 
 /**
- * Stock photos (Unsplash) were placeholders on the old site and often show no AC at all.
- * Until ESS uploads its own photos, those products get a drawn AC of the right kind instead.
+ * Only the product photos stored with this site (public/images/products/) are shown. Stock photos
+ * (Unsplash) and other websites' images get a drawn AC of the right kind instead.
  */
+const SITE_PHOTO = /^\/images\/products\/[A-Za-z0-9._-]+\.(jpe?g|png|webp|avif)$/;
+
 export function hasRealPhoto(p: Pick<Product, 'imageUrl'>): boolean {
-  if (!p.imageUrl) return false;
-  try {
-    const host = new URL(p.imageUrl).hostname;
-    return !(host === 'unsplash.com' || host.endsWith('.unsplash.com'));
-  } catch {
-    return false;
-  }
+  return Boolean(p.imageUrl && SITE_PHOTO.test(p.imageUrl) && !p.imageUrl.includes('..'));
 }
 
 function Drawing({ kind }: { kind: AcKind }) {
@@ -83,9 +79,9 @@ export function ProductArt({
   imageClassName?: string;
 }) {
   return (
-    <div className={cn('relative overflow-hidden bg-[linear-gradient(160deg,#eaf6fd,#d8ecf8)]', className)}>
+    <div className={cn('relative overflow-hidden', hasRealPhoto(product) ? 'bg-white' : 'bg-[linear-gradient(160deg,#eaf6fd,#d8ecf8)]', className)}>
       {hasRealPhoto(product) ? (
-        <Image src={product.imageUrl!} alt={product.name} fill sizes={sizes} className={cn('object-cover', imageClassName)} />
+        <Image src={product.imageUrl!} alt={product.name} fill sizes={sizes} className={cn('object-contain p-3', imageClassName)} />
       ) : (
         <svg viewBox="0 0 300 200" role="img" aria-label={product.name} className={cn('absolute inset-0 size-full', imageClassName)}>
           <Drawing kind={kindOf(product.name)} />
