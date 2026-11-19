@@ -9,7 +9,8 @@ const { POST } = await import('@/app/api/request/route');
 const valid = {
   kind: 'BASKET',
   ref: 'web-route-test-1',
-  items: [{ type: 'PRODUCT', ref: 'nlbvy46fALr4txUIZfqr', quantity: 1 }],
+  items: [{ type: 'SERVICE', ref: 'SVC-JET-WASH', quantity: 1 }],
+  address: { line: '12 Sea View, Chembur', city: 'Mumbai' },
   contact: { name: 'Asha Rao', phone: '+91 98765 43210' },
   consent: { privacy: true, marketing: false },
   hp: '',

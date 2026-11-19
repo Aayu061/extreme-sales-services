@@ -201,7 +201,7 @@ export interface TrackResult {
     type: string;
     name: string;
     quantity: number;
-    status: 'PENDING' | 'CONFIRMED' | 'SELLER_WILL_QUOTE' | 'DONE' | 'NOT_ACCEPTED' | 'CANCELLED';
+    status: 'PENDING' | 'CONFIRMED' | 'SELLER_WILL_QUOTE' | 'QUOTED' | 'DONE' | 'NOT_ACCEPTED' | 'CANCELLED';
     price: { total: number; label: string } | null;
   }>;
 }

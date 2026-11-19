@@ -37,6 +37,10 @@ export interface NewLine {
 }
 
 export const BASKET_KEY = 'ess-basket';
+/** New ACs are enquired about, not booked: they live in their own list. */
+export const ENQUIRY_KEY = 'ess-enquiry';
+export const BOOKING_TYPES: readonly LineType[] = ['SERVICE', 'AMC'];
+export const ENQUIRY_TYPES: readonly LineType[] = ['PRODUCT'];
 export const MAX_LINES = 30;
 export const MAX_QTY = 20;
 export const EMPTY_BASKET: Basket = Object.freeze({ v: 1, lines: [] }) as unknown as Basket;
@@ -59,17 +63,12 @@ function cleanAc(ac?: LineAc): LineAc | undefined {
   return out.type || out.tonnage !== undefined ? out : undefined;
 }
 
-export function addLine(b: Basket, line: NewLine): { basket: Basket; result: 'added' | 'increased' | 'full' } {
+/** Adds a line. Tapping Add again for the same item changes nothing ('exists'): quantity is set with the stepper. */
+export function addLine(b: Basket, line: NewLine): { basket: Basket; result: 'added' | 'exists' | 'full' } {
   const ac = cleanAc(line.ac);
   const key = lineKey(line.type, line.ref, ac);
   const qty = clampQty(line.quantity ?? 1);
-  const existing = b.lines.find((l) => l.key === key);
-  if (existing) {
-    return {
-      basket: { v: 1, lines: b.lines.map((l) => (l.key === key ? { ...l, quantity: clampQty(l.quantity + qty) } : l)) },
-      result: 'increased',
-    };
-  }
+  if (b.lines.some((l) => l.key === key)) return { basket: b, result: 'exists' };
   if (b.lines.length >= MAX_LINES) return { basket: b, result: 'full' };
   const next: BasketLine = { key, type: line.type, ref: line.ref, name: line.name, quantity: qty, ...(ac ? { ac } : {}) };
   return { basket: { v: 1, lines: [...b.lines, next] }, result: 'added' };
@@ -104,7 +103,7 @@ export function setLineAc(b: Basket, key: string, ac: LineAc | undefined): Baske
 }
 
 /** Reads a saved basket; anything broken, old or unexpected is dropped rather than trusted. */
-export function parseBasket(raw: string | null): Basket {
+export function parseBasket(raw: string | null, types: readonly LineType[] = LINE_TYPES): Basket {
   if (!raw) return EMPTY_BASKET;
   let data: unknown;
   try {
@@ -119,7 +118,7 @@ export function parseBasket(raw: string | null): Basket {
   for (const item of (data as { lines: unknown[] }).lines) {
     if (!item || typeof item !== 'object') continue;
     const l = item as Record<string, unknown>;
-    if (!LINE_TYPES.includes(l.type as LineType)) continue;
+    if (!types.includes(l.type as LineType)) continue;
     if (typeof l.ref !== 'string' || !l.ref.trim() || l.ref.length > 100) continue;
     if (typeof l.quantity !== 'number' || !Number.isInteger(l.quantity)) continue;
     const name = typeof l.name === 'string' ? l.name.slice(0, 200) : l.ref;
@@ -127,4 +126,16 @@ export function parseBasket(raw: string | null): Basket {
     basket = addLine(basket, { type: l.type as LineType, ref: l.ref.trim(), name, quantity: l.quantity, ac }).basket;
   }
   return basket.lines.length ? basket : EMPTY_BASKET;
+}
+
+/**
+ * Before the AC enquiry list existed, ACs were saved in the booking basket. This moves them across
+ * once. Returns null when there is nothing to move.
+ */
+export function splitLegacyBasket(basketRaw: string | null, enquiryRaw: string | null): { basket: Basket; enquiry: Basket } | null {
+  const legacy = parseBasket(basketRaw, ENQUIRY_TYPES);
+  if (!legacy.lines.length) return null;
+  let enquiry = parseBasket(enquiryRaw, ENQUIRY_TYPES);
+  for (const l of legacy.lines) enquiry = addLine(enquiry, l).basket;
+  return { basket: parseBasket(basketRaw, BOOKING_TYPES), enquiry };
 }

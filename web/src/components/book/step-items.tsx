@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { basketTotals, type PricedLine } from '@/lib/basket-pricing';
+import type { PricedLine } from '@/lib/basket-pricing';
 import type { AcType, LineAc } from '@/lib/basket';
-import { cn } from '@/lib/cn';
-import { formatInr } from '@/lib/format';
+import { formatInr, gstBreakupText } from '@/lib/format';
 
 const AC_OPTIONS: ReadonlyArray<{ value: AcType | ''; label: string }> = [
   { value: '', label: 'AC type' },
@@ -41,8 +40,6 @@ export function StepItems({
   onAc: (key: string, ac: LineAc | undefined) => void;
   onRemove: (key: string) => void;
 }) {
-  const totals = basketTotals(priced);
-
   if (priced.length === 0) {
     return (
       <div className="text-center">
@@ -83,6 +80,7 @@ export function StepItems({
                   ) : (
                     <p className="tabular mt-1 text-sm">
                       {p.unit === null ? 'Price after inspection' : `${formatInr(p.unit)} each`}
+                      {p.breakup && p.breakup.gst > 0 && <span className="block text-xs text-muted">{gstBreakupText(p.breakup)}</span>}
                       {p.unit !== null && l.quantity > 1 && <span className="text-muted"> · {formatInr(Math.round(p.unit * l.quantity * 100) / 100)}</span>}
                     </p>
                   )}
@@ -144,20 +142,6 @@ export function StepItems({
           );
         })}
       </ul>
-      <div className="mt-4 border-t border-line pt-4">
-        <p className="flex items-baseline justify-between gap-3">
-          <span className="font-semibold">Total</span>
-          {totals.known > 0 ? (
-            <span className="tabular text-2xl font-extrabold">
-              {formatInr(totals.known)} <span className="text-sm font-normal text-muted">incl. GST</span>
-            </span>
-          ) : (
-            <span className="text-lg font-bold">Price after inspection</span>
-          )}
-        </p>
-        {totals.hasUnpriced && totals.known > 0 && <p className="mt-1 text-sm text-muted">Some items are priced after inspection; we tell you before any work.</p>}
-        {totals.unavailable > 0 && <p className={cn('mt-1 text-sm font-semibold text-heat')}>Remove items that are no longer available to continue.</p>}
-      </div>
       <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
         <span className="text-muted">Add something else:</span>
         <Link href="/services" className="text-cool hover:underline">

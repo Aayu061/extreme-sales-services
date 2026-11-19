@@ -17,6 +17,7 @@ const fixture = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}.js
 const catalog = fixture('catalog');
 const products = fixture('products');
 const track = fixture('track');
+const trackEnquiry = fixture('track-enquiry');
 
 const content = {
   'business.identity': {
@@ -103,13 +104,15 @@ http
         });
         if (details.length) return fail(res, 422, 'VALIDATION_ERROR', 'Request validation failed', details);
         seq += 1;
-        return ok(res, { intakeNumber: `WEB-2026-LOCAL${seq}`, trackingCode: 'ESS-LOCL-DEV2', status: 'PENDING_REVIEW' }, 201);
+        const trackingCode = input.kind === 'PRODUCT_ENQUIRY' ? 'ESS-ENQR-DEV3' : 'ESS-LOCL-DEV2';
+        return ok(res, { intakeNumber: `WEB-2026-LOCAL${seq}`, trackingCode, status: 'PENDING_REVIEW' }, 201);
       }
       if (req.method === 'POST' && path === '/track') {
         // Test values: ESS-LOCL-DEV2 + 9876543210 finds the sample; 9999999999 is locked out.
         const { code, phone } = JSON.parse(body || '{}');
         if (phone === '9999999999') return fail(res, 429, 'TOO_MANY_ATTEMPTS', 'Too many attempts. Please try again in 30 minutes.');
         if (code === 'ESS-LOCL-DEV2' && phone === '9876543210') return ok(res, track);
+        if (code === 'ESS-ENQR-DEV3' && phone === '9876543210') return ok(res, trackEnquiry);
         return fail(res, 404, 'NOT_FOUND', 'No request matches this tracking code and mobile number.');
       }
       return fail(res, 404, 'NOT_FOUND', 'Not found');

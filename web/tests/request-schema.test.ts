@@ -31,10 +31,10 @@ describe('requestSchema', () => {
     expect(fieldErrors(r.error!.issues).address).toBeTruthy();
   });
 
-  it('does not need an address for ACs only', () => {
-    const r = requestSchema.safeParse({ ...base, kind: 'BASKET', items: [{ type: 'PRODUCT', ref: 'p1', quantity: 1 }] });
-    expect(r.success).toBe(true);
-    if (r.success) expect(r.data.contact.phone).toBe('9876543210');
+  it('refuses ACs in a booking (ACs are enquired about) and tidies the mobile', () => {
+    expect(requestSchema.safeParse({ ...base, kind: 'BASKET', items: [{ type: 'PRODUCT', ref: 'p1', quantity: 1 }], address }).success).toBe(false);
+    const r = requestSchema.parse({ ...base, kind: 'BASKET', items: [{ type: 'SERVICE', ref: 'SVC-GAS', quantity: 1 }], address });
+    expect(r.contact.phone).toBe('9876543210');
   });
 
   it('refuses a preferred date in the past (India time)', () => {
@@ -58,6 +58,34 @@ describe('requestSchema', () => {
   it('shows a friendly phone error', () => {
     const r = requestSchema.safeParse({ ...base, contact: { name: 'Asha', phone: '12345' }, kind: 'CONTACT', message: 'Please call me back' });
     expect(fieldErrors(r.error!.issues)['contact.phone']).toBe('Enter a valid 10-digit mobile number.');
+  });
+});
+
+describe('AC enquiry', () => {
+  const enquiry = { ...base, kind: 'PRODUCT_ENQUIRY', city: 'Thane', items: [{ type: 'PRODUCT', ref: 'p1', quantity: 2, notes: 'Installation needed' }, { type: 'PRODUCT', ref: 'p2', quantity: 1 }] };
+
+  it('accepts several ACs and only ACs, up to 10', () => {
+    expect(requestSchema.safeParse(enquiry).success).toBe(true);
+    expect(requestSchema.safeParse({ ...enquiry, items: [{ type: 'SERVICE', ref: 'SVC-GAS', quantity: 1 }] }).success).toBe(false);
+    const eleven = Array.from({ length: 11 }, (_, i) => ({ type: 'PRODUCT', ref: `p${i}`, quantity: 1 }));
+    expect(fieldErrors(requestSchema.safeParse({ ...enquiry, items: eleven }).error!.issues).items).toBe('An enquiry can have up to 10 ACs.');
+  });
+
+  it('builds the PYS enquiry body with the delivery area', () => {
+    const body = toPysIntake(requestSchema.parse({ ...enquiry, area: 'Vashi Sector 17', pincode: '400703', message: 'Need it this week' }), undefined) as Record<string, any>;
+    expect(body.kind).toBe('PRODUCT_ENQUIRY');
+    expect(body.items).toEqual([
+      { type: 'PRODUCT', productId: 'p1', quantity: 2, notes: 'Installation needed' },
+      { type: 'PRODUCT', productId: 'p2', quantity: 1 },
+    ]);
+    expect(body.address).toEqual({ line: 'Vashi Sector 17', city: 'Thane', pincode: '400703' });
+    expect(body.request).toEqual({ message: 'Need it this week' });
+  });
+
+  it('puts the city in the message when no area is given', () => {
+    const body = toPysIntake(requestSchema.parse(enquiry), undefined) as Record<string, any>;
+    expect(body.address).toBeUndefined();
+    expect(body.request.message).toBe('City: Thane');
   });
 });
 

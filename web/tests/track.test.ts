@@ -25,7 +25,8 @@ describe('visitText', () => {
 
 describe('ITEM_STATUS_LABEL', () => {
   it('has a plain label for every line status', () => {
-    expect(ITEM_STATUS_LABEL.SELLER_WILL_QUOTE).toBe('Seller will send a price');
+    expect(ITEM_STATUS_LABEL.SELLER_WILL_QUOTE).toBe("Waiting for the seller's price");
+    expect(ITEM_STATUS_LABEL.QUOTED).toBe('Price sent');
     expect(ITEM_STATUS_LABEL.PENDING).toBe('Waiting for confirmation');
   });
 });

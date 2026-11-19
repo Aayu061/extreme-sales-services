@@ -4,7 +4,8 @@ import type { TrackResult } from '@/lib/pys/types';
 export const ITEM_STATUS_LABEL: Record<TrackResult['items'][number]['status'], string> = {
   PENDING: 'Waiting for confirmation',
   CONFIRMED: 'Confirmed',
-  SELLER_WILL_QUOTE: 'Seller will send a price',
+  SELLER_WILL_QUOTE: "Waiting for the seller's price",
+  QUOTED: 'Price sent',
   DONE: 'Done',
   NOT_ACCEPTED: 'Not accepted',
   CANCELLED: 'Cancelled',
@@ -12,8 +13,8 @@ export const ITEM_STATUS_LABEL: Record<TrackResult['items'][number]['status'], s
 
 export const SLOT_LABEL: Record<string, string> = {
   MORNING: 'Morning (9–12)',
-  AFTERNOON: 'Afternoon (12–4)',
-  EVENING: 'Evening (4–7)',
+  AFTERNOON: 'Afternoon (12–3)',
+  EVENING: 'Evening (3–6:30)',
 };
 
 /** The six main steps from PYS, each marked done / current / still to come. */

@@ -8,7 +8,16 @@ import type { BasketLine, LineAc } from '@/lib/basket';
  */
 
 export type PricedLine =
-  | { line: BasketLine; status: 'ok'; unit: number | null; label: string; /** AC list could not be loaded, so this AC was not checked. */ unchecked?: boolean }
+  | {
+      line: BasketLine;
+      status: 'ok';
+      unit: number | null;
+      /** Before GST + GST for services and AMC plans; null for ACs and unpriced items. */
+      breakup: PriceBreakup | null;
+      label: string;
+      /** AC list could not be loaded, so this AC was not checked. */
+      unchecked?: boolean;
+    }
   | { line: BasketLine; status: 'unavailable' };
 
 /** AMC rate card sizes: "small" 0.75–1.0 ton, "large" 1.5–2.2 ton. */
@@ -44,28 +53,68 @@ export function priceLine(
   if (line.type === 'SERVICE') {
     const s = catalog.services.find((x) => x.code === line.ref && x.isActive && x.isPublic);
     if (!s) return { line, status: 'unavailable' };
-    return { line, status: 'ok', unit: servicePrice(s, line.ac)?.total ?? null, label: s.name };
+    const b = servicePrice(s, line.ac);
+    return { line, status: 'ok', unit: b?.total ?? null, breakup: b, label: s.name };
   }
   if (line.type === 'AMC') {
     const want = line.ref.toUpperCase();
     const plan = catalog.amcPlans.find((p) => p.code.toUpperCase() === want || p.planCode.toUpperCase() === want);
     if (!plan) return { line, status: 'unavailable' };
-    return { line, status: 'ok', unit: amcPrice(plan, line.ac)?.total ?? null, label: plan.name };
+    const b = amcPrice(plan, line.ac);
+    return { line, status: 'ok', unit: b?.total ?? null, breakup: b, label: plan.name };
   }
   const p = products.find((x) => x.id === line.ref);
-  if (!p && opts.productsUnknown) return { line, status: 'ok', unit: null, label: line.name, unchecked: true };
+  if (!p && opts.productsUnknown) return { line, status: 'ok', unit: null, breakup: null, label: line.name, unchecked: true };
   if (!p) return { line, status: 'unavailable' };
-  return { line, status: 'ok', unit: typeof p.price === 'number' && p.price > 0 ? p.price : null, label: p.name };
+  // AC prices are GST-inclusive retail prices; there is no separate GST figure for them.
+  return { line, status: 'ok', unit: typeof p.price === 'number' && p.price > 0 ? p.price : null, breakup: null, label: p.name };
 }
 
-export function basketTotals(lines: PricedLine[]): { known: number; hasUnpriced: boolean; unavailable: number } {
+export interface BasketTotals {
+  /** Total of every priced line, GST included. */
+  known: number;
+  /** Before GST and GST, for lines that have a GST breakup (services, AMC plans). */
+  base: number;
+  gst: number;
+  gstByRate: Array<{ rate: number; gst: number }>;
+  hasUnpriced: boolean;
+  unpricedCount: number;
+  unavailable: number;
+}
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+export function basketTotals(lines: PricedLine[]): BasketTotals {
   let known = 0;
-  let hasUnpriced = false;
+  let base = 0;
+  let gst = 0;
+  let unpricedCount = 0;
   let unavailable = 0;
+  const byRate = new Map<number, number>();
   for (const l of lines) {
     if (l.status === 'unavailable') unavailable++;
-    else if (l.unit === null) hasUnpriced = true;
-    else known += l.unit * l.line.quantity;
+    else if (l.unit === null) unpricedCount++;
+    else {
+      const q = l.line.quantity;
+      known += l.unit * q;
+      if (l.breakup) {
+        base += l.breakup.base * q;
+        gst += l.breakup.gst * q;
+        byRate.set(l.breakup.gstRatePercent, (byRate.get(l.breakup.gstRatePercent) ?? 0) + l.breakup.gst * q);
+      }
+    }
   }
-  return { known: Math.round(known * 100) / 100, hasUnpriced, unavailable };
+  return {
+    known: r2(known),
+    base: r2(base),
+    gst: r2(gst),
+    // Only rates where GST is actually charged get a row (some AMC prices carry 0 % GST).
+    gstByRate: [...byRate.entries()]
+      .filter(([, g]) => g > 0)
+      .sort((a, b) => a[0] - b[0])
+      .map(([rate, g]) => ({ rate, gst: r2(g) })),
+    hasUnpriced: unpricedCount > 0,
+    unpricedCount,
+    unavailable,
+  };
 }

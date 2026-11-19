@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AddToRequest } from '@/components/basket/add-to-request';
+import { AddToEnquiry } from '@/components/basket/add-to-request';
 import { formatInr } from '@/lib/format';
 import { starOf, tonnageOf } from '@/lib/shop';
 import type { Product } from '@/lib/pys/types';
@@ -38,7 +38,7 @@ export function ProductCard({ product: p }: { product: Product }) {
             <p className="text-lg font-bold">Price on request</p>
           )}
           <p className="mt-1 text-xs text-muted">Sold by {p.seller.name}</p>
-          <AddToRequest className="mt-3" label={p.price === null ? 'Ask for a price' : 'Add to request'} line={{ type: 'PRODUCT', ref: p.id, name: p.name }} />
+          <AddToEnquiry className="mt-3" label={p.price === null ? 'Ask for a price' : 'Add to enquiry'} line={{ type: 'PRODUCT', ref: p.id, name: p.name }} />
         </div>
       </div>
     </article>

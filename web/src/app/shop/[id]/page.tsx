@@ -5,7 +5,7 @@ import { Check, Phone } from 'lucide-react';
 import { PageBanner } from '@/components/site/page-banner';
 import { Container } from '@/components/site/container';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AddToRequest } from '@/components/basket/add-to-request';
+import { AddToEnquiry } from '@/components/basket/add-to-request';
 import { ProductArt } from '@/components/shop/product-art';
 import { ProductCard } from '@/components/shop/product-card';
 import { SellerDisclosure } from '@/components/shop/seller-disclosure';
@@ -127,7 +127,7 @@ async function ProductContent({ params }: Props) {
             )}
             <p className={p.inStock ? 'mt-2 text-sm font-semibold text-cool' : 'mt-2 text-sm font-semibold text-heat'}>{p.inStock ? 'In stock' : 'Out of stock: ask us when it is back'}</p>
           </div>
-          <AddToRequest className="mt-5" label={p.price === null ? 'Ask for a price' : 'Add to request'} line={{ type: 'PRODUCT', ref: p.id, name: p.name }} />
+          <AddToEnquiry className="mt-5" label={p.price === null ? 'Ask for a price' : 'Add to enquiry'} line={{ type: 'PRODUCT', ref: p.id, name: p.name }} />
           <a href={`tel:${tel}`} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cool underline-offset-4 hover:underline">
             <Phone aria-hidden="true" size={16} /> Questions? Call us
           </a>

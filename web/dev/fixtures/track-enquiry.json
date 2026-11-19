@@ -1,0 +1,23 @@
+{
+  "trackingCode": "ESS-ENQR-DEV3",
+  "intakeNumber": "WEB-2026-LOCAL9",
+  "kind": "PRODUCT_ENQUIRY",
+  "receivedAt": "2026-11-20T05:00:00.000Z",
+  "requestNumber": null,
+  "status": { "code": "CONFIRMED", "label": "Confirmed", "step": 2, "tone": "info", "sideState": false },
+  "steps": [
+    { "step": 1, "label": "Request received" },
+    { "step": 2, "label": "Confirmed" },
+    { "step": 3, "label": "Visit scheduled" },
+    { "step": 4, "label": "Technician assigned" },
+    { "step": 5, "label": "Work in progress" },
+    { "step": 6, "label": "Completed" }
+  ],
+  "preferred": { "date": null, "slot": null },
+  "visit": null,
+  "area": "Mumbai, Thane & Navi Mumbai",
+  "items": [
+    { "type": "PRODUCT", "name": "Daikin 1.0 Ton 3-Star Inverter Split AC (FTKL Series)", "quantity": 1, "status": "QUOTED", "price": { "total": 33500, "label": "Price from the seller" } },
+    { "type": "PRODUCT", "name": "Voltas 1.5 Ton 3-Star Window AC (Copper Condenser)", "quantity": 1, "status": "SELLER_WILL_QUOTE", "price": null }
+  ]
+}

@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button';
 import { priceLine } from '@/lib/basket-pricing';
 import type { NewLine } from '@/lib/basket';
 import { cn } from '@/lib/cn';
-import type { Catalog, Product } from '@/lib/pys/types';
+import type { Catalog } from '@/lib/pys/types';
 import { todayIst } from '@/lib/request-schema';
+import { BasketSummary } from './basket-summary';
 import { Confirmation } from './confirmation';
 import { StepDetails, EMPTY_DETAILS, type DetailsValue } from './step-details';
 import { StepItems } from './step-items';
@@ -19,8 +20,8 @@ import { StepWhere, EMPTY_WHERE, type WhereValue } from './step-where';
 type Step = 1 | 2 | 3;
 const STEP_NAMES = ['What you need', 'Where and when', 'Your details'] as const;
 
-/** Reads ?service= / ?amc= / ?product= from "Book this" links and turns it into a basket line. */
-function lineFromQuery(q: URLSearchParams, catalog: Pick<Catalog, 'services' | 'amcPlans'>, products: Product[]): NewLine | null {
+/** Reads ?service= / ?amc= from "Book this" links and turns it into a basket line. */
+function lineFromQuery(q: URLSearchParams, catalog: Pick<Catalog, 'services' | 'amcPlans'>): NewLine | null {
   const svc = q.get('service')?.toUpperCase();
   if (svc) {
     const s = catalog.services.find((x) => x.code === svc && x.isPublic && x.isActive);
@@ -30,11 +31,6 @@ function lineFromQuery(q: URLSearchParams, catalog: Pick<Catalog, 'services' | '
   if (amc) {
     const p = catalog.amcPlans.find((x) => x.code.toUpperCase() === amc || x.planCode.toUpperCase() === amc);
     return p ? { type: 'AMC', ref: p.code, name: p.name } : null;
-  }
-  const prod = q.get('product');
-  if (prod) {
-    const p = products.find((x) => x.id === prod);
-    return p ? { type: 'PRODUCT', ref: p.id, name: p.name } : null;
   }
   return null;
 }
@@ -50,25 +46,14 @@ function whereErrors(w: WhereValue): Record<string, string> {
 }
 
 /**
- * /book: the customer's whole request (services, AMC plans, new ACs) in three steps, sent to
- * PYS as one basket. ACs-only requests skip the visit step.
+ * /book: services and AMC plans in three steps, sent to PYS as one basket. New ACs are not booked
+ * here: they are enquired about on /enquiry.
  */
-export function BookFlow({
-  catalog,
-  products,
-  productsKnown = true,
-  phone,
-}: {
-  catalog: Pick<Catalog, 'services' | 'amcPlans'>;
-  products: Product[];
-  /** False when the AC list could not be loaded: ACs are not marked unavailable then. */
-  productsKnown?: boolean;
-  phone: string;
-}) {
+export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services' | 'amcPlans'>; phone: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const query = useSearchParams();
-  const { basket, add, remove, setQuantity, setAc, clear } = useBasket();
+  const { basket, add, has, remove, setQuantity, setAc, clear } = useBasket();
   const submit = useRequestSubmit();
   const [step, setStep] = useState<Step>(1);
   const [where, setWhere] = useState<WhereValue>(EMPTY_WHERE);
@@ -82,17 +67,18 @@ export function BookFlow({
   useEffect(() => {
     if (prefilled.current) return;
     prefilled.current = true;
-    const line = lineFromQuery(new URLSearchParams(query.toString()), catalog, products);
-    if (!query.toString()) return;
-    if (line && !basket.lines.some((l) => l.type === line.type && l.ref === line.ref)) add(line);
+    const q = new URLSearchParams(query.toString());
+    if (!q.toString()) return;
+    // Old AC links (?product=) belong to the enquiry page now.
+    const product = q.get('product');
+    if (product) return router.replace(`/enquiry?product=${encodeURIComponent(product)}`, { scroll: false });
+    const line = lineFromQuery(q, catalog);
+    // Checks the saved list itself, so a second "Book this" never adds a second one.
+    if (line && !has(line.type, line.ref)) add(line);
     router.replace(pathname, { scroll: false });
-  }, [query, catalog, products, basket, add, router, pathname]);
+  }, [query, catalog, has, add, router, pathname]);
 
-  const priced = useMemo(
-    () => basket.lines.map((l) => priceLine(l, catalog, products, { productsUnknown: !productsKnown })),
-    [basket, catalog, products, productsKnown],
-  );
-  const needsVisit = basket.lines.some((l) => l.type !== 'PRODUCT');
+  const priced = useMemo(() => basket.lines.map((l) => priceLine(l, catalog, [])), [basket, catalog]);
   const unavailable = priced.some((p) => p.status === 'unavailable');
   const errors = { ...submit.fields, ...localErrors };
 
@@ -116,7 +102,7 @@ export function BookFlow({
   };
 
   function next() {
-    if (step === 1) return goTo(needsVisit ? 2 : 3);
+    if (step === 1) return goTo(2);
     if (step === 2) {
       const e = whereErrors(where);
       if (Object.keys(e).length) return setLocalErrors(e);
@@ -129,20 +115,17 @@ export function BookFlow({
     const fields = await submit.send((ref) => ({
       kind: 'BASKET',
       ref,
-      items: basket.lines.map((l) => ({ type: l.type, ref: l.ref, quantity: l.quantity, ...(l.ac ? { ac: l.ac } : {}) })),
+      // The booking list only ever holds services and AMC plans (ACs live in the enquiry list).
+      items: basket.lines.map((l) => ({ type: l.type as 'SERVICE' | 'AMC', ref: l.ref, quantity: l.quantity, ...(l.ac ? { ac: l.ac } : {}) })),
       contact: { name: details.name, phone: details.phone, email: details.email },
-      ...(needsVisit
-        ? {
-            address: {
-              line: where.line,
-              area: where.area,
-              landmark: where.landmark,
-              city: where.city === 'Other' ? where.cityOther : where.city,
-              pincode: where.pincode.replace(/\s+/g, ''),
-            },
-            when: { date: where.date || undefined, slot: where.slot || undefined },
-          }
-        : {}),
+      address: {
+        line: where.line,
+        area: where.area,
+        landmark: where.landmark,
+        city: where.city === 'Other' ? where.cityOther : where.city,
+        pincode: where.pincode.replace(/\s+/g, ''),
+      },
+      when: { date: where.date || undefined, slot: where.slot || undefined },
       message: details.note,
       consent: { privacy: details.consent.privacy as true, marketing: details.consent.marketing },
       hp: details.consent.hp,
@@ -177,8 +160,7 @@ export function BookFlow({
       <ol className="mb-5 grid grid-cols-3 gap-2" aria-label="Steps">
         {STEP_NAMES.map((name, i) => {
           const n = (i + 1) as Step;
-          const skipped = n === 2 && !needsVisit;
-          const passed = n < step && !skipped;
+          const passed = n < step;
           return (
             <li key={name}>
               <button
@@ -189,14 +171,12 @@ export function BookFlow({
                 className={cn(
                   'glass flex w-full items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-sm text-ink disabled:cursor-default',
                   n === step && 'ring-2 ring-taxi',
-                  skipped && 'opacity-50',
                 )}
               >
                 <span className={cn('inline-flex size-7 shrink-0 items-center justify-center rounded-full font-bold', passed ? 'bg-cool text-white' : n === step ? 'bg-taxi text-taxi-ink' : 'bg-line text-muted')}>
                   {passed ? <Check aria-hidden="true" size={16} /> : n}
                 </span>
                 <span className="font-semibold max-sm:sr-only">{name}</span>
-                {skipped && <span className="sr-only"> (not needed for AC purchases)</span>}
               </button>
             </li>
           );
@@ -209,6 +189,8 @@ export function BookFlow({
         {step === 2 && <StepWhere value={where} onChange={setWhere} errors={errors} />}
         {step === 3 && <StepDetails value={details} onChange={setDetails} errors={errors} />}
 
+        {priced.length > 0 && <BasketSummary priced={priced} compact={step > 1} />}
+
         {submit.error && step === 3 && (
           <p role="alert" className="mt-5 rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
             {submit.error}
@@ -218,7 +200,7 @@ export function BookFlow({
         {priced.length > 0 && (
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             {step > 1 ? (
-              <Button variant="quiet" size="md" onClick={() => goTo(step === 3 && !needsVisit ? 1 : ((step - 1) as Step))}>
+              <Button variant="quiet" size="md" onClick={() => goTo((step - 1) as Step)}>
                 Back
               </Button>
             ) : (

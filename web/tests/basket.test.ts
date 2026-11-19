@@ -1,16 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { addLine, EMPTY_BASKET, lineKey, MAX_LINES, parseBasket, setLineAc, setQuantity, removeLine, type Basket } from '@/lib/basket';
+import {
+  addLine,
+  BOOKING_TYPES,
+  EMPTY_BASKET,
+  ENQUIRY_TYPES,
+  lineKey,
+  MAX_LINES,
+  parseBasket,
+  setLineAc,
+  setQuantity,
+  removeLine,
+  splitLegacyBasket,
+  type Basket,
+} from '@/lib/basket';
 
 const jet = { type: 'SERVICE' as const, ref: 'SVC-JET-WASH', name: 'Jet wash' };
 
 describe('basket lines', () => {
-  it('adding the same service twice raises its quantity', () => {
+  it('a second tap on the same item changes nothing', () => {
     const one = addLine(EMPTY_BASKET, jet);
     expect(one.result).toBe('added');
     const two = addLine(one.basket, jet);
-    expect(two.result).toBe('increased');
-    expect(two.basket.lines).toHaveLength(1);
-    expect(two.basket.lines[0].quantity).toBe(2);
+    expect(two.result).toBe('exists');
+    expect(two.basket).toBe(one.basket);
+    expect(two.basket.lines[0].quantity).toBe(1);
   });
 
   it('keeps the same service for different ACs as separate lines', () => {
@@ -20,8 +33,7 @@ describe('basket lines', () => {
   });
 
   it('never goes above 20 of one thing', () => {
-    let b = addLine(EMPTY_BASKET, { ...jet, quantity: 19 }).basket;
-    b = addLine(b, { ...jet, quantity: 5 }).basket;
+    const b = addLine(EMPTY_BASKET, { ...jet, quantity: 25 }).basket;
     expect(b.lines[0].quantity).toBe(20);
     expect(setQuantity(b, b.lines[0].key, 99).lines[0].quantity).toBe(20);
     expect(setQuantity(b, b.lines[0].key, 0).lines[0].quantity).toBe(1);
@@ -48,6 +60,33 @@ describe('basket lines', () => {
   it('removes a line', () => {
     const b = addLine(EMPTY_BASKET, jet).basket;
     expect(removeLine(b, b.lines[0].key).lines).toHaveLength(0);
+  });
+});
+
+describe('two lists: bookings and AC enquiries', () => {
+  const mixed = JSON.stringify({
+    v: 1,
+    lines: [
+      { key: 'a', type: 'SERVICE', ref: 'SVC-GAS', name: 'Gas', quantity: 1 },
+      { key: 'b', type: 'PRODUCT', ref: 'p1', name: 'AC one', quantity: 2 },
+    ],
+  });
+
+  it('keeps only the types a list allows', () => {
+    expect(parseBasket(mixed, BOOKING_TYPES).lines.map((l) => l.ref)).toEqual(['SVC-GAS']);
+    expect(parseBasket(mixed, ENQUIRY_TYPES).lines.map((l) => l.ref)).toEqual(['p1']);
+  });
+
+  it('moves ACs saved in the old single basket into the enquiry list once', () => {
+    const enquiry = JSON.stringify({ v: 1, lines: [{ key: 'c', type: 'PRODUCT', ref: 'p2', name: 'AC two', quantity: 1 }] });
+    const out = splitLegacyBasket(mixed, enquiry)!;
+    expect(out.basket.lines.map((l) => l.ref)).toEqual(['SVC-GAS']);
+    expect(out.enquiry.lines.map((l) => [l.ref, l.quantity])).toEqual([
+      ['p2', 1],
+      ['p1', 2],
+    ]);
+    expect(splitLegacyBasket(JSON.stringify(out.basket), JSON.stringify(out.enquiry))).toBeNull();
+    expect(splitLegacyBasket(null, null)).toBeNull();
   });
 });
 

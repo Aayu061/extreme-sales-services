@@ -59,7 +59,7 @@ export const AC_TYPES = ['SPLIT', 'WINDOW', 'CASSETTE', 'TOWER', 'UNKNOWN'] as c
 export const SLOTS = ['MORNING', 'AFTERNOON', 'EVENING'] as const;
 
 const item = z.object({
-  type: z.enum(['SERVICE', 'AMC', 'PRODUCT']),
+  type: z.enum(['SERVICE', 'AMC']),
   ref: z.string().trim().min(1).max(100),
   quantity: z.number().int().min(1).max(20),
   ac: z
@@ -68,6 +68,14 @@ const item = z.object({
       tonnage: z.number().positive().max(50).optional(),
     })
     .optional(),
+});
+
+/** One AC in an enquiry; notes carry e.g. "Installation needed". */
+const acItem = z.object({
+  type: z.literal('PRODUCT'),
+  ref: z.string().trim().min(1).max(100),
+  quantity: z.number().int().min(1).max(20),
+  notes: optText(500, 'Note is too long.'),
 });
 
 const basket = z
@@ -101,7 +109,8 @@ const basket = z
     message: optText(2000, 'Keep the note under 2000 characters.'),
   })
   .superRefine((v, ctx) => {
-    if (v.items.some((i) => i.type !== 'PRODUCT') && !v.address) {
+    // Every booking leads to a visit, so it needs the address.
+    if (!v.address) {
       ctx.addIssue({ code: 'custom', path: ['address'], message: 'Enter the address for the visit.' });
     }
   });
@@ -128,7 +137,17 @@ const seller = z.object({
   message: optText(1400, 'Keep the message under 1400 characters.'),
 });
 
-export const requestSchema = z.discriminatedUnion('kind', [basket, contact, seller]);
+const enquiry = z.object({
+  kind: z.literal('PRODUCT_ENQUIRY'),
+  ...common,
+  items: z.array(acItem).min(1, 'Your enquiry is empty.').max(10, 'An enquiry can have up to 10 ACs.'),
+  area: optText(300, 'Area is too long.'),
+  city: z.string({ message: 'Enter your city.' }).trim().min(2, 'Enter your city.').max(80),
+  pincode: z.preprocess(blank, z.string().trim().regex(/^[1-9]\d{5}$/, 'Pincode is 6 digits.').optional()),
+  message: optText(1900, 'Keep the message under 1900 characters.'),
+});
+
+export const requestSchema = z.discriminatedUnion('kind', [basket, enquiry, contact, seller]);
 export type SiteRequest = z.infer<typeof requestSchema>;
 /** What the browser fills in (before the phone is tidied). */
 export type SiteRequestInput = z.input<typeof requestSchema>;
@@ -162,6 +181,11 @@ export function toPysIntake(r: SiteRequest, clientIpHash: string | undefined): R
     if (r.when?.date) request.preferredDate = r.when.date;
     if (r.when?.slot) request.preferredSlot = r.when.slot;
     message = r.message;
+  } else if (r.kind === 'PRODUCT_ENQUIRY') {
+    body.items = r.items.map((i) => ({ type: 'PRODUCT', productId: i.ref, quantity: i.quantity, ...(i.notes ? { notes: i.notes } : {}) }));
+    // PYS needs a street line for an address; without an area the city goes in the message.
+    if (r.area && r.area.length >= 3) body.address = { line: r.area, city: r.city, ...(r.pincode ? { pincode: r.pincode } : {}) };
+    message = [!body.address ? `City: ${r.city}` : null, r.message].filter(Boolean).join('\n\n') || undefined;
   } else if (r.kind === 'CONTACT') {
     message = r.message;
   } else {

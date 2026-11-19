@@ -65,3 +65,25 @@ describe('basketTotals', () => {
     expect(t.unavailable).toBe(1);
   });
 });
+
+describe('payment breakdown', () => {
+  it('splits the total into before-GST and GST, and counts items priced later', () => {
+    const jet = fixtureCatalog.services.find((s) => s.code === 'SVC-JET-WASH')!.price!;
+    const amc = plan('ORD-4').rates.splitSmall!;
+    const t = basketTotals([
+      price(line('SERVICE', 'SVC-JET-WASH', undefined, 2)),
+      price(line('SERVICE', 'SVC-PCB')),
+      price(line('AMC', 'ORD-4', { type: 'SPLIT', tonnage: 1 })),
+    ]);
+    expect(t.base).toBeCloseTo(jet.base * 2 + amc.base, 2);
+    expect(t.gst).toBeCloseTo(jet.gst * 2 + amc.gst, 2);
+    expect(t.known).toBeCloseTo(t.base + t.gst, 2);
+    expect(t.unpricedCount).toBe(1);
+    expect(t.gstByRate).toEqual([{ rate: jet.gstRatePercent, gst: t.gst }]);
+  });
+
+  it('gives each priced service line its GST breakup', () => {
+    const p = price(line('SERVICE', 'SVC-JET-WASH'));
+    expect(p.status === 'ok' && p.breakup).toEqual(fixtureCatalog.services.find((s) => s.code === 'SVC-JET-WASH')!.price);
+  });
+});

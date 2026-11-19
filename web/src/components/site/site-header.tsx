@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { ThemeSwitch } from '@/components/theme/theme-switch';
-import { BasketPill } from '@/components/basket/basket-pill';
+import { BasketPill, EnquiryPill } from '@/components/basket/basket-pill';
 import { buttonStyles } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { Logo } from './logo';
@@ -63,6 +63,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <BasketPill />
+          <EnquiryPill />
           <ThemeSwitch />
           <Link href="/book" className={cn(buttonStyles({ size: 'sm' }), 'max-[760px]:hidden')}>
             Book a service

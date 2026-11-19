@@ -21,8 +21,8 @@ export const EMPTY_WHERE: WhereValue = { line: '', area: '', landmark: '', city:
 
 const SLOTS = [
   { value: 'MORNING', label: 'Morning (9–12)' },
-  { value: 'AFTERNOON', label: 'Afternoon (12–4)' },
-  { value: 'EVENING', label: 'Evening (4–7)' },
+  { value: 'AFTERNOON', label: 'Afternoon (12–3)' },
+  { value: 'EVENING', label: 'Evening (3–6:30)' },
 ] as const;
 
 const plusDays = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
