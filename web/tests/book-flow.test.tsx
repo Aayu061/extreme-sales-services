@@ -108,3 +108,38 @@ describe('StepWhere pincode note', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/serviceability/400071');
   });
 });
+
+describe('BookFlow review fixes', () => {
+  it('never shows a ₹0 total when nothing has a fixed price yet', () => {
+    saveBasket([{ type: 'SERVICE', ref: 'SVC-PCB', name: 'PCB repair' }]);
+    flow();
+    expect(screen.queryByText(/₹0/)).toBeNull();
+  });
+
+  it('lets ACs through with a note when the AC list could not be loaded', () => {
+    saveBasket([{ type: 'PRODUCT', ref: 'nlbvy46fALr4txUIZfqr', name: 'Daikin 1 ton' }]);
+    render(<BookFlow catalog={fixtureCatalog} products={[]} productsKnown={false} phone="+91 7977805245" />);
+    expect(screen.queryByText('No longer available')).toBeNull();
+    expect(screen.getByText("Couldn't check this AC right now; we'll confirm it when we call.")).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Continue' }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('keeps a PYS error on the right line after another line is removed', async () => {
+    saveBasket([
+      { type: 'PRODUCT', ref: 'nlbvy46fALr4txUIZfqr', name: 'Daikin' },
+      { type: 'PRODUCT', ref: 'CbGQjrQkG6M0D4zx9553', name: 'Voltas' },
+    ]);
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ error: 'Please check the highlighted details.', fields: { 'items.1': 'This AC is no longer available' } }), { status: 422 }));
+    flow();
+    click('Continue');
+    type(/^Your name/, 'Asha Rao');
+    type(/^Mobile number/, '9876543210');
+    act(() => fireEvent.click(screen.getByRole('checkbox', { name: /I agree that/ })));
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Send request' })));
+    expect(screen.getByText('This AC is no longer available')).toBeTruthy();
+    click(/^Remove Daikin/);
+    expect(screen.getByText('This AC is no longer available')).toBeTruthy();
+    click(/^Remove Voltas/);
+    expect(screen.queryByText('This AC is no longer available')).toBeNull();
+  });
+});

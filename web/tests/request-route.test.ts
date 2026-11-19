@@ -32,7 +32,7 @@ describe('POST /api/request', () => {
     expect(pysRequest).toHaveBeenCalledTimes(1);
     const [method, path, opts] = pysRequest.mock.calls[0];
     expect([method, path]).toEqual(['POST', '/intakes']);
-    expect(opts.headers['Idempotency-Key']).toBe('web-route-test-1');
+    expect(opts.headers['Idempotency-Key']).toMatch(/^web-route-test-1:[0-9a-f]{16}$/);
     expect(opts.body.externalReferenceId).toBe('web-route-test-1');
     expect(opts.body.meta.clientIpHash).toMatch(/^[0-9a-f]{64}$/);
     expect(opts.body.contact.phone).toBe('9876543210');
@@ -63,6 +63,35 @@ describe('POST /api/request', () => {
     const res = await post(valid);
     expect(res.status).toBe(502);
     expect((await res.json()).error).toBe('We could not send your request right now. Please try again in a minute, or call us.');
+  });
+
+  it('keeps one key per exact body, and a new key when the details change', async () => {
+    pysRequest.mockResolvedValue({ intakeNumber: 'WEB-1', trackingCode: 'ESS-AAAA-BBBB', status: 'PENDING_REVIEW' });
+    await post(valid);
+    await post(valid);
+    await post({ ...valid, items: [{ ...valid.items[0], quantity: 2 }] });
+    const keys = pysRequest.mock.calls.map((c) => c[2].headers['Idempotency-Key']);
+    expect(keys[1]).toBe(keys[0]);
+    expect(keys[2]).not.toBe(keys[0]);
+    for (const k of keys) expect(k).toMatch(/^[A-Za-z0-9_.:-]{8,200}$/);
+    expect(pysRequest.mock.calls.every((c) => c[2].body.externalReferenceId === 'web-route-test-1')).toBe(true);
+  });
+
+  it('asks the customer to wait when PYS is still working on the same request', async () => {
+    pysRequest.mockImplementation(async () => {
+      throw new PysError(409, 'REQUEST_IN_PROGRESS', 'busy');
+    });
+    const res = await post(valid);
+    expect(res.status).toBe(503);
+    expect((await res.json()).error).toBe('Your request is still being sent. Please wait a few seconds and tap Send again.');
+  });
+
+  it('shows a PYS message-length error on the message box', async () => {
+    pysRequest.mockImplementation(async () => {
+      throw new PysError(422, 'VALIDATION_ERROR', 'Request validation failed', [{ field: 'request.message', message: 'Too long' }]);
+    });
+    const res = await post(valid);
+    expect((await res.json()).fields.message).toBe('Too long');
   });
 
   it('answers 400 to a body that is not JSON', async () => {

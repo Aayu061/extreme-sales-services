@@ -44,6 +44,8 @@ const RETRY_DELAY_MS = 2_000;
 const API_PREFIX = '/api/v1/ess';
 
 const retryable = (status: number) => status >= 500 || status === 408 || status === 429;
+/** PYS answers 409 REQUEST_IN_PROGRESS while it is still storing the same idempotent write. */
+const inProgress = (e: PysError) => e.status === 409 && e.code === 'REQUEST_IN_PROGRESS';
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function pysRequest<T>(method: Method, path: string, opts: PysRequestOptions = {}): Promise<T> {
@@ -92,10 +94,10 @@ export async function pysRequest<T>(method: Method, path: string, opts: PysReque
         json?.error?.message ?? `PYS answered ${res.status}`,
         json?.error?.details,
       );
-      if (!retryable(res.status) || attempt === attempts) throw err;
+      if (!(retryable(res.status) || (canRetry && inProgress(err))) || attempt === attempts) throw err;
       lastError = err;
     } catch (err) {
-      if (err instanceof PysError && !retryable(err.status)) throw err;
+      if (err instanceof PysError && !retryable(err.status) && !(canRetry && inProgress(err))) throw err;
       lastError = err;
       if (attempt === attempts) break;
     } finally {

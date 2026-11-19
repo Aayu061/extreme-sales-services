@@ -124,7 +124,8 @@ const seller = z.object({
     ),
     sells: z.string({ message: 'Tell us what you sell.' }).trim().min(2, 'Tell us what you sell.').max(300),
   }),
-  message: optText(1500, 'Keep the message under 1500 characters.'),
+  // PYS takes 2000 characters in total; the business details use up to ~560 of them.
+  message: optText(1400, 'Keep the message under 1400 characters.'),
 });
 
 export const requestSchema = z.discriminatedUnion('kind', [basket, contact, seller]);

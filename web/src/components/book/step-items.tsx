@@ -35,7 +35,8 @@ export function StepItems({
   onRemove,
 }: {
   priced: PricedLine[];
-  lineErrors: Record<number, string>;
+  /** PYS errors per basket line, keyed by the line's key (so they stay on the right item). */
+  lineErrors: Record<string, string>;
   onQty: (key: string, q: number) => void;
   onAc: (key: string, ac: LineAc | undefined) => void;
   onRemove: (key: string) => void;
@@ -65,10 +66,10 @@ export function StepItems({
   return (
     <div>
       <ul className="divide-y divide-line">
-        {priced.map((p, i) => {
+        {priced.map((p) => {
           const l = p.line;
           const name = p.status === 'ok' ? p.label : l.name;
-          const error = lineErrors[i];
+          const error = lineErrors[l.key];
           return (
             <li key={l.key} className="py-4 first:pt-0">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -77,6 +78,8 @@ export function StepItems({
                   <p className="font-bold">{name}</p>
                   {p.status === 'unavailable' ? (
                     <p className="mt-1 text-sm font-semibold text-heat">No longer available</p>
+                  ) : p.unchecked ? (
+                    <p className="mt-1 text-sm text-muted">Couldn&apos;t check this AC right now; we&apos;ll confirm it when we call.</p>
                   ) : (
                     <p className="tabular mt-1 text-sm">
                       {p.unit === null ? 'Price after inspection' : `${formatInr(p.unit)} each`}
@@ -144,11 +147,15 @@ export function StepItems({
       <div className="mt-4 border-t border-line pt-4">
         <p className="flex items-baseline justify-between gap-3">
           <span className="font-semibold">Total</span>
-          <span className="tabular text-2xl font-extrabold">
-            {formatInr(totals.known)} <span className="text-sm font-normal text-muted">incl. GST</span>
-          </span>
+          {totals.known > 0 ? (
+            <span className="tabular text-2xl font-extrabold">
+              {formatInr(totals.known)} <span className="text-sm font-normal text-muted">incl. GST</span>
+            </span>
+          ) : (
+            <span className="text-lg font-bold">Price after inspection</span>
+          )}
         </p>
-        {totals.hasUnpriced && <p className="mt-1 text-sm text-muted">Some items are priced after inspection; we tell you before any work.</p>}
+        {totals.hasUnpriced && totals.known > 0 && <p className="mt-1 text-sm text-muted">Some items are priced after inspection; we tell you before any work.</p>}
         {totals.unavailable > 0 && <p className={cn('mt-1 text-sm font-semibold text-heat')}>Remove items that are no longer available to continue.</p>}
       </div>
       <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">

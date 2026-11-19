@@ -61,6 +61,21 @@ describe('requestSchema', () => {
   });
 });
 
+describe('seller message length', () => {
+  it('keeps the whole dealer message within what PYS accepts', () => {
+    const r = requestSchema.safeParse({ ...base, kind: 'SELLER_INTEREST', business: { name: 'Cool Traders', city: 'Thane', sells: 'ACs' }, message: 'x'.repeat(1401) });
+    expect(r.success).toBe(false);
+    expect(fieldErrors(r.error!.issues).message).toBeTruthy();
+    const ok = requestSchema.parse({
+      ...base,
+      kind: 'SELLER_INTEREST',
+      business: { name: 'x'.repeat(120), city: 'y'.repeat(80), gstin: '27ABCDE1234F1Z5', sells: 'z'.repeat(300) },
+      message: 'm'.repeat(1400),
+    });
+    expect(((toPysIntake(ok, undefined) as Record<string, any>).request.message as string).length).toBeLessThanOrEqual(2000);
+  });
+});
+
 describe('toPysIntake', () => {
   it('builds the PYS basket body', () => {
     const r = requestSchema.parse({

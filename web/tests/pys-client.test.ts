@@ -37,6 +37,16 @@ describe('PYS client', () => {
     expect(h['X-PYS-Signature']).toMatch(/^[0-9a-f]{64}$/);
   });
 
+  it('waits and retries a write PYS is still working on (same idempotency key)', async () => {
+    const { pysRequest } = await loadClient();
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(json(409, { success: false, error: { code: 'REQUEST_IN_PROGRESS', message: 'busy' } }))
+      .mockResolvedValueOnce(json(201, { success: true, data: 'stored' }));
+    await expect(pysRequest('POST', '/intakes', { fetchImpl, body: { a: 1 }, headers: { 'Idempotency-Key': 'web-abc:0123456789abcdef' } })).resolves.toBe('stored');
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
   it('retries a read once when PYS is waking up, with a fresh nonce', async () => {
     const { pysRequest } = await loadClient();
     const fetchImpl = vi

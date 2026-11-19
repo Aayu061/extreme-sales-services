@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 export default async function BookPage() {
   const [catalog, products, basics] = await Promise.all([
     getCatalog(),
-    getProducts().catch(() => []),
+    getProducts()
+      .then((list) => ({ list, known: true }))
+      .catch(() => ({ list: [], known: false })),
     getSiteBasics().catch(() => ({ identity: FALLBACK_IDENTITY, hero: FALLBACK_HERO })),
   ]);
   return (
@@ -28,7 +30,7 @@ export default async function BookPage() {
       />
       <Container className="max-w-[880px] py-8 sm:py-12">
         <Suspense fallback={<Skeleton className="h-96 rounded-[30px]" />}>
-          <BookFlow catalog={{ services: catalog.services, amcPlans: catalog.amcPlans }} products={products} phone={basics.identity.phone} />
+          <BookFlow catalog={{ services: catalog.services, amcPlans: catalog.amcPlans }} products={products.list} productsKnown={products.known} phone={basics.identity.phone} />
         </Suspense>
       </Container>
     </>

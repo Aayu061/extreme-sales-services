@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { hashClientIp } from '@/lib/client-ip';
 import { serverEnv } from '@/lib/env';
 import { PysError, pysRequest } from '@/lib/pys/client';
@@ -14,15 +15,18 @@ function pysFields(details: unknown): Record<string, string> {
   for (const d of details as Array<{ field?: unknown; message?: unknown }>) {
     if (typeof d?.field !== 'string' || typeof d.message !== 'string') continue;
     const m = d.field.match(/^items\.(\d+)\./);
-    out[m ? `items.${m[1]}` : d.field] ??= d.message;
+    const key = m ? `items.${m[1]}` : d.field === 'request.message' ? 'message' : d.field;
+    out[key] ??= d.message;
   }
   return out;
 }
 
 /**
  * Every form on the site (book, contact, sell) posts here. The request is checked, a hashed IP is
- * added, and it goes to the PYS approval inbox over the signed link. The form's reference doubles
- * as the idempotency key, so a retry after a timeout never creates a second request.
+ * added, and it goes to the PYS approval inbox over the signed link. The form's reference is the
+ * request's externalReferenceId, so PYS hands back the first request if it arrives again (no
+ * duplicates). The Idempotency-Key is that reference plus a fingerprint of the exact body: PYS
+ * refuses a reused key with a different body, and a retry always differs slightly (timer, IP).
  */
 export async function POST(request: Request): Promise<Response> {
   let raw: unknown;
@@ -41,12 +45,18 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const created = await pysRequest<IntakeCreated>('POST', '/intakes', {
       body,
-      headers: { 'Idempotency-Key': r.ref },
+      headers: { 'Idempotency-Key': `${r.ref.slice(0, 150)}:${createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0, 16)}` },
       timeoutMs: 70_000,
       retries: 1,
     });
     return Response.json({ intakeNumber: created.intakeNumber, trackingCode: created.trackingCode }, { headers: NO_STORE });
   } catch (err) {
+    if (err instanceof PysError && err.status === 409) {
+      return Response.json(
+        { error: 'Your request is still being sent. Please wait a few seconds and tap Send again.' },
+        { status: 503, headers: NO_STORE },
+      );
+    }
     if (err instanceof PysError && (err.status === 400 || err.status === 422)) {
       const fields = pysFields(err.details);
       if (Object.keys(fields).length) return Response.json({ error: CHECK, fields }, { status: 422, headers: NO_STORE });

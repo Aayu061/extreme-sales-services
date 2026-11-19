@@ -8,7 +8,7 @@ import type { BasketLine, LineAc } from '@/lib/basket';
  */
 
 export type PricedLine =
-  | { line: BasketLine; status: 'ok'; unit: number | null; label: string }
+  | { line: BasketLine; status: 'ok'; unit: number | null; label: string; /** AC list could not be loaded, so this AC was not checked. */ unchecked?: boolean }
   | { line: BasketLine; status: 'unavailable' };
 
 /** AMC rate card sizes: "small" 0.75–1.0 ton, "large" 1.5–2.2 ton. */
@@ -35,7 +35,12 @@ export function amcPrice(plan: CatalogAmcPlan, ac?: LineAc): PriceBreakup | null
   return null;
 }
 
-export function priceLine(line: BasketLine, catalog: Pick<Catalog, 'services' | 'amcPlans'>, products: Product[]): PricedLine {
+export function priceLine(
+  line: BasketLine,
+  catalog: Pick<Catalog, 'services' | 'amcPlans'>,
+  products: Product[],
+  opts: { productsUnknown?: boolean } = {},
+): PricedLine {
   if (line.type === 'SERVICE') {
     const s = catalog.services.find((x) => x.code === line.ref && x.isActive && x.isPublic);
     if (!s) return { line, status: 'unavailable' };
@@ -48,6 +53,7 @@ export function priceLine(line: BasketLine, catalog: Pick<Catalog, 'services' | 
     return { line, status: 'ok', unit: amcPrice(plan, line.ac)?.total ?? null, label: plan.name };
   }
   const p = products.find((x) => x.id === line.ref);
+  if (!p && opts.productsUnknown) return { line, status: 'ok', unit: null, label: line.name, unchecked: true };
   if (!p) return { line, status: 'unavailable' };
   return { line, status: 'ok', unit: typeof p.price === 'number' && p.price > 0 ? p.price : null, label: p.name };
 }

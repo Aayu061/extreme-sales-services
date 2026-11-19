@@ -63,7 +63,7 @@ export function SellerForm() {
       {text('What do you sell?', 'sells', { required: true, hint: 'e.g. split ACs, spares' })}
       <div className="sm:col-span-2">
         <Field label="Message (optional)" error={f.message}>
-          {({ id, describedBy, invalid }) => <Textarea id={id} maxLength={1500} aria-describedby={describedBy} aria-invalid={invalid || undefined} value={message} onChange={(e) => setMessage(e.target.value)} />}
+          {({ id, describedBy, invalid }) => <Textarea id={id} maxLength={1400} aria-describedby={describedBy} aria-invalid={invalid || undefined} value={message} onChange={(e) => setMessage(e.target.value)} />}
         </Field>
       </div>
       <div className="sm:col-span-2">

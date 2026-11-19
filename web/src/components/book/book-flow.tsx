@@ -53,7 +53,18 @@ function whereErrors(w: WhereValue): Record<string, string> {
  * /book: the customer's whole request (services, AMC plans, new ACs) in three steps, sent to
  * PYS as one basket. ACs-only requests skip the visit step.
  */
-export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 'services' | 'amcPlans'>; products: Product[]; phone: string }) {
+export function BookFlow({
+  catalog,
+  products,
+  productsKnown = true,
+  phone,
+}: {
+  catalog: Pick<Catalog, 'services' | 'amcPlans'>;
+  products: Product[];
+  /** False when the AC list could not be loaded: ACs are not marked unavailable then. */
+  productsKnown?: boolean;
+  phone: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const query = useSearchParams();
@@ -63,6 +74,7 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
   const [where, setWhere] = useState<WhereValue>(EMPTY_WHERE);
   const [details, setDetails] = useState<DetailsValue>(EMPTY_DETAILS);
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
+  const [lineErrors, setLineErrors] = useState<Record<string, string>>({});
   const panel = useRef<HTMLDivElement>(null);
   const prefilled = useRef(false);
 
@@ -76,15 +88,13 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
     router.replace(pathname, { scroll: false });
   }, [query, catalog, products, basket, add, router, pathname]);
 
-  const priced = useMemo(() => basket.lines.map((l) => priceLine(l, catalog, products)), [basket, catalog, products]);
+  const priced = useMemo(
+    () => basket.lines.map((l) => priceLine(l, catalog, products, { productsUnknown: !productsKnown })),
+    [basket, catalog, products, productsKnown],
+  );
   const needsVisit = basket.lines.some((l) => l.type !== 'PRODUCT');
   const unavailable = priced.some((p) => p.status === 'unavailable');
   const errors = { ...submit.fields, ...localErrors };
-  const lineErrors = Object.fromEntries(
-    Object.entries(submit.fields)
-      .filter(([k]) => /^items\.\d+$/.test(k))
-      .map(([k, v]) => [Number(k.split('.')[1]), v]),
-  ) as Record<number, string>;
 
   // Errors: focus the first highlighted field on the step being shown.
   useEffect(() => {
@@ -115,6 +125,7 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
   }
 
   async function send() {
+    const sentLines = basket.lines;
     const fields = await submit.send((ref) => ({
       kind: 'BASKET',
       ref,
@@ -137,6 +148,14 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
       hp: details.consent.hp,
       elapsedMs: submit.elapsedMs(),
     }));
+    // Item errors stick to their line (by key), so removing another line never moves them.
+    setLineErrors(
+      Object.fromEntries(
+        Object.entries(fields)
+          .filter(([k]) => /^items\.\d+$/.test(k) && sentLines[Number(k.split('.')[1])])
+          .map(([k, v]) => [sentLines[Number(k.split('.')[1])].key, v]),
+      ),
+    );
     // Go back to the step that holds the first problem (a removed item, or the address).
     const keys = Object.keys(fields);
     if (keys.some((k) => k.startsWith('items'))) setStep(1);

@@ -41,6 +41,17 @@ describe('priceLine (same rules as PYS basketPricing)', () => {
   });
 });
 
+describe('when the AC list could not be loaded', () => {
+  it('does not call ACs unavailable, it marks them unchecked', () => {
+    const p = priceLine(line('PRODUCT', 'nlbvy46fALr4txUIZfqr'), fixtureCatalog, [], { productsUnknown: true });
+    expect(p.status).toBe('ok');
+    if (p.status === 'ok') {
+      expect(p.unit).toBeNull();
+      expect(p.unchecked).toBe(true);
+    }
+  });
+});
+
 describe('basketTotals', () => {
   it('adds up known prices, flags unpriced lines and counts unavailable ones', () => {
     const t = basketTotals([
