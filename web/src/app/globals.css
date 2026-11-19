@@ -393,6 +393,20 @@ p {
   animation: banner-rise 0.6s var(--ease-enter) both;
 }
 
+/* Tracking: the current step breathes gently. */
+@keyframes track-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 201 21 / 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgb(255 201 21 / 0);
+  }
+}
+.track-current {
+  animation: track-pulse 2.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .banner-air::before {
     display: none;
