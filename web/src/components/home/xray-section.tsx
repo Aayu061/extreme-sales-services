@@ -245,9 +245,10 @@ export function XraySection({ services }: { services: PickerService[] }) {
                     key={p.id}
                     type="button"
                     onClick={() => select(p)}
+                    aria-pressed={selected?.id === p.id}
                     className={cn(
-                      'glass min-h-11 rounded-full px-4 text-sm font-semibold text-ink transition-colors',
-                      selected?.id === p.id && 'border-cool bg-cool text-[#0b0a1f]',
+                      'min-h-11 rounded-full px-4 text-sm font-semibold transition-colors',
+                      selected?.id === p.id ? 'border border-cool bg-cool text-white dark:text-[#0b0a1f]' : 'glass text-ink',
                     )}
                   >
                     {p.label}

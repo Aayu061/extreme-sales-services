@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore, type MouseEvent } from 'react';
 
 /** Saved theme key; the inline script in the root layout reads the same key before first paint. */
 export const THEME_KEY = 'ess-theme';
@@ -27,13 +27,28 @@ export function ThemeSwitch() {
   const night = theme === 'dark';
   const next: Theme = night ? 'light' : 'dark';
 
-  function toggle() {
+  function apply() {
     document.documentElement.setAttribute('data-theme', next);
     try {
       localStorage.setItem(THEME_KEY, next);
     } catch {
       // Private mode or blocked storage: the choice lasts for this visit only.
     }
+  }
+
+  /** The new mode spreads out in a circle from the switch (where the browser supports it). */
+  function toggle(e: MouseEvent<HTMLButtonElement>) {
+    const doc = document as Document & { startViewTransition?: (update: () => void) => unknown };
+    const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!doc.startViewTransition || reduce) {
+      apply();
+      return;
+    }
+    const r = e.currentTarget.getBoundingClientRect();
+    const root = document.documentElement.style;
+    root.setProperty('--vt-x', `${r.left + r.width / 2}px`);
+    root.setProperty('--vt-y', `${r.top + r.height / 2}px`);
+    doc.startViewTransition(apply);
   }
 
   return (
