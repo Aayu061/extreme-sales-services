@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+/* eslint-disable @typescript-eslint/no-explicit-any -- reading parsed JSON-LD / request bodies */
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import products from '../dev/fixtures/products.json';

@@ -99,8 +99,8 @@ export function setLineAc(b: Basket, key: string, ac: LineAc | undefined): Baske
         .map((l) => (l.key === newKey ? { ...l, quantity: clampQty(l.quantity + line.quantity) } : l)),
     };
   }
-  const { ac: _old, ...rest } = line;
-  return { v: 1, lines: b.lines.map((l) => (l.key === key ? { ...rest, key: newKey, ...(cleaned ? { ac: cleaned } : {}) } : l)) };
+  const moved: BasketLine = { key: newKey, type: line.type, ref: line.ref, name: line.name, quantity: line.quantity, ...(cleaned ? { ac: cleaned } : {}) };
+  return { v: 1, lines: b.lines.map((l) => (l.key === key ? moved : l)) };
 }
 
 /** Reads a saved basket; anything broken, old or unexpected is dropped rather than trusted. */

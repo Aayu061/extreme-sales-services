@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- reading parsed request bodies */
 import { describe, expect, it } from 'vitest';
 import { fieldErrors, normalizeIndianMobile, requestSchema, todayIst, toPysIntake } from '@/lib/request-schema';
 

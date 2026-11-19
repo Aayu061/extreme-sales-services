@@ -31,16 +31,18 @@ export function useRequestSubmit() {
 
   const elapsedMs = useCallback(() => (startedAt.current === null ? 0 : Date.now() - startedAt.current), []);
 
-  const send = useCallback(async (build: (ref: string) => SiteRequestInput) => {
-    if (busy.current) return;
+  /** Resolves with the field errors (empty when sent or ignored) so a form can jump to them. */
+  const send = useCallback(async (build: (ref: string) => SiteRequestInput): Promise<Record<string, string>> => {
+    if (busy.current) return {};
     ref.current ??= newRef();
     const body = build(ref.current);
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) {
-      setFields(fieldErrors(parsed.error.issues));
+      const f = fieldErrors(parsed.error.issues);
+      setFields(f);
       setError('Please check the highlighted details.');
       setState('error');
-      return;
+      return f;
     }
     busy.current = true;
     setState('sending');
@@ -53,14 +55,16 @@ export function useRequestSubmit() {
         setResult({ trackingCode: json.trackingCode, intakeNumber: json.intakeNumber ?? '' });
         setState('done');
         ref.current = null;
-      } else {
-        setError(json.error ?? 'We could not send your request right now. Please try again in a minute, or call us.');
-        setFields(json.fields ?? {});
-        setState('error');
+        return {};
       }
+      setError(json.error ?? 'We could not send your request right now. Please try again in a minute, or call us.');
+      setFields(json.fields ?? {});
+      setState('error');
+      return json.fields ?? {};
     } catch {
       setError('We could not reach our server. Check your internet and try again, or call us.');
       setState('error');
+      return {};
     } finally {
       busy.current = false;
     }

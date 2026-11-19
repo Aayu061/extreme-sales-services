@@ -86,13 +86,7 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
       .map(([k, v]) => [Number(k.split('.')[1]), v]),
   ) as Record<number, string>;
 
-  // Server or form errors: go to the step that holds the first one, then focus it.
-  useEffect(() => {
-    const keys = Object.keys(submit.fields);
-    if (!keys.length) return;
-    if (keys.some((k) => k.startsWith('items'))) setStep(1);
-    else if (keys.some((k) => k.startsWith('address') || k.startsWith('when'))) setStep(2);
-  }, [submit.fields]);
+  // Errors: focus the first highlighted field on the step being shown.
   useEffect(() => {
     panel.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
   }, [submit.fields, localErrors, step]);
@@ -120,8 +114,8 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
     }
   }
 
-  function send() {
-    void submit.send((ref) => ({
+  async function send() {
+    const fields = await submit.send((ref) => ({
       kind: 'BASKET',
       ref,
       items: basket.lines.map((l) => ({ type: l.type, ref: l.ref, quantity: l.quantity, ...(l.ac ? { ac: l.ac } : {}) })),
@@ -143,6 +137,10 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
       hp: details.consent.hp,
       elapsedMs: submit.elapsedMs(),
     }));
+    // Go back to the step that holds the first problem (a removed item, or the address).
+    const keys = Object.keys(fields);
+    if (keys.some((k) => k.startsWith('items'))) setStep(1);
+    else if (keys.some((k) => k.startsWith('address') || k.startsWith('when'))) setStep(2);
   }
 
   if (submit.state === 'done' && submit.result) {
@@ -212,7 +210,7 @@ export function BookFlow({ catalog, products, phone }: { catalog: Pick<Catalog, 
                 Continue
               </Button>
             ) : (
-              <Button size="lg" onClick={send} disabled={sending || unavailable}>
+              <Button size="lg" onClick={() => void send()} disabled={sending || unavailable}>
                 {sending ? 'Sending… this can take up to a minute' : 'Send request'}
               </Button>
             )}
