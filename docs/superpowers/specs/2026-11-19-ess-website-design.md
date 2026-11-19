@@ -64,7 +64,7 @@ Layers, back to front
 5. Glass UI: nav pill, headline panel, "What's wrong?" dock, offer card.
 
 Content
-- Headline "Stay cool this Mumbai season." (from content block `home.hero`, editable), subline about services and areas.
+- Headline "What does your AC need?" (owner decided 2026-11-19; from content block `home.hero`, editable), subline about services and areas.
 - Buttons: **Book a service** (yellow, primary) and **Buy an AC** (glass).
 - Fact chips: 45-day warranty on our work (value from `warrantyDays`), Prices include GST, opening hours.
 - "What's wrong?" dock: Not cooling, Leaking, Noisy, Bad smell, Service due, Needs gas, each with a small looping icon. Tapping shows the matching service name and live price (from `/catalog`, mapping in `lib/problems.ts`) with Book this. Phones: 3×2 grid, icon above label.
