@@ -4,6 +4,7 @@ import { CalendarCheck, Clock, Phone, Receipt, ShieldCheck, Tag } from 'lucide-r
 import { Container } from '@/components/site/container';
 import { WhatsAppIcon } from '@/components/site/whatsapp-icon';
 import { Hero } from '@/components/home/hero/hero';
+import { XraySection } from '@/components/home/xray-section';
 import type { PickerService } from '@/lib/answer';
 import { ServiceIcon } from '@/components/home/service-icon';
 import { BrandStrip } from '@/components/home/brand-strip';
@@ -86,52 +87,7 @@ export default async function HomePage() {
         </Container>
       )}
 
-      {/* Services */}
-      <section aria-labelledby="services-heading" className="reveal py-16 sm:py-20">
-        <Container>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 id="services-heading" className="text-3xl">
-                Services and prices
-              </h2>
-              <p className="mt-2 max-w-prose text-slate">Prices include 18% GST. Tap a service to see what is included.</p>
-            </div>
-            <ButtonLink href="/services" variant="glass">
-              All services
-            </ButtonLink>
-          </div>
-
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {pricedServices.map((s) => (
-              <li key={s.code}>
-                <Link
-                  href={`/services/${s.code.toLowerCase()}`}
-                  className="group flex h-full flex-col rounded-card border border-line bg-paper p-5 transition-[transform,border-color,box-shadow] duration-200 ease-standard hover:-translate-y-1 hover:border-sky hover:shadow-[0_14px_30px_-18px_rgb(8_60_120/0.5)] active:translate-y-0"
-                >
-                  <ServiceIcon code={s.code} category={s.category} />
-                  <span className="mt-4 text-lg font-semibold text-navy">{s.name}</span>
-                  {s.shortDescription && <span className="mt-1 line-clamp-2 text-slate">{s.shortDescription}</span>}
-                  <span className="tabular mt-auto pt-4 font-semibold text-navy">{servicePriceText(s)}</span>
-                </Link>
-              </li>
-            ))}
-            {repairs.length > 0 && (
-              <li className="sm:col-span-2 lg:col-span-4">
-                <Link
-                  href="/services#repairs"
-                  className="flex flex-wrap items-center gap-4 rounded-card border border-line bg-paper p-5 transition-[border-color,box-shadow] duration-200 hover:border-sky hover:shadow-[0_14px_30px_-18px_rgb(8_60_120/0.5)]"
-                >
-                  <ServiceIcon code={repairs[0].code} category="REPAIR" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-lg font-semibold text-navy">Repairs</span>
-                    <span className="block text-slate">{repairs.map((r) => r.name).join(', ')}. Priced after the diagnosis visit.</span>
-                  </span>
-                </Link>
-              </li>
-            )}
-          </ul>
-        </Container>
-      </section>
+      <XraySection services={pickerServices} />
 
       {/* Plans and new ACs */}
       <section aria-label="AMC plans and new ACs" className="reveal pb-16 sm:pb-20">
