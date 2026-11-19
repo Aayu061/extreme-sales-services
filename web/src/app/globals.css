@@ -211,6 +211,44 @@ p {
   animation: pop-in 220ms var(--ease-enter) both;
 }
 
+/* Hero photos: show the one for the current theme; it fades in when it appears. */
+@keyframes photo-in {
+  from {
+    opacity: 0;
+  }
+}
+.photo-night,
+:root[data-theme="dark"] .photo-day {
+  display: none;
+}
+:root[data-theme="dark"] .photo-night {
+  display: block;
+}
+.hero-photo {
+  animation: photo-in 0.9s ease both;
+}
+/* Flap-closed layer: only the AC area shows (ellipse set by the hero scene). */
+.hero-closed {
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(var(--acrx, 0px) var(--acry, 0px) at var(--acx, 0px) var(--acy, 0px), #000 70%, transparent 100%);
+  mask-image: radial-gradient(var(--acrx, 0px) var(--acry, 0px) at var(--acx, 0px) var(--acy, 0px), #000 70%, transparent 100%);
+}
+/* Readability shade behind the headline panel. */
+.hero-shade {
+  background: linear-gradient(90deg, rgb(255 250 240 / 0.55) 0%, rgb(255 250 240 / 0.2) 38%, rgb(255 250 240 / 0) 60%);
+}
+:root[data-theme="dark"] .hero-shade {
+  background: linear-gradient(90deg, rgb(4 8 24 / 0.72) 0%, rgb(4 8 24 / 0.38) 38%, rgb(4 8 24 / 0) 62%);
+}
+@media (max-width: 760px) {
+  .hero-shade {
+    background: linear-gradient(0deg, rgb(255 250 240 / 0.6) 0%, rgb(255 250 240 / 0) 55%);
+  }
+  :root[data-theme="dark"] .hero-shade {
+    background: linear-gradient(0deg, rgb(4 8 24 / 0.75) 0%, rgb(4 8 24 / 0) 55%);
+  }
+}
+
 /* "What's wrong?" dock icons: each shows its problem moving. */
 @keyframes dock-drip {
   50% {

@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
   images: {
     // Product photos are still hosted externally (to be replaced with ESS's own photos in Stage D).
     remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
+    // Hero photos are served at 70; product photos at the default 75.
+    qualities: [70, 75],
   },
   async headers() {
     return [

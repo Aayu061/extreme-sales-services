@@ -3,14 +3,13 @@ import { ProductArt } from '@/components/shop/product-art';
 import { CalendarCheck, Clock, Phone, Receipt, ShieldCheck, Tag } from 'lucide-react';
 import { Container } from '@/components/site/container';
 import { WhatsAppIcon } from '@/components/site/whatsapp-icon';
-import { HeroAc } from '@/components/home/hero-ac';
-import { ProblemPicker, type PickerService } from '@/components/home/problem-picker';
+import { Hero } from '@/components/home/hero/hero';
+import type { PickerService } from '@/lib/answer';
 import { ServiceIcon } from '@/components/home/service-icon';
 import { BrandStrip } from '@/components/home/brand-strip';
 import { ButtonLink, buttonStyles } from '@/components/ui/button';
-import { getCatalog, getHomeOffers, getProducts, getSiteBasics, FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
+import { getCatalog, getHeroCard, getHomeOffers, getProducts, getSiteBasics, FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
 import { formatInr, lowestTotal, servicePriceText } from '@/lib/format';
-import { PROBLEM_CHIPS } from '@/lib/problems';
 import { cn } from '@/lib/cn';
 
 function visitSteps(warrantyDays: number) {
@@ -29,21 +28,23 @@ function visitSteps(warrantyDays: number) {
  * Every price comes from PYS; nothing here promises times or guarantees the business has not confirmed.
  */
 export default async function HomePage() {
-  const [catalog, products, basics, offers] = await Promise.all([
+  const [catalog, products, basics, offers, heroCard] = await Promise.all([
     getCatalog(),
     getProducts().catch(() => []),
     getSiteBasics().catch(() => ({ hero: FALLBACK_HERO, identity: FALLBACK_IDENTITY })),
     getHomeOffers().catch(() => []),
+    getHeroCard(),
   ]);
   const { hero, identity } = basics;
 
   const publicServices = catalog.services.filter((s) => s.isPublic && s.isActive).sort((a, b) => a.displayOrder - b.displayOrder);
-  const pickerServices: PickerService[] = publicServices.map(({ code, name, shortDescription, pricingModel, price }) => ({
+  const pickerServices: PickerService[] = publicServices.map(({ code, name, shortDescription, pricingModel, price, category }) => ({
     code,
     name,
     shortDescription,
     pricingModel,
     price,
+    category,
   }));
   const pricedServices = publicServices.filter((s) => s.pricingModel !== 'QUOTE_AFTER_DIAGNOSIS');
   const repairs = publicServices.filter((s) => s.pricingModel === 'QUOTE_AFTER_DIAGNOSIS');
@@ -61,73 +62,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section aria-labelledby="hero-heading" className="relative overflow-hidden bg-hero text-white">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60rem_30rem_at_85%_-10%,rgb(27_163_224/0.55),transparent_60%)]"
-        />
-        <Container className="relative grid items-center gap-10 pt-12 pb-28 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:pb-36">
-          <div>
-            <h1 id="hero-heading" className="text-[clamp(2.4rem,6vw,4rem)] leading-[1.04] text-white">
-              {hero.headline}
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/85 sm:text-xl">{hero.subline}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <ButtonLink href="/book" variant="taxi" size="lg">
-                Book a service
-              </ButtonLink>
-              <a href={`tel:${tel}`} className={buttonStyles({ variant: 'glass', size: 'lg' })}>
-                <Phone aria-hidden="true" size={20} />
-                Call us
-              </a>
-              <a
-                href={`https://wa.me/${wa}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonStyles({ variant: 'glass', size: 'lg' })}
-              >
-                <WhatsAppIcon size={20} />
-                WhatsApp
-              </a>
-            </div>
-            <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-white/90">
-              {identity.warrantyDays > 0 && (
-                <li className="inline-flex items-center gap-2">
-                  <ShieldCheck aria-hidden="true" size={20} className="text-[#8fdcf5]" />
-                  {identity.warrantyDays}-day warranty on our service work
-                </li>
-              )}
-              <li className="inline-flex items-center gap-2">
-                <Receipt aria-hidden="true" size={20} className="text-[#8fdcf5]" />
-                All prices include GST
-              </li>
-              <li className="inline-flex items-center gap-2">
-                <Clock aria-hidden="true" size={20} className="text-[#8fdcf5]" />
-                Open {identity.hours}
-              </li>
-            </ul>
-          </div>
-          <div className="mx-auto flex w-full max-w-80 justify-center sm:max-w-md lg:max-w-none lg:justify-end">
-            <HeroAc />
-          </div>
-        </Container>
-      </section>
-
-      {/* Problem picker, lifted onto the hero */}
-      <Container className="relative z-10 -mt-20 lg:-mt-24">
-        <section
-          aria-labelledby="picker-heading"
-          className="rounded-sheet border border-line bg-paper p-5 shadow-[0_20px_50px_-24px_rgb(8_40_80/0.45)] sm:p-8"
-        >
-          <h2 id="picker-heading" className="text-2xl">
-            Pick a problem to see the price
-          </h2>
-          <div className="mt-5">
-            <ProblemPicker chips={PROBLEM_CHIPS} services={pickerServices} />
-          </div>
-        </section>
-      </Container>
+      <Hero hero={hero} identity={identity} services={pickerServices} card={heroCard} />
 
       {/* Offers (only when published in ESS admin) */}
       {offers.length > 0 && (

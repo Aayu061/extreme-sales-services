@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { pysRequest } from '@/lib/pys/client';
-import { activeOffers } from '@/lib/season';
+import { activeOffers, heroOfferCard, seasonNote, type HeroCard } from '@/lib/season';
 import type { BusinessIdentity, Catalog, ContentBlock, HomeHero, HomeOffer, Product, ServiceArea } from '@/lib/pys/types';
 
 /**
@@ -83,6 +83,24 @@ export async function getHomeOffers(): Promise<HomeOffer[]> {
   cacheTag('content');
   const blocks = await getContentBlocks(['home.offers']);
   return activeOffers((blocks['home.offers']?.body as { items?: unknown } | undefined)?.items, new Date());
+}
+
+/**
+ * The hero's offer card: first live offer, else this month's season note. Cached like the rest so
+ * the page can be prerendered; it changes at most 5 minutes after midnight or an admin edit.
+ */
+export async function getHeroCard(): Promise<HeroCard> {
+  'use cache';
+  cacheLife(SITE_DATA_LIFE);
+  cacheTag('content');
+  const now = new Date();
+  try {
+    const blocks = await getContentBlocks(['home.offers']);
+    const items = (blocks['home.offers']?.body as { items?: unknown } | undefined)?.items;
+    return heroOfferCard(Array.isArray(items) ? items : [], now);
+  } catch {
+    return seasonNote(now);
+  }
 }
 
 export async function getSiteBasics(): Promise<{ identity: BusinessIdentity; hero: HomeHero }> {
