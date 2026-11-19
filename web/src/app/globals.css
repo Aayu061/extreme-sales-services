@@ -211,6 +211,60 @@ p {
   animation: pop-in 220ms var(--ease-enter) both;
 }
 
+/* "What's wrong?" dock icons: each shows its problem moving. */
+@keyframes dock-drip {
+  50% {
+    transform: translateY(2px);
+  }
+}
+@keyframes dock-shake {
+  25% {
+    transform: translateX(-1px);
+  }
+  75% {
+    transform: translateX(1px);
+  }
+}
+@keyframes dock-fade {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes dock-tick {
+  0%,
+  30% {
+    stroke-dashoffset: 14;
+  }
+  60%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dock-needle {
+  50% {
+    transform: rotate(-40deg);
+  }
+}
+.dock-drip {
+  animation: dock-drip 1.6s ease-in-out infinite;
+}
+.dock-shake {
+  animation: dock-shake 0.12s linear infinite;
+}
+.dock-wave,
+.dock-rise {
+  animation: dock-fade 1.4s ease-in-out infinite;
+}
+.dock-tick {
+  stroke-dasharray: 14;
+  animation: dock-tick 2.4s ease-in-out infinite;
+}
+.dock-needle {
+  transform-box: view-box;
+  transform-origin: 12px 17px;
+  animation: dock-needle 2.6s ease-in-out infinite;
+}
+
 /* Sections rise in gently as they scroll into view (browsers without scroll timelines show them as is). */
 @keyframes reveal {
   from {
