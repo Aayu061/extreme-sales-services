@@ -1,12 +1,10 @@
 import { PageNotes, Star } from '@/components/site/footnote';
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Check, Clock, ShieldCheck, X } from 'lucide-react';
 import { PageBanner } from '@/components/site/page-banner';
 import { Container } from '@/components/site/container';
-import { Skeleton } from '@/components/ui/skeleton';
 import { AddToRequest } from '@/components/basket/add-to-request';
 import { FALLBACK_HERO, FALLBACK_IDENTITY, getCatalog, getSiteBasics } from '@/lib/data';
 import { gstBreakupText, servicePriceText } from '@/lib/format';
@@ -41,24 +39,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** The address is read inside Suspense so unknown addresses still get an instant page shell. */
-export default function ServicePage({ params }: Props) {
-  return (
-    <Suspense fallback={<DetailSkeleton />}>
-      <ServiceContent params={params} />
-    </Suspense>
-  );
-}
+/**
+ * This page waits for its data before sending anything (instant = false), so a mistyped
+ * address answers with a real 404 status, not a 200 "not found" page. Known addresses are
+ * still prerendered from generateStaticParams.
+ */
+export const instant = false;
 
-function DetailSkeleton() {
-  return (
-    <Container className="py-16">
-      <Skeleton className="h-64 rounded-[30px]" />
-    </Container>
-  );
-}
-
-async function ServiceContent({ params }: Props) {
+export default async function ServicePage({ params }: Props) {
   const { code } = await params;
   const [catalog, basics] = await Promise.all([getCatalog(), getSiteBasics().catch(() => ({ identity: FALLBACK_IDENTITY, hero: FALLBACK_HERO }))]);
   const s = findService(catalog.services, code);

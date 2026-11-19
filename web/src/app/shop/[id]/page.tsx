@@ -1,11 +1,9 @@
 import { PageNotes, Star } from '@/components/site/footnote';
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { Check, Phone } from 'lucide-react';
 import { PageBanner } from '@/components/site/page-banner';
 import { Container } from '@/components/site/container';
-import { Skeleton } from '@/components/ui/skeleton';
 import { AddToEnquiry } from '@/components/basket/add-to-request';
 import { ProductArt } from '@/components/shop/product-art';
 import { ProductCard } from '@/components/shop/product-card';
@@ -51,24 +49,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** The address is read inside Suspense so unknown addresses still get an instant page shell. */
-export default function ProductPage({ params }: Props) {
-  return (
-    <Suspense fallback={<DetailSkeleton />}>
-      <ProductContent params={params} />
-    </Suspense>
-  );
-}
+/**
+ * This page waits for its data before sending anything (instant = false), so a mistyped
+ * address answers with a real 404 status, not a 200 "not found" page. Known addresses are
+ * still prerendered from generateStaticParams.
+ */
+export const instant = false;
 
-function DetailSkeleton() {
-  return (
-    <Container className="py-16">
-      <Skeleton className="h-64 rounded-[30px]" />
-    </Container>
-  );
-}
-
-async function ProductContent({ params }: Props) {
+export default async function ProductPage({ params }: Props) {
   const id = decode((await params).id);
   const [p, products, basics] = await Promise.all([
     getProduct(id),
