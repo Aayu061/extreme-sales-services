@@ -1,5 +1,5 @@
 import { lowestTotal } from '@/lib/format';
-import type { CatalogAmcPlan } from '@/lib/pys/types';
+import type { CatalogAmcPlan, PriceBreakup } from '@/lib/pys/types';
 
 /** What an AMC card on the home page shows. */
 export interface AmcCard {
@@ -51,4 +51,18 @@ export function amcHighlights(cards: AmcCard[]): AmcCard[] {
     take(c);
   }
   return picked.slice(0, 3);
+}
+
+/** The four sizes on the AMC rate card (PYS: small = 0.75–1.0 ton, large = 1.5–2.2 ton). */
+export const AMC_SIZES = [
+  { key: 'splitSmall', type: 'SPLIT', label: 'Split · up to 1 ton', tonnages: [0.75, 1] },
+  { key: 'splitLarge', type: 'SPLIT', label: 'Split · 1.5–2 ton', tonnages: [1.5, 2] },
+  { key: 'windowSmall', type: 'WINDOW', label: 'Window · up to 1 ton', tonnages: [0.75, 1] },
+  { key: 'windowLarge', type: 'WINDOW', label: 'Window · 1.5–2 ton', tonnages: [1.5, 2] },
+] as const;
+export type AmcSizeKey = (typeof AMC_SIZES)[number]['key'];
+
+/** A plan's yearly price for one AC size; a flat rate applies to every AC (same rule as PYS). */
+export function amcRateFor(plan: CatalogAmcPlan, size: AmcSizeKey): PriceBreakup | null {
+  return plan.rates.flat ?? plan.rates[size] ?? null;
 }

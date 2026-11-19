@@ -11,6 +11,7 @@ import { buttonStyles } from '@/components/ui/button';
 import type { PickerService } from '@/lib/answer';
 import { cn } from '@/lib/cn';
 import { servicePriceText } from '@/lib/format';
+import { groupServices } from '@/lib/services';
 import { XRAY_IMAGE, XRAY_PARTS, clipPolygon, partAnswer, type XrayPart } from '@/lib/xray-parts';
 
 gsap.registerPlugin(useGSAP);
@@ -18,14 +19,6 @@ gsap.registerPlugin(useGSAP);
 const REDUCE = '(prefers-reduced-motion: reduce)';
 const DESKTOP = '(min-width: 761px)';
 const IMG_SIZES = '(min-width: 1024px) 64vw, 100vw';
-
-const CATEGORY_LABEL: Record<string, string> = {
-  CLEANING: 'Cleaning',
-  GAS: 'Gas',
-  INSTALLATION: 'Installation',
-  DIAGNOSIS: 'Check-ups',
-  REPAIR: 'Repairs, priced after the diagnosis visit',
-};
 
 const centroid = (outline: XrayPart['outline']) => [
   outline.reduce((s, p) => s + p[0], 0) / outline.length,
@@ -106,12 +99,7 @@ export function XraySection({ services }: { services: PickerService[] }) {
   }
 
   const answer = selected ? partAnswer(selected, services) : null;
-  const groups = Object.entries(
-    services.reduce<Record<string, PickerService[]>>((acc, s) => {
-      (acc[s.category] ??= []).push(s);
-      return acc;
-    }, {}),
-  ).sort(([a], [b]) => (a === 'REPAIR' ? 1 : b === 'REPAIR' ? -1 : 0));
+  const groups = groupServices(services);
 
   return (
     <section ref={root} id="services" aria-labelledby="xray-heading" className="py-12 sm:py-16">
@@ -258,9 +246,9 @@ export function XraySection({ services }: { services: PickerService[] }) {
             </>
           ) : (
             <div className="mt-6 grid gap-6 md:grid-cols-2">
-              {groups.map(([category, items]) => (
+              {groups.map(({ category, label, note, items }) => (
                 <div key={category} className="glass rounded-3xl p-6 text-ink">
-                  <h3 className="text-xl">{CATEGORY_LABEL[category] ?? category}</h3>
+                  <h3 className="text-xl">{note ? `${label}, ${note.toLowerCase()}` : label}</h3>
                   <ul className="mt-3 divide-y divide-[var(--glass-line)]">
                     {items.map((s) => (
                       <li key={s.code} className="flex items-center justify-between gap-4 py-3">
