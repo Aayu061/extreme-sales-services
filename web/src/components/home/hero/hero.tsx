@@ -65,9 +65,9 @@ export function Hero({
 
       <ProblemDock
         services={services}
-        className="hero-dock absolute bottom-7 left-[clamp(16px,5vw,80px)] z-10 max-w-[calc(100%-2*clamp(16px,5vw,80px)-360px)] max-[1100px]:max-w-[calc(100%-2*clamp(16px,5vw,80px))] max-[760px]:right-4 max-[760px]:bottom-3.5"
+        className="hero-dock absolute bottom-7 left-[clamp(16px,5vw,80px)] z-10 max-w-[calc(100%-clamp(16px,5vw,80px)-460px)] max-[1100px]:max-w-[calc(100%-2*clamp(16px,5vw,80px))] max-[760px]:right-4 max-[760px]:bottom-3.5"
       />
-      <OfferCard card={card} className="hero-offer absolute right-[clamp(16px,3vw,40px)] bottom-7 z-10 max-[1100px]:hidden" />
+      <OfferCard card={card} className="hero-offer absolute right-[96px] bottom-7 z-10 max-[1100px]:hidden" />
     </section>
   );
 }

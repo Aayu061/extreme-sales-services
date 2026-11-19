@@ -1,29 +1,44 @@
+'use client';
+
 import Link from 'next/link';
-import { Phone } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { ThemeSwitch } from '@/components/theme/theme-switch';
-import { ButtonLink } from '@/components/ui/button';
-import { Container } from './container';
+import { buttonStyles } from '@/components/ui/button';
+import { cn } from '@/lib/cn';
 import { Logo } from './logo';
 
 const NAV = [
+  { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
   { href: '/amc', label: 'AMC plans' },
   { href: '/shop', label: 'Shop ACs' },
   { href: '/track', label: 'Track' },
 ];
 
-export function SiteHeader({ phone }: { phone: string }) {
+/**
+ * Glass pill menu. On the home page it floats over the hero photo; on other pages it stays at
+ * the top of the screen as you scroll.
+ */
+export function SiteHeader() {
+  const pathname = usePathname();
+  const home = pathname === '/';
+  const active = (href: string) => (href === '/' ? home : pathname.startsWith(href));
+
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
-      <Container className="flex min-h-18 flex-wrap items-center justify-between gap-x-6 gap-y-1 py-2">
+    <header className={cn('z-30 px-[clamp(12px,3vw,40px)] pt-[18px]', home ? 'absolute inset-x-0 top-0' : 'sticky top-0 pb-3')}>
+      <div className="glass flex items-center justify-between gap-3.5 rounded-full py-2.5 pr-3 pl-[18px] text-ink max-[760px]:py-2 max-[760px]:pr-2 max-[760px]:pl-3">
         <Logo />
-        <nav aria-label="Main" className="order-3 w-full lg:order-none lg:w-auto">
-          <ul className="-mx-3 flex gap-x-1 overflow-x-auto text-base">
+        <nav aria-label="Main" className="max-[1100px]:hidden">
+          <ul className="flex gap-1">
             {NAV.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="inline-flex min-h-11 items-center rounded-full px-3 whitespace-nowrap text-navy transition-colors hover:bg-cyan-wash hover:text-deep-cyan"
+                  aria-current={active(item.href) ? 'page' : undefined}
+                  className={cn(
+                    'inline-flex min-h-11 items-center rounded-full px-3.5 text-[15px] transition-colors hover:bg-white/15',
+                    active(item.href) && 'bg-white/15 shadow-[inset_0_0_0_1px_var(--glass-line)]',
+                  )}
                 >
                   {item.label}
                 </Link>
@@ -31,20 +46,13 @@ export function SiteHeader({ phone }: { phone: string }) {
             ))}
           </ul>
         </nav>
-        <div className="flex items-center gap-1 sm:gap-3">
-          <a
-            href={`tel:${phone.replace(/[^+\d]/g, '')}`}
-            className="tabular hidden min-h-11 items-center gap-2 font-semibold text-navy hover:text-deep-cyan md:inline-flex"
-          >
-            <Phone aria-hidden="true" size={18} />
-            {phone}
-          </a>
+        <div className="flex items-center gap-2.5">
           <ThemeSwitch />
-          <ButtonLink href="/book" size="sm" className="hidden sm:inline-flex">
+          <Link href="/book" className={cn(buttonStyles({ size: 'sm' }), 'max-[760px]:px-3.5 max-[760px]:text-sm')}>
             Book a service
-          </ButtonLink>
+          </Link>
         </div>
-      </Container>
+      </div>
     </header>
   );
 }

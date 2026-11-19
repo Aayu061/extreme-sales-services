@@ -59,7 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <SiteHeader phone={identity.phone} />
+        <SiteHeader />
         <main id="main">{children}</main>
         <SiteFooter identity={identity} />
         <FloatingContact phone={identity.phone} whatsapp={identity.whatsapp} />
