@@ -87,3 +87,13 @@ describe('payment breakdown', () => {
     expect(p.status === 'ok' && p.breakup).toEqual(fixtureCatalog.services.find((s) => s.code === 'SVC-JET-WASH')!.price);
   });
 });
+
+describe('AC price breakdown (listed prices include GST)', () => {
+  it('splits a listed AC price into before-GST and 18% GST that add up exactly', () => {
+    const p = price(line('PRODUCT', 'nlbvy46fALr4txUIZfqr'));
+    expect(p.status === 'ok' && p.breakup).toEqual({ base: 28805.08, gstRatePercent: 18, gst: 5184.92, total: 33990 });
+    const t = basketTotals([price(line('PRODUCT', 'nlbvy46fALr4txUIZfqr', undefined, 2))]);
+    expect(t).toMatchObject({ known: 67980, base: 57610.16, gst: 10369.84 });
+    expect(t.gstByRate).toEqual([{ rate: 18, gst: 10369.84 }]);
+  });
+});

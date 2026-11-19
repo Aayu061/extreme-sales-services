@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Field, Input, Select, Textarea } from '@/components/ui/field';
 import { basketTotals, priceLine } from '@/lib/basket-pricing';
 import { cn } from '@/lib/cn';
-import { formatInr } from '@/lib/format';
+import { formatInr, gstBreakupText } from '@/lib/format';
 import type { Product } from '@/lib/pys/types';
 
 const NO_CATALOG = { services: [], amcPlans: [] };
@@ -150,7 +150,10 @@ export function EnquiryFlow({ products, productsKnown = true, phone }: { product
                     ) : p.unchecked ? (
                       <p className="mt-1 text-sm text-muted">Couldn&apos;t check this AC right now; the seller will confirm it.</p>
                     ) : (
-                      <p className="tabular mt-1 text-sm">{p.unit === null ? 'Price on request' : `${formatInr(p.unit)} each, listed price incl. GST`}</p>
+                      <p className="tabular mt-1 text-sm">
+                        {p.unit === null ? 'Price on request' : `${formatInr(p.unit)} each, listed price incl. GST`}
+                        {p.breakup && <span className="block text-xs text-muted">{gstBreakupText(p.breakup)}</span>}
+                      </p>
                     )}
                     {lineErrors[l.key] && <p className="mt-1 text-sm font-semibold text-heat">{lineErrors[l.key]}</p>}
                   </div>
@@ -185,21 +188,33 @@ export function EnquiryFlow({ products, productsKnown = true, phone }: { product
             );
           })}
         </ul>
-        <section aria-label="Listed total" className="mt-4 rounded-2xl border border-line bg-surface/60 p-4">
+        <section aria-label="Price breakdown" className="mt-4 rounded-2xl border border-line bg-surface/60 p-4">
           {totals.known > 0 ? (
-            <p className="tabular flex items-baseline justify-between gap-3">
-              <span className="font-semibold">
-                Listed total incl. GST
-                <Star />
-              </span>
-              <span className="text-2xl font-extrabold">{formatInr(totals.known)}</span>
-            </p>
+            <dl className="tabular space-y-1.5">
+              <div className="flex items-baseline justify-between gap-3">
+                <dt className="text-muted">Before GST</dt>
+                <dd>{formatInr(totals.base)}</dd>
+              </div>
+              {totals.gstByRate.map((g) => (
+                <div key={g.rate} className="flex items-baseline justify-between gap-3">
+                  <dt className="text-muted">{`GST ${g.rate}%`}</dt>
+                  <dd>{formatInr(g.gst)}</dd>
+                </div>
+              ))}
+              <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
+                <dt className="font-semibold">
+                  Listed total incl. GST
+                  <Star />
+                </dt>
+                <dd className="text-2xl font-extrabold">{formatInr(totals.known)}</dd>
+              </div>
+            </dl>
           ) : (
             <p className="font-bold">Prices on request</p>
           )}
-          {totals.hasUnpriced && totals.known > 0 && <p className="mt-1 text-sm text-muted">Some ACs are priced on request (not included).</p>}
-          {unavailable && <p className="mt-1 text-sm font-semibold text-heat">Remove ACs that are no longer available to send.</p>}
-          <p className="mt-1 text-sm text-muted">This is an enquiry, not an order. The seller confirms the final price and stock.</p>
+          {totals.hasUnpriced && totals.known > 0 && <p className="mt-2 text-sm text-muted">Some ACs are priced on request (not included).</p>}
+          {unavailable && <p className="mt-2 text-sm font-semibold text-heat">Remove ACs that are no longer available to send.</p>}
+          <p className="mt-2 text-sm text-muted">This is an enquiry, not an order. The seller confirms the final price and stock. Installation is quoted separately.</p>
         </section>
         <Link href="/shop" className="mt-4 inline-block text-sm font-semibold text-cool hover:underline">
           Add another AC

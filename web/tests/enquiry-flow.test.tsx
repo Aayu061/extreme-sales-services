@@ -50,8 +50,14 @@ describe('EnquiryFlow', () => {
     saveList([daikin.id, voltas.id]);
     flow();
     expect(screen.getByText(daikin.name)).toBeTruthy();
-    const summary = screen.getByRole('region', { name: 'Listed total' });
-    expect(summary.textContent).toContain(formatInr(daikin.price! + voltas.price!));
+    const summary = screen.getByRole('region', { name: 'Price breakdown' });
+    const total = daikin.price! + voltas.price!;
+    const base = Math.round((daikin.price! / 1.18) * 100) / 100 + Math.round((voltas.price! / 1.18) * 100) / 100;
+    expect(summary.textContent).toContain('Before GST');
+    expect(summary.textContent).toContain(formatInr(Math.round(base * 100) / 100));
+    expect(summary.textContent).toContain('GST 18%');
+    expect(summary.textContent).toContain(formatInr(Math.round((total - base) * 100) / 100));
+    expect(summary.textContent).toContain(formatInr(total));
   });
 
   it('blocks an AC that is no longer listed until it is removed', () => {

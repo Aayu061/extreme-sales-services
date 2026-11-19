@@ -20,6 +20,18 @@ export type PricedLine =
     }
   | { line: BasketLine; status: 'unavailable' };
 
+/**
+ * GST rate for air conditioners (18 % since the GST change of 22 Sep 2025). AC prices in PYS are
+ * listed incl. GST, so the breakdown is worked back from the listed price. Change here if needed.
+ */
+export const AC_GST_RATE_PERCENT = 18;
+
+/** Listed (GST-inclusive) AC price → before GST + GST; the two always add up to the listed price. */
+export function acBreakup(total: number, rate = AC_GST_RATE_PERCENT): PriceBreakup {
+  const base = Math.round((total / (1 + rate / 100)) * 100) / 100;
+  return { base, gstRatePercent: rate, gst: Math.round((total - base) * 100) / 100, total };
+}
+
 /** AMC rate card sizes: "small" 0.75–1.0 ton, "large" 1.5–2.2 ton. */
 export const AMC_SMALL = { min: 0.75, max: 1.0 } as const;
 export const AMC_LARGE = { min: 1.5, max: 2.2 } as const;
@@ -66,8 +78,9 @@ export function priceLine(
   const p = products.find((x) => x.id === line.ref);
   if (!p && opts.productsUnknown) return { line, status: 'ok', unit: null, breakup: null, label: line.name, unchecked: true };
   if (!p) return { line, status: 'unavailable' };
-  // AC prices are GST-inclusive retail prices; there is no separate GST figure for them.
-  return { line, status: 'ok', unit: typeof p.price === 'number' && p.price > 0 ? p.price : null, breakup: null, label: p.name };
+  // AC prices are GST-inclusive retail prices; the GST part is worked back at the AC rate.
+  const listed = typeof p.price === 'number' && p.price > 0 ? p.price : null;
+  return { line, status: 'ok', unit: listed, breakup: listed === null ? null : acBreakup(listed), label: p.name };
 }
 
 export interface BasketTotals {
