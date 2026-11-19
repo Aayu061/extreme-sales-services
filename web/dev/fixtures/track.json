@@ -1,0 +1,23 @@
+{
+  "trackingCode": "ESS-LOCL-DEV2",
+  "intakeNumber": "WEB-2026-LOCAL1",
+  "kind": "BASKET",
+  "receivedAt": "2026-11-19T06:30:00.000Z",
+  "requestNumber": "SR-2026-000123",
+  "status": { "code": "SCHEDULED", "label": "Visit scheduled", "step": 3, "tone": "info", "sideState": false },
+  "steps": [
+    { "step": 1, "label": "Request received" },
+    { "step": 2, "label": "Confirmed" },
+    { "step": 3, "label": "Visit scheduled" },
+    { "step": 4, "label": "Technician assigned" },
+    { "step": 5, "label": "Work in progress" },
+    { "step": 6, "label": "Completed" }
+  ],
+  "preferred": { "date": "2026-11-25", "slot": "MORNING" },
+  "visit": { "date": "2026-11-25", "startTime": "10:00", "endTime": "12:00", "technicianFirstName": "Ravi" },
+  "area": "Mumbai, Thane & Navi Mumbai",
+  "items": [
+    { "type": "SERVICE", "name": "Jet wash", "quantity": 1, "status": "CONFIRMED", "price": { "total": 1414.82, "label": "Jet wash" } },
+    { "type": "SERVICE", "name": "PCB repair", "quantity": 1, "status": "PENDING", "price": null }
+  ]
+}

@@ -15,7 +15,9 @@ vi.mock('next/navigation', () => ({
 const { ShopBrowser } = await import('@/components/shop/shop-browser');
 const all = ((products as { products?: Product[] }).products ?? (products as unknown as Product[])) as Product[];
 
-beforeEach(() => replace.mockReset());
+beforeEach(() => {
+  replace.mockReset();
+});
 afterEach(cleanup);
 
 describe('ShopBrowser', () => {
