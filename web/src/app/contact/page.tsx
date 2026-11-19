@@ -5,6 +5,9 @@ import { Container } from '@/components/site/container';
 import { WhatsAppIcon } from '@/components/site/whatsapp-icon';
 import { PincodeCheck } from '@/components/home/pincode-check';
 import { ContactForm } from '@/components/forms/contact-form';
+import { JsonLd } from '@/components/site/json-ld';
+import { serverEnv } from '@/lib/env';
+import { localBusinessLd } from '@/lib/seo';
 import { FALLBACK_HERO, FALLBACK_IDENTITY, getServiceAreas, getSiteBasics } from '@/lib/data';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,6 +32,7 @@ export default async function ContactPage() {
 
   return (
     <>
+      <JsonLd data={localBusinessLd(identity, serverEnv().SITE_URL)} />
       <PageBanner title="Contact us" intro="Call or WhatsApp for the quickest answer, or send us a message." crumbs={[{ href: '/contact', label: 'Contact' }]} />
       <Container className="grid gap-6 py-8 sm:py-12 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-6">

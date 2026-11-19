@@ -1,5 +1,6 @@
 import path from 'node:path';
 import type { NextConfig } from 'next';
+import { LEGACY_REDIRECTS } from './src/lib/legacy-redirects';
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
@@ -19,6 +20,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
     // Hero photos are served at 70; product photos at the default 75.
     qualities: [70, 75],
+  },
+  // Old site page addresses → new pages (permanent), so saved links keep working.
+  async redirects() {
+    return LEGACY_REDIRECTS;
   },
   async headers() {
     return [

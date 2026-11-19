@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero/hero';
 import { XraySection } from '@/components/home/xray-section';
 import { AmcSection } from '@/components/home/amc-section';
@@ -5,10 +6,15 @@ import { AcTypesSection } from '@/components/home/ac-types-section';
 import { BookSteps } from '@/components/home/book-steps';
 import { ContactArea } from '@/components/home/contact-area';
 import { WhyEss } from '@/components/home/why-ess';
+import { JsonLd } from '@/components/site/json-ld';
+import { serverEnv } from '@/lib/env';
+import { localBusinessLd } from '@/lib/seo';
 import { acTypeTiles } from '@/lib/ac-kind';
 import { amcCard } from '@/lib/amc';
 import type { PickerService } from '@/lib/answer';
 import { getCatalog, getHeroCard, getProducts, getSiteBasics, FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
+
+export const metadata: Metadata = { alternates: { canonical: '/' } };
 
 /**
  * Home, "Mumbai Glass" (design doc §5–6): the room photo where the ESS AC switches on, then the
@@ -32,6 +38,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={localBusinessLd(identity, serverEnv().SITE_URL)} />
       <Hero hero={hero} identity={identity} services={services} card={heroCard} />
       <XraySection services={services} />
       <WhyEss warrantyDays={identity.warrantyDays} />

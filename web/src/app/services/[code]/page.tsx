@@ -10,6 +10,9 @@ import { AddToRequest } from '@/components/basket/add-to-request';
 import { FALLBACK_HERO, FALLBACK_IDENTITY, getCatalog, getSiteBasics } from '@/lib/data';
 import { gstBreakupText, servicePriceText } from '@/lib/format';
 import { findService, relatedServices, serviceSlug } from '@/lib/services';
+import { JsonLd } from '@/components/site/json-ld';
+import { serverEnv } from '@/lib/env';
+import { serviceLd } from '@/lib/seo';
 
 type Props = { params: Promise<{ code: string }> };
 
@@ -66,6 +69,7 @@ async function ServiceContent({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={serviceLd(s, serverEnv().SITE_URL)} />
       <PageBanner title={s.name} intro={s.shortDescription ?? undefined} crumbs={[{ href: '/services', label: 'Services' }, { href: `/services/${serviceSlug(s.code)}`, label: s.name }]} />
 
       <Container className="grid gap-6 py-8 sm:py-12 lg:grid-cols-[1fr_380px]">

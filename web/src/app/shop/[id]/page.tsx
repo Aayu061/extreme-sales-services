@@ -13,6 +13,9 @@ import { kindOf } from '@/lib/ac-kind';
 import { FALLBACK_HERO, FALLBACK_IDENTITY, getProduct, getProducts, getSiteBasics } from '@/lib/data';
 import { formatInr } from '@/lib/format';
 import { starOf, tonnageOf } from '@/lib/shop';
+import { JsonLd } from '@/components/site/json-ld';
+import { serverEnv } from '@/lib/env';
+import { productLd } from '@/lib/seo';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -91,6 +94,7 @@ async function ProductContent({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={productLd(p, serverEnv().SITE_URL)} />
       <PageBanner title={p.name} crumbs={[{ href: '/shop', label: 'Shop ACs' }, { href: `/shop/${encodeURIComponent(p.id)}`, label: p.brand ?? 'AC' }]} />
 
       <Container className="grid gap-6 py-8 sm:py-12 lg:grid-cols-[1.1fr_0.9fr]">
