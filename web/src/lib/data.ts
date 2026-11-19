@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { pysRequest } from '@/lib/pys/client';
-import { activeOffers } from '@/lib/offers';
+import { activeOffers } from '@/lib/season';
 import type { BusinessIdentity, Catalog, ContentBlock, HomeHero, HomeOffer, Product, ServiceArea } from '@/lib/pys/types';
 
 /**
