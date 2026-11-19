@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
 import type { Product } from '@/lib/pys/types';
+import { kindOf, type AcKind } from '@/lib/ac-kind';
 
 /**
  * Stock photos (Unsplash) were placeholders on the old site and often show no AC at all.
@@ -16,17 +17,7 @@ export function hasRealPhoto(p: Pick<Product, 'imageUrl'>): boolean {
   }
 }
 
-type Kind = 'split' | 'window' | 'tower' | 'cassette';
-
-function kindOf(name: string): Kind {
-  const n = name.toLowerCase();
-  if (n.includes('window')) return 'window';
-  if (n.includes('tower') || n.includes('floor standing')) return 'tower';
-  if (n.includes('cassette') || n.includes('ceiling') || n.includes('ductable')) return 'cassette';
-  return 'split';
-}
-
-function Drawing({ kind }: { kind: Kind }) {
+function Drawing({ kind }: { kind: AcKind }) {
   const body = { fill: '#ffffff', stroke: '#c7d7e5', strokeWidth: 2 };
   switch (kind) {
     case 'window':

@@ -5,6 +5,10 @@ import { Container } from '@/components/site/container';
 import { WhatsAppIcon } from '@/components/site/whatsapp-icon';
 import { Hero } from '@/components/home/hero/hero';
 import { XraySection } from '@/components/home/xray-section';
+import { AmcSection } from '@/components/home/amc-section';
+import { AcTypesSection } from '@/components/home/ac-types-section';
+import { amcCard } from '@/lib/amc';
+import { acTypeTiles } from '@/lib/ac-kind';
 import type { PickerService } from '@/lib/answer';
 import { ServiceIcon } from '@/components/home/service-icon';
 import { BrandStrip } from '@/components/home/brand-strip';
@@ -65,118 +69,8 @@ export default async function HomePage() {
     <>
       <Hero hero={hero} identity={identity} services={pickerServices} card={heroCard} />
 
-      {/* Offers (only when published in ESS admin) */}
-      {offers.length > 0 && (
-        <Container className="mt-8">
-          <ul aria-label="Current offers" className="grid gap-3 md:grid-cols-2">
-            {offers.map((offer) => (
-              <li key={offer.title} className="flex items-start gap-4 rounded-card bg-tint-amber p-5 text-navy">
-                <Tag aria-hidden="true" size={24} className="mt-0.5 shrink-0 text-ink-amber" />
-                <div>
-                  <p className="text-lg font-semibold">{offer.title}</p>
-                  {offer.text && <p className="mt-1 text-slate">{offer.text}</p>}
-                  {offer.href && (
-                    <Link href={offer.href} className="mt-2 inline-block font-semibold text-ink-amber underline underline-offset-4">
-                      {offer.linkLabel || 'See the offer'}
-                    </Link>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Container>
-      )}
-
-      <XraySection services={pickerServices} />
-
-      {/* Plans and new ACs */}
-      <section aria-label="AMC plans and new ACs" className="reveal pb-16 sm:pb-20">
-        <Container className="grid gap-4 lg:grid-cols-2">
-          <Link
-            href="/amc"
-            className="group relative flex min-h-64 flex-col overflow-hidden rounded-sheet bg-tint-violet p-7 text-navy transition-transform duration-200 hover:-translate-y-1 sm:p-9"
-          >
-            <CalendarCheck aria-hidden="true" size={120} strokeWidth={1.25} className="absolute -right-4 -bottom-4 text-ink-violet/20 transition-transform duration-300 group-hover:-rotate-6" />
-            <h2 className="text-3xl">AMC plans</h2>
-            <p className="mt-2 max-w-sm text-slate">
-              {catalog.amcPlans.length} yearly plans for split and window ACs, with regular service visits.
-            </p>
-            {amcFrom !== null && <p className="tabular mt-auto pt-6 text-xl font-semibold">From {formatInr(amcFrom)} a year</p>}
-            <span className="mt-2 font-semibold text-ink-violet underline-offset-4 group-hover:underline">Compare plans</span>
-          </Link>
-
-          <Link
-            href="/shop"
-            className="group relative flex min-h-64 flex-col overflow-hidden rounded-sheet bg-tint-sky p-7 text-navy transition-transform duration-200 hover:-translate-y-1 sm:p-9"
-          >
-            <div className="relative z-10 max-w-[55%]">
-              <h2 className="text-3xl">Buy a new AC</h2>
-              <p className="mt-2 text-slate">Split, window and commercial ACs. Full price with GST, installation on request.</p>
-            </div>
-            <p className="tabular relative z-10 mt-auto pt-6 text-xl font-semibold">{inStock.length} models in stock</p>
-            <span className="relative z-10 mt-2 font-semibold text-ink-sky underline-offset-4 group-hover:underline">Shop ACs</span>
-            <div aria-hidden="true" className="absolute top-6 right-6 bottom-6 hidden w-[40%] sm:block">
-              {shopPhotos.map((p, i) => (
-                <div
-                  key={p.id}
-                  className={cn(
-                    'absolute aspect-square w-[72%] overflow-hidden rounded-card border-4 border-paper bg-paper shadow-lg transition-transform duration-300',
-                    i === 0 && 'top-0 right-0 rotate-3 group-hover:rotate-6',
-                    i === 1 && 'top-[28%] right-[22%] -rotate-3 group-hover:-rotate-6',
-                    i === 2 && 'right-[4%] bottom-0 rotate-2 group-hover:rotate-0',
-                  )}
-                >
-                  <ProductArt product={{ ...p, name: '' }} sizes="200px" className="size-full" />
-                </div>
-              ))}
-            </div>
-          </Link>
-        </Container>
-      </section>
-
-      {/* Featured ACs */}
-      {featured.length > 0 && (
-        <section aria-labelledby="featured-heading" className="reveal border-y border-line bg-paper py-16 sm:py-20">
-          <Container>
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <h2 id="featured-heading" className="text-3xl">
-                ACs for homes
-              </h2>
-              <ButtonLink href="/shop" variant="glass">
-                See all ACs
-              </ButtonLink>
-            </div>
-            <ul className="-mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-              {featured.map((p) => (
-                <li key={p.id} className="w-[78%] shrink-0 snap-start sm:w-auto">
-                  <Link
-                    href={`/shop/${encodeURIComponent(p.id)}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-frost transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[0_14px_30px_-18px_rgb(8_60_120/0.5)]"
-                  >
-                    <ProductArt
-                      product={p}
-                      sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 78vw"
-                      className="aspect-4/3"
-                      imageClassName="transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="flex flex-1 flex-col p-4">
-                      {p.brand && <span className="text-sm text-slate">{p.brand}</span>}
-                      <span className="mt-0.5 line-clamp-2 font-semibold text-navy">{p.name}</span>
-                      <span className="tabular mt-auto pt-3 text-xl font-semibold text-navy">
-                        {formatInr(p.price!)}
-                        {typeof p.mrp === 'number' && p.mrp > p.price! && (
-                          <span className="ml-2 text-sm font-normal text-slate line-through">{formatInr(p.mrp)}</span>
-                        )}
-                      </span>
-                      <span className="text-sm text-slate">incl. GST</span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Container>
-        </section>
-      )}
+      <AmcSection plans={catalog.amcPlans.map(amcCard)} />
+      <AcTypesSection tiles={acTypeTiles(products)} featured={featured} />
 
       {/* Brands */}
       <section aria-labelledby="brands-heading" className="reveal py-16 sm:py-20">
