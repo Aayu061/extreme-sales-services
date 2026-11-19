@@ -344,7 +344,59 @@ p {
   animation: theme-reveal 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+/*
+ * Inner pages: a slim strip of the room photo sits behind the sticky glass menu (pulled up by the
+ * menu's height), fades into the page, with one soft band of air drifting across it.
+ */
+:root {
+  --header-h: 94px;
+}
+@media (max-width: 760px) {
+  :root {
+    --header-h: 90px;
+  }
+}
+.page-banner {
+  height: calc(clamp(190px, 30vh, 280px) + var(--header-h));
+  margin-top: calc(-1 * var(--header-h));
+}
+.banner-photo {
+  object-position: 50% 18%;
+}
+.banner-fade {
+  background: linear-gradient(180deg, transparent, var(--page));
+}
+@keyframes banner-air {
+  from {
+    transform: translateX(-60%);
+  }
+  to {
+    transform: translateX(160%);
+  }
+}
+.banner-air::before {
+  content: '';
+  position: absolute;
+  inset: 20% auto 20% 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.22), transparent);
+  filter: blur(24px);
+  animation: banner-air 9s linear infinite;
+}
+@keyframes banner-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+.banner-rise {
+  animation: banner-rise 0.6s var(--ease-enter) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .banner-air::before {
+    display: none;
+  }
   *,
   *::before,
   *::after {
