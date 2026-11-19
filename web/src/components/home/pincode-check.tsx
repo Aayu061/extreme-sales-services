@@ -9,6 +9,20 @@ type State =
   | { kind: 'checking' }
   | { kind: 'done'; tone: 'yes' | 'no' | 'error'; message: string };
 
+export type PincodeAnswer = { serviceable: boolean; area: string | null } | { error: string };
+
+/** Asks this site's server whether ESS covers a 6-digit pincode (used here and on /book). */
+export async function checkPincode(pincode: string): Promise<PincodeAnswer> {
+  try {
+    const res = await fetch(`/api/serviceability/${pincode}`);
+    const body = (await res.json()) as { serviceable?: boolean; area?: string | null; error?: string };
+    if (!res.ok) return { error: body.error ?? 'Could not check right now. Please call us.' };
+    return { serviceable: Boolean(body.serviceable), area: body.area ?? null };
+  } catch {
+    return { error: 'Could not check right now. Please call us.' };
+  }
+}
+
 /** Pincode check: spaces are ignored, anything but 6 digits is caught before any request. */
 export function PincodeCheck() {
   const [value, setValue] = useState('');
@@ -22,18 +36,13 @@ export function PincodeCheck() {
       return;
     }
     setState({ kind: 'checking' });
-    try {
-      const res = await fetch(`/api/serviceability/${pincode}`);
-      const body = (await res.json()) as { serviceable?: boolean; area?: string | null; error?: string };
-      if (!res.ok) {
-        setState({ kind: 'done', tone: 'error', message: body.error ?? 'Could not check right now. Please call us.' });
-      } else if (body.serviceable) {
-        setState({ kind: 'done', tone: 'yes', message: `Yes, we cover ${body.area ?? 'your area'}.` });
-      } else {
-        setState({ kind: 'done', tone: 'no', message: "We don't cover this pincode yet. Call us and we'll see what we can do." });
-      }
-    } catch {
-      setState({ kind: 'done', tone: 'error', message: 'Could not check right now. Please call us.' });
+    const answer = await checkPincode(pincode);
+    if ('error' in answer) {
+      setState({ kind: 'done', tone: 'error', message: answer.error });
+    } else if (answer.serviceable) {
+      setState({ kind: 'done', tone: 'yes', message: `Yes, we cover ${answer.area ?? 'your area'}.` });
+    } else {
+      setState({ kind: 'done', tone: 'no', message: "We don't cover this pincode yet. Call us and we'll see what we can do." });
     }
   }
 

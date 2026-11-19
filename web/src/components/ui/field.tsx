@@ -2,7 +2,7 @@ import { useId, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 const controlStyles =
-  'w-full min-h-11 rounded-control border border-line bg-paper px-3.5 text-base text-navy placeholder:text-slate/70 aria-[invalid=true]:border-danger';
+  'w-full min-h-12 rounded-2xl border border-line bg-surface/85 px-4 text-base text-ink placeholder:text-muted/70 aria-[invalid=true]:border-heat aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-heat/30';
 
 /** Label above, hint below, error in words (what happened + how to fix). */
 export function Field({
@@ -24,18 +24,18 @@ export function Field({
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-base font-semibold text-navy">
+      <label htmlFor={id} className="text-base font-semibold text-ink">
         {label}
-        {required && <span className="text-slate font-normal"> (required)</span>}
+        {required && <span className="font-normal text-muted"> (required)</span>}
       </label>
       {children({ id, describedBy, invalid: Boolean(error) })}
       {hint && (
-        <p id={hintId} className="text-sm text-slate">
+        <p id={hintId} className="text-sm text-muted">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-sm font-semibold text-danger">
+        <p id={errorId} className="text-sm font-semibold text-heat">
           {error}
         </p>
       )}

@@ -1,0 +1,66 @@
+'use client';
+
+import { useCallback, useRef, useState } from 'react';
+import { fieldErrors, requestSchema, type SiteRequestInput } from '@/lib/request-schema';
+
+export interface SentRequest {
+  trackingCode: string;
+  intakeNumber: string;
+}
+
+const newRef = () =>
+  `web-${typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
+
+/**
+ * Sends a form to /api/request. The details are checked here first (friendly messages, no
+ * network call), a tap while sending is ignored, and a retry after an error reuses the same
+ * reference so PYS never stores the request twice.
+ */
+export function useRequestSubmit() {
+  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
+  const [result, setResult] = useState<SentRequest | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [fields, setFields] = useState<Record<string, string>>({});
+  const ref = useRef<string | null>(null);
+  const busy = useRef(false);
+  const startedAt = useRef(Date.now());
+
+  const elapsedMs = useCallback(() => Date.now() - startedAt.current, []);
+
+  const send = useCallback(async (build: (ref: string) => SiteRequestInput) => {
+    if (busy.current) return;
+    ref.current ??= newRef();
+    const body = build(ref.current);
+    const parsed = requestSchema.safeParse(body);
+    if (!parsed.success) {
+      setFields(fieldErrors(parsed.error.issues));
+      setError('Please check the highlighted details.');
+      setState('error');
+      return;
+    }
+    busy.current = true;
+    setState('sending');
+    setError(null);
+    setFields({});
+    try {
+      const res = await fetch('/api/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const json = (await res.json().catch(() => ({}))) as Partial<SentRequest> & { error?: string; fields?: Record<string, string> };
+      if (res.ok && json.trackingCode) {
+        setResult({ trackingCode: json.trackingCode, intakeNumber: json.intakeNumber ?? '' });
+        setState('done');
+        ref.current = null;
+      } else {
+        setError(json.error ?? 'We could not send your request right now. Please try again in a minute, or call us.');
+        setFields(json.fields ?? {});
+        setState('error');
+      }
+    } catch {
+      setError('We could not reach our server. Check your internet and try again, or call us.');
+      setState('error');
+    } finally {
+      busy.current = false;
+    }
+  }, []);
+
+  return { state, result, error, fields, send, elapsedMs };
+}
