@@ -4,30 +4,25 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 
 /**
- * Buttons: primary (deep cyan, one per view), secondary (outlined navy), quiet (text only), and
- * onBlue / onBlueOutline for the blue hero and call-to-action bands. They press in slightly when
- * tapped. 44 px minimum touch target at the default size.
+ * Buttons (design doc §8): taxi yellow for the main action, frosted glass for the second action,
+ * quiet for text links. All pills, pressing in slightly when tapped; 44 px minimum touch target.
  */
 export const buttonStyles = cva(
-  'inline-flex items-center justify-center gap-2 rounded-control font-semibold transition-[color,background-color,border-color,transform,box-shadow] duration-150 ease-standard active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 rounded-full font-bold whitespace-nowrap transition-[color,background-color,border-color,transform,box-shadow] duration-150 ease-standard active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
-        primary: 'bg-deep-cyan text-white hover:bg-deep-cyan-hover dark:text-[#0b1a30]',
-        secondary: 'border border-navy/80 bg-paper text-navy hover:bg-cyan-wash',
-        quiet: 'text-deep-cyan underline-offset-4 hover:underline active:scale-100',
-        onBlue:
-          'bg-white text-hero-deep shadow-[0_6px_20px_-6px_rgb(4_30_70/0.55)] hover:bg-[#eaf6fd] hover:shadow-[0_10px_28px_-8px_rgb(4_30_70/0.6)] dark:text-[#083f7a]',
-        onBlueOutline: 'border border-white/70 text-white hover:bg-white/10',
+        taxi: 'bg-taxi text-taxi-ink shadow-[0_10px_30px_-8px_rgb(255_201_21/0.55)] hover:bg-taxi-hover hover:shadow-[0_14px_38px_-8px_rgb(255_201_21/0.7)]',
+        glass: 'glass text-ink hover:bg-[var(--glass-strong)]',
+        quiet: 'text-cool underline-offset-4 hover:underline active:scale-100',
       },
       size: {
-        md: 'min-h-11 px-5 text-base',
-        sm: 'min-h-9 px-3.5 text-sm',
-        lg: 'min-h-12 px-6 text-lg',
-        xl: 'min-h-14 px-8 text-xl',
+        sm: 'min-h-11 px-5 text-[15px]',
+        md: 'min-h-12 px-6 text-base',
+        lg: 'min-h-14 px-8 text-lg',
       },
     },
-    defaultVariants: { variant: 'primary', size: 'md' },
+    defaultVariants: { variant: 'taxi', size: 'md' },
   },
 );
 

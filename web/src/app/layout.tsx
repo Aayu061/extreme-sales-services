@@ -4,7 +4,7 @@ import { getSiteBasics, FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { FloatingContact } from '@/components/site/floating-contact';
-import { THEME_SCRIPT } from '@/components/theme/theme-toggle';
+import { THEME_SCRIPT } from '@/components/theme/theme-switch';
 import './globals.css';
 
 /** One family, two widths: Archivo (body) and Archivo at 125% width (headings, hero numeral). */

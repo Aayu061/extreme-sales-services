@@ -74,10 +74,10 @@ export default async function HomePage() {
             </h1>
             <p className="mt-5 max-w-xl text-lg text-white/85 sm:text-xl">{hero.subline}</p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <ButtonLink href="/book" variant="onBlue" size="xl">
+              <ButtonLink href="/book" variant="taxi" size="lg">
                 Book a service
               </ButtonLink>
-              <a href={`tel:${tel}`} className={buttonStyles({ variant: 'onBlueOutline', size: 'lg' })}>
+              <a href={`tel:${tel}`} className={buttonStyles({ variant: 'glass', size: 'lg' })}>
                 <Phone aria-hidden="true" size={20} />
                 Call us
               </a>
@@ -85,7 +85,7 @@ export default async function HomePage() {
                 href={`https://wa.me/${wa}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonStyles({ variant: 'onBlueOutline', size: 'lg' })}
+                className={buttonStyles({ variant: 'glass', size: 'lg' })}
               >
                 <WhatsAppIcon size={20} />
                 WhatsApp
@@ -161,7 +161,7 @@ export default async function HomePage() {
               </h2>
               <p className="mt-2 max-w-prose text-slate">Prices include 18% GST. Tap a service to see what is included.</p>
             </div>
-            <ButtonLink href="/services" variant="secondary">
+            <ButtonLink href="/services" variant="glass">
               All services
             </ButtonLink>
           </div>
@@ -251,7 +251,7 @@ export default async function HomePage() {
               <h2 id="featured-heading" className="text-3xl">
                 ACs for homes
               </h2>
-              <ButtonLink href="/shop" variant="secondary">
+              <ButtonLink href="/shop" variant="glass">
                 See all ACs
               </ButtonLink>
             </div>
@@ -339,10 +339,10 @@ export default async function HomePage() {
                 <p className="mt-2 text-white/85">Book online, or talk to us on the phone or WhatsApp.</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <ButtonLink href="/book" variant="onBlue" size="lg">
+                <ButtonLink href="/book" variant="taxi" size="lg">
                   Book a service
                 </ButtonLink>
-                <a href={`tel:${tel}`} className={buttonStyles({ variant: 'onBlueOutline', size: 'lg' })}>
+                <a href={`tel:${tel}`} className={buttonStyles({ variant: 'glass', size: 'lg' })}>
                   <Phone aria-hidden="true" size={20} />
                   {identity.phone}
                 </a>

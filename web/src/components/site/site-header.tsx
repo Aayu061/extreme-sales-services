@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Phone } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { ThemeSwitch } from '@/components/theme/theme-switch';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from './container';
 import { Logo } from './logo';
@@ -39,7 +39,7 @@ export function SiteHeader({ phone }: { phone: string }) {
             <Phone aria-hidden="true" size={18} />
             {phone}
           </a>
-          <ThemeToggle />
+          <ThemeSwitch />
           <ButtonLink href="/book" size="sm" className="hidden sm:inline-flex">
             Book a service
           </ButtonLink>

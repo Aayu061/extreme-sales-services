@@ -1,108 +1,86 @@
 @import "tailwindcss";
 
-/* Tailwind's dark: follows the moon toggle (data-theme on <html>), not the device setting. */
+/* Tailwind's dark: follows the day/night switch (data-theme on <html>), not the device setting. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /*
- * ESS "Cool Air" design tokens (plan §5A.2). Colours sampled from the ESS logo (sky ≈ #1BA3E0,
- * navy ≈ #0B3C78) and tuned for contrast; every text/background pair meets WCAG AA.
- * Cyan is an accent (temperature numeral, focus ring, selection) — never small text.
- * Copper is the sparing "heat / problem" signal (copper is the AC coil metal).
+ * ESS "Mumbai Glass" design tokens (design doc §8). Day is the default; the day/night switch sets
+ * data-theme="dark" on <html>. Buttons are Mumbai taxi yellow; the cool blue is for links, focus
+ * and information; the heat orange marks problems, sparingly.
  */
 :root {
-  --frost: #f3f7fa;
-  --paper: #ffffff;
-  --navy: #0f2340;
-  --slate: #4a5b70;
-  --line: #d6e1ea;
-  --cyan: #1aa7c9;
-  --deep-cyan: #0b7a99;
-  --deep-cyan-hover: #08647e;
-  --copper: #9a5224;
-  --success: #1e7f55;
-  --warning: #b7791f;
-  --danger: #b42318;
-  --cyan-wash: #e6f5f9;
-  --copper-wash: #f7ece4;
-  --focus: #1aa7c9;
-  /* Bright Cool Air: the bold blue of the ESS logo for the hero and call-to-action bands. */
-  --hero: #0b5aa8;
-  --hero-deep: #083f7a;
-  --sky: #1ba3e0;
+  --page: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #12163a;
+  --muted: #4d5480;
+  --line: #d9deef;
+  --cool: #1f5fd6;
+  --heat: #ff6a1a;
+  --taxi: #ffc915;
+  --taxi-ink: #141414;
+  --taxi-hover: #ffd84d;
   --whatsapp: #1c8a4b;
-  /* Service icon tints (background) and inks (icon colour), one pair per kind of work. */
-  --tint-sky: #e3f3fc;
-  --tint-violet: #eeebfd;
-  --tint-mint: #e2f6ee;
-  --tint-amber: #fdf3dc;
-  --tint-coral: #fde9e6;
-  --ink-sky: #0a6fa8;
-  --ink-violet: #5b45c9;
-  --ink-mint: #177a52;
-  --ink-amber: #94600a;
-  --ink-coral: #b2392c;
+  --glass-fill: rgb(255 255 255 / 0.42);
+  --glass-strong: rgb(255 255 255 / 0.62);
+  --glass-line: rgb(255 255 255 / 0.65);
+  --glass-hi: rgb(255 255 255 / 0.9);
+  --neu-bg: #eef0f5;
+  --neu-dark: rgb(150 160 185 / 0.55);
+  --neu-light: rgb(255 255 255 / 0.95);
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --frost: #0b1a30;
-  --paper: #132a47;
-  --navy: #eaf2f8;
-  --slate: #a9bbcd;
-  --line: #26406a;
-  --deep-cyan: #46c3e0;
-  --deep-cyan-hover: #7ad6eb;
-  --copper: #e09a68;
-  --cyan-wash: #10344a;
-  --copper-wash: #3a2a20;
-  --hero: #0b4a8f;
-  --hero-deep: #083a70;
-  --tint-sky: #12395c;
-  --tint-violet: #2a2550;
-  --tint-mint: #10392f;
-  --tint-amber: #3a2e12;
-  --tint-coral: #3d2124;
-  --ink-sky: #7cc8f0;
-  --ink-violet: #b4a8f5;
-  --ink-mint: #6fd6ad;
-  --ink-amber: #f0c060;
-  --ink-coral: #f3a19a;
+  --page: #0b0a1f;
+  --surface: #16143a;
+  --ink: #ecedff;
+  --muted: #a6a9d6;
+  --line: #2a2760;
+  --cool: #5cc8ff;
+  --heat: #ff7a2e;
+  --glass-fill: rgb(14 22 48 / 0.38);
+  --glass-strong: rgb(12 18 40 / 0.55);
+  --glass-line: rgb(255 255 255 / 0.18);
+  --glass-hi: rgb(255 255 255 / 0.28);
+  --neu-bg: #1a2142;
+  --neu-dark: rgb(0 0 0 / 0.45);
+  --neu-light: rgb(255 255 255 / 0.08);
   color-scheme: dark;
 }
 
 @theme inline {
-  --color-frost: var(--frost);
-  --color-paper: var(--paper);
-  --color-navy: var(--navy);
-  --color-slate: var(--slate);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
   --color-line: var(--line);
-  --color-cyan: var(--cyan);
-  --color-deep-cyan: var(--deep-cyan);
-  --color-deep-cyan-hover: var(--deep-cyan-hover);
-  --color-copper: var(--copper);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
-  --color-cyan-wash: var(--cyan-wash);
-  --color-copper-wash: var(--copper-wash);
-  --color-hero: var(--hero);
-  --color-hero-deep: var(--hero-deep);
-  --color-sky: var(--sky);
+  --color-cool: var(--cool);
+  --color-heat: var(--heat);
+  --color-taxi: var(--taxi);
+  --color-taxi-ink: var(--taxi-ink);
+  --color-taxi-hover: var(--taxi-hover);
   --color-whatsapp: var(--whatsapp);
-  --color-tint-sky: var(--tint-sky);
-  --color-tint-violet: var(--tint-violet);
-  --color-tint-mint: var(--tint-mint);
-  --color-tint-amber: var(--tint-amber);
-  --color-tint-coral: var(--tint-coral);
-  --color-ink-sky: var(--ink-sky);
-  --color-ink-violet: var(--ink-violet);
-  --color-ink-mint: var(--ink-mint);
-  --color-ink-amber: var(--ink-amber);
-  --color-ink-coral: var(--ink-coral);
+
+  /*
+   * Older names still used by pages not yet restyled (inner pages, plan 2). They point at the
+   * Mumbai Glass colours so nothing looks out of place; remove once no component uses them.
+   */
+  --color-frost: var(--page);
+  --color-paper: var(--surface);
+  --color-navy: var(--ink);
+  --color-slate: var(--muted);
+  --color-cyan: var(--cool);
+  --color-deep-cyan: var(--cool);
+  --color-deep-cyan-hover: var(--cool);
+  --color-copper: var(--heat);
+  --color-cyan-wash: color-mix(in oklab, var(--cool) 12%, var(--surface));
+  --color-copper-wash: color-mix(in oklab, var(--heat) 12%, var(--surface));
+  --color-success: #1e7f55;
+  --color-warning: #b7791f;
+  --color-danger: #b42318;
 
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 
-  /* Type scale 14 / 16 / 18 / 22 / 28 / 36 / 48 / 96 (hero numeral) */
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.125rem;
@@ -110,14 +88,12 @@
   --text-2xl: 1.75rem;
   --text-3xl: 2.25rem;
   --text-4xl: 3rem;
-  --text-numeral: 6rem;
 
-  /* Radius by hierarchy, not one radius everywhere */
-  --radius-control: 10px;
-  --radius-card: 14px;
-  --radius-sheet: 20px;
+  /* Radius by hierarchy: pills for controls, softer cards, big panels */
+  --radius-control: 999px;
+  --radius-card: 20px;
+  --radius-sheet: 30px;
 
-  /* Motion tokens (plan §5B) */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-enter: cubic-bezier(0, 0, 0, 1);
   --ease-exit: cubic-bezier(0.3, 0, 1, 1);
@@ -130,22 +106,23 @@ html {
 }
 
 body {
-  background: var(--frost);
-  color: var(--navy);
+  background: var(--page);
+  color: var(--ink);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.55;
+  transition: background-color 0.6s, color 0.6s;
 }
 
-/* Headings use the expanded width of the same family: an engineering, spec-sheet feel. */
+/* Headings: the wide cut of the same family, heavy and tight. */
 h1,
 h2,
 h3,
 .display {
-  font-stretch: 125%;
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
@@ -153,32 +130,66 @@ p {
   text-wrap: pretty;
 }
 
-/* Prices, tonnage, dates and codes line up in tables and lists. */
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--cool);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .skip-link {
   position: absolute;
   left: 1rem;
   top: -4rem;
-  z-index: 50;
+  z-index: 60;
   padding: 0.5rem 1rem;
-  border-radius: var(--radius-control);
-  background: var(--navy);
-  color: var(--paper);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--page);
 }
 .skip-link:focus {
   top: 1rem;
 }
 
-/* Light is the default; the moon toggle sets data-theme="dark" on <html>. Show the matching logo. */
+/* Frosted glass panels: the photo or page shows through, blurred. */
+.glass,
+.glass-strong {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 20px 50px -20px rgb(0 0 0 / 0.45);
+}
+.glass-strong {
+  background: var(--glass-strong);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background: color-mix(in oklab, var(--surface) 92%, transparent);
+  }
+}
+
+/* Soft physical controls (day/night switch, steppers, segmented toggles). */
+.neu-inset {
+  background: var(--neu-bg);
+  box-shadow:
+    inset 4px 4px 8px var(--neu-dark),
+    inset -4px -4px 8px var(--neu-light);
+}
+.neu-raised {
+  background: var(--neu-bg);
+  box-shadow:
+    4px 4px 8px var(--neu-dark),
+    -3px -3px 7px var(--neu-light);
+}
+
+/* Show the logo that suits the theme. */
 .logo-dark {
   display: none;
 }
@@ -189,21 +200,7 @@ p {
   display: inline-block;
 }
 
-/* Cool air leaving the AC in the hero: dashes travel down each airflow line. */
-@keyframes airflow {
-  to {
-    stroke-dashoffset: -120;
-  }
-}
-.airflow path {
-  stroke-dasharray: 18 22;
-  animation: airflow 2.8s linear infinite;
-}
-.airflow path:nth-child(2) { animation-duration: 3.4s; }
-.airflow path:nth-child(3) { animation-duration: 2.4s; }
-.airflow path:nth-child(4) { animation-duration: 3.1s; }
-
-/* The picker's answer card appears where the customer tapped (answers their action). */
+/* An answer card appears where the customer tapped. */
 @keyframes pop-in {
   from {
     opacity: 0;
@@ -212,20 +209,6 @@ p {
 }
 .pop-in {
   animation: pop-in 220ms var(--ease-enter) both;
-}
-
-/* Brand strip: one slow, continuous scroll; pauses when the pointer is over it. */
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-.marquee-track {
-  animation: marquee 40s linear infinite;
-}
-.marquee:hover .marquee-track,
-.marquee:focus-within .marquee-track {
-  animation-play-state: paused;
 }
 
 /* Sections rise in gently as they scroll into view (browsers without scroll timelines show them as is). */
@@ -246,10 +229,6 @@ p {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .airflow path,
-  .marquee-track {
-    animation: none !important;
-  }
   *,
   *::before,
   *::after {

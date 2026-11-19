@@ -63,7 +63,7 @@ export function ProblemPicker({ chips, services }: { chips: ProblemChip[]; servi
                 </div>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <ButtonLink href={`/book?service=${encodeURIComponent(service.code)}`}>Book this visit</ButtonLink>
-                  <ButtonLink href={`/services/${service.code.toLowerCase()}`} variant="secondary">
+                  <ButtonLink href={`/services/${service.code.toLowerCase()}`} variant="glass">
                     What is included
                   </ButtonLink>
                 </div>
