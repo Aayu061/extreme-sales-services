@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { fieldErrors, requestSchema, type SiteRequestInput } from '@/lib/request-schema';
 
 export interface SentRequest {
@@ -23,9 +23,13 @@ export function useRequestSubmit() {
   const [fields, setFields] = useState<Record<string, string>>({});
   const ref = useRef<string | null>(null);
   const busy = useRef(false);
-  const startedAt = useRef(Date.now());
+  // Started once the form is on screen (reading the clock while the page is pre-built is not allowed).
+  const startedAt = useRef<number | null>(null);
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
 
-  const elapsedMs = useCallback(() => Date.now() - startedAt.current, []);
+  const elapsedMs = useCallback(() => (startedAt.current === null ? 0 : Date.now() - startedAt.current), []);
 
   const send = useCallback(async (build: (ref: string) => SiteRequestInput) => {
     if (busy.current) return;
