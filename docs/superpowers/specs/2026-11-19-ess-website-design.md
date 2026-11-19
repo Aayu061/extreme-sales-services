@@ -79,10 +79,10 @@ Motion (GSAP, one orchestrated intro, then calm loops)
 
 Order and purpose (every section must answer a customer question):
 
-1. **Services & prices: "Point at the problem" (AC X-ray).** A clean line drawing of a split AC; scrolling (pinned on desktop) opens it into parts: filter, cooling coil, blower fan, circuit board, gas pipes, drain tray. Tap a part: problem it causes, the service that fixes it, live price incl. GST, Book this / What's included. A **"Show as list"** toggle shows all public services as glass cards with prices (also the fallback for reduced motion and screen readers). Repairs priced after diagnosis are grouped with that note.
+1. **Services & prices: "Point at the problem" (AC X-ray).** Image: owner's ChatGPT cutaway render `web/public/hero/xray.png` (see-through split AC showing filter, cooling coil, blower fan, circuit board, copper gas pipes, drain tray; no text). If the PNG has no transparency, it sits on a dark "blueprint" panel in both themes. Glass hotspot labels sit on each part (positions stored as fractions of the image so they scale); on desktop the section pins and the labels reveal one by one as you scroll. Tap a part: problem it causes, the service that fixes it, live price incl. GST, Book this / What's included. Mapping: filter → foam jet wash (bad smell, dusty air); coil → jet wash (not cooling well); fan → diagnosis visit (noisy); circuit board → PCB repair, priced after diagnosis (won't start, beeping); gas pipes → gas leak test & charging (warm air, ice on pipes); drain tray → diagnosis visit (water leaking). A **"Show as list"** toggle shows all public services as glass cards with prices (also the fallback for reduced motion and screen readers). Repairs priced after diagnosis are grouped with that note.
 2. **AMC plans.** Glass cards from `/catalog` amcPlans: name, visits a year, what is covered (gas, spares, complaints flags), "from ₹ / year" by AC type, Compare plans → `/amc`.
-3. **New ACs.** Up to 4 in-stock residential products with price incl. GST and MRP strike-through when higher; drawn AC art until real photos exist (existing `components/shop/product-art.tsx`). See all → `/shop`.
-4. **How a visit works.** Four numbered steps (a real sequence): tell us what is wrong → we confirm your visit → technician visits (extra repairs quoted first; 45-day warranty) → follow it online. Link to `/track`.
+3. **New ACs for every space.** Four type tiles: Split, Window, Cassette, Floor-standing, each with drawn art (existing `components/shop/product-art.tsx` kinds), "from ₹ incl. GST" computed from in-stock priced products of that type (hidden when none), linking to `/shop` with that filter. Below: up to 4 featured in-stock products. See all → `/shop`.
+4. **Book in 3 steps.** Three numbered steps matching the `/book` flow: choose what you need → enter address and preferred time → we confirm your visit (extra repairs quoted first; 45-day warranty on our work). Book now button and a Track your request link.
 5. **Contact & area.** Pincode check (calls `/serviceability/:pincode`, shows area or "we don't cover this pincode yet, call us"), call, WhatsApp, hours, address, and the closing yellow **Book a service**.
 6. **Footer** (all pages): legal name, address, GSTIN, contact, grievance officer, policy links, "Sell on ESS".
 
@@ -108,6 +108,10 @@ Inner pages use a **slim photo banner** (a cropped strip of the day/night photo,
 | `not-found`, `error` | Glass panel on the slim banner, clear next action. |
 
 The basket persists in `localStorage` (per device) and shows as a glass pill in the nav with an item count.
+
+Floating contact (all pages): WhatsApp and Call round buttons bottom-right; on phones also a floating yellow **Book** pill bottom-left that appears once the hero's Book button scrolls out of view (hidden on `/book` itself).
+
+Prices rule: every price on every page comes from the live PYS API. Design references and AI mock-ups contain illustrative prices; none of those numbers may appear in code, fixtures shipped to production, or copy.
 
 Also in scope (from plan Stage D): SEO metadata and JSON-LD (LocalBusiness, Product, Service), sitemap/robots, and permanent redirects from the old site's URLs (`/index.html`, `/service.html`, `/amc.html`, `/products.html`, `/contact.html`, `/status.html`, `/privacy.html`, `/terms.html`, `/vendor.html`) to the new routes.
 
@@ -156,7 +160,7 @@ Editable through existing PYS content blocks: `home.hero` (headline, subline), `
 
 ## 10. Decided by the owner (do not reopen)
 
-Mumbai Glass hero as mocked; yellow buttons; thermal palette base for everything else; light default with day/night switch; trimmed home (section 6); thermal camera not in the hero; 45-day warranty shown; no 90-minute arrival; paise shown; the same design on every page; images from ChatGPT in `web/public/hero/`.
+Mumbai Glass hero as mocked; X-ray image from ChatGPT; AC type tiles; 3 booking steps; floating phone Book button; yellow buttons; thermal palette base for everything else; light default with day/night switch; trimmed home (section 6); thermal camera not in the hero; 45-day warranty shown; no 90-minute arrival; paise shown; the same design on every page; images from ChatGPT in `web/public/hero/`.
 
 ## 11. Left to the builder
 
