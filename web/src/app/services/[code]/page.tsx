@@ -1,3 +1,4 @@
+import { PageNotes, Star } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -119,12 +120,14 @@ async function ServiceContent({ params }: Props) {
                 <li className="flex gap-2">
                   <ShieldCheck aria-hidden="true" size={18} className="mt-0.5 shrink-0 text-cool" />
                   {warranty}-day warranty on our work
+                  <Star />
                 </li>
               )}
               {s.pricingModel !== 'FIXED' && (
                 <li className="flex gap-2">
                   <Check aria-hidden="true" size={18} className="mt-0.5 shrink-0 text-cool" />
                   {s.pricingModel === 'FROM' ? 'The final price depends on your AC; we confirm it before starting.' : 'We tell you the price after checking your AC, before any work.'}
+                  <Star mark="**" />
                 </li>
               )}
             </ul>
@@ -157,6 +160,7 @@ async function ServiceContent({ params }: Props) {
           </div>
         </Container>
       )}
+      <PageNotes ids={['warranty', 'inspection']} />
     </>
   );
 }

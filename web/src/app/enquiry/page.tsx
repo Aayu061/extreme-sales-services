@@ -1,3 +1,4 @@
+import { PageNotes } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PageBanner } from '@/components/site/page-banner';
@@ -32,6 +33,7 @@ export default async function EnquiryPage() {
           <EnquiryFlow products={products.list} productsKnown={products.known} phone={basics.identity.phone} />
         </Suspense>
       </Container>
+      <PageNotes ids={['acPrice']} />
     </>
   );
 }

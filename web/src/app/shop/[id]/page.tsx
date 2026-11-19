@@ -1,3 +1,4 @@
+import { PageNotes, Star } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
@@ -114,7 +115,10 @@ async function ProductContent({ params }: Props) {
               <>
                 <p className="flex flex-wrap items-baseline gap-x-2">
                   <span className="tabular text-4xl font-extrabold">{formatInr(p.price)}</span>
-                  <span className="text-muted">incl. GST</span>
+                  <span className="text-muted">
+                    incl. GST
+                    <Star />
+                  </span>
                 </p>
                 {saving > 0 && (
                   <p className="tabular mt-1 text-sm">
@@ -186,6 +190,7 @@ async function ProductContent({ params }: Props) {
           </div>
         </Container>
       )}
+      <PageNotes ids={['acPrice']} />
     </>
   );
 }

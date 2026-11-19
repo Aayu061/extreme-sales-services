@@ -29,7 +29,7 @@ export async function POST(request: Request): Promise<Response> {
     if (err instanceof PysError && err.status === 429) {
       return Response.json({ error: err.message }, { status: 429, headers: NO_STORE });
     }
-    if (err instanceof PysError && err.status === 400) {
+    if (err instanceof PysError && (err.status === 400 || err.status === 422)) {
       return Response.json({ error: ASK }, { status: 400, headers: NO_STORE });
     }
     console.error('tracking lookup failed', err instanceof PysError ? `${err.status} ${err.code}` : err);

@@ -10,7 +10,7 @@ export function WhyEss({ warrantyDays }: { warrantyDays: number }) {
     { icon: BadgeIndianRupee, title: 'The price before you book', text: 'Every service and AMC plan shows its price with GST, here on the site.' },
     { icon: Stethoscope, title: 'Extra repairs quoted first', text: 'If the technician finds more wrong, you get the price before any work starts.' },
     ...(warrantyDays > 0
-      ? [{ icon: ShieldCheck, title: `${warrantyDays}-day warranty`, text: `Our service work is covered for ${warrantyDays} days.` }]
+      ? [{ icon: ShieldCheck, title: `${warrantyDays}-day warranty*`, text: `Our service work is covered for ${warrantyDays} days.` }]
       : []),
     { icon: MapPinned, title: 'Follow it online', text: 'Your tracking code shows each step, from booked to done.' },
     { icon: Wrench, title: 'All major brands', text: 'Daikin, Voltas, LG, Blue Star, Hitachi, Carrier, O General, Panasonic, Mitsubishi and more.' },

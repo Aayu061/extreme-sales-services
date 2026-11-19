@@ -50,6 +50,15 @@ describe('POST /api/track', () => {
     expect(pysRequest).not.toHaveBeenCalled();
   });
 
+  it('treats a PYS validation refusal as a typing problem, not an outage', async () => {
+    pysRequest.mockImplementation(async () => {
+      throw new PysError(422, 'VALIDATION_ERROR', 'Request validation failed');
+    });
+    const res = await post({ code: 'ESS-ABCD-1234', phone: '9876543210' });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Enter your tracking code and the 10-digit mobile number you used.');
+  });
+
   it('asks to try again when PYS is down', async () => {
     pysRequest.mockImplementation(async () => {
       throw new PysError(503, 'PYS_UNREACHABLE', 'down');

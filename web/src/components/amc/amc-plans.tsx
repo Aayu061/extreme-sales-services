@@ -1,5 +1,6 @@
 'use client';
 
+import { Star } from '@/components/site/footnote';
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { AddToRequest } from '@/components/basket/add-to-request';
@@ -106,7 +107,11 @@ export function AmcPlans({ plans }: { plans: CatalogAmcPlan[] }) {
                       {rate ? (
                         <p>
                           <span className="tabular text-2xl font-extrabold">{formatInr(rate.total)}</span>
-                          <span className="text-sm text-muted"> a year incl. GST{p.rates.flat ? ', any AC' : ''}</span>
+                          <span className="text-sm text-muted">
+                            {' '}
+                            a year incl. GST{p.rates.flat ? ', any AC' : ''}
+                            <Star />
+                          </span>
                         </p>
                       ) : (
                         <p className="font-semibold text-muted">Not for this AC</p>
@@ -169,7 +174,6 @@ export function AmcPlans({ plans }: { plans: CatalogAmcPlan[] }) {
           </table>
         </div>
       </section>
-      <p className="mt-6 text-sm text-muted">Prices are per AC per year and include GST.</p>
     </div>
   );
 }

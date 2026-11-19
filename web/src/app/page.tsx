@@ -1,3 +1,4 @@
+import { PageNotes } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero/hero';
 import { XraySection } from '@/components/home/xray-section';
@@ -46,6 +47,7 @@ export default async function HomePage() {
       <AcTypesSection tiles={acTypeTiles(products)} />
       <BookSteps warrantyDays={identity.warrantyDays} />
       <ContactArea identity={identity} />
+      <PageNotes ids={['warranty', 'amc']} />
     </>
   );
 }

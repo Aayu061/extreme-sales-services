@@ -1,3 +1,4 @@
+import { Star } from '@/components/site/footnote';
 import Link from 'next/link';
 import { AddToEnquiry } from '@/components/basket/add-to-request';
 import { formatInr } from '@/lib/format';
@@ -31,7 +32,10 @@ export function ProductCard({ product: p }: { product: Product }) {
           {p.price !== null ? (
             <p className="flex flex-wrap items-baseline gap-x-2">
               <span className="tabular text-2xl font-extrabold">{formatInr(p.price)}</span>
-              <span className="text-sm text-muted">incl. GST</span>
+              <span className="text-sm text-muted">
+                incl. GST
+                <Star />
+              </span>
               {saving && <s className="tabular text-sm text-muted">MRP {formatInr(p.mrp!)}</s>}
             </p>
           ) : (

@@ -1,3 +1,4 @@
+import { Star } from '@/components/site/footnote';
 import Link from 'next/link';
 import { CalendarCheck, ClipboardList, Wrench } from 'lucide-react';
 import { Container } from '@/components/site/container';
@@ -40,7 +41,7 @@ export function AmcSection({ plans }: { plans: AmcCard[] }) {
               An Annual Maintenance Contract (AMC) is a yearly plan for your AC. {plans.length} plans for split and window ACs
               {from !== null && (
                 <>
-                  , <strong className="tabular text-ink">from {formatInr(from)} a year</strong> incl. GST
+                  , <strong className="tabular text-ink">from {formatInr(from)} a year</strong> incl. GST<Star mark="**" />
                 </>
               )}
               .
@@ -79,7 +80,9 @@ export function AmcSection({ plans }: { plans: AmcCard[] }) {
                   </span>
                   <span className="sm:text-right">
                     <span className="tabular block text-xl font-extrabold">From {formatInr(p.fromTotal!)}</span>
-                    <span className="block text-xs text-muted">a year, incl. GST</span>
+                    <span className="block text-xs text-muted">
+                      a year, incl. GST<Star mark="**" />
+                    </span>
                   </span>
                 </Link>
               </li>

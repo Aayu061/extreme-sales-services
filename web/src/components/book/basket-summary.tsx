@@ -1,3 +1,4 @@
+import { Star } from '@/components/site/footnote';
 import { basketTotals, type PricedLine } from '@/lib/basket-pricing';
 import { cn } from '@/lib/cn';
 import { formatInr } from '@/lib/format';
@@ -33,7 +34,8 @@ export function BasketSummary({ priced, compact = false }: { priced: PricedLine[
       )}
       {t.unpricedCount > 0 && t.known > 0 && (
         <p className="mt-2 text-sm text-muted">
-          {t.unpricedCount === 1 ? '1 item is' : `${t.unpricedCount} items are`} priced after inspection (not included). We tell you the price before any work.
+          {t.unpricedCount === 1 ? '1 item is' : `${t.unpricedCount} items are`} priced after inspection (not included).
+          <Star />
         </p>
       )}
       {t.unavailable > 0 && <p className="mt-2 text-sm font-semibold text-heat">Remove items that are no longer available to continue.</p>}

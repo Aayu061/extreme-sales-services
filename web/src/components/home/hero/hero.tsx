@@ -24,7 +24,7 @@ export function Hero({
   card: HeroCard;
 }) {
   const facts = [
-    identity.warrantyDays > 0 ? `${identity.warrantyDays}-day warranty on our work` : null,
+    identity.warrantyDays > 0 ? `${identity.warrantyDays}-day warranty on our work*` : null,
     'Prices include GST',
     identity.hours,
   ].filter((f): f is string => Boolean(f));

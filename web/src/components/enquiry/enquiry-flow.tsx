@@ -1,5 +1,6 @@
 'use client';
 
+import { Star } from '@/components/site/footnote';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -187,7 +188,10 @@ export function EnquiryFlow({ products, productsKnown = true, phone }: { product
         <section aria-label="Listed total" className="mt-4 rounded-2xl border border-line bg-surface/60 p-4">
           {totals.known > 0 ? (
             <p className="tabular flex items-baseline justify-between gap-3">
-              <span className="font-semibold">Listed total incl. GST</span>
+              <span className="font-semibold">
+                Listed total incl. GST
+                <Star />
+              </span>
               <span className="text-2xl font-extrabold">{formatInr(totals.known)}</span>
             </p>
           ) : (

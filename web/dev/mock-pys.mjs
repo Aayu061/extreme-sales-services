@@ -32,7 +32,7 @@ const content = {
       phone: '+91 7977805245',
       whatsapp: '+91 7977805245',
       email: 'extremess0121@gmail.com',
-      hours: 'Mon–Sat, 9:00 am – 7:00 pm',
+      hours: 'Mon–Sat, 9:00 am – 6:30 pm',
       warrantyDays: 45,
       grievanceOfficer: { name: null, email: 'extremess0121@gmail.com', phone: '+91 7977805245' },
     },

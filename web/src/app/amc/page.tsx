@@ -1,3 +1,4 @@
+import { PageNotes } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import { PageBanner } from '@/components/site/page-banner';
 import { Container } from '@/components/site/container';
@@ -22,6 +23,7 @@ export default async function AmcPage() {
       <Container className="py-8 sm:py-12">
         <AmcPlans plans={catalog.amcPlans} />
       </Container>
+      <PageNotes ids={['amc']} />
     </>
   );
 }

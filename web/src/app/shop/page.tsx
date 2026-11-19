@@ -1,3 +1,4 @@
+import { PageNotes } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PageBanner } from '@/components/site/page-banner';
@@ -38,6 +39,7 @@ export default async function ShopPage() {
         </Suspense>
         <BillSaver />
       </Container>
+      <PageNotes ids={['acPrice']} />
     </>
   );
 }

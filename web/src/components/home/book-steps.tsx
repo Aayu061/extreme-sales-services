@@ -9,7 +9,7 @@ export function BookSteps({ warrantyDays }: { warrantyDays: number }) {
     { title: 'Tell us where and when', text: 'Your address and a preferred day and time.' },
     {
       title: 'We confirm your visit',
-      text: `Our team confirms the time. Any extra repair is quoted before we start.${warrantyDays > 0 ? ` ${warrantyDays}-day warranty on our work.` : ''}`,
+      text: `Our team confirms the time. Any extra repair is quoted before we start.${warrantyDays > 0 ? ` ${warrantyDays}-day warranty on our work*.` : ''}`,
     },
   ];
   return (

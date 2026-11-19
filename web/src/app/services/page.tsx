@@ -1,3 +1,4 @@
+import { PageNotes, Star } from '@/components/site/footnote';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
@@ -42,7 +43,12 @@ export default async function ServicesPage() {
             <h2 id={`${anchor(g.category)}-h`} className="text-[clamp(26px,3vw,36px)]">
               {g.label}
             </h2>
-            {g.note && <p className="mt-1 text-muted">{g.note}</p>}
+            {g.note && (
+              <p className="mt-1 text-muted">
+                {g.note}
+                <Star />
+              </p>
+            )}
             <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {g.items.map((s) => (
                 <article key={s.code} className="glass flex flex-col rounded-3xl p-6 text-ink">
@@ -75,6 +81,7 @@ export default async function ServicesPage() {
           </section>
         ))}
       </Container>
+      <PageNotes ids={['inspection']} />
     </>
   );
 }
