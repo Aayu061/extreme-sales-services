@@ -17,15 +17,15 @@ export function WhyEss({ warrantyDays }: { warrantyDays: number }) {
     { icon: Layers, title: 'One request for everything', text: 'A service, an AMC plan and a new AC can go in the same request.' },
   ];
   return (
-    <section aria-labelledby="why-heading" className="reveal py-16 sm:py-20">
+    <section aria-labelledby="why-heading" className="reveal py-8 sm:py-12">
       <Container>
         <h2 id="why-heading" className="text-[clamp(30px,3.6vw,48px)]">
           Why people call ESS
         </h2>
         <p className="mt-2 max-w-[60ch] text-lg text-muted">AC sales, service and AMC from Chembur, for homes, shops and offices across Mumbai, Thane and Navi Mumbai.</p>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {points.map(({ icon: Icon, title, text }) => (
-            <li key={title} className="glass flex gap-4 rounded-3xl p-6 text-ink">
+            <li key={title} className="glass flex gap-4 rounded-3xl p-5 text-ink sm:p-6">
               <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-taxi text-taxi-ink">
                 <Icon aria-hidden="true" size={24} />
               </span>

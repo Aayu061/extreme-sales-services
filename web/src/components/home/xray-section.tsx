@@ -55,13 +55,13 @@ export function XraySection({ services }: { services: PickerService[] }) {
     () => {
       if (view !== 'xray' || reduce.current || !window.matchMedia(DESKTOP).matches) return;
       gsap.registerPlugin(ScrollTrigger);
-      // Desktop: hold the AC on screen briefly while the parts light up one by one.
+      // Desktop: the parts light up one by one as the AC scrolls into view (no pinning, no gap).
       gsap.from('.xray-hot', {
         scale: 0,
         opacity: 0,
         stagger: 0.15,
         ease: 'back.out(2)',
-        scrollTrigger: { trigger: '.xray-stage', start: 'top 20%', end: '+=420', pin: '.xray-wrap', scrub: 0.6 },
+        scrollTrigger: { trigger: '.xray-stage', start: 'top 80%', once: true },
       });
     },
     { scope: root, dependencies: [view] },
@@ -114,7 +114,7 @@ export function XraySection({ services }: { services: PickerService[] }) {
   ).sort(([a], [b]) => (a === 'REPAIR' ? 1 : b === 'REPAIR' ? -1 : 0));
 
   return (
-    <section ref={root} id="services" aria-labelledby="xray-heading" className="py-20 sm:py-24">
+    <section ref={root} id="services" aria-labelledby="xray-heading" className="py-12 sm:py-16">
       <div className="xray-wrap">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -141,7 +141,7 @@ export function XraySection({ services }: { services: PickerService[] }) {
 
           {view === 'xray' ? (
             <>
-              <div className="mt-8 grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+              <div className="mt-6 grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
                 <div className="xray-stage relative overflow-hidden rounded-[28px] bg-[radial-gradient(80%_70%_at_50%_45%,color-mix(in_oklab,var(--cool)_16%,#0a1630),#0a1630)] p-[3%] shadow-[inset_0_0_0_1px_var(--glass-line)] [background-image:linear-gradient(rgb(92_200_255/.07)_1px,transparent_1px),linear-gradient(90deg,rgb(92_200_255/.07)_1px,transparent_1px)] [background-size:28px_28px] dark:bg-[#0a1630]">
                   <div className="xray-ac relative [perspective:1400px]" style={{ aspectRatio: `${XRAY_IMAGE.w} / ${XRAY_IMAGE.h}` }}>
                     <Image
@@ -256,7 +256,7 @@ export function XraySection({ services }: { services: PickerService[] }) {
               </div>
             </>
           ) : (
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
               {groups.map(([category, items]) => (
                 <div key={category} className="glass rounded-3xl p-6 text-ink">
                   <h3 className="text-xl">{CATEGORY_LABEL[category] ?? category}</h3>

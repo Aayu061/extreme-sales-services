@@ -15,7 +15,7 @@ const USE: Record<AcTypeTile['kind'], string> = {
 /** New ACs for every space: the four AC types with live "from" prices; the models themselves live on /shop. */
 export function AcTypesSection({ tiles }: { tiles: AcTypeTile[] }) {
   return (
-    <section aria-labelledby="types-heading" className="reveal py-16 sm:py-20">
+    <section aria-labelledby="types-heading" className="reveal py-8 sm:py-12">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -29,7 +29,7 @@ export function AcTypesSection({ tiles }: { tiles: AcTypeTile[] }) {
           </Link>
         </div>
 
-        <ul className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <ul className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {tiles.map((t) => (
             <li key={t.kind}>
               <Link href={t.href} className="glass group flex h-full flex-col overflow-hidden rounded-3xl text-ink transition-transform duration-200 hover:-translate-y-1">

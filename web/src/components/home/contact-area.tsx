@@ -11,7 +11,7 @@ export function ContactArea({ identity }: { identity: BusinessIdentity }) {
   const tel = identity.phone.replace(/[^+\d]/g, '');
   const wa = (identity.whatsapp ?? identity.phone).replace(/\D/g, '');
   return (
-    <section aria-labelledby="contact-heading" className="reveal pt-4 pb-16 sm:pb-20">
+    <section aria-labelledby="contact-heading" className="reveal pt-8 pb-16 sm:pt-12 sm:pb-20">
       <Container className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
         <div className="glass rounded-[30px] p-6 text-ink sm:p-10">
           <h2 id="contact-heading" className="text-[clamp(28px,3.2vw,42px)]">

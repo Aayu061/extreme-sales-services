@@ -29,7 +29,7 @@ export function AmcSection({ plans }: { plans: AmcCard[] }) {
   if (highlights.length === 0) return null;
 
   return (
-    <section aria-labelledby="amc-heading" className="reveal py-16 sm:py-20">
+    <section aria-labelledby="amc-heading" className="reveal py-8 sm:py-12">
       <Container>
         <div className="glass grid gap-8 rounded-[30px] p-6 text-ink sm:p-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
@@ -68,16 +68,16 @@ export function AmcSection({ plans }: { plans: AmcCard[] }) {
               <li key={p.code}>
                 <Link
                   href={`/amc#${p.code.toLowerCase()}`}
-                  className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-3xl border border-[var(--glass-line)] bg-white/10 p-5 transition-transform duration-200 hover:-translate-y-0.5"
+                  className="flex flex-col gap-3 rounded-3xl sm:flex-row sm:items-center sm:justify-between sm:gap-6 border border-[var(--glass-line)] bg-white/10 p-5 transition-transform duration-200 hover:-translate-y-0.5"
                 >
-                  <span className="min-w-0 flex-1">
+                  <span className="min-w-0 sm:flex-1">
                     <span className="block text-sm font-semibold text-cool">{highlightLabel(p, i)}</span>
                     <span className="block text-lg font-bold">{p.name}</span>
                     <span className="block text-sm text-muted">
                       {p.visitsPerYear} service visits a year{p.covers.length ? `. ${p.covers.join(', ')}.` : ''}
                     </span>
                   </span>
-                  <span className="text-right">
+                  <span className="sm:text-right">
                     <span className="tabular block text-xl font-extrabold">From {formatInr(p.fromTotal!)}</span>
                     <span className="block text-xs text-muted">a year, incl. GST</span>
                   </span>
