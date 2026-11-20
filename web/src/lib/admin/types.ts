@@ -3,6 +3,8 @@
  * (server/src/middleware/essActor.ts, server/src/services/essAdmin.service.ts).
  */
 
+import type { SellerDisclosure } from '@/lib/pys/types';
+
 export type EssRole = 'ESS_ADMIN' | 'ESS_STAFF';
 
 /** The signed-in person (GET /me). A PYS Admin always has ESS_ADMIN in `roles`. */
@@ -69,4 +71,41 @@ export interface AdminEnquiryLine {
     pincode: string | null;
     message: string | null;
   };
+}
+
+/**
+ * One product in GET /products ({ products: [...] }, in shop order) and the answer of
+ * POST /products and PATCH /products/:id, as PYS essAdminService mapAdminProduct. Prices are rupees,
+ * GST included (null = price on request). `isPublished` false = hidden from the website.
+ * `imageUrl` is a full address (see lib/product-photo.ts).
+ */
+export interface AdminProduct {
+  id: string;
+  name: string;
+  category: string;
+  brand: string | null;
+  modelNumber: string | null;
+  tonnage: string | null;
+  starRating: string | null;
+  price: number | null;
+  mrp: number | null;
+  stock: number;
+  inStock: boolean;
+  isCustomQuote: boolean;
+  description: string | null;
+  coolingCapacity: string | null;
+  powerConsumption: string | null;
+  refrigerant: string | null;
+  noiseLevel: string | null;
+  dimensions: string | null;
+  warranty: string | null;
+  keyFeatures: string[];
+  imageUrl: string | null;
+  spaceType: string | null;
+  idealFor: string | null;
+  countryOfOrigin: string | null;
+  isPublished: boolean;
+  displayOrder: number;
+  seller: SellerDisclosure | null;
+  updatedAt: string | null;
 }

@@ -1,5 +1,7 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
+import { serverEnv } from '@/lib/env';
+import { photoPathFromPys } from '@/lib/product-photo';
 import { pysRequest } from '@/lib/pys/client';
 import { heroOfferCard, seasonNote, type HeroCard } from '@/lib/season';
 import type { BusinessIdentity, Catalog, ContentBlock, HomeHero, Product, ServiceArea } from '@/lib/pys/types';
@@ -27,7 +29,11 @@ export async function getProducts(): Promise<Product[]> {
   'use cache';
   cacheLife(SITE_DATA_LIFE);
   cacheTag('products');
-  return (await pysRequest<{ products: Product[] }>('GET', '/products')).products;
+  const { products } = await pysRequest<{ products: Product[] }>('GET', '/products');
+  // A photo chosen in the admin area is stored in PYS as a full address; the shop shows it by its
+  // site path (see lib/product-photo.ts). Other addresses are left as they are.
+  const origins = [serverEnv().SITE_URL];
+  return products.map((p) => ({ ...p, imageUrl: photoPathFromPys(p.imageUrl, origins) }));
 }
 
 export async function getProduct(id: string): Promise<Product | null> {

@@ -7,8 +7,9 @@
 //               PYS_INTEGRATION_KEY_ID=essweb_localdev
 //               PYS_INTEGRATION_SECRET=local-dev-secret-not-for-production
 // Admin area (/ess/admin/*): /admin/login "Sign in as test admin / staff" sends the token
-// dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests and AC enquiries
-// are kept in memory and start again each time this runs.
+// dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests, AC enquiries and
+// products are kept in memory and start again each time this runs (hiding a product in the admin
+// area also takes it out of the shop here).
 import http from 'node:http';
 import { createHash, createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -76,8 +77,70 @@ const ACTORS = {
   'dev-staff-token': { profileId: 'dev-staff', email: 'test-staff@example.com', name: 'Test Staff', roles: ['ESS_STAFF'], isPysAdmin: false },
 };
 
-const productList = Array.isArray(products) ? products : products.products;
+// ---------------------------------------------------------------- products (one list, in memory)
+// Kept in the admin shape (essAdminService mapAdminProduct), seeded from the public fixture, so the
+// admin Products screen and the public shop read the same ACs: a product hidden in the admin area
+// leaves GET /products (the shop), like PYS's is_published filter.
+const toAdminProduct = (p) => ({
+  id: p.id,
+  name: p.name,
+  category: p.category,
+  brand: p.brand ?? null,
+  modelNumber: p.modelNumber ?? null,
+  tonnage: p.tonnage ?? null,
+  starRating: p.starRating ?? null,
+  price: p.price ?? null,
+  mrp: p.mrp ?? null,
+  stock: p.inStock ? 10 : 0,
+  inStock: Boolean(p.inStock),
+  isCustomQuote: Boolean(p.isCustomQuote),
+  description: p.description ?? null,
+  coolingCapacity: p.specs?.coolingCapacity ?? null,
+  powerConsumption: p.specs?.powerConsumption ?? null,
+  refrigerant: p.specs?.refrigerant ?? null,
+  noiseLevel: p.specs?.noiseLevel ?? null,
+  dimensions: p.specs?.dimensions ?? null,
+  warranty: p.warranty ?? null,
+  keyFeatures: p.keyFeatures ?? [],
+  imageUrl: p.imageUrl ?? null,
+  spaceType: p.spaceType ?? null,
+  idealFor: p.idealFor ?? null,
+  countryOfOrigin: p.countryOfOrigin ?? null,
+  isPublished: p.isPublished !== false,
+  displayOrder: p.displayOrder ?? 100,
+  seller: p.seller ?? null,
+  updatedAt: '2026-11-19T00:00:00Z',
+});
+/** The shop's shape (essSite.service mapProduct). */
+const toPublicProduct = (p) => ({
+  id: p.id,
+  name: p.name,
+  category: p.category,
+  brand: p.brand,
+  modelNumber: p.modelNumber,
+  tonnage: p.tonnage,
+  starRating: p.starRating,
+  price: p.price,
+  mrp: p.mrp,
+  inStock: p.inStock,
+  isCustomQuote: p.isCustomQuote,
+  description: p.description,
+  specs: { coolingCapacity: p.coolingCapacity, powerConsumption: p.powerConsumption, refrigerant: p.refrigerant, noiseLevel: p.noiseLevel, dimensions: p.dimensions },
+  warranty: p.warranty,
+  keyFeatures: p.keyFeatures,
+  imageUrl: p.imageUrl,
+  spaceType: p.spaceType,
+  idealFor: p.idealFor,
+  countryOfOrigin: p.countryOfOrigin,
+  displayOrder: p.displayOrder,
+  seller: p.seller,
+});
+const productList = (Array.isArray(products) ? products : products.products).map(toAdminProduct);
 const productById = (id) => productList.find((p) => p.id === id);
+const FIRST_PARTY_SELLER = productList.find((p) => p.seller?.isFirstParty)?.seller ?? null;
+/** Like PYS listProducts: by display order, then name. */
+const sortedProducts = () => [...productList].sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name));
+const shopProducts = () => sortedProducts().filter((p) => p.isPublished).map(toPublicProduct);
 const ago = (hours) => new Date(Date.now() - hours * 3600_000).toISOString();
 
 /** A website request as PYS lists it (IntakeDto). `quote` on a line is kept here only, like the DB column. */
@@ -327,6 +390,137 @@ function enquiryWrite(path, method, rawBody) {
   return { data: { lineId: line.id, status: line.status } };
 }
 
+/**
+ * POST /products and PATCH /products/:id, like essAdminService.createProduct / updateProduct with
+ * productInputSchema / productPatchSchema (strict; 422 details as PYS's validate middleware sends
+ * them). The id is made from the name when left out (slug + 6 hex); a used id is 409, an unknown
+ * one 404; a patch with nothing in it is 400. Price above MRP is 422 on "price" (for a patch,
+ * against the product's current price or MRP too).
+ */
+const PRODUCT_TEXT = {
+  brand: 60, modelNumber: 80, tonnage: 20, starRating: 20, description: 4000, coolingCapacity: 60, powerConsumption: 60,
+  refrigerant: 40, noiseLevel: 40, dimensions: 120, warranty: 200, spaceType: 60, idealFor: 120, countryOfOrigin: 80,
+};
+const PRODUCT_KEYS = ['id', 'name', 'category', ...Object.keys(PRODUCT_TEXT), 'price', 'mrp', 'stock', 'isCustomQuote', 'keyFeatures', 'imageUrl', 'isPublished', 'displayOrder'];
+const slugify = (name) =>
+  name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'ac';
+
+function checkProduct(body, { patch }) {
+  const details = [];
+  const issue = (field, message, code) => details.push({ field, message, code });
+  const out = {};
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    issue('', 'Invalid input: expected object', 'invalid_type');
+    return { details };
+  }
+  const allowed = patch ? PRODUCT_KEYS.filter((k) => k !== 'id') : PRODUCT_KEYS;
+  const extra = Object.keys(body).filter((k) => !allowed.includes(k));
+  if (extra.length) issue('', `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, 'unrecognized_keys');
+  const blank = (v) => typeof v === 'string' && v.trim() === '';
+  const has = (k) => body[k] !== undefined;
+
+  if (!patch && has('id') && !blank(body.id)) {
+    if (typeof body.id !== 'string' || !/^[a-z0-9][a-z0-9-]{1,80}$/.test(body.id.trim())) issue('id', 'Use lowercase letters, digits and -', 'invalid_format');
+    else out.id = body.id.trim();
+  }
+  if (has('name') || !patch) {
+    const n = body.name;
+    if (typeof n !== 'string') issue('name', 'Invalid input: expected string, received undefined', 'invalid_type');
+    else if (n.trim().length < 2) issue('name', 'Too small: expected string to have >=2 characters', 'too_small');
+    else if (n.trim().length > 200) issue('name', 'Too big: expected string to have <=200 characters', 'too_big');
+    else out.name = n.trim();
+  }
+  if (has('category')) {
+    if (typeof body.category !== 'string' || !/^[a-z_]{2,40}$/.test(body.category.trim())) issue('category', 'Invalid string: must match pattern /^[a-z_]{2,40}$/', 'invalid_format');
+    else out.category = body.category.trim();
+  } else if (!patch) out.category = 'new_ac';
+  for (const [k, max] of Object.entries(PRODUCT_TEXT)) {
+    if (!has(k)) continue;
+    const v = blank(body[k]) ? null : body[k];
+    if (v !== null && typeof v !== 'string') issue(k, 'Invalid input: expected string', 'invalid_type');
+    else if (v !== null && v.trim().length > max) issue(k, `Too big: expected string to have <=${max} characters`, 'too_big');
+    else out[k] = v === null ? null : v.trim();
+  }
+  for (const k of ['price', 'mrp']) {
+    if (!has(k)) continue;
+    const v = body[k];
+    if (v === null) out[k] = null;
+    else if (typeof v !== 'number' || !Number.isFinite(v)) issue(k, 'Invalid input: expected number', 'invalid_type');
+    else if (v < 0) issue(k, 'Too small: expected number to be >=0', 'too_small');
+    else if (v > 10_000_000) issue(k, 'Too big: expected number to be <=10000000', 'too_big');
+    else out[k] = v;
+  }
+  for (const k of ['stock', 'displayOrder']) {
+    if (!has(k)) continue;
+    const v = body[k];
+    if (!Number.isInteger(v) || v < 0 || v > 100_000) issue(k, 'Invalid input: expected int between 0 and 100000', 'invalid_type');
+    else out[k] = v;
+  }
+  for (const k of ['isCustomQuote', 'isPublished']) {
+    if (!has(k)) continue;
+    if (typeof body[k] !== 'boolean') issue(k, 'Invalid input: expected boolean', 'invalid_type');
+    else out[k] = body[k];
+  }
+  if (has('keyFeatures')) {
+    const f = body.keyFeatures;
+    if (!Array.isArray(f)) issue('keyFeatures', 'Invalid input: expected array', 'invalid_type');
+    else if (f.length > 20) issue('keyFeatures', 'Too big: expected array to have <=20 items', 'too_big');
+    else {
+      f.forEach((x, i) => {
+        if (typeof x !== 'string' || x.trim().length < 1 || x.trim().length > 200) issue(`keyFeatures.${i}`, 'Invalid feature', 'invalid_type');
+      });
+      out.keyFeatures = f.map((x) => String(x).trim());
+    }
+  }
+  if (has('imageUrl') && !blank(body.imageUrl)) {
+    const v = body.imageUrl;
+    // zod's url(): anything new URL() can read (so a site path like /images/... is refused).
+    if (v !== null && (typeof v !== 'string' || !URL.canParse(v.trim()) || v.trim().length > 1000)) issue('imageUrl', 'Invalid URL', 'invalid_format');
+    else out.imageUrl = v === null ? null : v.trim();
+  }
+  if (out.price != null && out.mrp != null && out.price > out.mrp) issue('price', 'Selling price cannot be above the MRP', 'custom');
+  return details.length ? { details } : { input: out };
+}
+
+function productWrite(path, method, rawBody) {
+  const isList = path === '/products';
+  const m = /^\/products\/([^/]+)$/.exec(path);
+  if (!((isList && method === 'POST') || (m && method === 'PATCH'))) return null;
+  let body;
+  try {
+    body = JSON.parse(rawBody || '{}');
+  } catch {
+    return { status: 400, code: 'BAD_REQUEST', message: 'Invalid JSON body' };
+  }
+  const checked = checkProduct(body, { patch: !isList });
+  if (checked.details) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: checked.details };
+  const input = checked.input;
+  const now = new Date().toISOString();
+
+  if (isList) {
+    const id = input.id ?? `${slugify(input.name)}-${Math.random().toString(16).slice(2, 8).padEnd(6, '0')}`;
+    if (productById(id)) return { status: 409, code: 'CONFLICT', message: 'Could not add the product: it already exists' };
+    const p = toAdminProduct({ id, name: input.name, category: input.category, keyFeatures: [], seller: FIRST_PARTY_SELLER, displayOrder: 100 });
+    Object.assign(p, input, { id, stock: input.stock ?? 0, inStock: (input.stock ?? 0) > 0, updatedAt: now });
+    productList.push(p);
+    return { status: 201, data: p };
+  }
+
+  const id = decodeURIComponent(m[1]).trim();
+  if (id.length < 1 || id.length > 100) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: [{ field: 'id', message: 'Invalid id', code: 'too_big' }] };
+  const p = productById(id);
+  if (!p) return { status: 404, code: 'NOT_FOUND', message: 'Product not found' };
+  const price = input.price !== undefined ? input.price : p.price;
+  const mrp = input.mrp !== undefined ? input.mrp : p.mrp;
+  if (price != null && mrp != null && price > mrp) {
+    return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: [{ field: 'price', message: 'Selling price cannot be above the MRP', code: 'custom' }] };
+  }
+  if (Object.keys(input).length === 0) return { status: 400, code: 'BAD_REQUEST', message: 'Nothing to change' };
+  Object.assign(p, input, { updatedAt: now });
+  if (input.stock !== undefined) p.inStock = input.stock > 0;
+  return { status: 200, data: p };
+}
+
 function overview() {
   const pending = intakes.filter((it) => it.status === 'PENDING_REVIEW');
   const since = ago(24);
@@ -356,6 +550,13 @@ function adminRoute(req, res, path, url, body) {
     return r.details ? fail(res, 422, 'VALIDATION_ERROR', 'Request validation failed', r.details) : ok(res, r.data);
   }
   if (req.method === 'GET' && path === '/enquiries') return ok(res, { enquiries: listEnquiries() });
+  if (req.method === 'GET' && path === '/products') return ok(res, { products: sortedProducts() });
+  const productChange = productWrite(path, req.method, body);
+  if (productChange) {
+    return productChange.data
+      ? ok(res, productChange.data, productChange.status)
+      : fail(res, productChange.status, productChange.code, productChange.message, productChange.details);
+  }
   const write = enquiryWrite(path, req.method, body);
   if (write) return write.data ? ok(res, write.data) : fail(res, write.status, write.code, write.message, write.details);
   return fail(res, 404, 'NOT_FOUND', 'Not found');
@@ -375,9 +576,10 @@ http
       if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url, body);
 
       if (req.method === 'GET' && path === '/catalog') return ok(res, catalog);
-      if (req.method === 'GET' && path === '/products') return ok(res, { products });
+      // The shop: shown products only (PYS is_published filter), in shop order.
+      if (req.method === 'GET' && path === '/products') return ok(res, { products: shopProducts() });
       if (req.method === 'GET' && path.startsWith('/products/')) {
-        const p = products.find((x) => x.id === decodeURIComponent(path.slice(10)));
+        const p = shopProducts().find((x) => x.id === decodeURIComponent(path.slice(10)));
         return p ? ok(res, p) : fail(res, 404, 'NOT_FOUND', 'Product not found');
       }
       if (req.method === 'GET' && path === '/content') {
@@ -393,7 +595,7 @@ http
       if (req.method === 'POST' && path === '/intakes') {
         // Like PYS: every basket line must still be on offer, else 422 naming the line.
         const input = JSON.parse(body || '{}');
-        const list = Array.isArray(products) ? products : products.products;
+        const list = shopProducts();
         const details = (input.items ?? []).flatMap((it, i) => {
           if (it.type === 'SERVICE' && !catalog.services.some((s) => s.code === it.serviceCode)) return [{ field: `items.${i}.serviceCode`, message: 'Unknown service code' }];
           if (it.type === 'AMC' && !catalog.amcPlans.some((p) => p.code === it.amcPlanCode || p.planCode === it.amcPlanCode)) return [{ field: `items.${i}.amcPlanCode`, message: 'Unknown AMC plan' }];
