@@ -47,7 +47,18 @@ function useCheckedAction(action: (prev: AuthFormState, fd: FormData) => Promise
   return { state, pending, formAction, guard };
 }
 
-export function LoginForm({ devLogin, configured, next }: { devLogin: boolean; configured: boolean; next: string | null }) {
+export function LoginForm({
+  devLogin,
+  configured,
+  next,
+  expired = false,
+}: {
+  devLogin: boolean;
+  configured: boolean;
+  next: string | null;
+  /** The session ran out while the person was using the admin area (/admin/login?expired=1). */
+  expired?: boolean;
+}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -64,6 +75,11 @@ export function LoginForm({ devLogin, configured, next }: { devLogin: boolean; c
 
   return (
     <AuthCard title="Sign in to ESS admin" intro="Use the email and password of your Place Your Service account.">
+      {expired && (
+        <div className="mb-4">
+          <Note>Please sign in again.</Note>
+        </div>
+      )}
       {configured ? (
         <form action={formAction} onSubmit={submit} noValidate className="flex flex-col gap-4">
           {next && <input type="hidden" name="next" value={next} />}

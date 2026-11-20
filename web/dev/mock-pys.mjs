@@ -298,7 +298,8 @@ http
     req.on('data', (c) => (body += c));
     req.on('end', () => {
       if (!req.url.startsWith('/api/v1/ess/')) return fail(res, 404, 'NOT_FOUND', 'Not found');
-      if (!verify(req, body)) return fail(res, 401, 'UNAUTHORIZED', 'Bad signature');
+      // Like PYS integrationAuth: a refused signature is this server's setup, not someone's session.
+      if (!verify(req, body)) return fail(res, 401, 'INVALID_SIGNATURE', 'Request signature is missing or invalid');
       const url = new URL(req.url, 'http://x');
       const path = url.pathname.replace('/api/v1/ess', '');
       if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url);

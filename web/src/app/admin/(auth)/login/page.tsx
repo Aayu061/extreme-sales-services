@@ -10,8 +10,15 @@ export const metadata: Metadata = { title: 'Sign in' };
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 async function LoginWithNext({ searchParams, devLogin, configured }: { searchParams: SearchParams; devLogin: boolean; configured: boolean }) {
-  const { next } = await searchParams;
-  return <LoginForm devLogin={devLogin} configured={configured} next={safeAdminNext(Array.isArray(next) ? next[0] : next)} />;
+  const { next, expired } = await searchParams;
+  return (
+    <LoginForm
+      devLogin={devLogin}
+      configured={configured}
+      next={safeAdminNext(Array.isArray(next) ? next[0] : next)}
+      expired={(Array.isArray(expired) ? expired[0] : expired) === '1'}
+    />
+  );
 }
 
 export default function AdminLoginPage({ searchParams }: { searchParams: SearchParams }) {

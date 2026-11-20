@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import type { ReactElement } from 'react';
 
 const signIn = vi.fn();
 const devSignIn = vi.fn();
@@ -79,5 +80,35 @@ describe('LoginForm', () => {
     render(<LoginForm devLogin={false} configured={false} next={null} />);
     expect(screen.getByText(/Sign-in isn't set up yet/)).toBeTruthy();
     expect(screen.queryByLabelText(/^Email/)).toBeNull();
+  });
+
+  it('says "Please sign in again." above the form when the session ran out', () => {
+    const { rerender } = render(<LoginForm devLogin={false} configured next="/admin/requests" expired />);
+    const note = screen.getByText('Please sign in again.');
+    const form = screen.getByRole('button', { name: 'Sign in' }).closest('form')!;
+    expect(note.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    rerender(<LoginForm devLogin={false} configured next={null} />);
+    expect(screen.queryByText('Please sign in again.')).toBeNull();
+  });
+});
+
+describe('/admin/login page', () => {
+  /** The page's inner part (inside <Suspense>), resolved like the server does. */
+  async function renderLoginPage(searchParams: Record<string, string>) {
+    const { default: AdminLoginPage } = await import('@/app/admin/(auth)/login/page');
+    const page = AdminLoginPage({ searchParams: Promise.resolve(searchParams) }) as ReactElement<{ children: ReactElement }>;
+    const inner = page.props.children as ReactElement<Record<string, unknown>>;
+    const resolve = inner.type as (props: Record<string, unknown>) => Promise<ReactElement>;
+    return render(await resolve(inner.props));
+  }
+
+  it('shows "Please sign in again." for ?expired=1 and keeps where to go next', async () => {
+    await renderLoginPage({ expired: '1', next: '/admin/requests?status=APPROVED' });
+    expect(screen.getByText('Please sign in again.')).toBeTruthy();
+  });
+
+  it('does not show it on a normal visit', async () => {
+    await renderLoginPage({});
+    expect(screen.queryByText('Please sign in again.')).toBeNull();
   });
 });

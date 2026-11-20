@@ -16,6 +16,8 @@ class Redirected extends Error {
   }
 }
 let pathname = '/admin/enquiries';
+// The proxy tells the server which admin page this is (used when sending someone to sign in again).
+vi.mock('next/headers', () => ({ headers: async () => new Headers({ 'x-ess-admin-path': pathname }) }));
 vi.mock('next/navigation', () => ({
   usePathname: () => pathname,
   redirect: (url: string) => {
@@ -133,8 +135,8 @@ describe('admin panel layout', () => {
     expect(screen.queryByText('Page body')).toBeNull();
   });
 
-  it('sends the person to sign in again when PYS says the session has expired', async () => {
+  it('sends the person to sign in again when PYS says the session has expired, coming back to the same page', async () => {
     getMe.mockRejectedValue(new AdminAuthError());
-    await expect(AdminPanel({ children: <p>Page body</p> })).rejects.toMatchObject({ url: '/admin/login' });
+    await expect(AdminPanel({ children: <p>Page body</p> })).rejects.toMatchObject({ url: '/admin/login?expired=1&next=%2Fadmin%2Fenquiries' });
   });
 });

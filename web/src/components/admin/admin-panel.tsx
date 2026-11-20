@@ -1,22 +1,27 @@
-import { redirect } from 'next/navigation';
-import { AdminAuthError, AdminForbiddenError, getMe } from '@/lib/admin/pys-admin';
+import { guardAdmin } from '@/lib/admin/guard';
+import { AdminForbiddenError, getMe } from '@/lib/admin/pys-admin';
 import type { AdminMe } from '@/lib/admin/types';
 import { AdminNav } from './admin-nav';
 import { NoAccess } from './no-access';
 
+/** The person, or null for an account PYS knows but that has no ESS role. */
+async function signedInPerson(): Promise<AdminMe | null> {
+  try {
+    return await getMe();
+  } catch (err) {
+    if (err instanceof AdminForbiddenError) return null;
+    throw err;
+  }
+}
+
 /**
  * The signed-in part of the admin layout (rendered per request, inside <Suspense>). PYS decides
- * who may come in: an expired session goes back to sign in; an account without an ESS role sees
- * a short "no access" page with Sign out, and none of the screens.
+ * who may come in: an expired session goes back to sign in (and then to the same page); an
+ * account without an ESS role sees a short "no access" page with Sign out, and none of the
+ * screens (shown here, not by redirecting to /admin/no-access, which has this same layout).
  */
 export async function AdminPanel({ children }: { children: React.ReactNode }) {
-  let me: AdminMe | null = null;
-  try {
-    me = await getMe();
-  } catch (err) {
-    if (err instanceof AdminAuthError) redirect('/admin/login');
-    if (!(err instanceof AdminForbiddenError)) throw err;
-  }
+  const me = await guardAdmin(signedInPerson());
 
   if (!me) {
     return (

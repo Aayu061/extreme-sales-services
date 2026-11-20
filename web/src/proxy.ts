@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { isUnknownDetail, type KnownPages } from '@/lib/known-pages';
-import { adminGate, isAdminPath } from '@/lib/admin/gate';
+import { ADMIN_PATH_HEADER, adminGate, adminPathOf, isAdminPath, isUnknownAdminPage } from '@/lib/admin/gate';
 import { DEV_TOKEN_COOKIE, devLoginEnabled, isDevToken } from '@/lib/admin/dev-login';
 import { supabaseConfig } from '@/lib/env';
 
@@ -30,13 +30,18 @@ async function knownPages(origin: string): Promise<KnownPages | null> {
 
 /**
  * /admin: refresh the Supabase session (new cookies go on the response), then let the person in,
- * send them to sign in, or keep a first sign-in on "Choose a new password". The emailed reset link
+ * send them to sign in, or keep a first sign-in on "Choose a new password". An address with no
+ * admin screen answers 404 (after the sign-in check) and shows the admin "not found". The emailed reset link
  * (/admin/reset?code=…) is swapped for a session here. Admin answers are never cached.
  * Server Actions check the session again themselves; this is only the first gate.
  */
 async function adminProxy(request: NextRequest): Promise<NextResponse> {
   const { pathname, searchParams } = request.nextUrl;
-  let response = NextResponse.next({ request });
+  // Which admin page this is, for "sign in again, then come back here" (never the browser's own value).
+  request.headers.set(ADMIN_PATH_HEADER, adminPathOf(request.nextUrl));
+  // An admin address with no screen: a real 404 (the page itself starts streaming with 200).
+  const status = isUnknownAdminPage(pathname) ? 404 : undefined;
+  let response = NextResponse.next({ request, status });
   let hasSession = false;
   let mustChangePassword = false;
   let destination: string | null = null;
@@ -51,7 +56,7 @@ async function adminProxy(request: NextRequest): Promise<NextResponse> {
           getAll: () => request.cookies.getAll(),
           setAll(list, headers) {
             for (const { name, value } of list) request.cookies.set(name, value);
-            response = NextResponse.next({ request });
+            response = NextResponse.next({ request, status });
             for (const { name, value, options } of list) response.cookies.set(name, value, options);
             for (const [key, value] of Object.entries(headers)) response.headers.set(key, value);
           },
