@@ -7,10 +7,10 @@ vi.mock('@/lib/admin/pys-admin', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/admin/pys-admin')>()),
   adminRequest: (method: string, path: string, body?: unknown) => adminRequest(method, path, body),
 }));
-const revalidateTag = vi.fn();
+const updateTag = vi.fn();
 const revalidatePath = vi.fn();
 vi.mock('next/cache', () => ({
-  revalidateTag: (tag: string, profile: unknown) => revalidateTag(tag, profile),
+  updateTag: (tag: string) => updateTag(tag),
   revalidatePath: (p: string, type?: string) => revalidatePath(p, type),
 }));
 class Redirected extends Error {
@@ -86,7 +86,7 @@ const product = (extra: Partial<AdminProduct> = {}): AdminProduct => ({
 
 beforeEach(() => {
   adminRequest.mockReset();
-  revalidateTag.mockClear();
+  updateTag.mockClear();
   revalidatePath.mockClear();
 });
 
@@ -354,7 +354,7 @@ describe('createProduct', () => {
     const r = await createProduct({}, form({ ...VALID, price: '60,000', mrp: '58,400' }));
     expect(r).toEqual({ fields: { price: "Price can't be more than the MRP." } });
     expect(adminRequest).not.toHaveBeenCalled();
-    expect(revalidateTag).not.toHaveBeenCalled();
+    expect(updateTag).not.toHaveBeenCalled();
   });
 
   it('adds the product in PYS, refreshes the shop, then opens the new product (redirect outside the try)', async () => {
@@ -364,14 +364,14 @@ describe('createProduct', () => {
     const [method, path, body] = adminRequest.mock.calls[0];
     expect([method, path]).toEqual(['POST', '/products']);
     expect(body).toMatchObject({ name: VALID.name, price: 45990, mrp: 58400, isPublished: true, category: 'residential' });
-    expect(revalidateTag).toHaveBeenCalledWith('products', 'max');
+    expect(updateTag).toHaveBeenCalledWith('products');
   });
 
   it('says so on the id field when the id is already used (PYS 409)', async () => {
     adminRequest.mockRejectedValueOnce(new PysError(409, 'CONFLICT', 'Could not add the product: it already exists'));
     const r = await createProduct({}, form({ ...VALID, id: 'daikin-x1' }));
     expect(r).toEqual({ fields: { id: 'This product ID is already used. Choose another, or leave it empty.' } });
-    expect(revalidateTag).not.toHaveBeenCalled();
+    expect(updateTag).not.toHaveBeenCalled();
   });
 
   it('puts PYS field errors (422) on the matching form fields, in plain words', async () => {
@@ -415,7 +415,7 @@ describe('updateProduct', () => {
     expect([method, path]).toEqual(['PATCH', '/products/daikin-ftkm50-1a2b3c']);
     expect(body).not.toHaveProperty('id');
     expect(body).toMatchObject({ name: VALID.name, isPublished: true });
-    expect(revalidateTag).toHaveBeenCalledWith('products', 'max');
+    expect(updateTag).toHaveBeenCalledWith('products');
   });
 
   it('keeps an odd id inside its part of the PYS path, and refuses a missing one', async () => {
@@ -447,7 +447,7 @@ describe('setShown', () => {
     expect(adminRequest).toHaveBeenCalledWith('PATCH', '/products/daikin-ftkm50-1a2b3c', { isPublished: false });
     await setShown('daikin-ftkm50-1a2b3c', true);
     expect(adminRequest).toHaveBeenLastCalledWith('PATCH', '/products/daikin-ftkm50-1a2b3c', { isPublished: true });
-    expect(revalidateTag).toHaveBeenCalledWith('products', 'max');
+    expect(updateTag).toHaveBeenCalledWith('products');
   });
 
   it('refuses anything but true or false, and a bad id, without asking PYS', async () => {
@@ -463,6 +463,6 @@ describe('setShown', () => {
     expect(await setShown('a', true)).toEqual({ forbidden: true });
     adminRequest.mockRejectedValueOnce(new PysError(404, 'NOT_FOUND', 'Product not found'));
     expect(await setShown('a', true)).toEqual({ notFound: true, error: PRODUCT_MESSAGES.gone });
-    expect(revalidateTag).not.toHaveBeenCalled();
+    expect(updateTag).not.toHaveBeenCalled();
   });
 });

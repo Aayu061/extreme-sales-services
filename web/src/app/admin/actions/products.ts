@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { redirect, unstable_rethrow } from 'next/navigation';
 import { PRODUCT_MESSAGES, editHref, pysFieldsToForm, toProductInput, type ProductFieldErrors } from '@/lib/admin/product-form';
 import { AdminAuthError, AdminForbiddenError, AdminValidationError, adminRequest } from '@/lib/admin/pys-admin';
@@ -37,8 +37,8 @@ function productPath(id: unknown): string | null {
 }
 
 function refresh() {
-  // Public shop pages: stale-while-revalidate, so visitors never wait for PYS.
-  revalidateTag('products', 'max');
+  // Public shop pages: expired at once (R8), so the next visitor already sees the change.
+  updateTag('products');
   // Admin pages are rendered per request; this sends fresh ones back with the action's answer.
   revalidatePath(LIST, 'layout');
 }
