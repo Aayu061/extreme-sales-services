@@ -47,6 +47,9 @@ export async function loadAdmin<T>(promise: Promise<T>, currentPath?: string): P
     return { ok: true, data: await guardAdmin(promise, currentPath) };
   } catch (err) {
     unstable_rethrow(err);
+    // A render Next stopped itself (dev checks, a navigation away): not a PYS failure, so not ours
+    // to report. (pysRequest turns its own time-outs into PysError PYS_UNREACHABLE.)
+    if (err instanceof Error && err.name === 'AbortError') throw err;
     // Status and code only: PYS error messages can name a customer.
     console.error('admin read from PYS failed', err instanceof PysError ? `${err.status} ${err.code}` : err instanceof Error ? err.name : 'unknown');
     return { ok: false };

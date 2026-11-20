@@ -87,6 +87,11 @@ describe('loadAdmin', () => {
     log.mockRestore();
   });
 
+  it('leaves a render that Next stopped itself to Next (no "PYS failed" message)', async () => {
+    const aborted = new DOMException('This operation was aborted', 'AbortError');
+    await expect(loadAdmin(Promise.reject(aborted), '/admin')).rejects.toBe(aborted);
+  });
+
   it('still redirects for an expired session or no access', async () => {
     expect(await redirectOf(loadAdmin(Promise.reject(new AdminAuthError()), '/admin/requests'))).toBe('/admin/login?expired=1&next=%2Fadmin%2Frequests');
     expect(await redirectOf(loadAdmin(Promise.reject(new AdminForbiddenError()), '/admin/requests'))).toBe('/admin/no-access');

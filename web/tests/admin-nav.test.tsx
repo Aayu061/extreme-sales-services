@@ -23,6 +23,9 @@ vi.mock('next/navigation', () => ({
   redirect: (url: string) => {
     throw new Redirected(url);
   },
+  unstable_rethrow: (err: unknown) => {
+    if (err instanceof Redirected) throw err;
+  },
 }));
 
 import { ADMIN_NAV, visibleNav } from '@/lib/admin/nav';
@@ -133,6 +136,17 @@ describe('admin panel layout', () => {
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy();
     expect(screen.queryByRole('navigation', { name: 'Admin' })).toBeNull();
     expect(screen.queryByText('Page body')).toBeNull();
+  });
+
+  it('says plainly when PYS cannot be reached, with Try again on the same page', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    getMe.mockRejectedValue(new TypeError('fetch failed'));
+    await renderPanel();
+    expect(screen.getByRole('alert').textContent).toContain("We couldn't reach PYS. It may be waking up — try again in a minute.");
+    expect(screen.getByRole('link', { name: 'Try again' }).getAttribute('href')).toBe('/admin/enquiries');
+    expect(screen.queryByRole('navigation', { name: 'Admin' })).toBeNull();
+    expect(screen.queryByText('Page body')).toBeNull();
+    log.mockRestore();
   });
 
   it('sends the person to sign in again when PYS says the session has expired, coming back to the same page', async () => {

@@ -179,6 +179,19 @@ const intakes = [
     items: [productLine('TLRbwbHUxbXgBIJ9eCZM', { status: 'PENDING' })],
     hoursAgo: 1,
   }),
+  // Older, already handled requests (3 to 26 days old), so the Requests screen has a second page.
+  // None is waiting or recent, so the overview numbers above stay the same.
+  ...Array.from({ length: 24 }, (_, i) => {
+    const n = 7 + i;
+    const kinds = ['SERVICE_BOOKING', 'AMC_REQUEST', 'CONTACT', 'BASKET'];
+    const statuses = ['APPROVED', 'REJECTED', 'DUPLICATE', 'SPAM', 'WITHDRAWN', 'IMPORTED_ARCHIVE'];
+    return intake(n, {
+      kind: kinds[i % kinds.length],
+      status: statuses[i % statuses.length],
+      contact: { name: `Old customer ${n}`, phone: `98111${String(n).padStart(5, '0')}`, email: null },
+      hoursAgo: 72 + i * 24,
+    });
+  }),
 ];
 
 const leadDto = (it) => ({
