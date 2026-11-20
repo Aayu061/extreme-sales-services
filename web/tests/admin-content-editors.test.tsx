@@ -54,6 +54,9 @@ import { FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
 import { LEGAL_DEFAULTS } from '@/lib/legal';
 import type { AdminContentBlock, AdminContentSummary } from '@/lib/admin/types';
 import { ContentEditor } from '@/components/admin/content-editors/shell';
+import { SiteFooter } from '@/components/site/site-footer';
+import { validateBlock } from '@/lib/admin/content';
+import type { BusinessIdentity } from '@/lib/pys/types';
 import { ContentEditScreen, ContentListScreen } from '@/components/admin/content-view';
 
 const ADMIN = { roles: ['ESS_ADMIN'], isPysAdmin: false, name: 'Test Admin', email: 'a@example.com' };
@@ -234,6 +237,23 @@ describe('ContentEditor: saving and publishing', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await waitFor(() => expect(screen.getByText('Too small: expected string to have >=6 characters')).toBeTruthy());
     expect(field(/^Phone/).getAttribute('aria-invalid')).toBe('true');
+  });
+});
+
+describe('Business details and the footer', () => {
+  it('says empty grievance contacts are saved as the business email and phone', () => {
+    render(<ContentEditor blockKey="business.identity" saved={block('business.identity', FALLBACK_IDENTITY)} fallback={FALLBACK_IDENTITY} isAdmin />);
+    expect(screen.getByText(/empty email or phone is saved as the business email and phone/i)).toBeTruthy();
+  });
+
+  it('shows a complaints contact in the footer for business details saved without one', () => {
+    const r = validateBlock('business.identity', { ...FALLBACK_IDENTITY, grievanceOfficer: { name: null, email: '', phone: '' } });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    render(<SiteFooter identity={r.body as unknown as BusinessIdentity} />);
+    const box = screen.getByText('Complaints').parentElement as HTMLElement;
+    expect(within(box).getByRole('link', { name: FALLBACK_IDENTITY.email })).toBeTruthy();
+    expect(within(box).getByText(FALLBACK_IDENTITY.phone)).toBeTruthy();
   });
 });
 

@@ -109,7 +109,7 @@ export function IdentityFields({ value, onChange, errors, disabled }: FieldsProp
       </Group>
 
       <Group title="Grievance officer">
-        <p className="text-sm text-muted sm:col-span-2">Named on the privacy notice and terms for complaints. Empty fields use the business email and phone.</p>
+        <p className="text-sm text-muted sm:col-span-2">Shown in the footer&apos;s complaints box and on the privacy notice and terms. An empty email or phone is saved as the business email and phone.</p>
         {grievance('name', "Grievance officer's name", { max: 120 })}
         {grievance('email', "Grievance officer's email", { max: 254, type: 'email', inputMode: 'email' })}
         {grievance('phone', "Grievance officer's phone", { max: 20, type: 'tel', inputMode: 'tel', tabular: true })}

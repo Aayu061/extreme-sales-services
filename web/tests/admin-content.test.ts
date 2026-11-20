@@ -267,9 +267,30 @@ describe('validateBlock: business.identity', () => {
     );
     expect(r.ok).toBe(true);
     if (r.ok) {
-      expect(r.body).toMatchObject({ warrantyDays: 30, whatsapp: null, proprietorName: null, gstin: '27ANTPP9778J1ZO', grievanceOfficer: { name: null, email: null, phone: null } });
+      expect(r.body).toMatchObject({
+        warrantyDays: 30,
+        whatsapp: null,
+        proprietorName: null,
+        gstin: '27ANTPP9778J1ZO',
+        // An empty grievance contact is saved as the business email and phone (the footer shows it).
+        grievanceOfficer: { name: null, email: FALLBACK_IDENTITY.email, phone: FALLBACK_IDENTITY.phone },
+      });
       expect(Object.keys(r.body).sort()).toEqual(Object.keys(FALLBACK_IDENTITY).sort());
     }
+  });
+
+  it('always keeps a complaints contact: an empty grievance email or phone becomes the business one', () => {
+    const r = validateBlock(
+      'business.identity',
+      identity({ email: 'owner@example.com', phone: '+91 90000 11111', grievanceOfficer: { name: 'A. Officer', email: null, phone: '  ' } }),
+      NOW,
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.body.grievanceOfficer).toEqual({ name: 'A. Officer', email: 'owner@example.com', phone: '+91 90000 11111' });
+    // Given ones are kept as they are.
+    const own = validateBlock('business.identity', identity({ grievanceOfficer: { name: null, email: 'g@example.com', phone: '022 2522 1234' } }), NOW);
+    if (own.ok) expect(own.body.grievanceOfficer).toEqual({ name: null, email: 'g@example.com', phone: '022 2522 1234' });
+    expect(own.ok).toBe(true);
   });
 
   it('refuses warranty days outside 0–365, a bad email, a bad GSTIN and a phone without enough digits', () => {

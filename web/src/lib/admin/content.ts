@@ -275,7 +275,10 @@ function identity(b: Obj, c: Checker): BusinessIdentity {
     email,
     hours: c.text('hours', b.hours, 'opening hours', 2, 120),
     warrantyDays: days,
-    grievanceOfficer: { name: gName, email: gEmail, phone: gPhone },
+    // The footer's "Complaints" box (an e-commerce rules disclosure) shows the grievance email and
+    // phone with no fallback of its own, so an empty one is stored as the business email / phone:
+    // the published block always carries a contact, and the footer and legal pages agree.
+    grievanceOfficer: { name: gName, email: gEmail ?? (email || null), phone: gPhone ?? (phone || null) },
   };
 }
 
