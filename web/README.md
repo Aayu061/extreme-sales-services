@@ -33,5 +33,11 @@ Checks: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`.
 | `PYS_INTEGRATION_KEY_ID` | same as the old ESS server on Render |
 | `PYS_INTEGRATION_SECRET` | same as the old ESS server on Render |
 | `SITE_URL` | the site's public address |
+| `NEXT_PUBLIC_SUPABASE_URL` | the PYS Supabase project address (admin sign-in) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | its publishable (anon) key, never the service role key |
+
+Admin sign-in (`/admin/login`) uses the PYS Supabase accounts. Add `<SITE_URL>/admin/reset` to
+Supabase → Authentication → URL Configuration → Redirect URLs so password reset links work.
+On a PC with the mock PYS, `/admin/login` also offers "Sign in as test admin / staff".
 
 Vercel project setting: **Root Directory = `web`**.

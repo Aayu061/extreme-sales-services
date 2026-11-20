@@ -1,0 +1,178 @@
+'use client';
+
+import Link from 'next/link';
+import { startTransition, useActionState, useState, type FormEvent, type ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, Input } from '@/components/ui/field';
+import { devSignIn, sendReset, setNewPassword, signIn, type AuthFormState } from '@/app/admin/actions/auth';
+
+const NOT_SET_UP_NOTE = "Sign-in isn't set up yet. Please ask the person who looks after the website to add the sign-in settings.";
+
+export function AuthCard({ title, intro, children }: { title: string; intro?: ReactNode; children: ReactNode }) {
+  return (
+    <div className="glass-strong rounded-[30px] p-6 text-ink sm:p-8">
+      <h1 className="text-2xl font-bold">{title}</h1>
+      {intro && <p className="mt-2 text-muted">{intro}</p>}
+      <div className="mt-6">{children}</div>
+    </div>
+  );
+}
+
+function Alert({ children }: { children: ReactNode }) {
+  return (
+    <p role="alert" className="rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
+      {children}
+    </p>
+  );
+}
+
+function Note({ children }: { children: ReactNode }) {
+  return (
+    <p role="status" className="rounded-2xl bg-cool/10 px-4 py-3 text-sm font-semibold text-ink">
+      {children}
+    </p>
+  );
+}
+
+/** Runs the Server Action only after the fields pass the checks here (no reset of typed values). */
+function useCheckedAction(action: (prev: AuthFormState, fd: FormData) => Promise<AuthFormState>) {
+  const [state, formAction, pending] = useActionState(action, {});
+  const run = (e: FormEvent<HTMLFormElement>, ok: boolean) => {
+    e.preventDefault();
+    if (!ok || pending) return;
+    const fd = new FormData(e.currentTarget);
+    startTransition(() => formAction(fd));
+  };
+  return { state, pending, run };
+}
+
+export function LoginForm({ devLogin, configured, next }: { devLogin: boolean; configured: boolean; next: string | null }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const { state, pending, run } = useCheckedAction(signIn);
+
+  function submit(e: FormEvent<HTMLFormElement>) {
+    const found = {
+      email: email.trim() ? undefined : 'Enter your email address.',
+      password: password ? undefined : 'Enter your password.',
+    };
+    setErrors(found);
+    run(e, !found.email && !found.password);
+  }
+
+  return (
+    <AuthCard title="Sign in to ESS admin" intro="Use the email and password of your Place Your Service account.">
+      {configured ? (
+        <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+          {next && <input type="hidden" name="next" value={next} />}
+          <Field label="Email" error={errors.email}>
+            {({ id, describedBy, invalid }) => (
+              <Input id={id} name="email" type="email" autoComplete="username" inputMode="email" spellCheck={false} aria-describedby={describedBy} aria-invalid={invalid || undefined} value={email} onChange={(e) => setEmail(e.target.value)} />
+            )}
+          </Field>
+          <Field label="Password" error={errors.password}>
+            {({ id, describedBy, invalid }) => (
+              <Input id={id} name="password" type="password" autoComplete="current-password" aria-describedby={describedBy} aria-invalid={invalid || undefined} value={password} onChange={(e) => setPassword(e.target.value)} />
+            )}
+          </Field>
+          {state.error && <Alert>{state.error}</Alert>}
+          <Button type="submit" disabled={pending}>
+            {pending ? 'Signing in…' : 'Sign in'}
+          </Button>
+          <Link href="/admin/reset" className="inline-flex min-h-11 items-center self-start text-cool underline-offset-4 hover:underline">
+            Forgot your password?
+          </Link>
+        </form>
+      ) : (
+        <Note>{NOT_SET_UP_NOTE}</Note>
+      )}
+
+      {devLogin && (
+        <form action={devSignIn} className="mt-6 flex flex-col gap-3 border-t border-line pt-5">
+          <p className="text-sm text-muted">Only on this computer, with the test PYS:</p>
+          {next && <input type="hidden" name="next" value={next} />}
+          <Button type="submit" variant="glass" name="role" value="admin">
+            Sign in as test admin
+          </Button>
+          <Button type="submit" variant="glass" name="role" value="staff">
+            Sign in as test staff
+          </Button>
+        </form>
+      )}
+    </AuthCard>
+  );
+}
+
+export function ResetRequestForm({ configured, expired }: { configured: boolean; expired: boolean }) {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | undefined>();
+  const { state, pending, run } = useCheckedAction(sendReset);
+
+  function submit(e: FormEvent<HTMLFormElement>) {
+    const found = email.trim() ? undefined : 'Enter your email address.';
+    setError(found);
+    run(e, !found);
+  }
+
+  return (
+    <AuthCard title="Reset your password" intro="We will email you a link to choose a new password.">
+      {!configured ? (
+        <Note>{NOT_SET_UP_NOTE}</Note>
+      ) : state.message ? (
+        <Note>{state.message} Open it on this device. It works once and only for a short time.</Note>
+      ) : (
+        <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+          {expired && <Alert>This link has expired or was already used. Ask for a new one below.</Alert>}
+          <Field label="Email" error={error}>
+            {({ id, describedBy, invalid }) => (
+              <Input id={id} name="email" type="email" autoComplete="username" inputMode="email" spellCheck={false} aria-describedby={describedBy} aria-invalid={invalid || undefined} value={email} onChange={(e) => setEmail(e.target.value)} />
+            )}
+          </Field>
+          {state.error && <Alert>{state.error}</Alert>}
+          <Button type="submit" disabled={pending}>
+            {pending ? 'Sending…' : 'Send me a link'}
+          </Button>
+        </form>
+      )}
+      <Link href="/admin/login" className="mt-4 inline-flex min-h-11 items-center text-cool underline-offset-4 hover:underline">
+        Back to sign in
+      </Link>
+    </AuthCard>
+  );
+}
+
+export function NewPasswordForm() {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
+  const { state, pending, run } = useCheckedAction(setNewPassword);
+
+  function submit(e: FormEvent<HTMLFormElement>) {
+    const found = {
+      password: password.length >= 10 ? undefined : 'Use at least 10 characters.',
+      confirm: password.length >= 10 && confirm !== password ? 'This does not match. Type the same password twice.' : undefined,
+    };
+    setErrors(found);
+    run(e, !found.password && !found.confirm);
+  }
+
+  return (
+    <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+      <Field label="New password" hint="At least 10 characters." error={errors.password}>
+        {({ id, describedBy, invalid }) => (
+          <Input id={id} name="password" type="password" autoComplete="new-password" aria-describedby={describedBy} aria-invalid={invalid || undefined} value={password} onChange={(e) => setPassword(e.target.value)} />
+        )}
+      </Field>
+      <Field label="Type it again" error={errors.confirm}>
+        {({ id, describedBy, invalid }) => (
+          <Input id={id} name="confirm" type="password" autoComplete="new-password" aria-describedby={describedBy} aria-invalid={invalid || undefined} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+        )}
+      </Field>
+      {state.error && <Alert>{state.error}</Alert>}
+      <Button type="submit" disabled={pending}>
+        {pending ? 'Saving…' : 'Save new password'}
+      </Button>
+    </form>
+  );
+}

@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 import { isUnknownDetail, type KnownPages } from '@/lib/known-pages';
+import { adminGate, isAdminPath } from '@/lib/admin/gate';
+import { DEV_TOKEN_COOKIE, devLoginEnabled, isDevToken } from '@/lib/admin/dev-login';
+import { supabaseConfig } from '@/lib/env';
 
 /**
  * Real 404 for mistyped service and AC addresses (/services/x, /shop/x). With Cache Components a
@@ -24,7 +28,63 @@ async function knownPages(origin: string): Promise<KnownPages | null> {
   }
 }
 
+/**
+ * /admin: refresh the Supabase session (new cookies go on the response), then let the person in,
+ * send them to sign in, or keep a first sign-in on "Choose a new password". The emailed reset link
+ * (/admin/reset?code=…) is swapped for a session here. Admin answers are never cached.
+ * Server Actions check the session again themselves; this is only the first gate.
+ */
+async function adminProxy(request: NextRequest): Promise<NextResponse> {
+  const { pathname, searchParams } = request.nextUrl;
+  let response = NextResponse.next({ request });
+  let hasSession = false;
+  let mustChangePassword = false;
+  let destination: string | null = null;
+
+  if (devLoginEnabled() && isDevToken(request.cookies.get(DEV_TOKEN_COOKIE)?.value)) {
+    hasSession = true;
+  } else {
+    const config = supabaseConfig();
+    if (config) {
+      const supabase = createServerClient(config.url, config.anonKey, {
+        cookies: {
+          getAll: () => request.cookies.getAll(),
+          setAll(list, headers) {
+            for (const { name, value } of list) request.cookies.set(name, value);
+            response = NextResponse.next({ request });
+            for (const { name, value, options } of list) response.cookies.set(name, value, options);
+            for (const [key, value] of Object.entries(headers)) response.headers.set(key, value);
+          },
+        },
+      });
+
+      const code = pathname === '/admin/reset' ? searchParams.get('code') : null;
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        destination = error ? '/admin/reset?link=expired' : '/admin/change-password';
+      } else {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        hasSession = Boolean(user);
+        mustChangePassword = user?.user_metadata?.must_change_password === true;
+      }
+    }
+  }
+
+  destination ??= adminGate(pathname, hasSession, mustChangePassword)?.redirect ?? null;
+  if (destination) {
+    const redirect = NextResponse.redirect(new URL(destination, request.url));
+    for (const cookie of response.cookies.getAll()) redirect.cookies.set(cookie);
+    response = redirect;
+  }
+  response.headers.set('Cache-Control', 'no-store');
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
+  if (isAdminPath(request.nextUrl.pathname)) return adminProxy(request);
+
   const pages = await knownPages(request.nextUrl.origin);
   if (pages && isUnknownDetail(request.nextUrl.pathname, pages)) {
     // No route matches this path, so Next.js answers with the site's not-found page and a 404.
@@ -34,5 +94,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/services/:code', '/shop/:id'],
+  matcher: ['/services/:code', '/shop/:id', '/admin/:path*'],
 };
