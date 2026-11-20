@@ -42,8 +42,31 @@ export interface AdminLeadsPage {
   pageSize: number;
 }
 
-/** One AC line in GET /enquiries ({ enquiries: [...] }); only what the overview reads so far. */
+export type EnquiryLineStatus = 'QUOTE_PENDING' | 'QUOTED' | 'FULFILLED' | 'CANCELLED';
+
+/**
+ * One AC line in GET /enquiries ({ enquiries: [...] }, newest first), as PYS EnquiryLine.
+ * Prices are rupees per AC, GST included. `customer` is shown only on the AC enquiries screen.
+ */
 export interface AdminEnquiryLine {
   lineId: string;
-  status: 'QUOTE_PENDING' | 'QUOTED' | 'FULFILLED' | 'CANCELLED';
+  intakeNumber: string;
+  trackingCode: string;
+  receivedAt: string;
+  productId: string | null;
+  productName: string;
+  quantity: number;
+  notes: string | null;
+  status: EnquiryLineStatus;
+  listedPrice: number | null;
+  quote: { total: number; note: string | null; at: string | null } | null;
+  customer: {
+    name: string;
+    phone: string;
+    email: string | null;
+    area: string | null;
+    city: string | null;
+    pincode: string | null;
+    message: string | null;
+  };
 }

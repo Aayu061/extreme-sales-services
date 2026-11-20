@@ -272,6 +272,61 @@ function listEnquiries() {
     .sort((a, b) => b.receivedAt.localeCompare(a.receivedAt));
 }
 
+/**
+ * POST /enquiries/:lineId/quote and /close, like essAdminService.quoteEnquiry / closeEnquiry with
+ * enquiryLineParamSchema, enquiryQuoteSchema and enquiryCloseSchema (422 details as PYS's validate
+ * middleware sends them). A line can be priced or closed while waiting or priced; once sold or not
+ * taken it is 409. Sold → FULFILLED, not taken → CANCELLED.
+ */
+function enquiryWrite(path, method, rawBody) {
+  const m = /^\/enquiries\/([^/]+)\/(quote|close)$/.exec(path);
+  if (!m || method !== 'POST') return null;
+  const lineId = decodeURIComponent(m[1]).trim();
+  const action = m[2];
+  let body;
+  try {
+    body = JSON.parse(rawBody || '{}');
+  } catch {
+    return { status: 400, code: 'BAD_REQUEST', message: 'Invalid JSON body' };
+  }
+  const details = [];
+  const isObj = body && typeof body === 'object' && !Array.isArray(body);
+  if (!isObj) details.push({ field: '', message: 'Invalid input: expected object', code: 'invalid_type' });
+  const allowed = action === 'quote' ? ['total', 'note'] : ['result'];
+  const extra = isObj ? Object.keys(body).filter((k) => !allowed.includes(k)) : [];
+  if (extra.length) details.push({ field: '', message: `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, code: 'unrecognized_keys' });
+  let note = null;
+  if (action === 'quote' && isObj) {
+    const t = body.total;
+    if (typeof t !== 'number' || !Number.isFinite(t)) details.push({ field: 'total', message: 'Invalid input: expected number', code: 'invalid_type' });
+    else if (t < 0) details.push({ field: 'total', message: 'Too small: expected number to be >=0', code: 'too_small' });
+    else if (t > 10_000_000) details.push({ field: 'total', message: 'Too big: expected number to be <=10000000', code: 'too_big' });
+    else if (!(t > 0)) details.push({ field: 'total', message: 'Enter the price', code: 'custom' });
+    const n = typeof body.note === 'string' && body.note.trim() === '' ? null : body.note;
+    if (n !== undefined && n !== null && typeof n !== 'string') details.push({ field: 'note', message: 'Invalid input: expected string', code: 'invalid_type' });
+    else if (typeof n === 'string' && n.trim().length > 1000) details.push({ field: 'note', message: 'Too big: expected string to have <=1000 characters', code: 'too_big' });
+    else note = typeof n === 'string' ? n.trim() : null;
+  }
+  if (action === 'close' && isObj && !['SOLD', 'NOT_TAKEN'].includes(body.result)) {
+    details.push({ field: 'result', message: 'Invalid option: expected one of "SOLD"|"NOT_TAKEN"', code: 'invalid_value' });
+  }
+  if (lineId.length < 1 || lineId.length > 100) details.unshift({ field: 'lineId', message: 'Invalid lineId', code: 'too_big' });
+  if (details.length) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details };
+
+  const line = intakes.flatMap((it) => it.items).find((l) => l.id === lineId && l.type === 'PRODUCT' && l.seller?.code === 'ESS');
+  if (!line) return { status: 404, code: 'NOT_FOUND', message: 'Enquiry not found' };
+  if (line.status !== 'QUOTE_PENDING' && line.status !== 'QUOTED') {
+    return { status: 409, code: 'CONFLICT', message: 'This enquiry is not approved yet or is already closed.' };
+  }
+  if (action === 'quote') {
+    line.status = 'QUOTED';
+    line.quote = { total: body.total, note, at: new Date().toISOString() };
+    return { data: { lineId: line.id, status: 'QUOTED' } };
+  }
+  line.status = body.result === 'SOLD' ? 'FULFILLED' : 'CANCELLED';
+  return { data: { lineId: line.id, status: line.status } };
+}
+
 function overview() {
   const pending = intakes.filter((it) => it.status === 'PENDING_REVIEW');
   const since = ago(24);
@@ -287,7 +342,7 @@ function overview() {
 }
 
 /** Like PYS requireEssRole: the person's token decides who is acting. */
-function adminRoute(req, res, path, url) {
+function adminRoute(req, res, path, url, body) {
   res.setHeader('Cache-Control', 'no-store');
   const token = String(req.headers['x-pys-actor-token'] ?? '').trim();
   if (!token) return fail(res, 401, 'UNAUTHORIZED', 'Please sign in to the ESS admin area.');
@@ -301,6 +356,8 @@ function adminRoute(req, res, path, url) {
     return r.details ? fail(res, 422, 'VALIDATION_ERROR', 'Request validation failed', r.details) : ok(res, r.data);
   }
   if (req.method === 'GET' && path === '/enquiries') return ok(res, { enquiries: listEnquiries() });
+  const write = enquiryWrite(path, req.method, body);
+  if (write) return write.data ? ok(res, write.data) : fail(res, write.status, write.code, write.message, write.details);
   return fail(res, 404, 'NOT_FOUND', 'Not found');
 }
 
@@ -315,7 +372,7 @@ http
       if (!verify(req, body)) return fail(res, 401, 'INVALID_SIGNATURE', 'Request signature is missing or invalid');
       const url = new URL(req.url, 'http://x');
       const path = url.pathname.replace('/api/v1/ess', '');
-      if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url);
+      if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url, body);
 
       if (req.method === 'GET' && path === '/catalog') return ok(res, catalog);
       if (req.method === 'GET' && path === '/products') return ok(res, { products });
