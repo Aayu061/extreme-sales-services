@@ -26,7 +26,7 @@ export function activeOffers(items: unknown, now: Date): HomeOffer[] {
 }
 
 /** "YYYY-MM-DD" in Mumbai. */
-function indiaDate(now: Date): string {
+export function indiaDate(now: Date): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(now);
 }
 

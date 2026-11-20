@@ -16,7 +16,11 @@ export interface LegalBody {
 
 const DEFAULT_UPDATED = '2026-11-19';
 
-const DEFAULTS: Record<LegalDoc, LegalBody> = {
+/** The {placeholders} legal text may use; each is filled from the business details. */
+export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'warrantyDays', 'grievanceName', 'grievanceEmail', 'grievancePhone'] as const;
+
+/** The built-in wording, shown until a complete text is published in ESS admin. */
+export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
   privacy: {
     title: 'Privacy notice',
     updatedOn: DEFAULT_UPDATED,
@@ -104,7 +108,8 @@ const DEFAULTS: Record<LegalDoc, LegalBody> = {
   },
 };
 
-function isLegalBody(v: unknown): v is LegalBody {
+/** Whether a published block is complete enough to replace the built-in wording. */
+export function isLegalBody(v: unknown): v is LegalBody {
   if (!v || typeof v !== 'object') return false;
   const b = v as Partial<LegalBody>;
   return (
@@ -117,9 +122,9 @@ function isLegalBody(v: unknown): v is LegalBody {
 }
 
 export function legalBody(doc: LegalDoc, block: unknown, identity: BusinessIdentity): LegalBody {
-  const source = isLegalBody(block) ? block : DEFAULTS[doc];
+  const source = isLegalBody(block) ? block : LEGAL_DEFAULTS[doc];
   const g = identity.grievanceOfficer;
-  const values: Record<string, string> = {
+  const values: Record<(typeof LEGAL_PLACEHOLDERS)[number], string> = {
     legalName: identity.legalName,
     email: identity.email,
     phone: identity.phone,
@@ -129,7 +134,7 @@ export function legalBody(doc: LegalDoc, block: unknown, identity: BusinessIdent
     grievanceEmail: g.email ?? identity.email,
     grievancePhone: g.phone ?? identity.phone,
   };
-  const fill = (t: string) => t.replace(/\{([a-zA-Z]+)\}/g, (m, k: string) => values[k] ?? m);
+  const fill = (t: string) => t.replace(/\{([a-zA-Z]+)\}/g, (m, k: string) => (values as Record<string, string>)[k] ?? m);
   return {
     title: source.title,
     updatedOn: typeof source.updatedOn === 'string' && source.updatedOn ? source.updatedOn : DEFAULT_UPDATED,

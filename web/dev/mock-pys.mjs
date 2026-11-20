@@ -7,9 +7,10 @@
 //               PYS_INTEGRATION_KEY_ID=essweb_localdev
 //               PYS_INTEGRATION_SECRET=local-dev-secret-not-for-production
 // Admin area (/ess/admin/*): /admin/login "Sign in as test admin / staff" sends the token
-// dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests, AC enquiries and
-// products are kept in memory and start again each time this runs (hiding a product in the admin
-// area also takes it out of the shop here).
+// dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests, AC enquiries,
+// products and website text are kept in memory and start again each time this runs (hiding a
+// product in the admin area also takes it out of the shop here, and publishing website text
+// changes what the public pages show).
 import http from 'node:http';
 import { createHash, createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -52,6 +53,27 @@ const content = {
   'home.offers': { version: 1, publishedAt: '2026-11-19T00:00:00Z', body: { items: [] } },
   faq: { version: 1, publishedAt: '2026-11-19T00:00:00Z', body: { items: [] } },
 };
+
+// ---------------------------------------------------------------- website text (one store, in memory)
+// Kept like PYS's site_content_blocks (draft + published + version), seeded from the blocks above,
+// so the admin "Website text" screen and the public pages read the same text: publishing in the
+// admin area changes what GET /content (the public site) answers. legal.* is not seeded, like PYS:
+// the site shows its built-in wording until a legal text is saved and published.
+const clone = (v) => (v === null || v === undefined ? null : JSON.parse(JSON.stringify(v)));
+const contentBlocks = new Map(
+  Object.entries(content).map(([key, s]) => [
+    key,
+    { key, draft: clone(s.body), published: clone(s.body), publishedVersion: s.version, publishedAt: s.publishedAt, draftUpdatedAt: s.publishedAt, history: [{ version: s.version, publishedAt: s.publishedAt }] },
+  ]),
+);
+/** The public read (essSite.service getContent): published text only. */
+const publicContent = (keys) =>
+  Object.fromEntries(
+    keys
+      .map((k) => [k, contentBlocks.get(k)])
+      .filter(([, b]) => b && b.published !== null)
+      .map(([k, b]) => [k, { version: b.publishedVersion, body: clone(b.published), publishedAt: b.publishedAt }]),
+  );
 
 const ok = (res, data, status = 200) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -531,8 +553,146 @@ function overview() {
       sellerInterestPending: pending.filter((it) => it.kind === 'SELLER_INTEREST').length,
     },
     products: { total: productList.length, published: productList.filter((p) => p.isPublished !== false).length },
-    content: { blocksWithUnpublishedChanges: 0 },
+    content: { blocksWithUnpublishedChanges: [...contentBlocks.values()].filter((b) => JSON.stringify(b.draft) !== JSON.stringify(b.published)).length },
   };
+}
+
+/**
+ * Website text, like essAdminService listContent / getContent / saveDraft / publish and the routes'
+ * validate({ params: contentKeyParamSchema, body: contentDraftSchema }) (422 details as PYS sends
+ * them). PUT stores a draft (creating the block if needed); business.* / legal.* drafts are ESS Admin
+ * only (403); a body over 64 KB is 400; business.identity is checked like businessIdentitySchema.
+ * POST …/publish is ESS Admin only (403, the route's requireEssRole) and copies the draft to the
+ * published text with the next version; an unknown key is 404.
+ */
+const CONTENT_KEY_RE = /^[a-z0-9]+(\.[a-z0-9-]+)*$/;
+const ADMIN_ONLY_CONTENT = /^(business\.|legal\.)/;
+const contentSummary = (b) => ({
+  key: b.key,
+  publishedVersion: b.publishedVersion,
+  publishedAt: b.publishedAt,
+  draftUpdatedAt: b.draftUpdatedAt,
+  hasUnpublishedChanges: JSON.stringify(b.draft) !== JSON.stringify(b.published),
+  adminOnly: ADMIN_ONLY_CONTENT.test(b.key),
+});
+const contentDetail = (b) => ({
+  key: b.key,
+  draft: clone(b.draft),
+  published: clone(b.published),
+  publishedVersion: b.publishedVersion,
+  publishedAt: b.publishedAt,
+  draftUpdatedAt: b.draftUpdatedAt,
+  adminOnly: ADMIN_ONLY_CONTENT.test(b.key),
+  history: [...b.history].sort((x, y) => y.version - x.version).slice(0, 20),
+});
+
+/** businessIdentitySchema (strict): the zod messages PYS would send, as "body.<field>". */
+function checkIdentity(body) {
+  const details = [];
+  const issue = (field, message, code) => details.push({ field: `body.${field}`, message, code });
+  const allowed = ['legalName', 'tradeName', 'proprietorName', 'gstin', 'address', 'phone', 'whatsapp', 'email', 'hours', 'warrantyDays', 'grievanceOfficer'];
+  const extra = Object.keys(body).filter((k) => !allowed.includes(k));
+  if (extra.length) details.push({ field: 'body', message: `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, code: 'unrecognized_keys' });
+  const out = {};
+  const text = (obj, k, field, { min = 0, max, nullable = false, email = false, re }) => {
+    const v = obj[k];
+    if (v === null && nullable) return (out[field] = null);
+    if (typeof v !== 'string') return issue(field, `Invalid input: expected string, received ${v === null ? 'null' : typeof v}`, 'invalid_type');
+    const t = v.trim();
+    if (t.length < min) return issue(field, `Too small: expected string to have >=${min} characters`, 'too_small');
+    if (t.length > max) return issue(field, `Too big: expected string to have <=${max} characters`, 'too_big');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return issue(field, 'Invalid email address', 'invalid_format');
+    if (re && !re.test(t)) return issue(field, 'GSTIN is 15 characters', 'invalid_format');
+    out[field] = t;
+  };
+  text(body, 'legalName', 'legalName', { min: 2, max: 200 });
+  text(body, 'tradeName', 'tradeName', { min: 2, max: 200 });
+  text(body, 'proprietorName', 'proprietorName', { max: 120, nullable: true });
+  text(body, 'gstin', 'gstin', { nullable: true, max: Infinity, re: /^[0-9]{2}[A-Z0-9]{13}$/ });
+  text(body, 'address', 'address', { min: 5, max: 500 });
+  text(body, 'phone', 'phone', { min: 6, max: 20 });
+  text(body, 'whatsapp', 'whatsapp', { max: 20, nullable: true });
+  text(body, 'email', 'email', { max: 254, email: true });
+  text(body, 'hours', 'hours', { min: 2, max: 120 });
+  const d = body.warrantyDays;
+  if (!Number.isInteger(d) || d < 0 || d > 3650) issue('warrantyDays', 'Invalid input: expected int between 0 and 3650', 'invalid_type');
+  else out.warrantyDays = d;
+  const g = body.grievanceOfficer;
+  if (!g || typeof g !== 'object' || Array.isArray(g)) issue('grievanceOfficer', 'Invalid input: expected object', 'invalid_type');
+  else {
+    const gExtra = Object.keys(g).filter((k) => !['name', 'email', 'phone'].includes(k));
+    if (gExtra.length) issue('grievanceOfficer', `Unrecognized key(s) in object: ${gExtra.map((k) => `'${k}'`).join(', ')}`, 'unrecognized_keys');
+    const before = { ...out };
+    text(g, 'name', 'grievanceOfficer.name', { max: 120, nullable: true });
+    text(g, 'email', 'grievanceOfficer.email', { max: 254, nullable: true, email: true });
+    text(g, 'phone', 'grievanceOfficer.phone', { max: 20, nullable: true });
+    const grievanceOfficer = { name: out['grievanceOfficer.name'], email: out['grievanceOfficer.email'], phone: out['grievanceOfficer.phone'] };
+    for (const k of Object.keys(out)) if (!(k in before)) delete out[k];
+    out.grievanceOfficer = grievanceOfficer;
+  }
+  return details.length ? { details } : { body: out };
+}
+
+function contentRoute(path, method, rawBody, actor) {
+  if (method === 'GET' && path === '/content') {
+    return { data: { blocks: [...contentBlocks.values()].sort((a, b) => a.key.localeCompare(b.key)).map(contentSummary) } };
+  }
+  const m = /^\/content\/([^/]+)(\/publish)?$/.exec(path);
+  if (!m) return null;
+  const isPublish = Boolean(m[2]);
+  if (!((isPublish && method === 'POST') || (!isPublish && (method === 'GET' || method === 'PUT')))) return null;
+  const isAdmin = actor.roles.includes('ESS_ADMIN');
+  if (isPublish && !isAdmin) return { status: 403, code: 'FORBIDDEN', message: 'Only an ESS Admin can do this.' };
+  const key = decodeURIComponent(m[1]).trim();
+  if (key.length > 80 || !CONTENT_KEY_RE.test(key)) {
+    return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: [{ field: 'key', message: 'Invalid content key', code: 'invalid_format' }] };
+  }
+  const now = new Date().toISOString();
+
+  if (method === 'GET') {
+    const b = contentBlocks.get(key);
+    return b ? { data: contentDetail(b) } : { status: 404, code: 'NOT_FOUND', message: 'Content block not found' };
+  }
+
+  if (isPublish) {
+    const b = contentBlocks.get(key);
+    if (!b) return { status: 404, code: 'NOT_FOUND', message: 'Content block not found' };
+    b.published = clone(b.draft);
+    b.publishedVersion += 1;
+    b.publishedAt = now;
+    b.history.push({ version: b.publishedVersion, publishedAt: now });
+    return { data: contentDetail(b) };
+  }
+
+  // PUT: save the draft.
+  let input;
+  try {
+    input = JSON.parse(rawBody || '{}');
+  } catch {
+    return { status: 400, code: 'BAD_REQUEST', message: 'Invalid JSON body' };
+  }
+  const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+  const details = [];
+  if (!isObj(input)) details.push({ field: '', message: 'Invalid input: expected object', code: 'invalid_type' });
+  else {
+    const extra = Object.keys(input).filter((k) => k !== 'body');
+    if (extra.length) details.push({ field: '', message: `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, code: 'unrecognized_keys' });
+    if (!isObj(input.body)) details.push({ field: 'body', message: 'Invalid input: expected record', code: 'invalid_type' });
+  }
+  if (details.length) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details };
+  if (ADMIN_ONLY_CONTENT.test(key) && !isAdmin) return { status: 403, code: 'FORBIDDEN', message: 'Only an ESS Admin can edit business and legal details.' };
+  if (Buffer.byteLength(JSON.stringify(input.body), 'utf8') > 64 * 1024) return { status: 400, code: 'BAD_REQUEST', message: 'This content is too long (64 KB limit).' };
+  let body = input.body;
+  if (key === 'business.identity') {
+    const checked = checkIdentity(body);
+    if (checked.details) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: checked.details };
+    body = checked.body;
+  }
+  const b = contentBlocks.get(key) ?? { key, draft: {}, published: null, publishedVersion: 0, publishedAt: null, draftUpdatedAt: now, history: [] };
+  b.draft = clone(body);
+  b.draftUpdatedAt = now;
+  contentBlocks.set(key, b);
+  return { data: contentDetail(b) };
 }
 
 /** Like PYS requireEssRole: the person's token decides who is acting. */
@@ -556,6 +716,12 @@ function adminRoute(req, res, path, url, body) {
     return productChange.data
       ? ok(res, productChange.data, productChange.status)
       : fail(res, productChange.status, productChange.code, productChange.message, productChange.details);
+  }
+  const contentChange = contentRoute(path, req.method, body, actor);
+  if (contentChange) {
+    return contentChange.data
+      ? ok(res, contentChange.data, contentChange.status)
+      : fail(res, contentChange.status, contentChange.code, contentChange.message, contentChange.details);
   }
   const write = enquiryWrite(path, req.method, body);
   if (write) return write.data ? ok(res, write.data) : fail(res, write.status, write.code, write.message, write.details);
@@ -584,7 +750,7 @@ http
       }
       if (req.method === 'GET' && path === '/content') {
         const keys = (url.searchParams.get('keys') || '').split(',');
-        return ok(res, { blocks: Object.fromEntries(keys.filter((k) => content[k]).map((k) => [k, content[k]])) });
+        return ok(res, { blocks: publicContent(keys) });
       }
       if (req.method === 'GET' && path === '/areas') return ok(res, { areas: [{ pincodePrefix: '400', label: 'Mumbai, Thane & Navi Mumbai' }] });
       if (req.method === 'GET' && path.startsWith('/serviceability/')) {

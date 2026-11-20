@@ -74,6 +74,36 @@ export interface AdminEnquiryLine {
 }
 
 /**
+ * One website text block in GET /content ({ blocks: [...] }, by key), as PYS essAdminService
+ * listContent. `publishedVersion` 0 and `publishedAt` null = never published. `adminOnly`: business
+ * and legal blocks, which only an ESS Admin can change.
+ */
+export interface AdminContentSummary {
+  key: string;
+  publishedVersion: number;
+  publishedAt: string | null;
+  draftUpdatedAt: string | null;
+  hasUnpublishedChanges: boolean;
+  adminOnly: boolean;
+}
+
+/**
+ * GET /content/:key, and the answer of PUT /content/:key (save draft) and POST
+ * /content/:key/publish, as PYS essAdminService getContent. Publishing copies `draft` to
+ * `published` and adds one to the version. A key PYS has never stored is 404.
+ */
+export interface AdminContentBlock {
+  key: string;
+  draft: unknown;
+  published: unknown | null;
+  publishedVersion: number;
+  publishedAt: string | null;
+  draftUpdatedAt: string | null;
+  adminOnly: boolean;
+  history: Array<{ version: number; publishedAt: string }>;
+}
+
+/**
  * One product in GET /products ({ products: [...] }, in shop order) and the answer of
  * POST /products and PATCH /products/:id, as PYS essAdminService mapAdminProduct. Prices are rupees,
  * GST included (null = price on request). `isPublished` false = hidden from the website.
