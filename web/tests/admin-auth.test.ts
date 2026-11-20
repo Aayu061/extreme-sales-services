@@ -303,6 +303,7 @@ describe('setNewPassword', () => {
 
   it('needs at least 10 characters, typed the same twice', async () => {
     const { setNewPassword } = await import('@/app/admin/actions/auth');
+    expect((await setNewPassword({}, form({}))).error).toMatch(/10 characters/);
     expect((await setNewPassword({}, form({ password: 'short', confirm: 'short' }))).error).toMatch(/10 characters/);
     expect((await setNewPassword({}, form({ password: 'long-enough-1', confirm: 'long-enough-2' }))).error).toMatch(/do not match/);
     expect(auth.updateUser).not.toHaveBeenCalled();

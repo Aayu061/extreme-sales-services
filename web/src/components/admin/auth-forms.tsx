@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { startTransition, useActionState, useState, type FormEvent, type ReactNode } from 'react';
+import { useActionState, useState, type FormEvent, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { devSignIn, sendReset, setNewPassword, signIn, type AuthFormState } from '@/app/admin/actions/auth';
@@ -34,23 +34,24 @@ function Note({ children }: { children: ReactNode }) {
   );
 }
 
-/** Runs the Server Action only after the fields pass the checks here (no reset of typed values). */
+/**
+ * The Server Action is the form's own `action`, so even a tap before the page's JavaScript has
+ * loaded is a POST to the server (typed details never land in the address bar). Once loaded, the
+ * checks here run first and stop the submit when a field is wrong; the action checks again itself.
+ */
 function useCheckedAction(action: (prev: AuthFormState, fd: FormData) => Promise<AuthFormState>) {
   const [state, formAction, pending] = useActionState(action, {});
-  const run = (e: FormEvent<HTMLFormElement>, ok: boolean) => {
-    e.preventDefault();
-    if (!ok || pending) return;
-    const fd = new FormData(e.currentTarget);
-    startTransition(() => formAction(fd));
+  const guard = (e: FormEvent<HTMLFormElement>, ok: boolean) => {
+    if (!ok || pending) e.preventDefault();
   };
-  return { state, pending, run };
+  return { state, pending, formAction, guard };
 }
 
 export function LoginForm({ devLogin, configured, next }: { devLogin: boolean; configured: boolean; next: string | null }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const { state, pending, run } = useCheckedAction(signIn);
+  const { state, pending, formAction, guard } = useCheckedAction(signIn);
 
   function submit(e: FormEvent<HTMLFormElement>) {
     const found = {
@@ -58,13 +59,13 @@ export function LoginForm({ devLogin, configured, next }: { devLogin: boolean; c
       password: password ? undefined : 'Enter your password.',
     };
     setErrors(found);
-    run(e, !found.email && !found.password);
+    guard(e, !found.email && !found.password);
   }
 
   return (
     <AuthCard title="Sign in to ESS admin" intro="Use the email and password of your Place Your Service account.">
       {configured ? (
-        <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+        <form action={formAction} onSubmit={submit} noValidate className="flex flex-col gap-4">
           {next && <input type="hidden" name="next" value={next} />}
           <Field label="Email" error={errors.email}>
             {({ id, describedBy, invalid }) => (
@@ -107,12 +108,12 @@ export function LoginForm({ devLogin, configured, next }: { devLogin: boolean; c
 export function ResetRequestForm({ configured, expired }: { configured: boolean; expired: boolean }) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | undefined>();
-  const { state, pending, run } = useCheckedAction(sendReset);
+  const { state, pending, formAction, guard } = useCheckedAction(sendReset);
 
   function submit(e: FormEvent<HTMLFormElement>) {
     const found = email.trim() ? undefined : 'Enter your email address.';
     setError(found);
-    run(e, !found);
+    guard(e, !found);
   }
 
   return (
@@ -122,7 +123,7 @@ export function ResetRequestForm({ configured, expired }: { configured: boolean;
       ) : state.message ? (
         <Note>{state.message} Open it on this device. It works once and only for a short time.</Note>
       ) : (
-        <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+        <form action={formAction} onSubmit={submit} noValidate className="flex flex-col gap-4">
           {expired && <Alert>This link has expired or was already used. Ask for a new one below.</Alert>}
           <Field label="Email" error={error}>
             {({ id, describedBy, invalid }) => (
@@ -146,7 +147,7 @@ export function NewPasswordForm() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
-  const { state, pending, run } = useCheckedAction(setNewPassword);
+  const { state, pending, formAction, guard } = useCheckedAction(setNewPassword);
 
   function submit(e: FormEvent<HTMLFormElement>) {
     const found = {
@@ -154,11 +155,11 @@ export function NewPasswordForm() {
       confirm: password.length >= 10 && confirm !== password ? 'This does not match. Type the same password twice.' : undefined,
     };
     setErrors(found);
-    run(e, !found.password && !found.confirm);
+    guard(e, !found.password && !found.confirm);
   }
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+    <form action={formAction} onSubmit={submit} noValidate className="flex flex-col gap-4">
       <Field label="New password" hint="At least 10 characters." error={errors.password}>
         {({ id, describedBy, invalid }) => (
           <Input id={id} name="password" type="password" autoComplete="new-password" aria-describedby={describedBy} aria-invalid={invalid || undefined} value={password} onChange={(e) => setPassword(e.target.value)} />

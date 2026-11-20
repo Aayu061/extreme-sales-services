@@ -12,7 +12,8 @@ vi.mock('@/app/admin/actions/auth', () => ({
   signOut: vi.fn(),
 }));
 
-import { LoginForm } from '@/components/admin/auth-forms';
+import { renderToString } from 'react-dom/server';
+import { LoginForm, NewPasswordForm, ResetRequestForm } from '@/components/admin/auth-forms';
 
 beforeEach(() => {
   signIn.mockReset();
@@ -58,6 +59,20 @@ describe('LoginForm', () => {
     rerender(<LoginForm devLogin configured next={null} />);
     expect(screen.getByRole('button', { name: 'Sign in as test admin' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Sign in as test staff' })).toBeTruthy();
+  });
+
+  it('keeps typed details out of the address bar, even before the page script loads', () => {
+    // Server HTML (what a tap before hydration submits): every form must be the Server Action
+    // (React renders a POST, or a javascript: placeholder), never a plain GET form.
+    for (const ui of [
+      <LoginForm key="l" devLogin={false} configured next="/admin/enquiries" />,
+      <ResetRequestForm key="r" configured expired={false} />,
+      <NewPasswordForm key="n" />,
+    ]) {
+      const forms = renderToString(ui).match(/<form[^>]*>/g) ?? [];
+      expect(forms.length).toBeGreaterThan(0);
+      for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
+    }
   });
 
   it('says so when sign-in is not set up yet', () => {
