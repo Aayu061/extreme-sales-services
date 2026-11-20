@@ -8,9 +8,10 @@
 //               PYS_INTEGRATION_SECRET=local-dev-secret-not-for-production
 // Admin area (/ess/admin/*): /admin/login "Sign in as test admin / staff" sends the token
 // dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests, AC enquiries,
-// products and website text are kept in memory and start again each time this runs (hiding a
-// product in the admin area also takes it out of the shop here, and publishing website text
-// changes what the public pages show).
+// products, website text, services shown and pincodes are kept in memory and start again each
+// time this runs (hiding a product in the admin area also takes it out of the shop here,
+// publishing website text changes what the public pages show, hiding or moving a service changes
+// /services, and a pincode prefix added or removed changes the pincode check).
 import http from 'node:http';
 import { createHash, createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -695,6 +696,141 @@ function contentRoute(path, method, rawBody, actor) {
   return { data: contentDetail(b) };
 }
 
+// ---------------------------------------------------------------- services shown (in memory)
+// Kept like PYS's service_catalog_items / amc_plans is_public + display_order, seeded from the
+// public catalog fixture (AMC plans get 10, 20, 30 … in fixture order), so the admin "Services
+// shown" screen and the public pages read the same lists: GET /catalog (public) leaves out hidden
+// rows and follows the order, like PYS's catalog.service getPublicCatalog.
+const displayState = {
+  SERVICE: new Map(catalog.services.map((s) => [s.code, { isPublic: s.isPublic !== false, isActive: s.isActive !== false, displayOrder: Number(s.displayOrder ?? 100) }])),
+  AMC: new Map(catalog.amcPlans.map((p, i) => [p.code, { isPublic: p.isPublic !== false, isActive: p.isActive !== false, displayOrder: (i + 1) * 10 }])),
+};
+const byOrder = (type) => (a, b) => displayState[type].get(a.code).displayOrder - displayState[type].get(b.code).displayOrder;
+/** essAdminService getCatalogDisplay. */
+function catalogDisplay() {
+  return {
+    services: [...catalog.services].sort(byOrder('SERVICE')).map((s) => ({ code: s.code, name: s.name, category: s.category, ...displayState.SERVICE.get(s.code) })),
+    amcPlans: [...catalog.amcPlans].sort(byOrder('AMC')).map((p) => ({ code: p.code, planCode: p.planCode, name: p.name, category: p.category, ...displayState.AMC.get(p.code) })),
+  };
+}
+/** The public catalog: shown and active rows only, in display order (services carry their flags, as PYS sends them). */
+function publicCatalog() {
+  const on = (type) => (x) => {
+    const d = displayState[type].get(x.code);
+    return d.isPublic && d.isActive;
+  };
+  return {
+    ...catalog,
+    services: catalog.services.filter(on('SERVICE')).sort(byOrder('SERVICE')).map((s) => ({ ...s, ...displayState.SERVICE.get(s.code) })),
+    amcPlans: catalog.amcPlans.filter(on('AMC')).sort(byOrder('AMC')),
+  };
+}
+
+/**
+ * PATCH /catalog-display, like the route's requireEssRole('ESS_ADMIN') (403 first) then
+ * validate({ body: catalogDisplayPatchSchema }) (strict; 422 details as "items.N.field") and
+ * essAdminService updateCatalogDisplay: rows are changed one by one, an unknown code is 404 (the
+ * rows before it stay changed, like PYS); AMC rows match the public or the plan code.
+ */
+function displayWrite(rawBody, actor) {
+  if (!actor.roles.includes('ESS_ADMIN')) return { status: 403, code: 'FORBIDDEN', message: 'Only an ESS Admin can do this.' };
+  let body;
+  try {
+    body = JSON.parse(rawBody || '{}');
+  } catch {
+    return { status: 400, code: 'BAD_REQUEST', message: 'Invalid JSON body' };
+  }
+  const details = [];
+  const issue = (field, message, code) => details.push({ field, message, code });
+  const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+  if (!isObj(body)) issue('', 'Invalid input: expected object', 'invalid_type');
+  else {
+    const extra = Object.keys(body).filter((k) => k !== 'items');
+    if (extra.length) issue('', `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, 'unrecognized_keys');
+    if (!Array.isArray(body.items)) issue('items', 'Invalid input: expected array', 'invalid_type');
+    else if (body.items.length < 1) issue('items', 'Too small: expected array to have >=1 items', 'too_small');
+    else if (body.items.length > 200) issue('items', 'Too big: expected array to have <=200 items', 'too_big');
+    else
+      body.items.forEach((it, i) => {
+        const f = (k) => `items.${i}${k ? `.${k}` : ''}`;
+        if (!isObj(it)) return issue(f(), 'Invalid input: expected object', 'invalid_type');
+        const extraKeys = Object.keys(it).filter((k) => !['type', 'code', 'isPublic', 'displayOrder'].includes(k));
+        if (extraKeys.length) issue(f(), `Unrecognized key(s) in object: ${extraKeys.map((k) => `'${k}'`).join(', ')}`, 'unrecognized_keys');
+        if (it.type !== 'SERVICE' && it.type !== 'AMC') issue(f('type'), 'Invalid option: expected one of "SERVICE"|"AMC"', 'invalid_value');
+        if (typeof it.code !== 'string' || !/^[A-Za-z0-9-]{1,60}$/.test(it.code.trim())) issue(f('code'), 'Invalid code', 'invalid_format');
+        if (it.isPublic !== undefined && typeof it.isPublic !== 'boolean') issue(f('isPublic'), 'Invalid input: expected boolean', 'invalid_type');
+        if (it.displayOrder !== undefined && !(Number.isInteger(it.displayOrder) && it.displayOrder >= 0 && it.displayOrder <= 100_000)) {
+          issue(f('displayOrder'), 'Invalid input: expected int between 0 and 100000', 'invalid_type');
+        }
+      });
+  }
+  if (details.length) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details };
+  for (const it of body.items) {
+    const code = it.code.trim();
+    if (it.isPublic === undefined && it.displayOrder === undefined) continue;
+    const key = it.type === 'SERVICE' ? code : catalog.amcPlans.find((p) => p.code === code || p.planCode === code)?.code;
+    const row = key && displayState[it.type].get(key);
+    if (!row) return { status: 404, code: 'NOT_FOUND', message: `${it.type === 'SERVICE' ? 'Service' : 'AMC plan'} ${code} not found` };
+    if (it.isPublic !== undefined) row.isPublic = it.isPublic;
+    if (it.displayOrder !== undefined) row.displayOrder = it.displayOrder;
+  }
+  return { data: catalogDisplay() };
+}
+
+// ---------------------------------------------------------------- pincodes (in memory)
+// Kept like PYS's service_areas, so the admin "Pincodes" screen, the public pincode check
+// (longest matching prefix wins; a prefix not covered says no) and the contact page's list agree.
+const serviceAreas = new Map([['400', { pincodePrefix: '400', label: 'Mumbai, Thane & Navi Mumbai', isActive: true, notes: null, updatedAt: '2026-11-19T00:00:00Z' }]]);
+const PREFIX_RE = /^[1-9][0-9]{1,5}$/;
+const listAreas = () => [...serviceAreas.values()].sort((a, b) => a.pincodePrefix.localeCompare(b.pincodePrefix)).map((a) => ({ ...a }));
+/** essSite.service checkServiceability. */
+function serviceability(pincode) {
+  const match = [...serviceAreas.values()].filter((a) => pincode.startsWith(a.pincodePrefix)).sort((a, b) => b.pincodePrefix.length - a.pincodePrefix.length)[0];
+  return { pincode, serviceable: Boolean(match?.isActive), area: match?.isActive ? match.label : null };
+}
+
+/**
+ * PUT /service-areas (serviceAreaSchema, strict) and DELETE /service-areas/:prefix
+ * (prefixParamSchema), ESS Admin only (403 before the checks, like the routes). Both answer
+ * { areas } (the whole list); removing a prefix that is not there is 404.
+ */
+function areaWrite(path, method, rawBody, actor) {
+  const m = /^\/service-areas\/([^/]+)$/.exec(path);
+  if (!((path === '/service-areas' && method === 'PUT') || (m && method === 'DELETE'))) return null;
+  if (!actor.roles.includes('ESS_ADMIN')) return { status: 403, code: 'FORBIDDEN', message: 'Only an ESS Admin can do this.' };
+  if (m) {
+    const prefix = decodeURIComponent(m[1]);
+    if (!PREFIX_RE.test(prefix)) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: [{ field: 'prefix', message: 'Invalid string: must match pattern /^[1-9][0-9]{1,5}$/', code: 'invalid_format' }] };
+    if (!serviceAreas.delete(prefix)) return { status: 404, code: 'NOT_FOUND', message: 'Service area not found' };
+    return { data: { areas: listAreas() } };
+  }
+  let body;
+  try {
+    body = JSON.parse(rawBody || '{}');
+  } catch {
+    return { status: 400, code: 'BAD_REQUEST', message: 'Invalid JSON body' };
+  }
+  const details = [];
+  const issue = (field, message, code) => details.push({ field, message, code });
+  if (!body || typeof body !== 'object' || Array.isArray(body)) issue('', 'Invalid input: expected object', 'invalid_type');
+  else {
+    const extra = Object.keys(body).filter((k) => !['pincodePrefix', 'label', 'isActive', 'notes'].includes(k));
+    if (extra.length) issue('', `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, 'unrecognized_keys');
+    if (typeof body.pincodePrefix !== 'string' || !PREFIX_RE.test(body.pincodePrefix.trim())) issue('pincodePrefix', 'Use 2–6 digits of the pincode', 'invalid_format');
+    const label = typeof body.label === 'string' ? body.label.trim() : null;
+    if (label === null) issue('label', 'Invalid input: expected string', 'invalid_type');
+    else if (label.length < 2) issue('label', 'Too small: expected string to have >=2 characters', 'too_small');
+    else if (label.length > 120) issue('label', 'Too big: expected string to have <=120 characters', 'too_big');
+    if (body.isActive !== undefined && typeof body.isActive !== 'boolean') issue('isActive', 'Invalid input: expected boolean', 'invalid_type');
+    if (body.notes != null && (typeof body.notes !== 'string' || body.notes.trim().length > 300)) issue('notes', 'Too big: expected string to have <=300 characters', 'too_big');
+  }
+  if (details.length) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details };
+  const prefix = body.pincodePrefix.trim();
+  const notes = typeof body.notes === 'string' && body.notes.trim() ? body.notes.trim() : null;
+  serviceAreas.set(prefix, { pincodePrefix: prefix, label: body.label.trim(), isActive: body.isActive !== false, notes, updatedAt: new Date().toISOString() });
+  return { data: { areas: listAreas() } };
+}
+
 /** Like PYS requireEssRole: the person's token decides who is acting. */
 function adminRoute(req, res, path, url, body) {
   res.setHeader('Cache-Control', 'no-store');
@@ -711,6 +847,14 @@ function adminRoute(req, res, path, url, body) {
   }
   if (req.method === 'GET' && path === '/enquiries') return ok(res, { enquiries: listEnquiries() });
   if (req.method === 'GET' && path === '/products') return ok(res, { products: sortedProducts() });
+  if (req.method === 'GET' && path === '/catalog-display') return ok(res, catalogDisplay());
+  if (req.method === 'PATCH' && path === '/catalog-display') {
+    const r = displayWrite(body, actor);
+    return r.data ? ok(res, r.data) : fail(res, r.status, r.code, r.message, r.details);
+  }
+  if (req.method === 'GET' && path === '/service-areas') return ok(res, { areas: listAreas() });
+  const areaChange = areaWrite(path, req.method, body, actor);
+  if (areaChange) return areaChange.data ? ok(res, areaChange.data) : fail(res, areaChange.status, areaChange.code, areaChange.message, areaChange.details);
   const productChange = productWrite(path, req.method, body);
   if (productChange) {
     return productChange.data
@@ -741,7 +885,7 @@ http
       const path = url.pathname.replace('/api/v1/ess', '');
       if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url, body);
 
-      if (req.method === 'GET' && path === '/catalog') return ok(res, catalog);
+      if (req.method === 'GET' && path === '/catalog') return ok(res, publicCatalog());
       // The shop: shown products only (PYS is_published filter), in shop order.
       if (req.method === 'GET' && path === '/products') return ok(res, { products: shopProducts() });
       if (req.method === 'GET' && path.startsWith('/products/')) {
@@ -752,12 +896,9 @@ http
         const keys = (url.searchParams.get('keys') || '').split(',');
         return ok(res, { blocks: publicContent(keys) });
       }
-      if (req.method === 'GET' && path === '/areas') return ok(res, { areas: [{ pincodePrefix: '400', label: 'Mumbai, Thane & Navi Mumbai' }] });
-      if (req.method === 'GET' && path.startsWith('/serviceability/')) {
-        const pincode = path.slice(16);
-        const yes = pincode.startsWith('400');
-        return ok(res, { pincode, serviceable: yes, area: yes ? 'Mumbai, Thane & Navi Mumbai' : null });
-      }
+      // essSite.service listServiceAreas: covered prefixes only.
+      if (req.method === 'GET' && path === '/areas') return ok(res, { areas: listAreas().filter((a) => a.isActive).map((a) => ({ pincodePrefix: a.pincodePrefix, label: a.label })) });
+      if (req.method === 'GET' && path.startsWith('/serviceability/')) return ok(res, serviceability(decodeURIComponent(path.slice(16))));
       if (req.method === 'POST' && path === '/intakes') {
         // Like PYS: every basket line must still be on offer, else 422 naming the line.
         const input = JSON.parse(body || '{}');

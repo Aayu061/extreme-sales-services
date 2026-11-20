@@ -139,3 +139,54 @@ export interface AdminProduct {
   seller: SellerDisclosure | null;
   updatedAt: string | null;
 }
+
+/**
+ * GET /catalog-display, and the answer of PATCH /catalog-display, as PYS essAdminService
+ * getCatalogDisplay: every service and AMC plan (also those switched off in PYS), each list in
+ * display order. `isPublic` false = hidden from the website; `isActive` false = switched off in PYS
+ * (never on the website). AMC `code` is the public code (the plan code when there is none).
+ */
+export interface AdminDisplayService {
+  code: string;
+  name: string;
+  category: string;
+  isPublic: boolean;
+  isActive: boolean;
+  displayOrder: number;
+}
+export interface AdminDisplayPlan extends AdminDisplayService {
+  planCode: string;
+}
+export interface AdminCatalogDisplay {
+  services: AdminDisplayService[];
+  amcPlans: AdminDisplayPlan[];
+}
+
+/** One change in PATCH /catalog-display { items } (PYS catalogDisplayPatchSchema, strict). */
+export interface DisplayPatchItem {
+  type: 'SERVICE' | 'AMC';
+  code: string;
+  isPublic?: boolean;
+  displayOrder?: number;
+}
+
+/**
+ * One pincode prefix in GET /service-areas ({ areas: [...] }, by prefix), and in the answers of
+ * PUT /service-areas and DELETE /service-areas/:prefix, as PYS essAdminService listAreas. The
+ * public pincode check uses the longest matching prefix; `isActive` false there = not covered.
+ */
+export interface AdminServiceArea {
+  pincodePrefix: string;
+  label: string;
+  isActive: boolean;
+  notes: string | null;
+  updatedAt: string | null;
+}
+
+/** PUT /service-areas body (PYS serviceAreaSchema, strict). */
+export interface ServiceAreaInput {
+  pincodePrefix: string;
+  label: string;
+  isActive: boolean;
+  notes: string | null;
+}
