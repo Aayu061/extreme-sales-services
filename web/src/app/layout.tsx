@@ -1,9 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { Archivo } from 'next/font/google';
-import { getSiteBasics, FALLBACK_HERO, FALLBACK_IDENTITY } from '@/lib/data';
-import { SiteHeader } from '@/components/site/site-header';
-import { SiteFooter } from '@/components/site/site-footer';
-import { FloatingContact } from '@/components/site/floating-contact';
 import { THEME_SCRIPT } from '@/components/theme/theme-switch';
 import './globals.css';
 
@@ -44,11 +40,11 @@ export const viewport: Viewport = {
   themeColor: '#ffffff',
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Business details come from PYS (editable in ESS admin); the fallback keeps the frame complete
-  // if PYS cannot be reached while this page is built.
-  const { identity } = await getSiteBasics().catch(() => ({ identity: FALLBACK_IDENTITY, hero: FALLBACK_HERO }));
-
+/**
+ * Only the document: fonts, theme and the skip link. The public site's menu and footer live in
+ * (site)/layout.tsx; the admin area has its own layout. Each of them provides <main id="main">.
+ */
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // Light by default; the inline script applies a saved dark choice before the first paint.
     <html lang="en-IN" data-theme="light" className={archivo.variable} suppressHydrationWarning>
@@ -59,10 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <SiteFooter identity={identity} />
-        <FloatingContact phone={identity.phone} whatsapp={identity.whatsapp} />
+        {children}
       </body>
     </html>
   );

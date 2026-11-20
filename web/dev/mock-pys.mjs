@@ -6,6 +6,9 @@
 //   .env.local: PYS_API_URL=http://localhost:4010
 //               PYS_INTEGRATION_KEY_ID=essweb_localdev
 //               PYS_INTEGRATION_SECRET=local-dev-secret-not-for-production
+// Admin area (/ess/admin/*): /admin/login "Sign in as test admin / staff" sends the token
+// dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests and AC enquiries
+// are kept in memory and start again each time this runs.
 import http from 'node:http';
 import { createHash, createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -65,6 +68,229 @@ function verify(req, body) {
   return createHmac('sha256', SECRET).update(canonical).digest('hex') === h('x-pys-signature');
 }
 
+// ---------------------------------------------------------------- ESS admin area (/ess/admin/*)
+// In memory, same response shapes as PYS (server/src/services/essAdmin.service.ts and
+// intake.service.ts). The site's dev sign-in sends one of these fixed tokens; anything else is 401.
+const ACTORS = {
+  'dev-admin-token': { profileId: 'dev-admin', email: 'test-admin@example.com', name: 'Test Admin', roles: ['ESS_ADMIN'], isPysAdmin: false },
+  'dev-staff-token': { profileId: 'dev-staff', email: 'test-staff@example.com', name: 'Test Staff', roles: ['ESS_STAFF'], isPysAdmin: false },
+};
+
+const productList = Array.isArray(products) ? products : products.products;
+const productById = (id) => productList.find((p) => p.id === id);
+const ago = (hours) => new Date(Date.now() - hours * 3600_000).toISOString();
+
+/** A website request as PYS lists it (IntakeDto). `quote` on a line is kept here only, like the DB column. */
+function intake(n, { kind, status, contact, address = {}, message = null, items = [], hoursAgo }) {
+  return {
+    id: `intake-${n}`,
+    intakeNumber: `WEB-2026-DEV${String(n).padStart(3, '0')}`,
+    trackingCode: `ESS-DEV${n}-${'ABCDEFGH'[n % 8]}${'JKLMNPQR'[n % 8]}`,
+    kind,
+    status,
+    sourceChannel: 'EXTREME_SALES_SERVICES',
+    externalReferenceId: `web-dev-${n}`,
+    contact,
+    address: { line: null, area: null, landmark: null, city: 'Mumbai', pincode: null, ...address },
+    ac: { type: null, brand: null, tonnage: null, inverter: null, ageYears: null, units: null },
+    request: { serviceCode: null, serviceName: null, amcPlanCode: null, message, preferredDate: null, preferredSlot: null },
+    consent: { privacy: true, marketing: false },
+    spamScore: 0,
+    matchedCustomer: null,
+    review: { reviewedBy: status === 'PENDING_REVIEW' ? null : 'dev-admin', reviewedAt: status === 'PENDING_REVIEW' ? null : ago(hoursAgo - 1), rejectionReason: null },
+    serviceRequest: null,
+    items: items.map((it, i) => ({
+      id: `line-${n}-${i + 1}`,
+      lineNo: i + 1,
+      type: it.type,
+      serviceCode: it.serviceCode ?? null,
+      amcPlanCode: null,
+      productId: it.productId ?? null,
+      name: it.name,
+      quantity: it.quantity ?? 1,
+      ac: { type: null, tonnage: null, brand: null },
+      notes: it.notes ?? null,
+      price: it.price ?? null,
+      status: it.status,
+      seller: it.type === 'PRODUCT' ? { code: 'ESS', name: 'Extreme Sales & Services' } : null,
+      quote: it.quote ?? null,
+    })),
+    createdAt: ago(hoursAgo),
+  };
+}
+
+const productLine = (id, extra) => {
+  const p = productById(id);
+  const price = p?.price > 0 ? { total: p.price, label: `${p.name} (listed price incl. GST)` } : null;
+  return { type: 'PRODUCT', productId: id, name: p?.name ?? id, price, ...extra };
+};
+
+const intakes = [
+  intake(1, {
+    kind: 'PRODUCT_ENQUIRY',
+    status: 'APPROVED',
+    contact: { name: 'Priya Shah', phone: '9876543210', email: 'priya.shah@example.com' },
+    address: { area: 'Chembur', pincode: '400071' },
+    message: 'Please call after 5 pm.',
+    items: [productLine('TLRbwbHUxbXgBIJ9eCZM', { status: 'QUOTE_PENDING', notes: 'Installation needed' })],
+    hoursAgo: 3,
+  }),
+  intake(2, {
+    kind: 'PRODUCT_ENQUIRY',
+    status: 'APPROVED',
+    contact: { name: 'Rahul Mehta', phone: '9820012345', email: null },
+    address: { area: 'Andheri East', pincode: '400069' },
+    items: [
+      productLine('prod-1794761315308', {
+        status: 'QUOTED',
+        quantity: 2,
+        quote: { total: 48500, note: 'Includes standard installation.', at: ago(20) },
+      }),
+      productLine('oI1UpVLd2kug7WqY1ecF', { status: 'QUOTE_PENDING' }),
+    ],
+    hoursAgo: 30,
+  }),
+  intake(3, {
+    kind: 'BASKET',
+    status: 'PENDING_REVIEW',
+    contact: { name: 'Sneha Iyer', phone: '9930011122', email: 'sneha.iyer@example.com' },
+    address: { area: 'Thane West', city: 'Thane', pincode: '400601' },
+    items: [{ type: 'SERVICE', serviceCode: 'SVC-DRY', name: 'Dry service', status: 'PENDING', price: { total: 590, label: 'Dry service' } }],
+    hoursAgo: 2,
+  }),
+  intake(4, {
+    kind: 'CONTACT',
+    status: 'PENDING_REVIEW',
+    contact: { name: 'Amit Kulkarni', phone: '9819900011', email: null },
+    message: 'My AC is dripping water inside. Can someone check it this week?',
+    hoursAgo: 5,
+  }),
+  intake(5, {
+    kind: 'SELLER_INTEREST',
+    status: 'PENDING_REVIEW',
+    contact: { name: 'Coolwave Traders', phone: '9867012345', email: 'sales@coolwave.example.com' },
+    message: 'We are an authorised dealer and would like to list our ACs.',
+    hoursAgo: 50,
+  }),
+  intake(6, {
+    kind: 'PRODUCT_ENQUIRY',
+    status: 'PENDING_REVIEW',
+    contact: { name: 'Neha Desai', phone: '9876501234', email: null },
+    items: [productLine('TLRbwbHUxbXgBIJ9eCZM', { status: 'PENDING' })],
+    hoursAgo: 1,
+  }),
+];
+
+const leadDto = (it) => ({
+  ...it,
+  items: it.items.map((line) => {
+    const copy = { ...line };
+    delete copy.quote;
+    return copy;
+  }),
+});
+
+const LEAD_STATUSES = ['PENDING_REVIEW', 'APPROVED', 'REJECTED', 'DUPLICATE', 'SPAM'];
+const LEAD_KINDS = ['SERVICE_BOOKING', 'AMC_REQUEST', 'PRODUCT_ENQUIRY', 'CONTACT', 'BASKET', 'SELLER_INTEREST'];
+
+/** GET /leads, like intakeService.list + leadsQuerySchema (422 on a bad value). */
+function listLeads(q) {
+  const blank = (v) => (v === null || v.trim() === '' ? undefined : v.trim());
+  const status = blank(q.get('status'));
+  const kind = blank(q.get('kind'));
+  const search = blank(q.get('search'));
+  const page = blank(q.get('page')) === undefined ? 1 : Number(q.get('page'));
+  const pageSize = blank(q.get('pageSize')) === undefined ? 25 : Number(q.get('pageSize'));
+  const details = [];
+  if (status && !LEAD_STATUSES.includes(status)) details.push({ field: 'status', message: 'Invalid option', code: 'invalid_value' });
+  if (kind && !LEAD_KINDS.includes(kind)) details.push({ field: 'kind', message: 'Invalid option', code: 'invalid_value' });
+  if (search && search.length > 100) details.push({ field: 'search', message: 'Too long', code: 'too_big' });
+  if (!Number.isInteger(page) || page < 1 || page > 10_000) details.push({ field: 'page', message: 'Invalid page', code: 'invalid_type' });
+  if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) details.push({ field: 'pageSize', message: 'Invalid page size', code: 'invalid_type' });
+  if (details.length) return { details };
+
+  const term = search?.toLowerCase();
+  const digits = search?.replace(/\D/g, '') ?? '';
+  const rows = intakes
+    .filter((it) => !status || it.status === status)
+    .filter((it) => !kind || it.kind === kind)
+    .filter(
+      (it) =>
+        !term ||
+        [it.contact.name, it.contact.email ?? '', it.intakeNumber, it.trackingCode].some((v) => v.toLowerCase().includes(term)) ||
+        (digits.length >= 4 && it.contact.phone.includes(digits.slice(-10))),
+    )
+    // PYS: oldest first while waiting for approval, otherwise newest first.
+    .sort((a, b) => (status === 'PENDING_REVIEW' ? 1 : -1) * a.createdAt.localeCompare(b.createdAt));
+  const from = (page - 1) * pageSize;
+  return { data: { items: rows.slice(from, from + pageSize).map(leadDto), total: rows.length, page, pageSize } };
+}
+
+/** GET /enquiries: AC lines of approved requests, newest first, with the customer to call (EnquiryLine). */
+function listEnquiries() {
+  return intakes
+    .filter((it) => it.status === 'APPROVED')
+    .flatMap((it) =>
+      it.items
+        .filter((line) => line.type === 'PRODUCT' && ['QUOTE_PENDING', 'QUOTED', 'FULFILLED', 'CANCELLED'].includes(line.status))
+        .map((line) => ({
+          lineId: line.id,
+          intakeNumber: it.intakeNumber,
+          trackingCode: it.trackingCode,
+          receivedAt: it.createdAt,
+          productId: line.productId,
+          productName: line.name,
+          quantity: line.quantity,
+          notes: line.notes,
+          status: line.status,
+          listedPrice: line.price?.total ?? null,
+          quote: line.quote,
+          customer: {
+            name: it.contact.name,
+            phone: it.contact.phone,
+            email: it.contact.email,
+            area: it.address.area,
+            city: it.address.city,
+            pincode: it.address.pincode,
+            message: it.request.message,
+          },
+        })),
+    )
+    .sort((a, b) => b.receivedAt.localeCompare(a.receivedAt));
+}
+
+function overview() {
+  const pending = intakes.filter((it) => it.status === 'PENDING_REVIEW');
+  const since = ago(24);
+  return {
+    requests: {
+      pendingReview: pending.length,
+      last24Hours: intakes.filter((it) => it.createdAt >= since && it.status !== 'SPAM').length,
+      sellerInterestPending: pending.filter((it) => it.kind === 'SELLER_INTEREST').length,
+    },
+    products: { total: productList.length, published: productList.filter((p) => p.isPublished !== false).length },
+    content: { blocksWithUnpublishedChanges: 0 },
+  };
+}
+
+/** Like PYS requireEssRole: the person's token decides who is acting. */
+function adminRoute(req, res, path, url) {
+  res.setHeader('Cache-Control', 'no-store');
+  const token = String(req.headers['x-pys-actor-token'] ?? '').trim();
+  if (!token) return fail(res, 401, 'UNAUTHORIZED', 'Please sign in to the ESS admin area.');
+  const actor = ACTORS[token];
+  if (!actor) return fail(res, 401, 'UNAUTHORIZED', 'Your session has expired. Please sign in again.');
+
+  if (req.method === 'GET' && path === '/me') return ok(res, actor);
+  if (req.method === 'GET' && path === '/overview') return ok(res, overview());
+  if (req.method === 'GET' && path === '/leads') {
+    const r = listLeads(url.searchParams);
+    return r.details ? fail(res, 422, 'VALIDATION_ERROR', 'Request validation failed', r.details) : ok(res, r.data);
+  }
+  if (req.method === 'GET' && path === '/enquiries') return ok(res, { enquiries: listEnquiries() });
+  return fail(res, 404, 'NOT_FOUND', 'Not found');
+}
+
 let seq = 0;
 http
   .createServer((req, res) => {
@@ -75,6 +301,7 @@ http
       if (!verify(req, body)) return fail(res, 401, 'UNAUTHORIZED', 'Bad signature');
       const url = new URL(req.url, 'http://x');
       const path = url.pathname.replace('/api/v1/ess', '');
+      if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url);
 
       if (req.method === 'GET' && path === '/catalog') return ok(res, catalog);
       if (req.method === 'GET' && path === '/products') return ok(res, { products });
