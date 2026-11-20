@@ -41,10 +41,14 @@ export function adminGate(pathname: string, hasSession: boolean, mustChangePassw
  */
 export const ADMIN_PATH_HEADER = 'x-ess-admin-path';
 
-/** "/admin/requests?status=APPROVED" (the router's own _rsc value left out). */
+/**
+ * "/admin/requests?status=APPROVED": the router's own _rsc value left out, and any "search" (it can
+ * be a customer's phone or email, so it is never passed on in next= or Try again links).
+ */
 export function adminPathOf(url: URL): string {
   const params = new URLSearchParams(url.search);
   params.delete('_rsc');
+  params.delete('search');
   const query = params.toString();
   return query ? `${url.pathname}?${query}` : url.pathname;
 }

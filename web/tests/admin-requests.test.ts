@@ -5,7 +5,9 @@ import {
   REQUESTS_PAGE_SIZE,
   REQUEST_KINDS,
   REQUEST_STATUSES,
+  REQUESTS_SEARCH_COOKIE,
   STATUS_LABEL,
+  cleanSearch,
   formatReceived,
   kindLabel,
   leadsPath,
@@ -16,17 +18,20 @@ import {
 } from '@/lib/admin/requests';
 
 describe('requestsQuery', () => {
-  it('keeps the filters PYS accepts', () => {
-    expect(requestsQuery({ status: 'APPROVED', kind: 'BASKET', search: '  Priya  ', page: '3' })).toEqual({
+  it('keeps the filters PYS accepts; the search comes only from the saved search, never the address', () => {
+    expect(requestsQuery({ status: 'APPROVED', kind: 'BASKET', page: '3' }, '  Priya  ')).toEqual({
       status: 'APPROVED',
       kind: 'BASKET',
       search: 'Priya',
       page: 3,
     });
+    // An old link with ?search= (could be a customer's phone or email) is not read.
+    expect(requestsQuery({ search: '9820012345', kind: 'BASKET' })).toEqual({ kind: 'BASKET', page: 1 });
+    expect(requestsQuery({ search: 'Priya' }, '')).toEqual({ page: 1 });
   });
 
   it('drops values PYS does not know, and blanks', () => {
-    expect(requestsQuery({ status: 'NOPE', kind: 'approved', search: '   ' })).toEqual({ page: 1 });
+    expect(requestsQuery({ status: 'NOPE', kind: 'approved' }, '   ')).toEqual({ page: 1 });
     expect(requestsQuery({ status: 'pending_review', kind: 'BASKET; DROP' })).toEqual({ page: 1 });
     expect(requestsQuery({ status: '', kind: '', search: '' })).toEqual({ page: 1 });
     // WITHDRAWN is a real status, but PYS does not filter by it (leadsQuerySchema).
@@ -44,7 +49,11 @@ describe('requestsQuery', () => {
 
   it('uses the first value when one is given twice, and keeps search within 100 characters', () => {
     expect(requestsQuery({ status: ['SPAM', 'APPROVED'], page: ['2', '5'] })).toEqual({ status: 'SPAM', page: 2 });
-    expect(requestsQuery({ search: 'x'.repeat(150) }).search).toHaveLength(100);
+    expect(requestsQuery({}, 'x'.repeat(150)).search).toHaveLength(100);
+    expect(cleanSearch('  a b  ')).toBe('a b');
+    expect(cleanSearch(` ${'y'.repeat(120)} `)).toBe('y'.repeat(100));
+    expect(cleanSearch(null)).toBe('');
+    expect(cleanSearch(42)).toBe('');
   });
 });
 
@@ -78,12 +87,11 @@ describe('labels', () => {
 });
 
 describe('addresses', () => {
-  it('builds the Requests page address with only the filters set (page 1 left out)', () => {
+  it('builds the Requests page address with status, kind and page only (never the search)', () => {
     expect(requestsHref({ page: 1 })).toBe('/admin/requests');
-    expect(requestsHref({ status: 'APPROVED', kind: 'CONTACT', search: 'WEB-2026', page: 2 })).toBe(
-      '/admin/requests?status=APPROVED&kind=CONTACT&search=WEB-2026&page=2',
-    );
-    expect(requestsHref({ search: 'a&b=c', page: 1 })).toBe('/admin/requests?search=a%26b%3Dc');
+    expect(requestsHref({ status: 'APPROVED', kind: 'CONTACT', search: '9820012345', page: 2 })).toBe('/admin/requests?status=APPROVED&kind=CONTACT&page=2');
+    expect(requestsHref({ search: 'priya@example.com', page: 1 })).toBe('/admin/requests');
+    expect(REQUESTS_SEARCH_COOKIE).toBe('ess-admin-search');
   });
 
   it('asks PYS for one page of requests', () => {

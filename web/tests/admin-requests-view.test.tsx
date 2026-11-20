@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
+import { renderToString } from 'react-dom/server';
 import type { ReactElement } from 'react';
 
 // ---- Fakes: PYS answers by path; redirect() throws like Next does ----
@@ -31,9 +32,12 @@ vi.mock('next/navigation', () => ({
   },
 }));
 let adminPath = '/admin/requests';
-vi.mock('next/headers', () => ({ headers: async () => new Headers({ 'x-ess-admin-path': adminPath }) }));
-// next/form needs the app router; a plain GET form behaves the same for these checks.
-vi.mock('next/form', () => ({ default: (props: Record<string, unknown>) => <form {...props} /> }));
+let savedSearch: string | undefined;
+vi.mock('next/headers', () => ({
+  headers: async () => new Headers({ 'x-ess-admin-path': adminPath }),
+  cookies: async () => ({ get: (name: string) => (name === 'ess-admin-search' && savedSearch !== undefined ? { name, value: savedSearch } : undefined) }),
+}));
+vi.mock('@/app/admin/actions/requests', () => ({ searchRequests: vi.fn(), clearRequestsFilters: vi.fn() }));
 
 import { AdminAuthError } from '@/lib/admin/pys-admin';
 import { PysError } from '@/lib/pys/client';
@@ -73,10 +77,16 @@ function expectNoContactInAddresses(container: HTMLElement) {
   }
 }
 
+/** Every href and form action in the server HTML: never the search (it can be a phone or email). */
+function addressesIn(html: string): string[] {
+  return [...html.matchAll(/\s(?:href|action|formAction)="([^"]*)"/gi)].map((m) => m[1]);
+}
+
 beforeEach(() => {
   answers.clear();
   adminRequest.mockClear();
   adminPath = '/admin/requests';
+  savedSearch = undefined;
 });
 afterEach(() => {
   cleanup();
@@ -116,21 +126,40 @@ describe('Requests screen', () => {
     expect(screen.getByText('Showing 1–2 of 2')).toBeTruthy();
   });
 
-  it('asks PYS with the filters from the address and keeps them in the form', async () => {
-    answers.set('/leads?status=APPROVED&kind=CONTACT&search=Rahul&page=2&pageSize=25', { items: [lead(3)], total: 26, page: 2, pageSize: 25 });
-    const { container } = await requests({ status: 'APPROVED', kind: 'CONTACT', search: 'Rahul', page: '2' });
+  it('asks PYS with status, kind and page from the address and the search saved on the server', async () => {
+    savedSearch = '9820012345';
+    answers.set('/leads?status=APPROVED&kind=CONTACT&search=9820012345&page=2&pageSize=25', { items: [lead(3)], total: 26, page: 2, pageSize: 25 });
+    const { container } = await requests({ status: 'APPROVED', kind: 'CONTACT', page: '2' });
     expect((screen.getByLabelText('Status') as HTMLSelectElement).value).toBe('APPROVED');
     expect((screen.getByLabelText('Kind') as HTMLSelectElement).value).toBe('CONTACT');
-    expect((screen.getByLabelText(/^Search/) as HTMLInputElement).value).toBe('Rahul');
-    const form = container.querySelector('form')!;
-    expect(form.getAttribute('action')).toBe('/admin/requests');
-    expect(form.getAttribute('method') ?? 'get').toMatch(/get/i);
+    expect((screen.getByLabelText(/^Search/) as HTMLInputElement).value).toBe('9820012345');
 
     const pages = screen.getByRole('navigation', { name: 'Pages' });
     expect(within(pages).getByText('Page 2 of 2')).toBeTruthy();
-    expect(within(pages).getByRole('link', { name: 'Previous page' }).getAttribute('href')).toBe('/admin/requests?status=APPROVED&kind=CONTACT&search=Rahul');
+    expect(within(pages).getByRole('link', { name: 'Previous page' }).getAttribute('href')).toBe('/admin/requests?status=APPROVED&kind=CONTACT');
     expect(within(pages).queryByRole('link', { name: 'Next page' })).toBeNull();
     expect(screen.getByText('Showing 26–26 of 26')).toBeTruthy();
+    for (const el of container.querySelectorAll('a[href]')) expect(el.getAttribute('href')).not.toContain('9820012345');
+  });
+
+  it('never puts the search in a link or form address, and posts the form (works before the page script loads)', async () => {
+    savedSearch = 'priya@example.com';
+    answers.set('/leads?search=priya%40example.com&page=1&pageSize=25', { items: [lead(1)], total: 30, page: 1, pageSize: 25 });
+    const html = renderToString(await RequestsScreen({ searchParams: Promise.resolve({}) }));
+    const addresses = addressesIn(html);
+    expect(addresses.length).toBeGreaterThan(0);
+    for (const a of addresses) expect(a).not.toMatch(/priya|%40|@/i);
+    const forms = html.match(/<form[^>]*>/g) ?? [];
+    expect(forms.length).toBeGreaterThan(0);
+    for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
+  });
+
+  it('ignores a search in the address (an old link), neither reading nor repeating it', async () => {
+    answers.set('/leads?kind=BASKET&page=1&pageSize=25', { items: [lead(1)], total: 30, page: 1, pageSize: 25 });
+    const { container } = await requests({ kind: 'BASKET', search: '9876543210' });
+    expect(adminRequest).toHaveBeenCalledWith('GET', '/leads?kind=BASKET&page=1&pageSize=25');
+    expect((screen.getByLabelText(/^Search/) as HTMLInputElement).value).toBe('');
+    expect(container.innerHTML).not.toContain('9876543210');
   });
 
   it('ignores filters PYS does not know instead of failing', async () => {
@@ -141,20 +170,23 @@ describe('Requests screen', () => {
     expect(within(pages).getByRole('link', { name: 'Next page' }).getAttribute('href')).toBe('/admin/requests?page=2');
   });
 
-  it('says so in plain words when nothing matches, with Clear filters', async () => {
+  it('says so in plain words when nothing matches, with Clear filters (which also forgets the search)', async () => {
+    savedSearch = 'zzz';
     answers.set('/leads?kind=CONTACT&search=zzz&page=1&pageSize=25', { items: [], total: 0, page: 1, pageSize: 25 });
-    await requests({ kind: 'CONTACT', search: 'zzz' });
+    await requests({ kind: 'CONTACT' });
     expect(screen.getByText('No requests match these filters')).toBeTruthy();
     expect(screen.queryByRole('table')).toBeNull();
-    const clear = screen.getAllByRole('link', { name: 'Clear filters' });
-    expect(clear.every((a) => a.getAttribute('href') === '/admin/requests')).toBe(true);
+    // A button posting to the clear action, not a link: a link could not forget the saved search.
+    const clear = screen.getAllByRole('button', { name: 'Clear filters' });
+    expect(clear.length).toBeGreaterThan(0);
+    expect(screen.queryByRole('link', { name: 'Clear filters' })).toBeNull();
   });
 
   it('says there are no requests yet when there are none at all', async () => {
     answers.set('/leads?page=1&pageSize=25', { items: [], total: 0, page: 1, pageSize: 25 });
     await requests({});
     expect(screen.getByText('No requests yet')).toBeTruthy();
-    expect(screen.queryByRole('link', { name: 'Clear filters' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull();
   });
 
   it('offers the first page when the page asked for is past the end', async () => {
@@ -163,9 +195,10 @@ describe('Requests screen', () => {
     expect(screen.getByRole('link', { name: 'Go to the first page' }).getAttribute('href')).toBe('/admin/requests');
   });
 
-  it('explains when PYS cannot be reached, with Try again', async () => {
+  it('explains when PYS cannot be reached, with Try again (without the search)', async () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
-    answers.set('/leads?status=SPAM&page=1&pageSize=25', new PysError(503, 'HTTP_503', 'PYS answered 503'));
+    savedSearch = '9820012345';
+    answers.set('/leads?status=SPAM&search=9820012345&page=1&pageSize=25', new PysError(503, 'HTTP_503', 'PYS answered 503'));
     await requests({ status: 'SPAM' });
     expect(screen.getByRole('alert').textContent).toContain("We couldn't reach PYS. It may be waking up — try again in a minute.");
     expect(screen.getByRole('link', { name: 'Try again' }).getAttribute('href')).toBe('/admin/requests?status=SPAM');

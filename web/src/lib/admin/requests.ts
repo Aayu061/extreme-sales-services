@@ -9,6 +9,15 @@ import type { CustomerStatus } from '@/lib/pys/types';
 /** Where approving happens. PYS has no address per request, so every request opens the inbox. */
 export const PYS_APPROVAL_INBOX = 'https://place-your-service.vercel.app/intakes';
 
+/**
+ * The search box can hold a customer's phone or email, which never goes in an address (history,
+ * hosting logs, sign-in "next" links). It is posted to a server action and kept in this short-lived
+ * httpOnly cookie, read only by the Requests screen.
+ */
+export const REQUESTS_SEARCH_COOKIE = 'ess-admin-search';
+export const REQUESTS_SEARCH_COOKIE_PATH = '/admin/requests';
+export const REQUESTS_SEARCH_MAX_AGE = 30 * 60;
+
 export const REQUESTS_PAGE_SIZE = 25;
 /** leadsQuerySchema limits. */
 const MAX_PAGE = 10_000;
@@ -57,9 +66,14 @@ export function statusLabel(status: string): Pick<CustomerStatus, 'label' | 'ton
 export interface RequestsQuery {
   status?: RequestStatus;
   kind?: RequestKind;
-  /** Typed by staff (name, email, request number, tracking code or mobile number). */
+  /** Typed by staff (name, email, request number, tracking code or mobile number). Never in an address. */
   search?: string;
   page: number;
+}
+
+/** Trimmed, at most 100 characters (the PYS limit); anything that is not text is "". */
+export function cleanSearch(value: unknown): string {
+  return typeof value === 'string' ? value.trim().slice(0, MAX_SEARCH).trim() : '';
 }
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -68,12 +82,15 @@ const first = (v: string | string[] | undefined): string | undefined => (Array.i
 const oneOf = <T extends string>(list: readonly T[], v: string | undefined): T | undefined =>
   list.includes(v as T) ? (v as T) : undefined;
 
-/** The Requests screen's filters, from its address. */
-export function requestsQuery(params: SearchParams): RequestsQuery {
+/**
+ * The Requests screen's filters: status, kind and page from its address; the search only from the
+ * saved search (cookie). A "search" in the address (an old link) is not read.
+ */
+export function requestsQuery(params: SearchParams, savedSearch?: string): RequestsQuery {
   const q: RequestsQuery = { page: 1 };
   const status = oneOf(REQUEST_STATUSES, first(params.status));
   const kind = oneOf(REQUEST_KINDS, first(params.kind));
-  const search = first(params.search)?.trim().slice(0, MAX_SEARCH).trim();
+  const search = cleanSearch(savedSearch);
   const page = Math.trunc(Number(first(params.page)));
   if (status) q.status = status;
   if (kind) q.kind = kind;
@@ -82,27 +99,27 @@ export function requestsQuery(params: SearchParams): RequestsQuery {
   return q;
 }
 
-function filterParams(q: RequestsQuery): URLSearchParams {
+function addressParams(q: RequestsQuery): URLSearchParams {
   const p = new URLSearchParams();
   if (q.status) p.set('status', q.status);
   if (q.kind) p.set('kind', q.kind);
-  if (q.search) p.set('search', q.search);
   return p;
 }
 
 export const hasFilters = (q: RequestsQuery): boolean => Boolean(q.status || q.kind || q.search);
 
-/** /admin/requests with these filters (page 1 is left out). */
+/** /admin/requests with status, kind and page (page 1 left out). Never the search. */
 export function requestsHref(q: RequestsQuery): string {
-  const p = filterParams(q);
+  const p = addressParams(q);
   if (q.page > 1) p.set('page', String(q.page));
   const s = p.toString();
   return s ? `/admin/requests?${s}` : '/admin/requests';
 }
 
-/** The PYS call for one page: adminRequest('GET', leadsPath(q)). */
+/** The PYS call for one page: adminRequest('GET', leadsPath(q)). Server to PYS only. */
 export function leadsPath(q: RequestsQuery, pageSize = REQUESTS_PAGE_SIZE): string {
-  const p = filterParams(q);
+  const p = addressParams(q);
+  if (q.search) p.set('search', q.search);
   p.set('page', String(q.page));
   p.set('pageSize', String(pageSize));
   return `/leads?${p}`;

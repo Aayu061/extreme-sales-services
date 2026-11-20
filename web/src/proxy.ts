@@ -37,6 +37,13 @@ async function knownPages(origin: string): Promise<KnownPages | null> {
  */
 async function adminProxy(request: NextRequest): Promise<NextResponse> {
   const { pathname, searchParams } = request.nextUrl;
+  // A search (old link) can be a customer's phone or email: take it out of the address at once.
+  // The Requests search is kept in a cookie instead (see actions/requests.ts).
+  if (searchParams.has('search')) {
+    const clean = NextResponse.redirect(new URL(adminPathOf(request.nextUrl), request.url));
+    clean.headers.set('Cache-Control', 'no-store');
+    return clean;
+  }
   // Which admin page this is, for "sign in again, then come back here" (never the browser's own value).
   request.headers.set(ADMIN_PATH_HEADER, adminPathOf(request.nextUrl));
   // An admin address with no screen: a real 404 (the page itself starts streaming with 200).

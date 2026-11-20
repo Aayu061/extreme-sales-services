@@ -109,9 +109,11 @@ describe('admin pages that do not exist', () => {
     expect(isUnknownAdminPage('/shop/x')).toBe(false);
   });
 
-  it('keeps the path and query of the page, without the router-only _rsc value', () => {
+  it('keeps the path and query of the page, without the router-only _rsc value or a search', () => {
     expect(adminPathOf(new URL('https://ess.example/admin/requests?status=APPROVED&_rsc=abc'))).toBe('/admin/requests?status=APPROVED');
     expect(adminPathOf(new URL('https://ess.example/admin?_rsc=1'))).toBe('/admin');
+    // A search can be a customer's phone or email: never passed on (next=, Try again links).
+    expect(adminPathOf(new URL('https://ess.example/admin/requests?search=9820012345&kind=BASKET'))).toBe('/admin/requests?kind=BASKET');
   });
 });
 
@@ -151,6 +153,15 @@ describe('proxy for admin pages (test admin, mock PYS)', () => {
     const { proxy } = await import('@/proxy');
     const res = await proxy(new NextRequest('https://ess.example/admin', { headers: { cookie: SIGNED_IN, [ADMIN_PATH_HEADER]: 'https://evil.example' } }));
     expect(res.headers.get(`x-middleware-request-${ADMIN_PATH_HEADER}`)).toBe('/admin');
+  });
+
+  it('drops a search from an old admin link straight away (it can be a phone or email)', async () => {
+    const res = await call('/admin/requests?kind=BASKET&search=9820012345', SIGNED_IN);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('location')).toBe('https://ess.example/admin/requests?kind=BASKET');
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    const signedOut = await call('/admin/requests?search=priya%40example.com');
+    expect(signedOut.headers.get('location')).toBe('https://ess.example/admin/requests');
   });
 
   it('still sends a signed-out visitor to sign in first', async () => {
