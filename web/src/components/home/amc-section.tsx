@@ -67,13 +67,17 @@ export function AmcSection({ plans }: { plans: AmcCard[] }) {
           <ul className="grid content-center gap-3">
             {highlights.map((p, i) => (
               <li key={p.code}>
-                <Link
-                  href={`/amc#${p.code.toLowerCase()}`}
-                  className="flex flex-col gap-3 rounded-3xl sm:flex-row sm:items-center sm:justify-between sm:gap-6 border border-[var(--glass-line)] bg-white/10 p-5 transition-transform duration-200 hover:-translate-y-0.5"
-                >
+                {/* The whole card opens the plan on /amc through a stretched link on the plan name (its ::after
+                    covers the card), so the note star can stay a link of its own: no link inside a link. */}
+                <div className="relative flex flex-col gap-3 rounded-3xl sm:flex-row sm:items-center sm:justify-between sm:gap-6 border border-[var(--glass-line)] bg-white/10 p-5 transition-transform duration-200 hover:-translate-y-0.5 has-[.plan-link:focus-visible]:outline-[3px] has-[.plan-link:focus-visible]:outline-solid has-[.plan-link:focus-visible]:outline-[var(--cool)] has-[.plan-link:focus-visible]:outline-offset-2">
                   <span className="min-w-0 sm:flex-1">
                     <span className="block text-sm font-semibold text-cool">{highlightLabel(p, i)}</span>
-                    <span className="block text-lg font-bold">{p.name}</span>
+                    <Link
+                      href={`/amc#${p.code.toLowerCase()}`}
+                      className="plan-link block text-lg font-bold after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none"
+                    >
+                      {p.name}
+                    </Link>
                     <span className="block text-sm text-muted">
                       {p.visitsPerYear} service visits a year{p.covers.length ? `. ${p.covers.join(', ')}.` : ''}
                     </span>
@@ -81,10 +85,13 @@ export function AmcSection({ plans }: { plans: AmcCard[] }) {
                   <span className="sm:text-right">
                     <span className="tabular block text-xl font-extrabold">From {formatInr(p.fromTotal!)}</span>
                     <span className="block text-xs text-muted">
-                      a year, incl. GST<Star mark="**" />
+                      a year, incl. GST
+                      <span className="relative z-10">
+                        <Star mark="**" />
+                      </span>
                     </span>
                   </span>
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
