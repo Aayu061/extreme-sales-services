@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
-import type { ReactElement } from 'react';
+import { Activity, type ReactElement } from 'react';
 
 // ---- Fakes: PYS (adminRequest + getMe), Next's cache calls, the router, redirect() throwing like Next ----
 // The real server actions run (no fake): a click on the screen goes through the action to adminRequest,
@@ -281,6 +281,32 @@ describe('UsersEditor', () => {
     await act(async () => resolve({ users: [...USERS, NEW_USER], temporaryPassword: null }));
     expect(await screen.findByText(USER_MESSAGES.granted)).toBeTruthy();
     expect(document.body.innerHTML).not.toContain(ONE_TIME);
+  });
+
+  it('leaving the page clears the password: Next keeps the page in a hidden <Activity>, and Back must not show it again', async () => {
+    adminRequest.mockResolvedValueOnce({ users: [...USERS, NEW_USER], temporaryPassword: ONE_TIME });
+    const page = (mode: 'visible' | 'hidden') => (
+      <Activity mode={mode}>
+        <UsersEditor users={USERS} myEmail="test-admin@example.com" />
+      </Activity>
+    );
+    const { rerender } = render(page('visible'));
+    grant('ravi@example.com');
+    expect(await screen.findByText(ONE_TIME)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
+    expect(await screen.findByText(USER_MESSAGES.copied)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Remove ESS Staff access for Test Staff' }));
+    expect(screen.getByRole('button', { name: 'Yes, remove' })).toBeTruthy();
+
+    // Another admin page is opened (this one is hidden, not unmounted)…
+    await act(async () => rerender(page('hidden')));
+    // …and Back shows it again: no password, no copy note, no open "Remove?" question.
+    await act(async () => rerender(page('visible')));
+    expect(screen.queryByText(ONE_TIME)).toBeNull();
+    expect(document.body.innerHTML).not.toContain(ONE_TIME);
+    expect(screen.queryByText(USER_MESSAGES.copied)).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Yes, remove' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Remove ESS Staff access for Test Staff' })).toBeTruthy();
   });
 
   it('an existing account gets access with no password shown', async () => {

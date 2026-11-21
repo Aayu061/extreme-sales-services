@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useRef, useState, useTransition, type FormEvent } from 'react';
+import { useActionState, useLayoutEffect, useRef, useState, useTransition, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { grantUserRole, removeUserRole, type UserActionState } from '@/app/admin/actions/users';
 import { Button } from '@/components/ui/button';
@@ -40,7 +40,8 @@ const text = (fd: FormData, key: string) => {
  * The one-time password for a new account (R11) comes only from the server action's answer and is
  * kept only in this component's memory (`oneTime`): never in a URL, cookie, browser storage, the
  * console, an input's value, or anything the server renders. It is shown once, with Copy, and is
- * gone when the admin presses "Hide it", sends another grant, or leaves the page. The form posts
+ * gone when the admin presses "Hide it", sends another grant, or leaves the page (Next hides the
+ * page rather than unmounting it, so that is a layout-effect cleanup, below). The form posts
  * through the action (no address-bar submit before the page is ready).
  */
 export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]; myEmail: string | null }) {
@@ -67,6 +68,21 @@ export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]
   const passwordRef = useRef<HTMLDivElement>(null);
   const listNoteRef = useRef<HTMLParagraphElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+
+  // Next (Cache Components) keeps a page the admin leaves in a hidden <Activity> instead of
+  // unmounting it, so state would come back on Back. A layout-effect cleanup runs when the page is
+  // hidden (Next's "Preserving UI state" guide): the one-time password, its copy note, an open
+  // "Remove?" question and the list note go then, so the password is never shown twice.
+  useLayoutEffect(
+    () => () => {
+      setOneTime(null);
+      setCopyNote(null);
+      setConfirming(null);
+      setListNote(null);
+      setChecked(null);
+    },
+    [],
+  );
 
   /** The session ended or access was taken away: say so and move to the right page. */
   function handledAccess(state: UserActionState): Note | null {
