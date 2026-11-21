@@ -73,6 +73,8 @@ describe('LoginForm', () => {
     expect(client).not.toMatch(/Sign in as test|dev-login|DevSignInForm|import \{[^}]*\bdevSignIn\b/);
     const dev = readFileSync(path.join(__dirname, '../src/components/admin/dev-sign-in.tsx'), 'utf8');
     expect(dev).not.toMatch(/^\s*['"]use client['"]/m);
+    // …and the build fails if a client module ever imports it.
+    expect(dev).toMatch(/^import 'server-only';$/m);
   });
 
   it('keeps typed details out of the address bar, even before the page script loads', () => {

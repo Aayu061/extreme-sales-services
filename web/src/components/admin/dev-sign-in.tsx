@@ -1,3 +1,4 @@
+import 'server-only';
 import { Button } from '@/components/ui/button';
 import { devSignIn } from '@/app/admin/actions/auth';
 
