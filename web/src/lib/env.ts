@@ -27,12 +27,15 @@ const schema = z.object({
     .url()
     .default('https://extreme-sales-services.vercel.app')
     .transform((v) => v.replace(/\/+$/, '')),
+  // Fail soft: a mistyped Supabase value only switches the admin sign-in off ("not set up yet"),
+  // it never stops the public pages (which all read serverEnv()) from opening.
   NEXT_PUBLIC_SUPABASE_URL: z
     .string()
     .url()
     .optional()
+    .catch(undefined)
     .transform((v) => v?.replace(/\/+$/, '')),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().trim().optional(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().trim().optional().catch(undefined),
 });
 
 export type ServerEnv = z.infer<typeof schema>;
