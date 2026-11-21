@@ -11,6 +11,9 @@ vi.mock('next/navigation', () => ({
   redirect: (url: string) => {
     throw new Redirected(url);
   },
+  notFound: () => {
+    throw new Error('NEXT_HTTP_ERROR_FALLBACK;404');
+  },
   // Like the real one: Next's own redirect/notFound errors go on, everything else is left alone.
   unstable_rethrow: (err: unknown) => {
     if (err instanceof Redirected) throw err;
@@ -20,7 +23,7 @@ vi.mock('next/navigation', () => ({
 let requestHeaders = new Headers();
 vi.mock('next/headers', () => ({ headers: async () => requestHeaders, cookies: async () => ({ get: () => undefined, getAll: () => [] }) }));
 
-import { ADMIN_PATH_HEADER, adminPathOf, isUnknownAdminPage } from '@/lib/admin/gate';
+import { ADMIN_PATH_HEADER, adminPathOf } from '@/lib/admin/gate';
 import { expiredLoginUrl, guardAdmin, loadAdmin } from '@/lib/admin/guard';
 import { AdminAuthError, AdminForbiddenError, AdminValidationError } from '@/lib/admin/pys-admin';
 import { PysError } from '@/lib/pys/client';
@@ -99,16 +102,6 @@ describe('loadAdmin', () => {
 });
 
 describe('admin pages that do not exist', () => {
-  it('knows the admin screens by their first part', () => {
-    for (const path of ['/admin', '/admin/', '/admin/requests', '/admin/enquiries', '/admin/products/abc', '/admin/no-access', '/admin/login', '/admin/reset', '/admin/change-password', '/admin/users']) {
-      expect(isUnknownAdminPage(path), path).toBe(false);
-    }
-    for (const path of ['/admin/does-not-exist', '/admin/Requests', '/admin/requestsx', '/admin/x/requests']) {
-      expect(isUnknownAdminPage(path), path).toBe(true);
-    }
-    expect(isUnknownAdminPage('/shop/x')).toBe(false);
-  });
-
   it('keeps the path and query of the page, without the router-only _rsc value or a search', () => {
     expect(adminPathOf(new URL('https://ess.example/admin/requests?status=APPROVED&_rsc=abc'))).toBe('/admin/requests?status=APPROVED');
     expect(adminPathOf(new URL('https://ess.example/admin?_rsc=1'))).toBe('/admin');
@@ -135,11 +128,21 @@ describe('proxy for admin pages (test admin, mock PYS)', () => {
   };
   const SIGNED_IN = 'ess-admin-dev=dev-admin-token';
 
-  it('answers 404 for an admin page that does not exist (signed in), never cached', async () => {
+  it('lets an admin page that does not exist through to the admin "not found" (signed in), never cached', async () => {
+    // R13: no 404 here. Next ignores a status on a let-through proxy answer, so the proxy does not
+    // claim one; the (panel)/[...missing] page shows the admin "not found" (status 200, noindex).
     const res = await call('/admin/does-not-exist', SIGNED_IN);
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('x-middleware-next')).toBe('1');
+    expect(res.headers.get('x-middleware-rewrite')).toBeNull();
     expect(res.headers.get('location')).toBeNull();
     expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(res.headers.get(`x-middleware-request-${ADMIN_PATH_HEADER}`)).toBe('/admin/does-not-exist');
+  });
+
+  it('calls notFound() on the admin catch-all page, so the admin "not found" is what shows', async () => {
+    const { default: AdminMissingPage } = await import('@/app/admin/(panel)/[...missing]/page');
+    expect(() => AdminMissingPage()).toThrow('NEXT_HTTP_ERROR_FALLBACK;404');
   });
 
   it('opens real admin pages as usual and tells them which page they are', async () => {

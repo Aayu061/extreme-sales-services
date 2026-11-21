@@ -7,7 +7,8 @@ export const instant = false;
 
 /**
  * Any /admin address without a screen (R6): shows the admin "not found" inside the admin layout,
- * instead of the public site's page. The proxy has already answered 404 for it.
+ * instead of the public site's page. The answer's status stays 200 (R13: with Cache Components the
+ * page has started streaming before notFound(); signed-in only and noindex, so this is accepted).
  */
 export default function AdminMissingPage(): never {
   notFound();

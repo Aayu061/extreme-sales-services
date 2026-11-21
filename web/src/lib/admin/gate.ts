@@ -1,5 +1,3 @@
-import { ADMIN_NAV } from './nav';
-
 /**
  * Who may open which /admin page (used by the proxy before any admin page renders).
  * Pure: no cookies or network here, so the rules are easy to test.
@@ -51,23 +49,4 @@ export function adminPathOf(url: URL): string {
   params.delete('search');
   const query = params.toString();
   return query ? `${url.pathname}?${query}` : url.pathname;
-}
-
-/** The first part after /admin of every admin page: the menu's screens plus the pages outside it. */
-const ADMIN_SECTIONS = new Set([
-  ...ADMIN_NAV.map((item) => item.href.split('/')[2]).filter(Boolean),
-  'no-access',
-  ...OPEN_PAGES.map((p) => p.split('/')[2]),
-  CHANGE_PASSWORD_PAGE.split('/')[2],
-]);
-
-/**
- * True for an /admin address that no admin screen has (/admin/does-not-exist), so the proxy can
- * answer 404 before the page starts streaming (with Cache Components a page always starts with
- * 200). Deeper unknown addresses on a real screen (/admin/products/x) are left to that screen.
- */
-export function isUnknownAdminPage(pathname: string): boolean {
-  if (!pathname.startsWith('/admin/')) return false;
-  const section = pathname.split('/')[2];
-  return section !== '' && !ADMIN_SECTIONS.has(section);
 }
