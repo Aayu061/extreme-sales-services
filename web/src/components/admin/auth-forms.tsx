@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useActionState, useState, type FormEvent, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
-import { devSignIn, sendReset, setNewPassword, signIn, type AuthFormState } from '@/app/admin/actions/auth';
+import { sendReset, setNewPassword, signIn, type AuthFormState } from '@/app/admin/actions/auth';
 
 const NOT_SET_UP_NOTE = "Sign-in isn't set up yet. Please ask the person who looks after the website to add the sign-in settings.";
 
@@ -48,12 +48,13 @@ function useCheckedAction(action: (prev: AuthFormState, fd: FormData) => Promise
 }
 
 export function LoginForm({
-  devLogin,
+  devSignIn,
   configured,
   next,
   expired = false,
 }: {
-  devLogin: boolean;
+  /** The test sign-in (a server component), passed in by the page only on a PC with the mock PYS. */
+  devSignIn?: ReactNode;
   configured: boolean;
   next: string | null;
   /** The session ran out while the person was using the admin area (/admin/login?expired=1). */
@@ -105,18 +106,7 @@ export function LoginForm({
         <Note>{NOT_SET_UP_NOTE}</Note>
       )}
 
-      {devLogin && (
-        <form action={devSignIn} className="mt-6 flex flex-col gap-3 border-t border-line pt-5">
-          <p className="text-sm text-muted">Only on this computer, with the test PYS:</p>
-          {next && <input type="hidden" name="next" value={next} />}
-          <Button type="submit" variant="glass" name="role" value="admin">
-            Sign in as test admin
-          </Button>
-          <Button type="submit" variant="glass" name="role" value="staff">
-            Sign in as test staff
-          </Button>
-        </form>
-      )}
+      {devSignIn}
     </AuthCard>
   );
 }
