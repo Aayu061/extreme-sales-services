@@ -5,6 +5,9 @@ import { LEGACY_REDIRECTS } from './src/lib/legacy-redirects';
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  // Next logs each server action call with its arguments in development; admin actions carry
+  // emails and customer details, which are never logged.
+  logging: { serverFunctions: false },
   turbopack: {
     // web/ has its own lockfile inside the ESS repo; build from here.
     root: path.join(__dirname),

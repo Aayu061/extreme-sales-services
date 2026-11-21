@@ -8,12 +8,12 @@
 //               PYS_INTEGRATION_SECRET=local-dev-secret-not-for-production
 // Admin area (/ess/admin/*): /admin/login "Sign in as test admin / staff" sends the token
 // dev-admin-token (ESS Admin) or dev-staff-token (ESS Staff); sample requests, AC enquiries,
-// products, website text, services shown and pincodes are kept in memory and start again each
-// time this runs (hiding a product in the admin area also takes it out of the shop here,
+// products, website text, services shown, pincodes and users are kept in memory and start again
+// each time this runs (hiding a product in the admin area also takes it out of the shop here,
 // publishing website text changes what the public pages show, hiding or moving a service changes
 // /services, and a pincode prefix added or removed changes the pincode check).
 import http from 'node:http';
-import { createHash, createHmac } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
 const KEY_ID = 'essweb_localdev';
@@ -831,6 +831,102 @@ function areaWrite(path, method, rawBody, actor) {
   return { data: { areas: listAreas() } };
 }
 
+// ---------------------------------------------------------------- users & roles (in memory)
+// Kept like PYS's profiles + app_role_grants, seeded with the two test sign-ins' roles. (The test
+// tokens keep their fixed roles: removing "Test Staff" here does not sign that token out.)
+const profiles = new Map([
+  ['test-admin@example.com', { id: 'dev-admin', name: 'Test Admin', email: 'test-admin@example.com' }],
+  ['test-staff@example.com', { id: 'dev-staff', name: 'Test Staff', email: 'test-staff@example.com' }],
+]);
+const grants = [
+  { grantId: '7c9e6679-7425-40de-944b-e07fc1f90ae7', role: 'ESS_ADMIN', grantedAt: '2026-11-19T00:00:00Z', profileId: 'dev-admin', revoked: false },
+  { grantId: '16fd2706-8baf-433b-82eb-8c7fada847da', role: 'ESS_STAFF', grantedAt: '2026-11-19T00:00:00Z', profileId: 'dev-staff', revoked: false },
+];
+// zod's uuid() and email() checks, as PYS's grantIdParamSchema and roleGrantSchema use them.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const EMAIL_RE = /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9-]*\.)+[A-Za-z]{2,}$/;
+/** Test value: like an account PYS's sign-in knows but that has no profile (PYS answers 409). */
+const NO_PROFILE_EMAIL = 'no-profile@example.com';
+
+/** essAdminService listUsers: active grants, oldest first. */
+function listUsers() {
+  const byId = new Map([...profiles.values()].map((p) => [p.id, p]));
+  return grants
+    .filter((g) => !g.revoked)
+    .sort((a, b) => a.grantedAt.localeCompare(b.grantedAt))
+    .map((g) => {
+      const p = byId.get(g.profileId);
+      return { grantId: g.grantId, role: g.role, grantedAt: g.grantedAt, profileId: g.profileId, name: p?.name ?? null, email: p?.email ?? null };
+    });
+}
+
+/**
+ * GET /users, POST /users (roleGrantSchema, strict; 201 { users, temporaryPassword }, the password
+ * only when the account is new) and DELETE /users/:id (grantIdParamSchema; 404 when gone; 400 for
+ * an ESS Admin removing their own ESS Admin role), ESS Admin only (403 first, like the routes).
+ */
+function usersRoute(path, method, rawBody, actor) {
+  const m = /^\/users\/([^/]+)$/.exec(path);
+  if (!((path === '/users' && (method === 'GET' || method === 'POST')) || (m && method === 'DELETE'))) return null;
+  if (!actor.roles.includes('ESS_ADMIN')) return { status: 403, code: 'FORBIDDEN', message: 'Only an ESS Admin can do this.' };
+  if (method === 'GET') return { data: { users: listUsers() } };
+  if (m) {
+    const id = decodeURIComponent(m[1]);
+    if (!UUID_RE.test(id)) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details: [{ field: 'id', message: 'Invalid UUID', code: 'invalid_format' }] };
+    const grant = grants.find((g) => g.grantId === id && !g.revoked);
+    if (!grant) return { status: 404, code: 'NOT_FOUND', message: 'Role not found' };
+    if (grant.profileId === actor.profileId && grant.role === 'ESS_ADMIN' && !actor.isPysAdmin) {
+      return { status: 400, code: 'BAD_REQUEST', message: 'You cannot remove your own ESS Admin role. Ask another ESS Admin.' };
+    }
+    grant.revoked = true;
+    return { data: { users: listUsers() } };
+  }
+  let body;
+  try {
+    body = JSON.parse(rawBody || '{}');
+  } catch {
+    return { status: 400, code: 'BAD_REQUEST', message: 'Invalid JSON body' };
+  }
+  const details = [];
+  const issue = (field, message, code) => details.push({ field, message, code });
+  let email = '';
+  let fullName;
+  if (!body || typeof body !== 'object' || Array.isArray(body)) issue('', 'Invalid input: expected object', 'invalid_type');
+  else {
+    const extra = Object.keys(body).filter((k) => !['email', 'fullName', 'role'].includes(k));
+    if (extra.length) issue('', `Unrecognized key(s) in object: ${extra.map((k) => `'${k}'`).join(', ')}`, 'unrecognized_keys');
+    if (typeof body.email !== 'string') issue('email', 'Invalid input: expected string', 'invalid_type');
+    else {
+      email = body.email.trim().toLowerCase();
+      if (!EMAIL_RE.test(email)) issue('email', 'Invalid email address', 'invalid_format');
+      else if (email.length > 254) issue('email', 'Too big: expected string to have <=254 characters', 'too_big');
+    }
+    const name = typeof body.fullName === 'string' && body.fullName.trim() === '' ? undefined : body.fullName;
+    if (name !== undefined) {
+      if (typeof name !== 'string') issue('fullName', 'Invalid input: expected string', 'invalid_type');
+      else if (name.trim().length > 120) issue('fullName', 'Too big: expected string to have <=120 characters', 'too_big');
+      else fullName = name.trim();
+    }
+    if (!['ESS_ADMIN', 'ESS_STAFF'].includes(body.role)) issue('role', 'Invalid option: expected one of "ESS_ADMIN"|"ESS_STAFF"', 'invalid_value');
+  }
+  if (details.length) return { status: 422, code: 'VALIDATION_ERROR', message: 'Request validation failed', details };
+
+  let temporaryPassword = null;
+  let profile = profiles.get(email);
+  if (!profile) {
+    if (email === NO_PROFILE_EMAIL) return { status: 409, code: 'CONFLICT', message: 'An account with this email exists but has no profile. Ask PYS Admin to fix it.' };
+    // Like PYS: a random one-time password, sent back in this answer only.
+    temporaryPassword = `${randomBytes(9).toString('base64url')}-${randomBytes(2).toString('hex')}`;
+    profile = { id: randomUUID(), name: fullName ?? email.split('@')[0], email };
+    profiles.set(email, profile);
+  }
+  if (grants.some((g) => !g.revoked && g.profileId === profile.id && g.role === body.role)) {
+    return { status: 409, code: 'CONFLICT', message: 'This person already has that role.' };
+  }
+  grants.push({ grantId: randomUUID(), role: body.role, grantedAt: new Date().toISOString(), profileId: profile.id, revoked: false });
+  return { status: 201, data: { users: listUsers(), temporaryPassword } };
+}
+
 /** Like PYS requireEssRole: the person's token decides who is acting. */
 function adminRoute(req, res, path, url, body) {
   res.setHeader('Cache-Control', 'no-store');
@@ -855,6 +951,8 @@ function adminRoute(req, res, path, url, body) {
   if (req.method === 'GET' && path === '/service-areas') return ok(res, { areas: listAreas() });
   const areaChange = areaWrite(path, req.method, body, actor);
   if (areaChange) return areaChange.data ? ok(res, areaChange.data) : fail(res, areaChange.status, areaChange.code, areaChange.message, areaChange.details);
+  const userChange = usersRoute(path, req.method, body, actor);
+  if (userChange) return userChange.data ? ok(res, userChange.data, userChange.status) : fail(res, userChange.status, userChange.code, userChange.message, userChange.details);
   const productChange = productWrite(path, req.method, body);
   if (productChange) {
     return productChange.data

@@ -183,6 +183,27 @@ export interface AdminServiceArea {
   updatedAt: string | null;
 }
 
+/**
+ * One active ESS role in GET /users ({ users: [...] }, oldest first), and in the answers of
+ * POST /users and DELETE /users/:id, as PYS essAdminService listUsers. A person with both roles
+ * has two rows. PYS Admins are ESS Admins without a row here (unless also given one).
+ */
+export interface AdminUser {
+  grantId: string;
+  role: EssRole;
+  grantedAt: string;
+  profileId: string;
+  name: string | null;
+  email: string | null;
+}
+
+/** POST /users body (PYS roleGrantSchema, strict). */
+export interface RoleGrantInput {
+  email: string;
+  fullName?: string;
+  role: EssRole;
+}
+
 /** PUT /service-areas body (PYS serviceAreaSchema, strict). */
 export interface ServiceAreaInput {
   pincodePrefix: string;
