@@ -198,7 +198,7 @@ export function ProductForm({ mode, product, added }: Props) {
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_340px]">
-      <form ref={formRef} onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5">
+      <form ref={formRef} method="post" onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5">
         {notice && (
           <p role="status" className="rounded-2xl bg-cool/12 px-4 py-3 font-semibold text-cool">
             {notice}

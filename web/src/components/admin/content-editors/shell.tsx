@@ -250,7 +250,7 @@ export function ContentEditor({ blockKey, saved, fallback, isAdmin }: Props) {
         </p>
       )}
 
-      <form onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5">
+      <form method="post" onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5">
         <div className="glass min-w-0 rounded-[24px] p-4 text-ink sm:p-5">
           <BlockFieldsFor
             blockKey={blockKey}

@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Activity, type ReactElement } from 'react';
+import { renderToString } from 'react-dom/server';
 
 // ---- Fakes: the server actions, the router, PYS answers by path, redirect()/notFound() throwing like Next ----
 
@@ -147,6 +148,12 @@ describe('PhotoPicker', () => {
 });
 
 describe('ProductForm (add)', () => {
+  it('before the page is ready, pressing the button cannot put the details in the address (no GET form)', () => {
+    const forms = renderToString(<ProductForm mode="create" />).match(/<form[^>]*>/g) ?? [];
+    expect(forms.length).toBeGreaterThan(0);
+    for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
+  });
+
   it('loads the photo list from /api/admin/photos for the picker', async () => {
     render(<ProductForm mode="create" />);
     expect(await screen.findByRole('radio', { name: 'voltas-185v.jpg' })).toBeTruthy();
@@ -219,6 +226,12 @@ describe('ProductForm (add)', () => {
 });
 
 describe('ProductForm (edit)', () => {
+  it('before the page is ready, pressing the button cannot put the details in the address (no GET form)', () => {
+    const forms = renderToString(<ProductForm mode="edit" product={product()} />).match(/<form[^>]*>/g) ?? [];
+    expect(forms.length).toBeGreaterThan(0);
+    for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
+  });
+
   it('starts with the product\'s details and its photo chosen', async () => {
     render(<ProductForm mode="edit" product={product()} />);
     expect(field(/^Name/).value).toBe('Daikin 1.5 Ton 5 Star Inverter Split AC');

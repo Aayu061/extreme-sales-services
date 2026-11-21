@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactElement } from 'react';
+import { renderToString } from 'react-dom/server';
 
 // ---- Fakes: PYS (adminRequest + getMe), Next's cache calls, the router, redirect() throwing like Next ----
 // The real server actions run (no fake): a click on the screen goes through the action to adminRequest,
@@ -376,6 +377,12 @@ describe('saveArea and removeArea', () => {
 });
 
 describe('AreasEditor', () => {
+  it('before the page is ready, pressing the button cannot put the details in the address (no GET form)', () => {
+    const forms = renderToString(<AreasEditor areas={AREAS} />).match(/<form[^>]*>/g) ?? [];
+    expect(forms.length).toBeGreaterThan(0);
+    for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
+  });
+
   it('lists the prefixes with their area names and whether they are covered', () => {
     render(<AreasEditor areas={AREAS} />);
     const list = screen.getByRole('list', { name: 'Pincode prefixes' });

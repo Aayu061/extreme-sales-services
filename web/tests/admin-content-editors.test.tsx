@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Activity, type ReactElement } from 'react';
+import { renderToString } from 'react-dom/server';
 
 // ---- Fakes: the server actions, the router, PYS answers by path, redirect()/notFound() throwing like Next ----
 
@@ -220,6 +221,12 @@ describe('ContentEditor: kept by Next while the text changes elsewhere', () => {
 });
 
 describe('ContentEditor: saving and publishing', () => {
+  it('before the page is ready, pressing the button cannot put the details in the address (no GET form)', () => {
+    const forms = renderToString(<ContentEditor blockKey="home.hero" saved={block('home.hero', HERO)} fallback={FALLBACK_HERO} isAdmin />).match(/<form[^>]*>/g) ?? [];
+    expect(forms.length).toBeGreaterThan(0);
+    for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
+  });
+
   it('saves the draft once on a double click', async () => {
     let resolve: (s: State) => void = () => {};
     saveDraft.mockImplementation(() => new Promise((r) => (resolve = r)));

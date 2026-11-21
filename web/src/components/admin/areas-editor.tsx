@@ -178,7 +178,7 @@ export function AreasEditor({ areas: fromServer }: { areas: AdminServiceArea[] }
 
   return (
     <div className="flex flex-col gap-6">
-      <form ref={formRef} noValidate onSubmit={submit} className="glass flex scroll-mt-6 flex-col gap-4 rounded-[24px] p-4 text-ink sm:p-5" aria-labelledby="area-form-h">
+      <form ref={formRef} method="post" noValidate onSubmit={submit} className="glass flex scroll-mt-6 flex-col gap-4 rounded-[24px] p-4 text-ink sm:p-5" aria-labelledby="area-form-h">
         <h2 id="area-form-h" className="text-xl font-bold">
           {editing ? `Change ${editing}` : 'Add a pincode prefix'}
         </h2>
