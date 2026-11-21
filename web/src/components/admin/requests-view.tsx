@@ -63,7 +63,7 @@ function RequestsFilters({ q }: { q: RequestsQuery }) {
         )}
       </Field>
       <Field label="Search" hint="Name, email, request number, tracking code or mobile number.">
-        {({ id, describedBy }) => <Input id={id} name="search" type="search" maxLength={100} defaultValue={q.search ?? ''} aria-describedby={describedBy} />}
+        {({ id, describedBy }) => <Input id={id} name="search" type="search" maxLength={100} autoComplete="off" defaultValue={q.search ?? ''} aria-describedby={describedBy} />}
       </Field>
       <div className="flex flex-wrap items-center gap-3 xl:pt-8">
         <Button type="submit" size="md">

@@ -154,6 +154,12 @@ describe('Requests screen', () => {
     for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
   });
 
+  it('does not let the browser remember searches (they can be customer phones or emails)', async () => {
+    answers.set('/leads?page=1&pageSize=25', { items: [lead(1)], total: 1, page: 1, pageSize: 25 });
+    await requests({});
+    expect((screen.getByLabelText(/^Search/) as HTMLInputElement).getAttribute('autocomplete')).toBe('off');
+  });
+
   it('ignores a search in the address (an old link), neither reading nor repeating it', async () => {
     answers.set('/leads?kind=BASKET&page=1&pageSize=25', { items: [lead(1)], total: 30, page: 1, pageSize: 25 });
     const { container } = await requests({ kind: 'BASKET', search: '9876543210' });
