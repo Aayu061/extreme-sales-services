@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import type { ReactElement } from 'react';
+import { Activity, type ReactElement } from 'react';
 
 // ---- Fakes: the server actions, the router, PYS answers by path, redirect()/notFound() throwing like Next ----
 
@@ -55,7 +55,7 @@ import { LEGAL_DEFAULTS } from '@/lib/legal';
 import type { AdminContentBlock, AdminContentSummary } from '@/lib/admin/types';
 import { ContentEditor } from '@/components/admin/content-editors/shell';
 import { SiteFooter } from '@/components/site/site-footer';
-import { validateBlock } from '@/lib/admin/content';
+import { CONTENT_MESSAGES, validateBlock } from '@/lib/admin/content';
 import type { BusinessIdentity } from '@/lib/pys/types';
 import { ContentEditScreen, ContentListScreen } from '@/components/admin/content-view';
 
@@ -170,6 +170,52 @@ describe('ContentEditor: draft status', () => {
     render(<ContentEditor blockKey="legal.privacy" saved={null} fallback={LEGAL_DEFAULTS.privacy} isAdmin />);
     expect(screen.getByText(/built-in wording/i)).toBeTruthy();
     expect(screen.queryByText('Unpublished changes')).toBeNull();
+  });
+});
+
+describe('ContentEditor: kept by Next while the text changes elsewhere', () => {
+  // Next (Cache Components) keeps a page the person leaves in a hidden <Activity> and shows it
+  // again with fresh server data: the editor must follow that data, not the copy it started with.
+  const NEWER = { headline: 'Cool rooms all summer', subline: HERO.subline };
+  const page = (mode: 'visible' | 'hidden', saved: AdminContentBlock) => (
+    <Activity mode={mode}>
+      <ContentEditor blockKey="home.hero" saved={saved} fallback={FALLBACK_HERO} isAdmin />
+    </Activity>
+  );
+
+  it('shows the newer draft and its "Unpublished changes" badge', async () => {
+    const { rerender } = render(page('visible', block('home.hero', HERO)));
+    expect(screen.getByText('Up to date')).toBeTruthy();
+    await act(async () => rerender(page('hidden', block('home.hero', HERO))));
+    await act(async () => rerender(page('visible', block('home.hero', NEWER, { published: HERO }))));
+    expect(field('Headline').value).toBe(NEWER.headline);
+    expect(screen.getByText('Unpublished changes')).toBeTruthy();
+    expect(screen.queryByText(CONTENT_MESSAGES.changedElsewhere)).toBeNull();
+  });
+
+  it('says so when it replaces changes that were not saved, and a save then starts from the newer draft', async () => {
+    saveDraft.mockResolvedValue({ ok: true, block: block('home.hero', NEWER, { published: HERO }) });
+    const { rerender } = render(page('visible', block('home.hero', HERO)));
+    type('Headline', 'Typed here');
+    await act(async () => rerender(page('hidden', block('home.hero', HERO))));
+    await act(async () => rerender(page('visible', block('home.hero', NEWER, { published: HERO }))));
+    expect(field('Headline').value).toBe(NEWER.headline);
+    expect(screen.getByText(CONTENT_MESSAGES.changedElsewhere)).toBeTruthy();
+    expect(screen.queryByText(/not saved yet/i)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await waitFor(() => expect(saveDraft).toHaveBeenCalledWith('home.hero', NEWER));
+  });
+
+  it('keeps "Draft saved" when the fresh block arrives after saving', async () => {
+    const changed = { headline: 'Cool rooms', subline: HERO.subline };
+    saveDraft.mockResolvedValue({ ok: true, block: block('home.hero', changed, { published: HERO }) });
+    const { rerender } = render(page('visible', block('home.hero', HERO)));
+    type('Headline', 'Cool rooms');
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await waitFor(() => expect(screen.getByRole('status').textContent).toMatch(/Draft saved/));
+    await act(async () => rerender(page('visible', block('home.hero', changed, { published: HERO }))));
+    expect(screen.getByRole('status').textContent).toMatch(/Draft saved/);
+    expect(screen.queryByText(CONTENT_MESSAGES.changedElsewhere)).toBeNull();
   });
 });
 

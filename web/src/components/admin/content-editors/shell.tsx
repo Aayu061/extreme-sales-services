@@ -103,6 +103,27 @@ export function ContentEditor({ blockKey, saved, fallback, isAdmin }: Props) {
   const dirty = !sameBody(value, baseline);
   const unpublished = stored.draft !== null && !sameBody(stored.draft, stored.published);
 
+  // Follows a fresh block from the server (after a save, or when Next shows this kept page again
+  // after someone else saved or published). When it differs from what the editor holds, the
+  // editor starts from it; changes typed and not saved are replaced too, and the person is told,
+  // so "Save draft" cannot write over the newer draft.
+  const incoming = JSON.stringify(saved);
+  const [seen, setSeen] = useState(incoming);
+  if (seen !== incoming) {
+    setSeen(incoming);
+    const fresh = storedOf(saved);
+    if (JSON.stringify(fresh) !== JSON.stringify(stored)) {
+      setStored(fresh);
+      setValue(editableBody(blockKey, fresh.draft, fallback));
+      setErrors({});
+      setAsking(false);
+      if (dirty) {
+        setMessage(null);
+        setNotice(CONTENT_MESSAGES.changedElsewhere);
+      }
+    }
+  }
+
   // After a check or PYS refuses a field, move to the first one with a message.
   useEffect(() => {
     if (Object.keys(errors).length === 0) return;

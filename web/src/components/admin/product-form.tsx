@@ -71,19 +71,40 @@ export function ProductForm({ mode, product, added }: Props) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const shownHintId = `${useId()}-shown-hint`;
-  const [values, setValues] = useState<ProductFormValues>(() => (product ? formValuesOf(product) : EMPTY_PRODUCT_FORM));
+  // `loaded`: the details the form started from (PYS's, or what was last saved from here).
+  const [loaded, setLoaded] = useState<ProductFormValues>(() => (product ? formValuesOf(product) : EMPTY_PRODUCT_FORM));
+  const [values, setValues] = useState<ProductFormValues>(loaded);
   const [checked, setChecked] = useState<ProductFieldErrors | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(added ? PRODUCT_MESSAGES.added : null);
+
+  // Follows fresh details from the server (after a save, or when Next shows this kept page again
+  // after the product was changed elsewhere, e.g. hidden from the list). Changes typed and not
+  // saved are replaced too, and the person is told, so a later save cannot undo the other change.
+  const incoming = product ? JSON.stringify(product) : '';
+  const [seen, setSeen] = useState(incoming);
+  if (product && seen !== incoming) {
+    setSeen(incoming);
+    const fresh = formValuesOf(product);
+    const typed = JSON.stringify(values) !== JSON.stringify(loaded);
+    setLoaded(fresh);
+    setValues(fresh);
+    setChecked(null);
+    if (typed) {
+      setMessage(null);
+      setNotice(PRODUCT_MESSAGES.changedElsewhere);
+    }
+  }
   const { photos, failed } = usePhotoList();
   // A second submit while one is on its way is ignored: the button is disabled once React has
   // re-rendered, and this ref covers a click that lands before that.
   const inFlight = useRef(false);
 
-  const [state, dispatch, pending] = useActionState(async (prev: ProductActionState, fd: FormData): Promise<ProductActionState> => {
+  type Sent = { fd: FormData; from: ProductFormValues; sent: ProductFormValues };
+  const [state, dispatch, pending] = useActionState(async (prev: ProductActionState, { fd, from, sent }: Sent): Promise<ProductActionState> => {
     let result: ProductActionState;
     try {
-      result = mode === 'create' ? await createProduct(prev, fd) : await updateProduct(product.id, prev, fd);
+      result = mode === 'create' ? await createProduct(prev, fd) : await updateProduct(product.id, prev, fd, from);
     } catch (err) {
       // "Add product" ends with a redirect to the new product: let Next carry it out.
       unstable_rethrow(err);
@@ -101,6 +122,8 @@ export function ProductForm({ mode, product, added }: Props) {
     } else if (result.ok) {
       setMessage(null);
       setNotice(PRODUCT_MESSAGES.saved);
+      // PYS now has what was sent: the fresh details that follow are not "changed elsewhere".
+      setLoaded(sent);
       router.refresh();
     } else {
       setMessage(result.error ?? (result.fields ? PRODUCT_MESSAGES.checkFields : null));
@@ -138,7 +161,8 @@ export function ProductForm({ mode, product, added }: Props) {
     setMessage(null);
     setNotice(null);
     inFlight.current = true;
-    startTransition(() => dispatch(fd));
+    const payload = { fd, from: loaded, sent: values };
+    startTransition(() => dispatch(payload));
   }
 
   const set = (key: ProductField) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [key]: e.target.value }));

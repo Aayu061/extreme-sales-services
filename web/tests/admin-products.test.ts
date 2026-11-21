@@ -32,6 +32,7 @@ import { PysError } from '@/lib/pys/client';
 import {
   PRODUCT_MESSAGES,
   filterAdminProducts,
+  formDataOf,
   formValuesOf,
   normaliseStar,
   normaliseTonnage,
@@ -431,6 +432,24 @@ describe('updateProduct', () => {
   it('says the product is gone when PYS does not know it (404)', async () => {
     adminRequest.mockRejectedValueOnce(new PysError(404, 'NOT_FOUND', 'Product not found'));
     expect(await updateProduct('nope', {}, form(VALID))).toEqual({ notFound: true, error: PRODUCT_MESSAGES.gone });
+  });
+
+  it('sends PYS only what changed from the details the form started with', async () => {
+    adminRequest.mockResolvedValue(product());
+    const loaded = formValuesOf(product({ isPublished: false, imageUrl: 'https://cdn.example.com/stock.jpg' }));
+    expect(await updateProduct('daikin-ftkm50-1a2b3c', {}, formDataOf({ ...loaded, price: '44,990' }), loaded)).toEqual({ ok: true });
+    // The price and MRP go together, so PYS still checks one against the other. "Shown" and the
+    // photo (another website's image, shown as the drawn AC here) were not touched, so they stay.
+    expect(adminRequest).toHaveBeenCalledWith('PATCH', '/products/daikin-ftkm50-1a2b3c', { price: 44990, mrp: 58400 });
+  });
+
+  it('sends nothing when nothing changed, and the whole form when the starting details are unusable', async () => {
+    adminRequest.mockResolvedValue(product());
+    const loaded = formValuesOf(product());
+    expect(await updateProduct('daikin-ftkm50-1a2b3c', {}, formDataOf(loaded), loaded)).toEqual({ ok: true });
+    expect(adminRequest).not.toHaveBeenCalled();
+    await updateProduct('daikin-ftkm50-1a2b3c', {}, form({ ...VALID, shown: 'on' }), { name: 42 });
+    expect(adminRequest.mock.calls[0][2]).toMatchObject({ name: VALID.name, price: 45990, isPublished: true });
   });
 
   it('refuses a price above the MRP without asking PYS', async () => {

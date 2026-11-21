@@ -2,7 +2,7 @@
 
 import { revalidatePath, updateTag } from 'next/cache';
 import { redirect, unstable_rethrow } from 'next/navigation';
-import { PRODUCT_MESSAGES, editHref, pysFieldsToForm, toProductInput, type ProductFieldErrors } from '@/lib/admin/product-form';
+import { PRODUCT_MESSAGES, asFormValues, changedInput, editHref, formDataOf, pysFieldsToForm, toProductInput, type ProductFieldErrors } from '@/lib/admin/product-form';
 import { AdminAuthError, AdminForbiddenError, AdminValidationError, adminRequest } from '@/lib/admin/pys-admin';
 import type { AdminProduct } from '@/lib/admin/types';
 import { PysError } from '@/lib/pys/client';
@@ -79,15 +79,25 @@ export async function createProduct(_prev: ProductActionState, formData: FormDat
   redirect(`${editHref(created.id)}?added=1`);
 }
 
-/** "Save changes" on a product's page. */
-export async function updateProduct(id: string, _prev: ProductActionState, formData: FormData): Promise<ProductActionState> {
+/**
+ * "Save changes" on a product's page. `loaded` is what the form started from (the browser sends it
+ * back): when it has the form's shape, PYS gets only the details that differ from it (PYS PATCH
+ * takes any part of a product), so a save never undoes a change made meanwhile to an untouched
+ * detail. Without it, the whole form is sent. Nothing changed: nothing is sent.
+ */
+export async function updateProduct(id: string, _prev: ProductActionState, formData: FormData, loaded?: unknown): Promise<ProductActionState> {
   const path = productPath(id);
   if (!path) return { error: PRODUCT_MESSAGES.gone };
   const checked = toProductInput(formData, 'update');
   if (!checked.ok) return { fields: checked.fields };
 
+  const start = asFormValues(loaded);
+  const before = start ? toProductInput(formDataOf(start), 'update') : null;
+  const body = before?.ok ? changedInput(checked.input, before.input) : checked.input;
+  if (Object.keys(body).length === 0) return { ok: true };
+
   try {
-    await adminRequest<AdminProduct>('PATCH', path, checked.input);
+    await adminRequest<AdminProduct>('PATCH', path, body);
   } catch (err) {
     return failure(err, 'update');
   }

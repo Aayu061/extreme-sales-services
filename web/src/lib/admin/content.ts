@@ -60,6 +60,7 @@ export const CONTENT_MESSAGES = {
   unreachable: "We couldn't reach PYS. It may be waking up — try again in a minute.",
   signIn: 'Please sign in again.',
   forbidden: "You don't have access to this.",
+  changedElsewhere: 'This text was changed since you opened it. The editor now shows the latest saved draft; please make your changes again.',
 } as const;
 
 /** One message per field, by path: "headline", "items.0.href", "sections.2.paragraphs.1", "grievanceOfficer.email". */

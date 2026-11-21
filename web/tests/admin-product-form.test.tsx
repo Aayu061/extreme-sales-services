@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import type { ReactElement } from 'react';
+import { Activity, type ReactElement } from 'react';
 
 // ---- Fakes: the server actions, the router, PYS answers by path, redirect()/notFound() throwing like Next ----
 
 type State = Record<string, unknown>;
 const createProduct = vi.fn<(prev: State, fd: FormData) => Promise<State>>(async () => ({}));
-const updateProduct = vi.fn<(id: string, prev: State, fd: FormData) => Promise<State>>(async () => ({ ok: true }));
+const updateProduct = vi.fn<(id: string, prev: State, fd: FormData, loaded?: unknown) => Promise<State>>(async () => ({ ok: true }));
 const setShown = vi.fn<(id: string, shown: boolean) => Promise<State>>(async () => ({ ok: true }));
 vi.mock('@/app/admin/actions/products', () => ({
   createProduct: (...args: [State, FormData]) => createProduct(...args),
-  updateProduct: (...args: [string, State, FormData]) => updateProduct(...args),
+  updateProduct: (...args: [string, State, FormData, unknown?]) => updateProduct(...args),
   setShown: (...args: [string, boolean]) => setShown(...args),
 }));
 
@@ -51,6 +51,7 @@ vi.mock('next/headers', () => ({ headers: async () => new Headers({ 'x-ess-admin
 
 import { PysError } from '@/lib/pys/client';
 import { PHOTO_ORIGIN } from '@/lib/product-photo';
+import { PRODUCT_MESSAGES, type ProductFormValues } from '@/lib/admin/product-form';
 import type { AdminProduct } from '@/lib/admin/types';
 import { PhotoPicker } from '@/components/admin/photo-picker';
 import { ProductForm } from '@/components/admin/product-form';
@@ -250,6 +251,59 @@ describe('ProductForm (edit)', () => {
     render(<ProductForm mode="edit" product={product()} added />);
     expect(screen.getByText('Product added.')).toBeTruthy();
     await screen.findByRole('radio', { name: 'voltas-185v.jpg' });
+  });
+});
+
+describe('ProductForm (edit) when the product changes while the page is kept', () => {
+  // Next (Cache Components) keeps a page the person leaves in a hidden <Activity> and shows it
+  // again with fresh server data: the form must follow that data, not the copy it started with.
+  const page = (mode: 'visible' | 'hidden', p: AdminProduct) => (
+    <Activity mode={mode}>
+      <ProductForm mode="edit" product={p} />
+    </Activity>
+  );
+
+  it('shows the latest details when the product was hidden in the list meanwhile', async () => {
+    const { rerender } = render(page('visible', product()));
+    expect((screen.getByLabelText('Show on the website') as HTMLInputElement).checked).toBe(true);
+    await act(async () => rerender(page('hidden', product())));
+    await act(async () => rerender(page('visible', product({ isPublished: false, price: 43990 }))));
+    expect((screen.getByLabelText('Show on the website') as HTMLInputElement).checked).toBe(false);
+    expect(field(/^Price/).value).toBe('43990');
+    expect(screen.queryByText(PRODUCT_MESSAGES.changedElsewhere)).toBeNull();
+  });
+
+  it('says so when it replaces changes that were not saved', async () => {
+    const { rerender } = render(page('visible', product()));
+    type(/^Price/, '44,990');
+    await act(async () => rerender(page('hidden', product())));
+    await act(async () => rerender(page('visible', product({ isPublished: false }))));
+    expect(field(/^Price/).value).toBe('45990');
+    expect((screen.getByLabelText('Show on the website') as HTMLInputElement).checked).toBe(false);
+    expect(screen.getByText(PRODUCT_MESSAGES.changedElsewhere)).toBeTruthy();
+  });
+
+  it('sends the details it started from, so only what was changed reaches PYS', async () => {
+    const { rerender } = render(page('visible', product()));
+    await act(async () => rerender(page('hidden', product())));
+    await act(async () => rerender(page('visible', product({ isPublished: false }))));
+    type(/^Price/, '44,990');
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('Changes saved.')).toBeTruthy();
+    const loaded = updateProduct.mock.calls[0][3] as ProductFormValues;
+    expect(loaded).toMatchObject({ shown: false, price: '45990' });
+    expect((updateProduct.mock.calls[0][2] as FormData).get('shown')).toBeNull();
+  });
+
+  it('keeps "Changes saved." when the fresh details arrive after saving', async () => {
+    const { rerender } = render(page('visible', product()));
+    type(/^Price/, '44,990');
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('Changes saved.')).toBeTruthy();
+    await act(async () => rerender(page('visible', product({ price: 44990, updatedAt: '2026-11-21T10:00:00Z' }))));
+    expect(field(/^Price/).value).toBe('44990');
+    expect(screen.getByText('Changes saved.')).toBeTruthy();
+    expect(screen.queryByText(PRODUCT_MESSAGES.changedElsewhere)).toBeNull();
   });
 });
 

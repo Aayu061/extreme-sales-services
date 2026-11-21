@@ -125,6 +125,7 @@ export const PRODUCT_MESSAGES = {
   chooseShown: 'Choose show or hide.',
   added: 'Product added.',
   saved: 'Changes saved.',
+  changedElsewhere: 'This product was changed since you opened it. The form now shows the latest details; please make your changes again.',
 } as const;
 
 export const tooLong = (max: number) => `Keep this to ${max.toLocaleString('en-IN')} characters or fewer.`;
@@ -270,6 +271,45 @@ export function toProductInput(form: FormData, mode: 'create' | 'update' = 'crea
     isPublished: shown === 'on' || shown === 'true',
   };
   return { ok: true, input };
+}
+
+/** The form's values as the browser would post them ("shown" is "on" when ticked, absent when not). */
+export function formDataOf(values: ProductFormValues): FormData {
+  const fd = new FormData();
+  for (const [key, value] of Object.entries(values)) {
+    if (key === 'shown') {
+      if (value === true) fd.set('shown', 'on');
+    } else if (typeof value === 'string') fd.set(key, value);
+  }
+  return fd;
+}
+
+/** The starting values sent back by the browser, if they have the form's shape; anything else is null. */
+export function asFormValues(raw: unknown): ProductFormValues | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const r = raw as Record<string, unknown>;
+  for (const key of Object.keys(EMPTY_PRODUCT_FORM) as ProductField[]) {
+    if (key === 'shown' ? typeof r[key] !== 'boolean' : typeof r[key] !== 'string') return null;
+  }
+  return r as unknown as ProductFormValues;
+}
+
+/**
+ * Only the parts of `next` that differ from `loaded` (both checked by toProductInput), so a save
+ * never sends back details the person did not touch (e.g. "shown", changed meanwhile from the list,
+ * or a photo the form cannot show). Price and MRP go together, so PYS still checks one against the other.
+ */
+export function changedInput(next: ProductInput, loaded: ProductInput): Partial<ProductInput> {
+  const out: Record<string, unknown> = {};
+  const same = (key: keyof ProductInput) => JSON.stringify(next[key] ?? null) === JSON.stringify(loaded[key] ?? null);
+  for (const key of Object.keys(next) as (keyof ProductInput)[]) {
+    if (!same(key)) out[key] = next[key];
+  }
+  if ('price' in out || 'mrp' in out) {
+    out.price = next.price;
+    out.mrp = next.mrp;
+  }
+  return out as Partial<ProductInput>;
 }
 
 /** PYS field names (422 details) → the form field that shows the message. */
