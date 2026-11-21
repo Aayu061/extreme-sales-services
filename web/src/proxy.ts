@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { isUnknownDetail, type KnownPages } from '@/lib/known-pages';
 import { ADMIN_PATH_HEADER, adminGate, adminPathOf, isAdminPath } from '@/lib/admin/gate';
 import { DEV_TOKEN_COOKIE, devLoginEnabled, isDevToken } from '@/lib/admin/dev-login';
+import { supabaseCookieOptions } from '@/lib/admin/supabase-cookies';
 import { supabaseConfig } from '@/lib/env';
 
 /**
@@ -60,6 +61,7 @@ async function adminProxy(request: NextRequest): Promise<NextResponse> {
     const config = supabaseConfig();
     if (config) {
       const supabase = createServerClient(config.url, config.anonKey, {
+        cookieOptions: supabaseCookieOptions(),
         cookies: {
           getAll: () => request.cookies.getAll(),
           setAll(list, headers) {

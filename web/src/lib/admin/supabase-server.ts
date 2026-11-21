@@ -2,6 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { supabaseConfig } from '@/lib/env';
+import { supabaseCookieOptions } from './supabase-cookies';
 
 /**
  * Supabase client for Server Components and Server Actions, using the visitor's sign-in cookies.
@@ -12,6 +13,7 @@ export async function createSupabaseServer() {
   if (!config) return null;
   const store = await cookies();
   return createServerClient(config.url, config.anonKey, {
+    cookieOptions: supabaseCookieOptions(),
     cookies: {
       getAll: () => store.getAll(),
       setAll(list) {
