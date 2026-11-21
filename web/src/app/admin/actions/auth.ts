@@ -46,13 +46,6 @@ export async function devSignIn(formData: FormData): Promise<void> {
   redirect(safeAdminNext(text(formData, 'next')) ?? '/admin');
 }
 
-export async function signOut(): Promise<void> {
-  const supabase = await createSupabaseServer();
-  if (supabase) await supabase.auth.signOut().catch(() => undefined);
-  (await cookies()).delete(DEV_TOKEN_COOKIE);
-  redirect('/admin/login');
-}
-
 export async function sendReset(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const email = text(formData, 'email').trim();
   if (!email) return { error: 'Enter your email address.' };

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { signOut } from '@/app/admin/actions/auth';
+import { SignOutForm } from '@/components/admin/sign-out-form';
 import { Button } from '@/components/ui/button';
 import { roleLabel, visibleNav } from '@/lib/admin/nav';
 import type { AdminMe } from '@/lib/admin/types';
@@ -70,11 +70,11 @@ export function AdminNav({ me }: { me: AdminMe }) {
               </li>
             ))}
           </ul>
-          <form action={signOut} className="mt-auto border-t border-line pt-3">
+          <SignOutForm className="mt-auto border-t border-line pt-3">
             <Button type="submit" variant="glass" size="sm" className="w-full">
               Sign out
             </Button>
-          </form>
+          </SignOutForm>
         </nav>
       </div>
     </aside>

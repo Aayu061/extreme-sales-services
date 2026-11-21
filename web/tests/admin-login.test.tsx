@@ -10,7 +10,6 @@ vi.mock('@/app/admin/actions/auth', () => ({
   devSignIn: (...args: unknown[]) => devSignIn(...args),
   sendReset: vi.fn(),
   setNewPassword: vi.fn(),
-  signOut: vi.fn(),
 }));
 
 import { renderToString } from 'react-dom/server';
@@ -18,6 +17,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { LoginForm, NewPasswordForm, ResetRequestForm } from '@/components/admin/auth-forms';
 import { DevSignInForm } from '@/components/admin/dev-sign-in';
+import AdminChangePasswordPage from '@/app/admin/(auth)/change-password/page';
 
 beforeEach(() => {
   signIn.mockReset();
@@ -88,6 +88,14 @@ describe('LoginForm', () => {
       expect(forms.length).toBeGreaterThan(0);
       for (const tag of forms) expect(tag).toMatch(/method="post"|action="javascript:/i);
     }
+  });
+
+  it('signs out from "Choose a new password" with a plain form post (a whole new page, works before the page is ready)', () => {
+    const forms = renderToString(<AdminChangePasswordPage />).match(/<form[^>]*>/g) ?? [];
+    const signOut = forms.filter((f) => f.includes('/admin/sign-out'));
+    expect(signOut).toHaveLength(1);
+    expect(signOut[0]).toMatch(/method="post"/);
+    expect(signOut[0]).toMatch(/action="\/admin\/sign-out"/);
   });
 
   it('says so when sign-in is not set up yet', () => {

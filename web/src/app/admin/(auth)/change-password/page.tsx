@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { AuthCard, NewPasswordForm } from '@/components/admin/auth-forms';
 import { Button } from '@/components/ui/button';
-import { signOut } from '@/app/admin/actions/auth';
+import { SignOutForm } from '@/components/admin/sign-out-form';
 
 export const metadata: Metadata = { title: 'Choose a new password' };
 
@@ -10,11 +10,11 @@ export default function AdminChangePasswordPage() {
   return (
     <AuthCard title="Choose a new password" intro="You will use it to sign in from now on.">
       <NewPasswordForm />
-      <form action={signOut} className="mt-4">
+      <SignOutForm className="mt-4">
         <Button type="submit" variant="quiet" className="min-h-11 px-0">
           Sign out
         </Button>
-      </form>
+      </SignOutForm>
     </AuthCard>
   );
 }

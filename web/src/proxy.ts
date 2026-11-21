@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { isUnknownDetail, type KnownPages } from '@/lib/known-pages';
-import { ADMIN_PATH_HEADER, adminGate, adminPathOf, isAdminPath } from '@/lib/admin/gate';
+import { ADMIN_PATH_HEADER, SIGN_OUT_PATH, adminGate, adminPathOf, isAdminPath } from '@/lib/admin/gate';
 import { DEV_TOKEN_COOKIE, devLoginEnabled, isDevToken } from '@/lib/admin/dev-login';
 import { supabaseCookieOptions } from '@/lib/admin/supabase-cookies';
 import { supabaseConfig } from '@/lib/env';
@@ -47,6 +47,13 @@ async function adminProxy(request: NextRequest): Promise<NextResponse> {
     const clean = NextResponse.redirect(new URL(adminPathOf(request.nextUrl), request.url));
     clean.headers.set('Cache-Control', 'no-store');
     return clean;
+  }
+  // Signing out needs no session check, and must not refresh the session: a refreshed cookie on
+  // this answer could land after the sign-out's own "delete" and keep the person signed in.
+  if (pathname === SIGN_OUT_PATH) {
+    const through = NextResponse.next();
+    through.headers.set('Cache-Control', 'no-store');
+    return through;
   }
   // Which admin page this is, for "sign in again, then come back here" (never the browser's own value).
   request.headers.set(ADMIN_PATH_HEADER, adminPathOf(request.nextUrl));

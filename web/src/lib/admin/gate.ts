@@ -3,8 +3,14 @@
  * Pure: no cookies or network here, so the rules are easy to test.
  */
 
-/** Pages anyone can open: signing in and asking for a password reset link. */
-const OPEN_PAGES = ['/admin/login', '/admin/reset'];
+/**
+ * Sign out: a plain form post to this address (route handler), answered with a 303 to the sign-in
+ * page, so the browser loads a whole new page and no admin screen stays behind in memory.
+ */
+export const SIGN_OUT_PATH = '/admin/sign-out';
+
+/** Pages anyone can open: signing in, asking for a password reset link, and signing out. */
+const OPEN_PAGES = ['/admin/login', '/admin/reset', SIGN_OUT_PATH];
 export const CHANGE_PASSWORD_PAGE = '/admin/change-password';
 
 export function isAdminPath(pathname: string): boolean {

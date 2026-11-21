@@ -8,7 +8,6 @@ vi.mock('@/lib/admin/pys-admin', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/admin/pys-admin')>()),
   getMe: () => getMe(),
 }));
-vi.mock('@/app/admin/actions/auth', () => ({ signOut: vi.fn() }));
 
 class Redirected extends Error {
   constructor(public url: string) {
@@ -86,7 +85,11 @@ describe('admin panel layout', () => {
     expect(within(nav).getByRole('link', { name: 'Overview' }).getAttribute('aria-current')).toBeNull();
     expect(screen.getByText('Asha Patel')).toBeTruthy();
     expect(screen.getByText('ESS Admin')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Sign out' }).closest('form')).toBeTruthy();
+    // Sign out is a plain form post to /admin/sign-out, so the browser loads a whole new page
+    // (no admin screen stays behind, hidden by Next) and it works before the page is ready.
+    const signOutForm = screen.getByRole('button', { name: 'Sign out' }).closest('form')!;
+    expect(signOutForm.getAttribute('method')).toBe('post');
+    expect(signOutForm.getAttribute('action')).toBe('/admin/sign-out');
     expect(screen.getByRole('main').textContent).toContain('Page body');
 
     // None of the public site's frame: menu, Book button, footer, floating Call / WhatsApp.
@@ -133,7 +136,9 @@ describe('admin panel layout', () => {
     getMe.mockRejectedValue(new AdminForbiddenError());
     await renderPanel();
     expect(screen.getByRole('heading', { name: "You don't have access to this" })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy();
+    const signOutForm = screen.getByRole('button', { name: 'Sign out' }).closest('form')!;
+    expect(signOutForm.getAttribute('method')).toBe('post');
+    expect(signOutForm.getAttribute('action')).toBe('/admin/sign-out');
     expect(screen.queryByRole('navigation', { name: 'Admin' })).toBeNull();
     expect(screen.queryByText('Page body')).toBeNull();
   });

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { signOut } from '@/app/admin/actions/auth';
+import { SignOutForm } from '@/components/admin/sign-out-form';
 import { Button, buttonStyles } from '@/components/ui/button';
 
 /**
@@ -23,11 +23,11 @@ export function NoAccess({ hasRole, reason }: { hasRole: boolean; reason?: strin
             Go to the overview
           </Link>
         ) : (
-          <form action={signOut}>
+          <SignOutForm>
             <Button type="submit" size="md">
               Sign out
             </Button>
-          </form>
+          </SignOutForm>
         )}
       </div>
     </div>

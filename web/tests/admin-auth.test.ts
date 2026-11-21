@@ -9,7 +9,7 @@ const cookieStore = {
   get: (name: string) => (jar.has(name) ? { name, value: jar.get(name)! } : undefined),
   getAll: () => [...jar].map(([name, value]) => ({ name, value })),
   set: vi.fn((name: string, value: string) => void jar.set(name, value)),
-  delete: vi.fn((name: string) => void jar.delete(name)),
+  delete: vi.fn((c: string | { name: string; path?: string }) => void jar.delete(typeof c === 'string' ? c : c.name)),
 };
 vi.mock('next/headers', () => ({ cookies: async () => cookieStore }));
 
@@ -82,6 +82,12 @@ describe('adminGate', () => {
     expect(adminGate('/admin/login', false)).toBeNull();
     expect(adminGate('/admin/reset', false)).toBeNull();
     expect(adminGate('/admin/login', true, true)).toBeNull();
+  });
+
+  it('lets anyone sign out, even with an ended session or before choosing a new password', () => {
+    expect(adminGate('/admin/sign-out', false)).toBeNull();
+    expect(adminGate('/admin/sign-out', true, true)).toBeNull();
+    expect(safeAdminNext('/admin/sign-out')).toBeNull();
   });
 
   it('sends a signed-out person to sign in, remembering where they were going', () => {
@@ -270,13 +276,48 @@ describe('devSignIn', () => {
   });
 });
 
-describe('signOut', () => {
-  it('ends the Supabase session and the test session', async () => {
+describe('sign out (POST /admin/sign-out)', () => {
+  const signOut = async () => {
+    const { POST } = await import('@/app/admin/sign-out/route');
+    return POST();
+  };
+
+  it('ends the Supabase session on this device only, and the test session', async () => {
     jar.set('ess-admin-dev', 'dev-admin-token');
-    const { signOut } = await import('@/app/admin/actions/auth');
-    expect(await redirectOf(signOut())).toBe('/admin/login');
-    expect(auth.signOut).toHaveBeenCalled();
+    await signOut();
+    // "local": the owner's PYS sign-ins on other devices stay signed in.
+    expect(auth.signOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(jar.has('ess-admin-dev')).toBe(false);
+  });
+
+  it('forgets the Requests search (it can be a customer phone or email)', async () => {
+    jar.set('ess-admin-search', '9876543210');
+    await signOut();
+    expect(cookieStore.delete).toHaveBeenCalledWith({ name: 'ess-admin-search', path: '/admin/requests' });
+    expect(jar.has('ess-admin-search')).toBe(false);
+  });
+
+  it('answers 303 to the sign-in page, never cached, so the browser loads a whole new page', async () => {
+    const res = await signOut();
+    expect(res.status).toBe(303);
+    expect(res.headers.get('location')).toBe('/admin/login');
+    expect(res.headers.get('cache-control')).toBe('no-store');
+  });
+
+  it('still signs out when Supabase cannot be reached', async () => {
+    auth.signOut.mockRejectedValueOnce(new TypeError('fetch failed'));
+    jar.set('ess-admin-dev', 'dev-admin-token');
+    expect((await signOut()).status).toBe(303);
+    expect(jar.has('ess-admin-dev')).toBe(false);
+  });
+
+  it('is let through by the proxy without a session check, never cached', async () => {
+    const { NextRequest } = await import('next/server');
+    const { proxy } = await import('@/proxy');
+    const res = await proxy(new NextRequest('https://ess.example/admin/sign-out', { method: 'POST' }));
+    expect(res.headers.get('location')).toBeNull();
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(auth.getUser).not.toHaveBeenCalled();
   });
 });
 

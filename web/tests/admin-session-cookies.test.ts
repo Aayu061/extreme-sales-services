@@ -47,6 +47,7 @@ const fetchMock = vi.fn(async (input: RequestInfo | URL): Promise<Response> => {
   if (url.startsWith(`${SUPABASE_URL}/auth/v1/token?grant_type=password`)) return json(session('signed-in', nowSeconds() + 3600));
   if (url.startsWith(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`)) return json(session('refreshed', nowSeconds() + 3600));
   if (url.startsWith(`${SUPABASE_URL}/auth/v1/user`)) return json(USER);
+  if (url.startsWith(`${SUPABASE_URL}/auth/v1/logout`)) return new Response(null, { status: 204 });
   throw new Error(`unexpected fetch ${url}`);
 });
 
@@ -89,6 +90,22 @@ describe('Supabase session cookies', () => {
     const session = written.filter((c) => c.name.startsWith(AUTH_COOKIE) && c.value);
     expect(session.length).toBeGreaterThan(0);
     for (const c of session) expect(c.options).toMatchObject({ httpOnly: true, secure: true });
+  });
+
+  it('sign-out ends only the session on this device and removes the session cookies', async () => {
+    const { signIn } = await import('@/app/admin/actions/auth');
+    await expect(signIn({}, form({ email: 'owner@example.com', password: 'a-long-password' }))).rejects.toBeInstanceOf(Redirected);
+    written.length = 0;
+    const { POST } = await import('@/app/admin/sign-out/route');
+    expect((await POST()).status).toBe(303);
+    const logout = fetchMock.mock.calls.map(([u]) => String(u)).find((u) => u.includes('/auth/v1/logout'));
+    expect(logout).toContain('scope=local');
+    const removed = written.filter((c) => c.name.startsWith(AUTH_COOKIE));
+    expect(removed.length).toBeGreaterThan(0);
+    for (const c of removed) {
+      expect(c.value).toBe('');
+      expect(c.options).toMatchObject({ httpOnly: true, maxAge: 0 });
+    }
   });
 
   it('the /admin proxy refreshes an old session into cookies page scripts cannot read', async () => {
