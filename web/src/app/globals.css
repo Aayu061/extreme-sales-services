@@ -16,6 +16,8 @@
   --line: #d9deef;
   --cool: #1f5fd6;
   --heat: #ff6a1a;
+  /* S07: error TEXT in light mode (brand orange is 2.9:1 on white; this is ~6:1, WCAG AA) */
+  --heat-text: #b13c08;
   --taxi: #ffc915;
   --taxi-ink: #141414;
   --taxi-hover: #ffd84d;
@@ -38,6 +40,7 @@
   --line: #2a2760;
   --cool: #5cc8ff;
   --heat: #ff7a2e;
+  --heat-text: #ff9a5c;
   --glass-fill: rgb(14 22 48 / 0.38);
   --glass-strong: rgb(12 18 40 / 0.55);
   --glass-line: rgb(255 255 255 / 0.18);
@@ -56,6 +59,7 @@
   --color-line: var(--line);
   --color-cool: var(--cool);
   --color-heat: var(--heat);
+  --color-heat-text: var(--heat-text);
   --color-taxi: var(--taxi);
   --color-taxi-ink: var(--taxi-ink);
   --color-taxi-hover: var(--taxi-hover);

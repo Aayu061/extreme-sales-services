@@ -55,7 +55,7 @@ const PUBLIC_PAGE: Partial<Record<ContentKey, string>> = {
 };
 
 function Badge({ tone, children }: { tone: 'heat' | 'cool' | 'plain'; children: string }) {
-  const styles = { heat: 'bg-heat/12 text-heat', cool: 'bg-cool/12 text-cool', plain: 'bg-line/60 text-ink' }[tone];
+  const styles = { heat: 'bg-heat/12 text-heat-text', cool: 'bg-cool/12 text-cool', plain: 'bg-line/60 text-ink' }[tone];
   return <span className={`rounded-full px-3 py-1 text-sm font-semibold ${styles}`}>{children}</span>;
 }
 

@@ -133,7 +133,7 @@ export async function ProductEditScreen({ params, searchParams }: { params: Prom
             <ExternalLink aria-hidden="true" size={16} className="ml-1 shrink-0" />
           </a>
         ) : (
-          <span className="font-semibold text-heat">Hidden from the website</span>
+          <span className="font-semibold text-heat-text">Hidden from the website</span>
         )}
       </div>
       <div className="mt-6">

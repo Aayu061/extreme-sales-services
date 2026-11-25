@@ -150,7 +150,7 @@ export function AddButton({
 /** A message about a whole list ("Add at least one section."), shown under it. */
 export function ListProblem({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="text-sm font-semibold text-heat">{message}</p>;
+  return <p className="text-sm font-semibold text-heat-text">{message}</p>;
 }
 
 /** One item in a list: a glass card with its own legend ("Offer 1"). */

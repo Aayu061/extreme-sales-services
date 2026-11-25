@@ -182,7 +182,7 @@ export function PhotoPicker({
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-sm font-semibold text-heat">
+        <p id={errorId} className="text-sm font-semibold text-heat-text">
           {error}
         </p>
       )}

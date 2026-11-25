@@ -27,6 +27,8 @@ import { HeroFields } from './hero';
 import { IdentityFields } from './identity';
 import { LegalFields } from './legal';
 import { OffersFields } from './offers';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
+import { Alert } from '../alert';
 
 interface Props {
   blockKey: ContentKey;
@@ -154,10 +156,10 @@ export function ContentEditor({ blockKey, saved, fallback, isAdmin }: Props) {
     if (result.authError) {
       setMessage(CONTENT_MESSAGES.signIn);
       const next = `${window.location.pathname}${window.location.search}`;
-      router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next })}`);
+      sendToSignInAgain(router, next);
     } else if (result.forbidden) {
       setMessage(CONTENT_MESSAGES.forbidden);
-      router.replace('/admin/no-access');
+      sendToNoAccess(router);
     } else if (result.ok) {
       setErrors({});
       setMessage(null);
@@ -218,7 +220,7 @@ export function ContentEditor({ blockKey, saved, fallback, isAdmin }: Props) {
           {neverStored ? (
             <span className="rounded-full bg-line/60 px-3 py-1 text-sm font-semibold text-ink">Built-in wording</span>
           ) : unpublished ? (
-            <span className="rounded-full bg-heat/12 px-3 py-1 text-sm font-semibold text-heat">Unpublished changes</span>
+            <span className="rounded-full bg-heat/12 px-3 py-1 text-sm font-semibold text-heat-text">Unpublished changes</span>
           ) : (
             <span className="rounded-full bg-cool/12 px-3 py-1 text-sm font-semibold text-cool">Up to date</span>
           )}
@@ -245,9 +247,9 @@ export function ContentEditor({ blockKey, saved, fallback, isAdmin }: Props) {
 
       <div role="status">{notice && <p className="rounded-2xl bg-cool/12 px-4 py-3 font-semibold text-cool">{notice}</p>}</div>
       {message && (
-        <p role="alert" className="rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
+        <Alert>
           {message}
-        </p>
+        </Alert>
       )}
 
       <form method="post" onSubmit={submit} noValidate className="flex min-w-0 flex-col gap-5">

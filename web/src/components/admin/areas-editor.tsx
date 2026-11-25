@@ -9,6 +9,7 @@ import { AREA_MESSAGES, checkArea, type AreaFieldErrors } from '@/lib/admin/area
 import type { AdminServiceArea } from '@/lib/admin/types';
 import { cn } from '@/lib/cn';
 import { PendingButton } from './pending-button';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
 
 interface FormValues {
   pincodePrefix: string;
@@ -58,12 +59,12 @@ export function AreasEditor({ areas: fromServer }: { areas: AdminServiceArea[] }
     if (state.authError) {
       show({ tone: 'problem', text: AREA_MESSAGES.signIn });
       const back = `${window.location.pathname}${window.location.search}`;
-      router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next: back })}`);
+      sendToSignInAgain(router, back);
       return true;
     }
     if (state.forbidden) {
       show({ tone: 'problem', text: AREA_MESSAGES.forbidden });
-      router.replace('/admin/no-access');
+      sendToNoAccess(router);
       return true;
     }
     return false;
@@ -226,7 +227,7 @@ export function AreasEditor({ areas: fromServer }: { areas: AdminServiceArea[] }
           <p className="text-sm text-muted">
             Untick to keep the prefix listed but not covered. The longest matching prefix decides, so 400088 not covered takes one pincode out of 400.
           </p>
-          {fields.isActive && <p className="text-sm font-semibold text-heat">{fields.isActive}</p>}
+          {fields.isActive && <p className="text-sm font-semibold text-heat-text">{fields.isActive}</p>}
         </div>
         <Field label="Notes (only seen here)" error={fields.notes}>
           {({ id, describedBy, invalid }) => (
@@ -242,7 +243,7 @@ export function AreasEditor({ areas: fromServer }: { areas: AdminServiceArea[] }
           )}
         </Field>
         {formNote && (
-          <p role={formNote.tone === 'done' ? 'status' : 'alert'} className={cn('font-semibold', formNote.tone === 'done' ? 'text-cool' : 'text-heat')}>
+          <p role={formNote.tone === 'done' ? 'status' : 'alert'} className={cn('font-semibold', formNote.tone === 'done' ? 'text-cool' : 'text-heat-text')}>
             {formNote.text}
           </p>
         )}
@@ -263,7 +264,7 @@ export function AreasEditor({ areas: fromServer }: { areas: AdminServiceArea[] }
         <h2 id="areas-h" className="text-xl font-bold text-ink">
           Prefixes covered
         </h2>
-        <p ref={listNoteRef} tabIndex={-1} role={listNote?.tone === 'problem' ? 'alert' : 'status'} className={cn('font-semibold outline-none', listNote?.tone === 'problem' ? 'text-heat' : 'text-cool', !listNote && 'sr-only')}>
+        <p ref={listNoteRef} tabIndex={-1} role={listNote?.tone === 'problem' ? 'alert' : 'status'} className={cn('font-semibold outline-none', listNote?.tone === 'problem' ? 'text-heat-text' : 'text-cool', !listNote && 'sr-only')}>
           {listNote?.text}
         </p>
         {areas.length === 0 ? (
@@ -282,7 +283,7 @@ export function AreasEditor({ areas: fromServer }: { areas: AdminServiceArea[] }
                       <span>{a.label}</span>
                     </p>
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className={cn('rounded-full px-3 py-0.5 text-sm font-semibold', a.isActive ? 'bg-cool/12 text-cool' : 'bg-heat/12 text-heat')}>
+                      <span className={cn('rounded-full px-3 py-0.5 text-sm font-semibold', a.isActive ? 'bg-cool/12 text-cool' : 'bg-heat/12 text-heat-text')}>
                         {a.isActive ? 'Covered' : 'Not covered'}
                       </span>
                       {a.notes && <span className="text-sm break-words text-muted">{a.notes}</span>}

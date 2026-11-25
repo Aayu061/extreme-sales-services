@@ -5,6 +5,7 @@ import { useActionState, useState, type FormEvent, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { sendReset, setNewPassword, signIn, type AuthFormState } from '@/app/admin/actions/auth';
+import { Alert } from './alert';
 
 const NOT_SET_UP_NOTE = "Sign-in isn't set up yet. Please ask the person who looks after the website to add the sign-in settings.";
 
@@ -15,14 +16,6 @@ export function AuthCard({ title, intro, children }: { title: string; intro?: Re
       {intro && <p className="mt-2 text-muted">{intro}</p>}
       <div className="mt-6">{children}</div>
     </div>
-  );
-}
-
-function Alert({ children }: { children: ReactNode }) {
-  return (
-    <p role="alert" className="rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
-      {children}
-    </p>
   );
 }
 

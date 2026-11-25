@@ -10,6 +10,7 @@ import { ROLE_LABELS, USER_MESSAGES, checkGrant, isOwnAdminRow, isOwnRow, person
 import { cn } from '@/lib/cn';
 import { formatDate } from '@/lib/format';
 import { PendingButton } from './pending-button';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
 
 type Note = { tone: 'done' | 'problem'; text: string };
 
@@ -88,11 +89,11 @@ export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]
   function handledAccess(state: UserActionState): Note | null {
     if (state.authError) {
       const back = `${window.location.pathname}${window.location.search}`;
-      router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next: back })}`);
+      sendToSignInAgain(router, back);
       return { tone: 'problem', text: USER_MESSAGES.signIn };
     }
     if (state.forbidden) {
-      router.replace('/admin/no-access');
+      sendToNoAccess(router);
       return { tone: 'problem', text: USER_MESSAGES.forbidden };
     }
     return null;
@@ -259,13 +260,13 @@ export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]
             </label>
           ))}
           {fields.role && (
-            <p id="grant-role-error" className="text-sm font-semibold text-heat">
+            <p id="grant-role-error" className="text-sm font-semibold text-heat-text">
               {fields.role}
             </p>
           )}
         </fieldset>
         {formState.note && !pending && (
-          <p role={formState.note.tone === 'done' ? 'status' : 'alert'} className={cn('font-semibold', formState.note.tone === 'done' ? 'text-cool' : 'text-heat')}>
+          <p role={formState.note.tone === 'done' ? 'status' : 'alert'} className={cn('font-semibold', formState.note.tone === 'done' ? 'text-cool' : 'text-heat-text')}>
             {formState.note.text}
           </p>
         )}
@@ -292,7 +293,7 @@ export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]
             <Button variant="glass" size="sm" onClick={hidePassword}>
               Hide it
             </Button>
-            <span role="status" className={cn('text-sm font-semibold', copyNote?.tone === 'problem' ? 'text-heat' : 'text-cool')}>
+            <span role="status" className={cn('text-sm font-semibold', copyNote?.tone === 'problem' ? 'text-heat-text' : 'text-cool')}>
               {copyNote?.text}
             </span>
           </div>
@@ -305,7 +306,7 @@ export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]
           People with access
         </h2>
         <p className="text-muted">{USER_MESSAGES.pysAdmins}</p>
-        <p ref={listNoteRef} tabIndex={-1} role={listNote?.tone === 'problem' ? 'alert' : 'status'} className={cn('font-semibold outline-none', listNote?.tone === 'problem' ? 'text-heat' : 'text-cool', !listNote && 'sr-only')}>
+        <p ref={listNoteRef} tabIndex={-1} role={listNote?.tone === 'problem' ? 'alert' : 'status'} className={cn('font-semibold outline-none', listNote?.tone === 'problem' ? 'text-heat-text' : 'text-cool', !listNote && 'sr-only')}>
           {listNote?.text}
         </p>
         {users.length === 0 ? (
@@ -329,7 +330,7 @@ export function UsersEditor({ users: fromServer, myEmail }: { users: AdminUser[]
                       </p>
                       {u.email && u.email !== who && <p className="text-sm break-words text-muted">{u.email}</p>}
                       <span className="flex flex-wrap items-center gap-2">
-                        <span className={cn('rounded-full px-3 py-0.5 text-sm font-semibold', u.role === 'ESS_ADMIN' ? 'bg-heat/12 text-heat' : 'bg-cool/12 text-cool')}>{label}</span>
+                        <span className={cn('rounded-full px-3 py-0.5 text-sm font-semibold', u.role === 'ESS_ADMIN' ? 'bg-heat/12 text-heat-text' : 'bg-cool/12 text-cool')}>{label}</span>
                         {since && <span className="text-sm text-muted">Since {since}</span>}
                       </span>
                     </div>

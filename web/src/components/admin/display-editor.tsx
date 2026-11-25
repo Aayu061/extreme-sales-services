@@ -9,6 +9,7 @@ import { DISPLAY_MESSAGES, displayChanges, displayRows, moveItem, type DisplayRo
 import type { AdminCatalogDisplay } from '@/lib/admin/types';
 import { cn } from '@/lib/cn';
 import { PendingButton } from './pending-button';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
 
 type Group = 'services' | 'amcPlans';
 type Rows = Record<Group, DisplayRow[]>;
@@ -48,7 +49,7 @@ function ShowSwitch({ row, disabled, onToggle }: { row: DisplayRow; disabled: bo
 function RowBadges({ row, unsaved }: { row: DisplayRow; unsaved: boolean }) {
   return (
     <span className="flex flex-wrap gap-2">
-      {!row.isPublic && <span className="rounded-full bg-heat/12 px-3 py-0.5 text-sm font-semibold text-heat">Hidden</span>}
+      {!row.isPublic && <span className="rounded-full bg-heat/12 px-3 py-0.5 text-sm font-semibold text-heat-text">Hidden</span>}
       {!row.isActive && <span className="rounded-full bg-line/60 px-3 py-0.5 text-sm font-semibold text-ink">Switched off in PYS</span>}
       {unsaved && <span className="rounded-full bg-taxi/30 px-3 py-0.5 text-sm font-semibold text-ink">Not saved yet</span>}
     </span>
@@ -211,10 +212,10 @@ export function DisplayEditor({ display }: { display: AdminCatalogDisplay }) {
       if (state.authError) {
         setNote({ tone: 'problem', text: DISPLAY_MESSAGES.signIn });
         const back = `${window.location.pathname}${window.location.search}`;
-        router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next: back })}`);
+        sendToSignInAgain(router, back);
       } else if (state.forbidden) {
         setNote({ tone: 'problem', text: DISPLAY_MESSAGES.forbidden });
-        router.replace('/admin/no-access');
+        sendToNoAccess(router);
       } else if (state.ok && state.display) {
         const rows = displayRows(state.display);
         setSaved(rows);
@@ -240,7 +241,7 @@ export function DisplayEditor({ display }: { display: AdminCatalogDisplay }) {
       <div className="glass-strong sticky bottom-3 z-10 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[24px] p-4 text-ink">
         <p className="min-w-0 flex-1 basis-48 font-semibold tabular-nums">{items.length ? `${plural(items.length)} not saved yet` : 'No changes'}</p>
         {note && (
-          <p role={note.tone === 'done' ? 'status' : 'alert'} className={cn('basis-full font-semibold sm:order-first', note.tone === 'done' ? 'text-cool' : 'text-heat')}>
+          <p role={note.tone === 'done' ? 'status' : 'alert'} className={cn('basis-full font-semibold sm:order-first', note.tone === 'done' ? 'text-cool' : 'text-heat-text')}>
             {note.text}
           </p>
         )}

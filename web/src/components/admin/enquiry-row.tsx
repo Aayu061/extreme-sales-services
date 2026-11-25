@@ -13,6 +13,8 @@ import type { AdminEnquiryLine } from '@/lib/admin/types';
 import { formatInr } from '@/lib/format';
 import { normalizeIndianMobile } from '@/lib/request-schema';
 import { PendingButton } from './pending-button';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
+import { Alert } from './alert';
 
 export interface EnquiryNotice {
   tone: 'done' | 'problem';
@@ -32,10 +34,10 @@ function useResult(onNotice: ((n: EnquiryNotice) => void) | undefined, setMessag
     if (state.authError) {
       setMessage(ENQUIRY_MESSAGES.signIn);
       const next = `${window.location.pathname}${window.location.search}`;
-      router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next })}`);
+      sendToSignInAgain(router, next);
     } else if (state.forbidden) {
       setMessage(ENQUIRY_MESSAGES.forbidden);
-      router.replace('/admin/no-access');
+      sendToNoAccess(router);
     } else if (state.conflict) {
       const text = state.error ?? ENQUIRY_MESSAGES.alreadyUpdated;
       if (onNotice) onNotice({ tone: 'problem', text });
@@ -52,9 +54,9 @@ function useResult(onNotice: ((n: EnquiryNotice) => void) | undefined, setMessag
 
 function Problem({ children }: { children: ReactNode }) {
   return (
-    <p role="alert" className="rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
+    <Alert>
       {children}
-    </p>
+    </Alert>
   );
 }
 
@@ -338,9 +340,9 @@ export function EnquiryList({ lines, emptyText }: { lines: readonly AdminEnquiry
         )}
       </div>
       {notice?.tone === 'problem' && (
-        <p ref={noticeRef} tabIndex={-1} role="alert" className="rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
+        <Alert ref={noticeRef} tabIndex={-1}>
           {notice.text}
-        </p>
+        </Alert>
       )}
       {lines.length === 0 ? (
         <p className="glass rounded-[24px] p-6 text-lg font-bold text-ink">{emptyText}</p>

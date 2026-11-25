@@ -21,6 +21,8 @@ import {
 import type { AdminProduct } from '@/lib/admin/types';
 import { PendingButton } from './pending-button';
 import { PhotoPicker, usePhotoList } from './photo-picker';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
+import { Alert } from './alert';
 
 type Props = { mode: 'create'; product?: undefined; added?: undefined } | { mode: 'edit'; product: AdminProduct; added?: boolean };
 
@@ -115,10 +117,10 @@ export function ProductForm({ mode, product, added }: Props) {
     if (result.authError) {
       setMessage(PRODUCT_MESSAGES.signIn);
       const next = `${window.location.pathname}${window.location.search}`;
-      router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next })}`);
+      sendToSignInAgain(router, next);
     } else if (result.forbidden) {
       setMessage(PRODUCT_MESSAGES.forbidden);
-      router.replace('/admin/no-access');
+      sendToNoAccess(router);
     } else if (result.ok) {
       setMessage(null);
       setNotice(PRODUCT_MESSAGES.saved);
@@ -311,9 +313,9 @@ export function ProductForm({ mode, product, added }: Props) {
             </p>
           </div>
           {message && (
-            <p role="alert" className="rounded-2xl bg-heat/10 px-4 py-3 text-sm font-semibold text-heat">
+            <Alert>
               {message}
-            </p>
+            </Alert>
           )}
           <PendingButton pending={pending} pendingLabel="Saving…" className="self-start">
             {mode === 'create' ? 'Add product' : 'Save changes'}

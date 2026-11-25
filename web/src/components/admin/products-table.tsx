@@ -9,6 +9,7 @@ import type { AdminProduct } from '@/lib/admin/types';
 import { cn } from '@/lib/cn';
 import { formatInr } from '@/lib/format';
 import { PendingButton } from './pending-button';
+import { sendToNoAccess, sendToSignInAgain } from '@/lib/admin/access-redirect';
 
 const linkStyles = 'inline-flex min-h-11 items-center font-semibold text-cool underline-offset-4 hover:underline';
 
@@ -17,7 +18,7 @@ function ShownBadge({ shown }: { shown: boolean }) {
     <span
       className={cn(
         'inline-flex items-center rounded-full border px-3 py-0.5 text-sm font-semibold whitespace-nowrap',
-        shown ? 'border-cool/40 bg-cool/12 text-cool' : 'border-heat/40 bg-heat/12 text-heat',
+        shown ? 'border-cool/40 bg-cool/12 text-cool' : 'border-heat/40 bg-heat/12 text-heat-text',
       )}
     >
       {shown ? 'Shown' : 'Hidden'}
@@ -63,10 +64,10 @@ function ProductRow({ product: p, onDone }: { product: AdminProduct; onDone: (te
       if (state.authError) {
         setNote({ tone: 'problem', text: PRODUCT_MESSAGES.signIn });
         const back = `${window.location.pathname}${window.location.search}`;
-        router.replace(`/admin/login?${new URLSearchParams({ expired: '1', next: back })}`);
+        sendToSignInAgain(router, back);
       } else if (state.forbidden) {
         setNote({ tone: 'problem', text: PRODUCT_MESSAGES.forbidden });
-        router.replace('/admin/no-access');
+        sendToNoAccess(router);
       } else if (state.ok) {
         setShownNow(next);
         setNote(null);
@@ -115,7 +116,7 @@ function ProductRow({ product: p, onDone }: { product: AdminProduct; onDone: (te
           </PendingButton>
         </div>
         {note && (
-          <p role={note.tone === 'done' ? 'status' : 'alert'} className={cn('mt-2 text-sm font-semibold', note.tone === 'done' ? 'text-cool' : 'text-heat')}>
+          <p role={note.tone === 'done' ? 'status' : 'alert'} className={cn('mt-2 text-sm font-semibold', note.tone === 'done' ? 'text-cool' : 'text-heat-text')}>
             {note.text}
           </p>
         )}
