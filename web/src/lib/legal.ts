@@ -34,8 +34,7 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         paragraphs: [
           'When you send a request or a message we collect your name, mobile number and (if you give it) email; the address for a visit; details about your AC such as type, size and brand; your preferred date and time; and any note you write.',
           'We also keep a one-way fingerprint of your internet address to stop misuse of the forms and of request tracking. We never store the address itself.',
-          'If we give you a website account (for AMC and regular customers), we also use your email address to send you one-time sign-in codes, and we record when you last signed in. We keep only a scrambled form of each code and each sign-in session, never the code or session itself.',
-          'When you are a customer, we also keep the details of your ACs, AMC contracts, visits, service reports and payments so that you and our team can see your service history.',
+          'When you are a customer, we also keep the details of your ACs, AMC contracts, visits, service reports and payments so that we can look after your ACs and answer your questions.',
         ],
       },
       {
@@ -50,35 +49,33 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         heading: 'Who can see it',
         paragraphs: [
           'Our staff and the technician who visits you. If you ask about an AC sold by another seller, that seller receives the details needed to answer you.',
-          'Our service providers process the data only for us and under our instructions: Supabase (database and file storage), Render and Vercel (hosting our systems and this website), Google (sending our emails and keeping our encrypted backups in Google Drive) and GitHub (running our automatic checks and backups). Some of these providers may store data outside India.',
+          'Our service providers process the data only for us and under our instructions: Supabase (database and file storage), Render and Vercel (hosting our systems and this website), and Google (sending our emails). Some of these providers may store data outside India.',
         ],
       },
       {
         heading: 'How long we keep it',
         paragraphs: [
           'As long as needed to provide the service and for as long as tax and accounting law requires us to keep invoices and records.',
-          'Sign-in codes stop working after 10 minutes. A website sign-in ends after 7 days without use, after 30 days at most, or when you sign out. Misuse-prevention records (the internet-address fingerprints) are kept only briefly.',
-          'We keep encrypted backup copies of our records for 30 days so that we can recover them after a technical failure. Older copies are deleted automatically.',
+          'Misuse-prevention records (the internet-address fingerprints) are kept only briefly.',
         ],
       },
       {
         heading: 'Stored on your device',
         paragraphs: [
           'Your request list (what you added before sending) and your day/night choice are saved in your own browser so they are still there when you come back. They stay on your device and you can clear them in your browser settings.',
-          'If you sign in to your account, a sign-in cookie keeps you signed in. It is needed for the account to work, cannot be read by scripts on the page, and is removed when you sign out. We do not use advertising or tracking cookies.',
+          'We do not use advertising or tracking cookies.',
         ],
       },
       {
         heading: 'How we protect it',
         paragraphs: [
-          'Your details are sent over encrypted connections, access inside our systems is limited by role, sign-in codes and sessions are stored only in scrambled form, and our backup copies are encrypted before they leave our systems. No method is completely secure, but we work to protect your data and will tell you and the authorities about a personal data breach as the law requires.',
+          'Your details are sent over encrypted connections and access inside our systems is limited by role. No method is completely secure, but we work to protect your data and will tell you and the authorities about a personal data breach as the law requires.',
         ],
       },
       {
         heading: 'Your rights',
         paragraphs: [
           'Under the Digital Personal Data Protection Act, 2023 you can ask to see the personal data we hold about you, correct it, or have it erased, and you can withdraw your consent. To do so, or to raise a complaint, contact {grievanceName} at {grievanceEmail} or {grievancePhone}. If you are not satisfied with our answer, you can complain to the Data Protection Board of India.',
-          'You can also ask us to switch off your website account at any time.',
         ],
       },
       {
@@ -113,13 +110,6 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
       {
         heading: 'Our warranty',
         paragraphs: ['We give a {warrantyDays}-day warranty on our work, counted from the day the work is done. Contact us if the same problem comes back within that time.'],
-      },
-      {
-        heading: 'Your account',
-        paragraphs: [
-          'Website accounts are for our AMC and regular customers and are switched on by us. Keep the email address you use for sign-in safe: anyone who can read your email can receive your sign-in codes. Tell us straight away if you think someone else has used your account, and we will switch it off.',
-          'Your account shows the information we hold about your ACs, AMC and service requests. If something looks wrong, please tell us so we can correct it.',
-        ],
       },
       {
         heading: 'AMC plans',
