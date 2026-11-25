@@ -74,6 +74,8 @@ export const ENQUIRY_MESSAGES = {
   checkFields: 'Please check the price and note, then try again.',
   chooseResult: 'Choose Sold or Not taken.',
   priceSent: 'Price sent. The customer gets an email and can see it on the tracking page.',
+  priceUpdated: 'Price updated. The customer gets an email with the new price.',
+  priceUnchanged: 'Nothing changed: that is already the price and note sent. No email was sent.',
   sold: 'Marked as sold.',
   notTaken: 'Marked as not taken.',
 } as const;

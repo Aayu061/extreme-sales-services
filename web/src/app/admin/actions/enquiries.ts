@@ -23,6 +23,8 @@ export interface EnquiryActionState {
   forbidden?: true;
   /** The line changed in PYS in the meantime (or is gone): the list is refreshed. */
   conflict?: true;
+  /** S08: the price and note were the same as already sent; nothing changed, no email. */
+  unchanged?: true;
 }
 
 const PAGE = '/admin/enquiries';
@@ -35,8 +37,9 @@ function linePath(lineId: unknown): string | null {
 }
 
 async function callPys(path: string, body: unknown): Promise<EnquiryActionState> {
+  let answer: { emailed?: unknown } | null = null;
   try {
-    await adminRequest('POST', path, body);
+    answer = await adminRequest<{ emailed?: unknown } | null>('POST', path, body);
   } catch (err) {
     if (err instanceof AdminAuthError) return { authError: true };
     if (err instanceof AdminForbiddenError) return { forbidden: true };
@@ -55,7 +58,7 @@ async function callPys(path: string, body: unknown): Promise<EnquiryActionState>
     return { error: ENQUIRY_MESSAGES.unreachable };
   }
   revalidatePath(PAGE);
-  return { ok: true };
+  return answer?.emailed === false ? { ok: true, unchanged: true } : { ok: true };
 }
 
 /** "Send price": `total` (as typed) and `note` (shown to the customer) from the row's form. */

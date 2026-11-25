@@ -45,7 +45,7 @@ function useResult(onNotice: ((n: EnquiryNotice) => void) | undefined, setMessag
       router.refresh();
     } else if (state.ok) {
       setMessage(null);
-      onNotice?.({ tone: 'done', text: done });
+      onNotice?.({ tone: 'done', text: state.unchanged ? ENQUIRY_MESSAGES.priceUnchanged : done });
     } else if (state.error) {
       setMessage(state.error);
     }
@@ -60,14 +60,32 @@ function Problem({ children }: { children: ReactNode }) {
   );
 }
 
-/** "Send price": the price per AC (GST included) and an optional note the customer sees. */
-function PriceForm({ lineId, onResult }: { lineId: string; onResult: Result }) {
+/**
+ * "Send price": the price per AC (GST included) and an optional note the customer sees.
+ * S08: also "Change price" for a line already priced (starts with the price and note sent; the customer is emailed
+ * the updated price).
+ */
+function PriceForm({
+  lineId,
+  onResult,
+  initial,
+  submitLabel = 'Send price',
+  doneText = ENQUIRY_MESSAGES.priceSent,
+  onCancel,
+}: {
+  lineId: string;
+  onResult: Result;
+  initial?: { total: string; note: string };
+  submitLabel?: string;
+  doneText?: string;
+  onCancel?: () => void;
+}) {
   // A second submit while one is on its way is ignored: the button is disabled once React has
   // re-rendered, and this ref covers a click that lands before that.
   const inFlight = useRef(false);
   const [checked, setChecked] = useState<{ total?: string }>({});
   // What was last sent, so a refused price stays in the box after the form resets.
-  const [sent, setSent] = useState({ total: '', note: '' });
+  const [sent, setSent] = useState(initial ?? { total: '', note: '' });
   const [state, formAction, pending] = useActionState(async (prev: EnquiryActionState, fd: FormData): Promise<EnquiryActionState> => {
     let result: EnquiryActionState;
     try {
@@ -77,7 +95,7 @@ function PriceForm({ lineId, onResult }: { lineId: string; onResult: Result }) {
     } finally {
       inFlight.current = false;
     }
-    onResult(result, ENQUIRY_MESSAGES.priceSent);
+    onResult(result, doneText);
     return result;
   }, {});
 
@@ -99,7 +117,7 @@ function PriceForm({ lineId, onResult }: { lineId: string; onResult: Result }) {
   }
 
   const totalError = checked.total ?? state.fields?.total;
-  const keep = state.ok ? { total: '', note: '' } : sent;
+  const keep = state.ok ? (initial ?? { total: '', note: '' }) : sent;
   return (
     <form action={formAction} onSubmit={submit} noValidate className="flex flex-col gap-4">
       <Field label="Price per AC (incl. GST)" hint="For one AC, GST included, e.g. 40,500." error={totalError} required>
@@ -121,9 +139,16 @@ function PriceForm({ lineId, onResult }: { lineId: string; onResult: Result }) {
           <Textarea id={id} name="note" rows={2} maxLength={NOTE_MAX} defaultValue={keep.note} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
         )}
       </Field>
-      <PendingButton pending={pending} pendingLabel="Sending…" size="sm" className="self-start">
-        Send price
-      </PendingButton>
+      <div className="flex flex-wrap gap-3">
+        <PendingButton pending={pending} pendingLabel="Sending…" size="sm">
+          {submitLabel}
+        </PendingButton>
+        {onCancel && (
+          <Button type="button" variant="glass" size="sm" disabled={pending} onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
@@ -203,6 +228,36 @@ function CloseButtons({ lineId, onResult }: { lineId: string; onResult: Result }
         </Button>
       ))}
     </div>
+  );
+}
+
+/** S08: a line already priced can get a new price; the customer is emailed the updated price. */
+function ChangePrice({ line, onResult }: { line: AdminEnquiryLine; onResult: Result }) {
+  const [open, setOpen] = useState(false);
+  const openerRef = useRef<HTMLButtonElement>(null);
+  if (!line.quote) return null;
+  if (!open) {
+    return (
+      <Button ref={openerRef} variant="glass" size="sm" className="self-start" onClick={() => setOpen(true)}>
+        Change price
+      </Button>
+    );
+  }
+  return (
+    <PriceForm
+      lineId={line.lineId}
+      initial={{ total: String(line.quote.total), note: line.quote.note ?? '' }}
+      submitLabel="Send updated price"
+      doneText={ENQUIRY_MESSAGES.priceUpdated}
+      onResult={(state, done) => {
+        if (state.ok) setOpen(false);
+        onResult(state, done);
+      }}
+      onCancel={() => {
+        setOpen(false);
+        requestAnimationFrame(() => openerRef.current?.focus());
+      }}
+    />
   );
 }
 
@@ -311,7 +366,9 @@ export function EnquiryRow({ line, onNotice }: { line: AdminEnquiryLine; onNotic
         <div className="flex flex-col gap-4">
           {badge && <p className={`self-start rounded-full px-3 py-1 text-sm font-semibold ${badge.className}`}>{badge.text}</p>}
           {line.status === 'QUOTE_PENDING' ? <PriceForm lineId={line.lineId} onResult={onResult} /> : <QuoteSummary line={line} />}
-          {line.status === 'QUOTED' && <CloseButtons lineId={line.lineId} onResult={onResult} />}
+          {line.status === 'QUOTED' && <ChangePrice line={line} onResult={onResult} />}
+          {/* S08: a line can be closed while it still waits for a price, as well as after one was sent */}
+          {(line.status === 'QUOTED' || line.status === 'QUOTE_PENDING') && <CloseButtons lineId={line.lineId} onResult={onResult} />}
           {message && <Problem>{message}</Problem>}
         </div>
       </div>

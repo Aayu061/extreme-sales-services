@@ -37,6 +37,13 @@ describe('sendPrice', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/admin/enquiries');
   });
 
+  it('S08: says "unchanged" when PYS sent no email (same price and note as already sent)', async () => {
+    adminRequest.mockImplementation(async () => ({ lineId: 'x', status: 'QUOTED', updated: true, emailed: false }));
+    expect(await sendPrice('line-1-1', {}, form({ total: '40500' }))).toEqual({ ok: true, unchanged: true });
+    adminRequest.mockImplementation(async () => ({ lineId: 'x', status: 'QUOTED', updated: true, emailed: true }));
+    expect(await sendPrice('line-1-1', {}, form({ total: '39000' }))).toEqual({ ok: true });
+  });
+
   it('sends no note as null', async () => {
     await sendPrice('line-1-1', {}, form({ total: '40500', note: '   ' }));
     expect(adminRequest).toHaveBeenCalledWith('POST', '/enquiries/line-1-1/quote', { total: 40500, note: null });

@@ -297,6 +297,50 @@ describe('an AC enquiry with a price sent', () => {
   });
 });
 
+describe('S08: changing a price already sent, and closing a waiting line', () => {
+  it('"Change price" opens the form with the price and note sent, and sends the updated price', async () => {
+    const notices: string[] = [];
+    render(<EnquiryRow line={quoted()} onNotice={(n) => notices.push(n.text)} />);
+    expect(screen.queryByLabelText(/Price per AC/)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Change price' }));
+    expect((priceBox() as HTMLInputElement).value).toBe('40500');
+    expect((screen.getByLabelText(/Note for the customer/) as HTMLTextAreaElement).value).toBe('Includes standard installation.');
+    fireEvent.change(priceBox(), { target: { value: '39,000' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send updated price' }));
+    await waitFor(() => expect(sendPrice).toHaveBeenCalledTimes(1));
+    expect(sendPrice.mock.calls[0][0]).toBe('line-2-1');
+    expect(sendPrice.mock.calls[0][2].get('total')).toBe('39,000');
+    await waitFor(() => expect(notices).toContain('Price updated. The customer gets an email with the new price.'));
+    // the form closes again after it was sent
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Send updated price' })).toBeNull());
+  });
+
+  it('Cancel closes the form and sends nothing', () => {
+    render(<EnquiryRow line={quoted()} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Change price' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByLabelText(/Price per AC/)).toBeNull();
+    expect(sendPrice).not.toHaveBeenCalled();
+  });
+
+  it('says so when nothing changed (same price and note: no email)', async () => {
+    sendPrice.mockImplementation(async () => ({ ok: true, unchanged: true }));
+    const notices: string[] = [];
+    render(<EnquiryRow line={quoted()} onNotice={(n) => notices.push(n.text)} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Change price' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send updated price' }));
+    await waitFor(() => expect(notices).toContain('Nothing changed: that is already the price and note sent. No email was sent.'));
+  });
+
+  it('a line still waiting for a price can be closed (Sold / Not taken) as well as priced', async () => {
+    render(<EnquiryRow line={line()} />);
+    expect(screen.getByLabelText(/Price per AC/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Not taken' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, mark as not taken' }));
+    await waitFor(() => expect(closeEnquiry).toHaveBeenCalledWith('line-1-1', 'NOT_TAKEN'));
+  });
+});
+
 describe('a closed AC enquiry', () => {
   it('shows Sold or Not taken, with no buttons', () => {
     render(
