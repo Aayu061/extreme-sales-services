@@ -14,7 +14,7 @@ export interface LegalBody {
   sections: Array<{ heading: string; paragraphs: string[] }>;
 }
 
-const DEFAULT_UPDATED = '2026-11-19';
+const DEFAULT_UPDATED = '2026-11-25';
 
 /** The {placeholders} legal text may use; each is filled from the business details. */
 export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'warrantyDays', 'grievanceName', 'grievanceEmail', 'grievancePhone'] as const;
@@ -34,6 +34,8 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         paragraphs: [
           'When you send a request or a message we collect your name, mobile number and (if you give it) email; the address for a visit; details about your AC such as type, size and brand; your preferred date and time; and any note you write.',
           'We also keep a one-way fingerprint of your internet address to stop misuse of the forms and of request tracking. We never store the address itself.',
+          'If we give you a website account (for AMC and regular customers), we also use your email address to send you one-time sign-in codes, and we record when you last signed in. We keep only a scrambled form of each code and each sign-in session, never the code or session itself.',
+          'When you are a customer, we also keep the details of your ACs, AMC contracts, visits, service reports and payments so that you and our team can see your service history.',
         ],
       },
       {
@@ -48,24 +50,44 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         heading: 'Who can see it',
         paragraphs: [
           'Our staff and the technician who visits you. If you ask about an AC sold by another seller, that seller receives the details needed to answer you.',
-          'Our service providers who host our systems and send our messages process the data only for us.',
+          'Our service providers process the data only for us and under our instructions: Supabase (database and file storage), Render and Vercel (hosting our systems and this website), Google (sending our emails and keeping our encrypted backups in Google Drive) and GitHub (running our automatic checks and backups). Some of these providers may store data outside India.',
         ],
       },
       {
         heading: 'How long we keep it',
-        paragraphs: ['As long as needed to provide the service and for as long as tax and accounting law requires us to keep invoices and records.'],
+        paragraphs: [
+          'As long as needed to provide the service and for as long as tax and accounting law requires us to keep invoices and records.',
+          'Sign-in codes stop working after 10 minutes. A website sign-in ends after 7 days without use, after 30 days at most, or when you sign out. Misuse-prevention records (the internet-address fingerprints) are kept only briefly.',
+          'We keep encrypted backup copies of our records for 30 days so that we can recover them after a technical failure. Older copies are deleted automatically.',
+        ],
       },
       {
         heading: 'Stored on your device',
         paragraphs: [
           'Your request list (what you added before sending) and your day/night choice are saved in your own browser so they are still there when you come back. They stay on your device and you can clear them in your browser settings.',
+          'If you sign in to your account, a sign-in cookie keeps you signed in. It is needed for the account to work, cannot be read by scripts on the page, and is removed when you sign out. We do not use advertising or tracking cookies.',
+        ],
+      },
+      {
+        heading: 'How we protect it',
+        paragraphs: [
+          'Your details are sent over encrypted connections, access inside our systems is limited by role, sign-in codes and sessions are stored only in scrambled form, and our backup copies are encrypted before they leave our systems. No method is completely secure, but we work to protect your data and will tell you and the authorities about a personal data breach as the law requires.',
         ],
       },
       {
         heading: 'Your rights',
         paragraphs: [
-          'Under the Digital Personal Data Protection Act, 2023 you can ask to see the personal data we hold about you, correct it, or have it erased, and you can withdraw your consent. To do so, or to raise a complaint, contact {grievanceName} at {grievanceEmail} or {grievancePhone}.',
+          'Under the Digital Personal Data Protection Act, 2023 you can ask to see the personal data we hold about you, correct it, or have it erased, and you can withdraw your consent. To do so, or to raise a complaint, contact {grievanceName} at {grievanceEmail} or {grievancePhone}. If you are not satisfied with our answer, you can complain to the Data Protection Board of India.',
+          'You can also ask us to switch off your website account at any time.',
         ],
+      },
+      {
+        heading: 'Children',
+        paragraphs: ['Our services are for adults. Please do not send us requests on behalf of anyone under 18 without their parent or guardian.'],
+      },
+      {
+        heading: 'Changes to this notice',
+        paragraphs: ['If we change how we use your data, we will update this notice and the date at the top. For important changes we will tell you by email or when you next use our website.'],
       },
     ],
   },
@@ -93,12 +115,22 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         paragraphs: ['We give a {warrantyDays}-day warranty on our work, counted from the day the work is done. Contact us if the same problem comes back within that time.'],
       },
       {
+        heading: 'Your account',
+        paragraphs: [
+          'Website accounts are for our AMC and regular customers and are switched on by us. Keep the email address you use for sign-in safe: anyone who can read your email can receive your sign-in codes. Tell us straight away if you think someone else has used your account, and we will switch it off.',
+          'Your account shows the information we hold about your ACs, AMC and service requests. If something looks wrong, please tell us so we can correct it.',
+        ],
+      },
+      {
         heading: 'AMC plans',
         paragraphs: ['An AMC covers the visits and items listed for the plan you choose, per AC, for one year. Anything not listed is quoted separately before the work is done.'],
       },
       {
         heading: 'New ACs',
-        paragraphs: ['Each AC is sold by the seller named on its page, with the warranty and return policy shown there. Prices and stock are confirmed when we call you.'],
+        paragraphs: [
+          'Each AC is sold by the seller named on its page, with the warranty and return policy shown there. Prices and stock are confirmed when we call you.',
+          'For an AC enquiry the seller sends you a price. If the seller changes that price, we email you the updated price, and only the latest price applies.',
+        ],
       },
       {
         heading: 'Complaints',
