@@ -243,11 +243,15 @@ export function ShopBrowser({ products }: { products: Product[] }) {
             </button>
           </div>
         ) : (
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {shown.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          <>
+            {/* Heading for screen readers so the AC cards (h3) sit under an h2 on every screen size */}
+            <h2 className="sr-only">ACs for sale</h2>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {shown.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

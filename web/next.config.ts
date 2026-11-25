@@ -20,7 +20,11 @@ const nextConfig: NextConfig = {
   },
   images: {
     // Product photos are still hosted externally (to be replaced with ESS's own photos in Stage D).
-    remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Photos uploaded from the admin (S10): only the product-photo bucket of a Supabase project.
+      { protocol: 'https', hostname: '*.supabase.co', pathname: '/storage/v1/object/public/ess-product-photos/**' },
+    ],
     // Hero photos are served at 70; product photos at the default 75.
     qualities: [70, 75],
   },

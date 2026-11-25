@@ -1,42 +1,41 @@
 name: CI
 
+# Runs the real tests for the new ESS website (web/) on every push (any branch) and every pull request.
+# No secrets are used. The production build is not run here: it needs the PYS API and a signed
+# integration key to pre-render pages, and Vercel already runs it on every deploy.
+
 on:
   push:
-    branches: [ main ]
+    branches: ['**']
   pull_request:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  web:
+    name: Website (lint + typecheck + tests)
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Syntax verification
-      run: |
-        node -c server.js
-        node -c server/middleware/authMiddleware.js
-        node -c server/middleware/security.js
-        node -c server/services/dispatchEngine.js
-        node -c server/services/diagnosticsEngine.js
-        node -c server/services/emailService.js
-
-    - name: Run automated test suite
-      run: npm test
-      env:
-        JWT_SECRET: ci_test_jwt_secret_token_123456789
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test

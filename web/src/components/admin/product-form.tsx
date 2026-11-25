@@ -95,7 +95,7 @@ export function ProductForm({ mode, product, added }: Props) {
       setNotice(PRODUCT_MESSAGES.changedElsewhere);
     }
   }
-  const { photos, failed } = usePhotoList();
+  const { photos, uploaded, failed, addUploaded } = usePhotoList();
   // A second submit while one is on its way is ignored: the button is disabled once React has
   // re-rendered, and this ref covers a click that lands before that.
   const inFlight = useRef(false);
@@ -290,7 +290,7 @@ export function ProductForm({ mode, product, added }: Props) {
         </Section>
 
         <div className="glass rounded-[24px] p-4 text-ink sm:p-5">
-          <PhotoPicker photos={photos} failed={failed} value={values.photo} onChange={(photo) => setValues((v) => ({ ...v, photo }))} error={errors.photo} />
+          <PhotoPicker photos={photos} uploaded={uploaded} onUploaded={addUploaded} failed={failed} value={values.photo} onChange={(photo) => setValues((v) => ({ ...v, photo }))} error={errors.photo} />
         </div>
 
         <div className="glass flex flex-col gap-4 rounded-[24px] p-4 text-ink sm:p-5">

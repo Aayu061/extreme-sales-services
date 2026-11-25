@@ -309,10 +309,11 @@ p {
   animation: dock-needle 2.6s ease-in-out infinite;
 }
 
-/* Sections rise in gently as they scroll into view (browsers without scroll timelines show them as is). */
+/* Sections rise in gently as they scroll into view (browsers without scroll timelines show them as is).
+   Slide only, no fade: the animation is tied to scrolling, so a faded start left text near the bottom of the
+   screen half see-through (below the 4.5:1 contrast minimum) for as long as the page stood still. */
 @keyframes reveal {
   from {
-    opacity: 0;
     transform: translateY(28px);
   }
 }

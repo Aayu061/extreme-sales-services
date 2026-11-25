@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/cn';
 import type { Product } from '@/lib/pys/types';
 import { kindOf, type AcKind } from '@/lib/ac-kind';
+import { isUploadedPhoto } from '@/lib/product-photo';
 
 /**
  * Only the product photos stored with this site (public/images/products/) are shown. Stock photos
@@ -10,6 +11,8 @@ import { kindOf, type AcKind } from '@/lib/ac-kind';
 const SITE_PHOTO = /^\/images\/products\/[A-Za-z0-9._-]+\.(jpe?g|png|webp|avif)$/;
 
 export function hasRealPhoto(p: Pick<Product, 'imageUrl'>): boolean {
+  const uploaded: boolean = isUploadedPhoto(p.imageUrl); // uploaded from the admin (PYS storage, exact shape checked)
+  if (uploaded) return true;
   return Boolean(p.imageUrl && SITE_PHOTO.test(p.imageUrl) && !p.imageUrl.includes('..'));
 }
 

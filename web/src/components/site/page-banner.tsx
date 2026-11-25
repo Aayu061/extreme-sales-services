@@ -8,17 +8,20 @@ type Theme = 'day' | 'night';
 
 /** A strip of the home page's room photo (wide on computers, tall crop on phones). Decorative. */
 function BannerPicture({ theme }: { theme: Theme }) {
-  const common = { alt: '', sizes: '100vw', quality: 70 as const };
-  const {
-    props: { srcSet: wide },
-  } = getImageProps({ ...common, src: `/hero/${theme}.png`, width: 1672, height: 941 });
-  const {
-    props: { srcSet: tall, ...rest },
-  } = getImageProps({ ...common, src: `/hero/${theme}-phone.png`, width: 941, height: 1672 });
+  // The banner is the first thing on every inner page (its largest paint): the day photo (default look) loads at
+  // once with high priority; the night photo stays lazy so a visitor never downloads both.
+  const common = {
+    alt: '',
+    sizes: '100vw',
+    quality: 70 as const,
+    ...(theme === 'day' ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {}),
+  };
+  // The banner is a short strip on every screen, so the wide photo is used everywhere: on phones the tall
+  // portrait crop (made for the full-height home hero) downloaded ~3x the pixels only to be cut off.
+  const { props } = getImageProps({ ...common, src: `/hero/${theme}.png`, width: 1672, height: 941 });
   return (
     <picture className={cn('absolute inset-0', theme === 'day' ? 'photo-day' : 'photo-night')}>
-      <source media="(min-width: 761px)" srcSet={wide} />
-      <img {...rest} srcSet={tall} alt="" className="banner-photo size-full object-cover" />
+      <img {...props} alt="" className="banner-photo size-full object-cover" />
     </picture>
   );
 }

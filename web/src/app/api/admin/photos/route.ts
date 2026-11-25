@@ -1,5 +1,7 @@
 import { connection } from 'next/server';
 import { listProductPhotos } from '@/lib/admin/photos';
+import { adminRequest } from '@/lib/admin/pys-admin';
+import { isUploadedPhoto } from '@/lib/product-photo';
 import { getAdminSession } from '@/lib/admin/session';
 
 const NO_STORE = { 'Cache-Control': 'no-store' } as const;
@@ -15,5 +17,16 @@ export async function GET(): Promise<Response> {
   if (!(await getAdminSession())) {
     return Response.json({ error: 'Please sign in again.' }, { status: 401, headers: NO_STORE });
   }
-  return Response.json({ photos: await listProductPhotos() }, { headers: NO_STORE });
+  const [photos, uploaded] = await Promise.all([listProductPhotos(), listUploadedPhotos()]);
+  return Response.json({ photos, uploaded }, { headers: NO_STORE });
+}
+
+/** Photos uploaded from the admin (PYS storage), newest first. If PYS cannot be reached the site photos still show. */
+async function listUploadedPhotos(): Promise<string[]> {
+  try {
+    const res = await adminRequest<{ photos?: Array<{ publicUrl?: unknown }> }>('GET', '/product-photos');
+    return (res.photos ?? []).map((p) => p.publicUrl).filter(isUploadedPhoto);
+  } catch {
+    return [];
+  }
 }

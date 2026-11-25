@@ -20,14 +20,37 @@ export function isPhotoFile(name: unknown): name is string {
   return typeof name === 'string' && PHOTO_FILE.test(name) && !name.includes('..');
 }
 
+/**
+ * Photos uploaded from the admin (S10) live in the PYS storage bucket "ess-product-photos", one per
+ * upload, named <YYYY-MM-DD>/<uuid>.<jpg|png|webp> by PYS. Only exactly that shape on a Supabase
+ * project host counts: anything else (another bucket, another site, odd names) is not a photo choice.
+ */
+const UPLOADED_PHOTO =
+  /^https:\/\/[a-z0-9]{20}\.supabase\.co\/storage\/v1\/object\/public\/ess-product-photos\/\d{4}-\d{2}-\d{2}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/;
+
+export function isUploadedPhoto(value: unknown): value is string {
+  return typeof value === 'string' && UPLOADED_PHOTO.test(value);
+}
+
+/** A value the photo picker may hold: a site photo file name or an uploaded photo address. */
+export function isPhotoChoice(value: unknown): value is string {
+  return isPhotoFile(value) || isUploadedPhoto(value);
+}
+
+/** Where a photo choice is shown from: the site path for a site file, the address itself for an upload. */
+export function photoSrc(choice: string): string {
+  return isUploadedPhoto(choice) ? choice : sitePhotoPath(choice);
+}
+
 /** "voltas-185v.jpg" → "/images/products/voltas-185v.jpg" (what the shop shows). */
 export function sitePhotoPath(file: string): string {
   return `${PHOTO_DIR_PATH}${file}`;
 }
 
-/** The address PYS stores for a chosen photo; "" (the drawn AC) → null. */
-export function photoUrlForPys(file: string): string | null {
-  return isPhotoFile(file) ? `${PHOTO_ORIGIN}${sitePhotoPath(file)}` : null;
+/** The address PYS stores for a chosen photo; "" (the drawn AC) → null. Uploads are stored as they are. */
+export function photoUrlForPys(choice: string): string | null {
+  if (isUploadedPhoto(choice)) return choice;
+  return isPhotoFile(choice) ? `${PHOTO_ORIGIN}${sitePhotoPath(choice)}` : null;
 }
 
 function fileFromPath(pathname: string): string | null {
@@ -65,4 +88,9 @@ export function photoFileOf(imageUrl: string | null | undefined, origins: readon
 export function photoPathFromPys(imageUrl: string | null, origins: readonly string[] = []): string | null {
   const file = photoFileOf(imageUrl, origins);
   return file ? sitePhotoPath(file) : imageUrl;
+}
+
+/** The picker value for a stored address: a site photo file, an uploaded photo address, or null. */
+export function photoChoiceOf(imageUrl: string | null | undefined, origins: readonly string[] = []): string | null {
+  return photoFileOf(imageUrl, origins) ?? (isUploadedPhoto(imageUrl) ? imageUrl : null);
 }

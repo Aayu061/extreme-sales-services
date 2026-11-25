@@ -14,14 +14,14 @@
  *   - stock and shop order: whole numbers 0–1,00,000; empty → left out (unchanged / PYS default).
  *   - key features: one per line, at most 200 characters each. PYS takes up to 20; the site keeps
  *     to 8 (the shop page shows a short list).
- *   - photo: a file from public/images/products, sent as a full address (lib/product-photo.ts).
+ *   - photo: a file from public/images/products (sent as a full address) or an uploaded photo address (lib/product-photo.ts).
  * Tonnage and star rating are free text in PYS (20 characters); the form writes the common forms
  * the shop reads ("1.5 TR", "3 Star") and keeps anything else as typed (e.g. "10,000 CFM").
  */
 import { PRICE_MESSAGES, parseRupees, priceError } from './money';
 import type { AdminProduct } from './types';
 import type { Product } from '@/lib/pys/types';
-import { isPhotoFile, photoFileOf, photoUrlForPys, sitePhotoPath } from '@/lib/product-photo';
+import { isPhotoChoice, photoChoiceOf, photoSrc, photoUrlForPys } from '@/lib/product-photo';
 
 export interface ProductFormValues {
   id: string;
@@ -252,7 +252,7 @@ export function toProductInput(form: FormData, mode: 'create' | 'update' = 'crea
   else if (keyFeatures.some((f) => f.length > FEATURE_MAX)) fields.keyFeatures = PRODUCT_MESSAGES.featureTooLong;
 
   const photo = read(form, 'photo').trim();
-  if (photo && !isPhotoFile(photo)) fields.photo = PRODUCT_MESSAGES.photo;
+  if (photo && !isPhotoChoice(photo)) fields.photo = PRODUCT_MESSAGES.photo;
 
   if (Object.keys(fields).length) return { ok: false, fields };
 
@@ -378,7 +378,7 @@ export function formValuesOf(p: AdminProduct): ProductFormValues {
     noiseLevel: text(p.noiseLevel),
     dimensions: text(p.dimensions),
     countryOfOrigin: text(p.countryOfOrigin),
-    photo: photoFileOf(p.imageUrl) ?? '',
+    photo: photoChoiceOf(p.imageUrl) ?? '',
     shown: p.isPublished,
   };
 }
@@ -424,7 +424,7 @@ export function previewProduct(v: ProductFormValues, base: AdminProduct | null |
     },
     warranty: none(v.warranty),
     keyFeatures: featureLines(v.keyFeatures).slice(0, MAX_FEATURES),
-    imageUrl: isPhotoFile(v.photo) ? sitePhotoPath(v.photo) : null,
+    imageUrl: isPhotoChoice(v.photo) ? photoSrc(v.photo) : null,
     spaceType: base?.spaceType ?? null,
     idealFor: base?.idealFor ?? null,
     countryOfOrigin: none(v.countryOfOrigin),
