@@ -14,7 +14,7 @@ export interface LegalBody {
   sections: Array<{ heading: string; paragraphs: string[] }>;
 }
 
-const DEFAULT_UPDATED = '2026-11-25';
+const DEFAULT_UPDATED = '2026-11-26';
 
 /** The {placeholders} legal text may use; each is filled from the business details. */
 export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'warrantyDays', 'grievanceName', 'grievanceEmail', 'grievancePhone'] as const;
@@ -70,6 +70,15 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         heading: 'How we protect it',
         paragraphs: [
           'Your details are sent over encrypted connections and access inside our systems is limited by role. No method is completely secure, but we work to protect your data and will tell you and the authorities about a personal data breach as the law requires.',
+        ],
+      },
+      {
+        heading: 'Backup copies (ESS-PYS Backups)',
+        paragraphs: [
+          'To protect your records against technical failure, our internal tool ESS-PYS Backups makes a copy of our customer and service database (the records described above, plus the sign-in records of our own staff) once a night. Status: the tool is ready and tested, but it is switched on for our live records only after our final approval; until then it runs only with test data.',
+          'Each copy is encrypted on our side before it is uploaded, with a key that only we hold and keep offline. It is then stored in a private folder (ESS-PYS-Backups) in our business Google Drive. The files are not shared with anyone; Google stores them for us but receives only the encrypted files and cannot read them. A checksum (SHA-256) is kept with each copy so that we can prove it has not changed.',
+          'The tool connects to Google Drive with the narrowest permission Google offers (drive.file: it can only see and manage the files it creates itself, not anything else in the Drive). Its sign-in token and the database password are stored only as protected secrets of our automated systems and are never written into our code, logs or the backup files.',
+          'Copies are kept for 30 days and then deleted automatically; the newest good copy is always kept. A copy is used only to restore our records after a failure: we download it, check its checksum, decrypt it on our own computer and restore it into our database. We do not use backup copies for any other purpose.',
         ],
       },
       {
