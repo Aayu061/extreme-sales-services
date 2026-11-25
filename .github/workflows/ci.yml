@@ -1,12 +1,12 @@
 name: CI
 
-# Runs the real tests for the new ESS website (web/) on every push to main and every pull request.
+# Runs the real tests for the new ESS website (web/) on every push (any branch) and every pull request.
 # No secrets are used. The production build is not run here: it needs the PYS API and a signed
 # integration key to pre-render pages, and Vercel already runs it on every deploy.
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
     branches: [main]
   workflow_dispatch:
