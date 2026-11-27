@@ -1,11 +1,22 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { hashClientIp } from '@/lib/client-ip';
+import { serverEnv } from '@/lib/env';
 import { PysError, pysRequest } from '@/lib/pys/client';
 import { ACCOUNT_COOKIE, ACCOUNT_MAX_AGE_S, accountToken, isPortalOff } from '@/lib/account';
 
 const PORTAL_OFF_TEXT = 'Customer login is not available right now. You can still track a request with its code.';
+const RATE_LIMITED_TEXT = 'Too many tries from this connection. Please wait an hour and try again.';
+
+/** PYS refused because this connection (by its IP fingerprint) has made too many tries. */
+const isRateLimited = (err: unknown) => err instanceof PysError && err.status === 429 && err.code === 'RATE_LIMITED';
+
+/** Same one-way IP fingerprint as /track, so PYS can limit tries per connection without the address. */
+async function clientIpHash(): Promise<string | undefined> {
+  return hashClientIp(await headers(), serverEnv().PYS_INTEGRATION_SECRET ?? '');
+}
 
 export interface SignInState {
   step: 'email' | 'code';
@@ -25,9 +36,10 @@ export async function requestCode(_prev: SignInState, formData: FormData): Promi
   const email = text(formData, 'email').toLowerCase();
   if (!EMAIL_RE.test(email)) return { step: 'email', email, error: 'Enter the email address we have for you, like name@example.com.' };
   try {
-    await pysRequest('POST', '/portal/code', { body: { email } });
+    await pysRequest('POST', '/portal/code', { body: { email, clientIpHash: await clientIpHash() } });
   } catch (err) {
     if (isPortalOff(err)) return { step: 'email', email, error: PORTAL_OFF_TEXT };
+    if (isRateLimited(err)) return { step: 'email', email, error: RATE_LIMITED_TEXT };
     return { step: 'email', email, error: 'We could not send a code right now. Please try again in a minute.' };
   }
   return {
@@ -44,10 +56,13 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
   if (!/^\d{6}$/.test(code)) return { step: 'code', email, error: 'Enter the 6-digit code from the email.' };
   let token: string;
   try {
-    const res = await pysRequest<{ token: string; expiresAt: string }>('POST', '/portal/sign-in', { body: { email, code } });
+    const res = await pysRequest<{ token: string; expiresAt: string }>('POST', '/portal/sign-in', {
+      body: { email, code, clientIpHash: await clientIpHash() },
+    });
     token = res.token;
   } catch (err) {
     if (isPortalOff(err)) return { step: 'code', email, error: PORTAL_OFF_TEXT };
+    if (isRateLimited(err)) return { step: 'code', email, error: RATE_LIMITED_TEXT };
     if (err instanceof PysError && err.status === 401) {
       return { step: 'code', email, error: 'That code is not right or has expired. Check the email, or ask for a new code.' };
     }

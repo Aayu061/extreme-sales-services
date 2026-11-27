@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// ---- Fakes: cookies, redirect and the signed PYS client ----
+// ---- Fakes: cookies, request headers, redirect and the signed PYS client ----
 const jar = new Map<string, { value: string; opts?: Record<string, unknown> }>();
+let reqHeaders = new Headers();
 vi.mock('next/headers', () => ({
+  headers: async () => reqHeaders,
   cookies: async () => ({
     get: (n: string) => (jar.has(n) ? { value: jar.get(n)!.value } : undefined),
     set: (n: string, value: string, opts?: Record<string, unknown>) => jar.set(n, { value, opts }),
@@ -24,6 +26,7 @@ vi.mock('@/lib/pys/client', async (importOriginal) => ({
 import { requestCode, signIn, signOut } from '@/app/(site)/account/actions';
 import { PysError } from '@/lib/pys/client';
 import { ACCOUNT_COOKIE, getAccountState } from '@/lib/account';
+import { hashClientIp } from '@/lib/client-ip';
 
 const fd = (o: Record<string, string>) => {
   const f = new FormData();
@@ -34,6 +37,7 @@ const TOKEN = 'a'.repeat(43);
 
 beforeEach(() => {
   jar.clear();
+  reqHeaders = new Headers();
   pysRequest.mockReset();
 });
 
@@ -48,7 +52,7 @@ describe('customer account sign-in (S11)', () => {
   it('any valid email gets the same "if it has an account" answer (no account enumeration)', async () => {
     pysRequest.mockResolvedValue({ sent: true });
     const s = await requestCode({ step: 'email', email: '' }, fd({ email: ' Asha@Example.com ' }));
-    expect(pysRequest).toHaveBeenCalledWith('POST', '/portal/code', { body: { email: 'asha@example.com' } });
+    expect(pysRequest).toHaveBeenCalledWith('POST', '/portal/code', { body: { email: 'asha@example.com', clientIpHash: undefined } });
     expect(s).toMatchObject({ step: 'code', email: 'asha@example.com' });
     expect(s.message).toMatch(/^If asha@example\.com has an account with us/);
   });
@@ -71,7 +75,9 @@ describe('customer account sign-in (S11)', () => {
     const err = await signIn({ step: 'code', email: 'asha@example.com' }, fd({ email: 'asha@example.com', code: '123 456' })).catch((e) => e);
     expect(err).toBeInstanceOf(Redirect);
     expect(err.to).toBe('/account');
-    expect(pysRequest).toHaveBeenCalledWith('POST', '/portal/sign-in', { body: { email: 'asha@example.com', code: '123456' } });
+    expect(pysRequest).toHaveBeenCalledWith('POST', '/portal/sign-in', {
+      body: { email: 'asha@example.com', code: '123456', clientIpHash: undefined },
+    });
     const c = jar.get(ACCOUNT_COOKIE)!;
     expect(c.value).toBe(TOKEN);
     expect(c.opts).toMatchObject({ httpOnly: true, sameSite: 'lax', path: '/' });
@@ -82,6 +88,43 @@ describe('customer account sign-in (S11)', () => {
     pysRequest.mockResolvedValue({ signedOut: true });
     await signOut().catch(() => undefined);
     expect(pysRequest).toHaveBeenCalledWith('POST', '/portal/sign-out', { headers: { 'X-PYS-Customer-Session': TOKEN } });
+    expect(jar.has(ACCOUNT_COOKIE)).toBe(false);
+  });
+});
+
+describe('per-connection limits (F3): IP fingerprint sent, 429 RATE_LIMITED shown', () => {
+  const limited = () => new PysError(429, 'RATE_LIMITED', 'slow down');
+  const TOO_MANY = 'Too many tries from this connection. Please wait an hour and try again.';
+
+  it('asking for a code sends the same IP fingerprint as /track (never the address)', async () => {
+    reqHeaders = new Headers({ 'x-forwarded-for': '203.0.113.7, 10.0.0.1' });
+    pysRequest.mockResolvedValue({ sent: true });
+    await requestCode({ step: 'email', email: '' }, fd({ email: 'asha@example.com' }));
+    const [, , opts] = pysRequest.mock.calls[0];
+    expect(opts.body.clientIpHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(opts.body.clientIpHash).toBe(hashClientIp(reqHeaders, process.env.PYS_INTEGRATION_SECRET ?? ''));
+    expect(JSON.stringify(opts)).not.toContain('203.0.113.7');
+  });
+
+  it('signing in sends the IP fingerprint too', async () => {
+    reqHeaders = new Headers({ 'x-real-ip': '198.51.100.2' });
+    pysRequest.mockResolvedValue({ token: TOKEN, expiresAt: '2026-12-25T00:00:00Z' });
+    await signIn({ step: 'code', email: 'a@b.co' }, fd({ email: 'a@b.co', code: '123456' })).catch(() => undefined);
+    const [, path, opts] = pysRequest.mock.calls[0];
+    expect(path).toBe('/portal/sign-in');
+    expect(opts.body.clientIpHash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('too many code requests from one connection shows the wait-an-hour message', async () => {
+    pysRequest.mockRejectedValue(limited());
+    const s = await requestCode({ step: 'email', email: '' }, fd({ email: 'asha@example.com' }));
+    expect(s).toEqual({ step: 'email', email: 'asha@example.com', error: TOO_MANY });
+  });
+
+  it('too many sign-in tries from one connection shows the message and sets no cookie', async () => {
+    pysRequest.mockRejectedValue(limited());
+    const s = await signIn({ step: 'code', email: 'asha@example.com' }, fd({ email: 'asha@example.com', code: '123456' }));
+    expect(s).toEqual({ step: 'code', email: 'asha@example.com', error: TOO_MANY });
     expect(jar.has(ACCOUNT_COOKIE)).toBe(false);
   });
 });
