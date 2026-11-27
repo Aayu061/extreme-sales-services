@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { buttonStyles } from '@/components/ui/button';
-import { formatDate } from '@/lib/format';
+import { acTitle, formatDate, formatTime, requestTypeLabel, statusLabel } from '@/lib/portal-format';
 import type { AccountOverview } from '@/lib/account';
 import { signOut } from '@/app/(site)/account/actions';
 
@@ -57,10 +57,12 @@ export function AccountView({ data }: { data: AccountOverview }) {
             {requests.map((r) => (
               <li key={r.requestNumber} className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4 text-ink">
                 <div>
-                  <p className="font-semibold">{r.requestNumber}</p>
+                  <p className="font-semibold">
+                    {requestTypeLabel(r.type)} · {r.requestNumber}
+                  </p>
                   <p className="text-sm text-muted">
                     Requested {formatDate(r.createdAt) ?? r.createdAt}
-                    {r.visit && ` · Visit ${formatDate(r.visit.date) ?? r.visit.date}${r.visit.startTime ? `, ${r.visit.startTime.slice(0, 5)}` : ''}`}
+                    {r.visit && ` · Visit ${formatDate(r.visit.date) ?? r.visit.date}${r.visit.startTime ? `, ${formatTime(r.visit.startTime) ?? ''}` : ''}`}
                     {r.visit?.technicianFirstName && ` · Technician: ${r.visit.technicianFirstName}`}
                   </p>
                 </div>
@@ -90,7 +92,7 @@ export function AccountView({ data }: { data: AccountOverview }) {
                 <li key={c.contractNumber} className="glass rounded-2xl p-4 text-ink">
                   <p className="font-semibold">{c.plan ?? 'AMC'}</p>
                   <p className="text-sm text-muted">
-                    {c.contractNumber} · {c.status.replace(/_/g, ' ').toLowerCase()}
+                    {c.contractNumber} · {statusLabel(c.status)}
                   </p>
                   <p className="mt-2 text-sm">
                     {formatDate(c.startDate) ?? dash(c.startDate)} to {formatDate(c.endDate) ?? dash(c.endDate)}
@@ -115,7 +117,7 @@ export function AccountView({ data }: { data: AccountOverview }) {
             {acs.map((a, i) => (
               <li key={a.tag ?? i} className="glass rounded-2xl p-4 text-ink">
                 <p className="font-semibold">
-                  {[a.brand, a.tons ? `${a.tons} ton` : null, a.type].filter(Boolean).join(' ') || 'AC'}
+                  {acTitle(a)}
                 </p>
                 <p className="text-sm text-muted">
                   {[a.room, a.model, a.tag].filter(Boolean).join(' · ') || '—'}
