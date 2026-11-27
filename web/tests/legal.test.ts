@@ -31,4 +31,19 @@ describe('legalBody', () => {
     expect(body.updatedOn).toBe('2027-01-01');
     expect(body.sections[0].paragraphs[0]).toBe('Contact extremess0121@gmail.com.');
   });
+
+  it('describes customer website accounts (S11) and keeps the backup section', () => {
+    const privacy = legalBody('privacy', null, FALLBACK_IDENTITY);
+    const headings = privacy.sections.map((x) => x.heading);
+    expect(headings).toContain('Your website account');
+    expect(headings).toContain('Backup copies (ESS-PYS Backups)');
+    expect(privacy.updatedOn).toBe('2026-11-27');
+    const all = JSON.stringify(privacy);
+    for (const fact of ['6-digit code', '10 minutes', 'keyed one-way fingerprint', 'locked for 24 hours', 'ess_account', '7 days without use', '30 days at most', 'visits used and left', 'first name of the technician', 'switch off your website account']) {
+      expect(all).toContain(fact);
+    }
+    const terms = legalBody('terms', null, FALLBACK_IDENTITY);
+    expect(terms.sections.map((x) => x.heading)).toContain('Your account');
+    expect(JSON.stringify(terms)).toMatch(/Keep your sign-in codes private/);
+  });
 });
