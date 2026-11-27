@@ -10,6 +10,7 @@ import { priceLine } from '@/lib/basket-pricing';
 import type { NewLine } from '@/lib/basket';
 import { cn } from '@/lib/cn';
 import type { Catalog } from '@/lib/pys/types';
+import { cleanBookNote } from '@/lib/portal-links';
 import { todayIst } from '@/lib/request-schema';
 import { BasketSummary } from './basket-summary';
 import { Confirmation } from './confirmation';
@@ -35,6 +36,29 @@ function lineFromQuery(q: URLSearchParams, catalog: Pick<Catalog, 'services' | '
   return null;
 }
 
+/**
+ * "Book / complain for this AC" links from the customer account carry ?note= naming the AC. It goes in the note box
+ * (plain text the customer can still change) and is kept for this tab, so it survives going to /services to add one.
+ */
+const NOTE_KEY = 'ess-book-note';
+function rememberNote(note: string | null) {
+  try {
+    if (note) sessionStorage.setItem(NOTE_KEY, note);
+    else sessionStorage.removeItem(NOTE_KEY);
+  } catch {
+    // Storage blocked (private mode): the note still shows on this visit.
+  }
+}
+/** The note box is on step 3, so reading the tab's storage on the first render cannot change the first paint. */
+function savedNote(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    return cleanBookNote(sessionStorage.getItem(NOTE_KEY));
+  } catch {
+    return '';
+  }
+}
+
 function whereErrors(w: WhereValue): Record<string, string> {
   const e: Record<string, string> = {};
   if (w.line.trim().length < 3) e['address.line'] = 'Enter your flat, building and street.';
@@ -57,7 +81,7 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
   const submit = useRequestSubmit();
   const [step, setStep] = useState<Step>(1);
   const [where, setWhere] = useState<WhereValue>(EMPTY_WHERE);
-  const [details, setDetails] = useState<DetailsValue>(EMPTY_DETAILS);
+  const [details, setDetails] = useState<DetailsValue>(() => ({ ...EMPTY_DETAILS, note: cleanBookNote(query.get('note')) || savedNote() }));
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
   const [lineErrors, setLineErrors] = useState<Record<string, string>>({});
   const panel = useRef<HTMLDivElement>(null);
@@ -68,6 +92,8 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
     if (prefilled.current) return;
     prefilled.current = true;
     const q = new URLSearchParams(query.toString());
+    const note = cleanBookNote(q.get('note'));
+    if (note) rememberNote(note);
     if (!q.toString()) return;
     // Old AC links (?product=) belong to the enquiry page now.
     const product = q.get('product');
@@ -91,6 +117,7 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
   useEffect(() => {
     if (submit.state !== 'done') return;
     clear();
+    rememberNote(null);
     done.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
     done.current?.focus();
   }, [submit.state, clear]);
