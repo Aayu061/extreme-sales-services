@@ -13,7 +13,19 @@ export const ACCOUNT_MAX_AGE_S = 30 * 24 * 60 * 60;
 export interface AccountOverview {
   customer: { name: string; companyName: string | null; email: string | null; phone: string | null; city: string | null };
   acs: Array<{ tag: string | null; brand: string | null; model: string | null; type: string | null; tons: number | null; room: string | null; warrantyUntil: string | null }>;
-  amc: Array<{ contractNumber: string; plan: string | null; status: string; startDate: string | null; endDate: string | null; totalVisits: number | null; acCount: number }>;
+  amc: Array<{
+    contractNumber: string;
+    plan: string | null;
+    status: string;
+    startDate: string | null;
+    endDate: string | null;
+    totalVisits: number | null;
+    /** Visits done so far. Optional: an older PYS answer does not send it. */
+    visitsUsed?: number;
+    /** Visits still to come, or null when the contract has no fixed number. Optional like visitsUsed. */
+    visitsLeft?: number | null;
+    acCount: number;
+  }>;
   requests: Array<{
     requestNumber: string;
     type: string | null;

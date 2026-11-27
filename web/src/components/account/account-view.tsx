@@ -7,6 +7,19 @@ import { signOut } from '@/app/(site)/account/actions';
 
 const dash = (v: string | number | null | undefined) => (v === null || v === undefined || v === '' ? '—' : String(v));
 
+type AmcContract = AccountOverview['amc'][number];
+
+/**
+ * "Visits: 2 used, 2 left of 4" for an AMC contract. Without a fixed number left, just the visits used.
+ * Null when PYS did not send visitsUsed (an older answer), so the card falls back to the total only.
+ */
+export function amcVisitsText(c: Pick<AmcContract, 'visitsUsed' | 'visitsLeft' | 'totalVisits'>): string | null {
+  if (typeof c.visitsUsed !== 'number') return null;
+  const used = `Visits: ${c.visitsUsed} used`;
+  if (typeof c.visitsLeft !== 'number') return used;
+  return `${used}, ${c.visitsLeft} left${c.totalVisits ? ` of ${c.totalVisits}` : ''}`;
+}
+
 /** A signed-in customer's own ACs, AMC contracts and service history (data from PYS, nothing internal). */
 export function AccountView({ data }: { data: AccountOverview }) {
   const { customer, acs, amc, requests } = data;
@@ -71,18 +84,22 @@ export function AccountView({ data }: { data: AccountOverview }) {
           </p>
         ) : (
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {amc.map((c) => (
-              <li key={c.contractNumber} className="glass rounded-2xl p-4 text-ink">
-                <p className="font-semibold">{c.plan ?? 'AMC'}</p>
-                <p className="text-sm text-muted">
-                  {c.contractNumber} · {c.status.replace(/_/g, ' ').toLowerCase()}
-                </p>
-                <p className="mt-2 text-sm">
-                  {formatDate(c.startDate) ?? dash(c.startDate)} to {formatDate(c.endDate) ?? dash(c.endDate)}
-                  {c.totalVisits ? ` · ${c.totalVisits} visits` : ''} · {c.acCount} AC{c.acCount === 1 ? '' : 's'}
-                </p>
-              </li>
-            ))}
+            {amc.map((c) => {
+              const visits = amcVisitsText(c);
+              return (
+                <li key={c.contractNumber} className="glass rounded-2xl p-4 text-ink">
+                  <p className="font-semibold">{c.plan ?? 'AMC'}</p>
+                  <p className="text-sm text-muted">
+                    {c.contractNumber} · {c.status.replace(/_/g, ' ').toLowerCase()}
+                  </p>
+                  <p className="mt-2 text-sm">
+                    {formatDate(c.startDate) ?? dash(c.startDate)} to {formatDate(c.endDate) ?? dash(c.endDate)}
+                    {!visits && c.totalVisits ? ` · ${c.totalVisits} visits` : ''} · {c.acCount} AC{c.acCount === 1 ? '' : 's'}
+                  </p>
+                  {visits && <p className="mt-1 text-sm font-semibold">{visits}</p>}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
