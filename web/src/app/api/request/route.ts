@@ -5,6 +5,18 @@ import { serverEnv } from '@/lib/env';
 import { PysError, pysRequest } from '@/lib/pys/client';
 import type { IntakeCreated } from '@/lib/pys/types';
 import { fieldErrors, requestSchema, toPysIntake } from '@/lib/request-schema';
+import { getContentBlocks } from '@/lib/data';
+import { privacyNoticeVersion } from '@/lib/legal';
+
+/** S12 / E1: the privacy notice version the site shows now (published admin text, else built-in). */
+async function shownNoticeVersion(): Promise<string> {
+  try {
+    const blocks = await getContentBlocks(['legal.privacy']);
+    return privacyNoticeVersion(blocks['legal.privacy']?.body);
+  } catch {
+    return privacyNoticeVersion(undefined);
+  }
+}
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 const CHECK = 'Please check the highlighted details.';
@@ -42,7 +54,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const r = parsed.data;
-  const body = toPysIntake(r, hashClientIp(request.headers, serverEnv().PYS_INTEGRATION_SECRET ?? ''));
+  const body = toPysIntake(r, hashClientIp(request.headers, serverEnv().PYS_INTEGRATION_SECRET ?? ''), await shownNoticeVersion());
   // A signed-in customer's session goes along, so PYS links the request to their record. PYS resolves it itself; an
   // ended session is simply treated as "not signed in". Nothing in the body names a customer.
   const session = await accountToken();

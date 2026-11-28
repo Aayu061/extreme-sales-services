@@ -1,4 +1,5 @@
 import type { BusinessIdentity } from '@/lib/pys/types';
+import { PRIVACY_NOTICE_VERSION } from '@/lib/notice-version';
 
 /**
  * Privacy notice and terms. The text published in ESS admin (content blocks legal.privacy /
@@ -16,6 +17,18 @@ export interface LegalBody {
 
 const DEFAULT_UPDATED = '2026-11-27';
 
+export { PRIVACY_NOTICE_VERSION };
+
+/**
+ * The version of the privacy notice a visitor is shown right now: the "Last updated" date of the text published
+ * in ESS admin when one is complete, else the built-in version. Recorded with each request's consent.
+ */
+export function privacyNoticeVersion(publishedBlock: unknown): string {
+  return isLegalBody(publishedBlock) && typeof publishedBlock.updatedOn === 'string' && publishedBlock.updatedOn
+    ? publishedBlock.updatedOn
+    : PRIVACY_NOTICE_VERSION;
+}
+
 /** The {placeholders} legal text may use; each is filled from the business details. */
 export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'warrantyDays', 'grievanceName', 'grievanceEmail', 'grievancePhone'] as const;
 
@@ -23,91 +36,83 @@ export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'wa
 export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
   privacy: {
     title: 'Privacy notice',
-    updatedOn: DEFAULT_UPDATED,
+    updatedOn: PRIVACY_NOTICE_VERSION,
     sections: [
       {
         heading: 'Who we are',
-        paragraphs: ['{legalName}, {address}, handles the details you share on this website. You can reach us at {email} or {phone}.'],
+        paragraphs: ['{legalName}, {address}, handles the details you share on this website and the records we keep when you are our customer. You can reach us at {email} or {phone}.'],
       },
       {
         heading: 'What we collect',
         paragraphs: [
-          'When you send a request or a message we collect your name, mobile number and (if you give it) email; the address for a visit; details about your AC such as type, size and brand; your preferred date and time; and any note you write.',
-          'We also keep a one-way fingerprint of your internet address to stop misuse of the forms and of request tracking. We never store the address itself.',
-          'When you are a customer, we also keep the details of your ACs, AMC contracts, visits, service reports and payments so that we can look after your ACs and answer your questions.',
+          'When you send a request or a message, we collect your name, mobile number and (if you give it) email; the address for a visit; details about your AC such as type, size and brand; your preferred date and time; and any note you write.',
+          'To stop misuse of our forms, of request tracking and of sign-in, our website turns your internet (IP) address into a one-way fingerprint before sending it to our systems. We do not store the internet address itself. The fingerprint is kept as described under "How long we keep it".',
+          'When you are our customer, we also keep the details of your ACs, AMC contracts, visits, service reports, bills and payments so that we can look after your ACs and answer your questions.',
         ],
       },
       {
         heading: 'Your website account',
         paragraphs: [
           'Website accounts are only for our active AMC and regular customers, and only when our staff switch one on for you. To sign in, you enter the email address we have on record for you and we email you a 6-digit code.',
-          'Each code works only once and only for 10 minutes. We keep it only as a keyed one-way fingerprint (a hash), never the code itself, and the code is not kept in our records of the emails we send. After 10 wrong codes in 24 hours, sign-in to that account is locked for 24 hours.',
-          'To stop anyone trying codes again and again, we also limit the number of tries from one connection. For this we use the one-way fingerprint of your internet address described above, never the address itself.',
+          'Each code can be used once and works for 10 minutes. A code also stops working after 5 wrong tries. We keep codes only as a keyed one-way fingerprint, never the code itself. After 10 wrong codes in 24 hours, sign-in to that account is locked for 24 hours. We also limit how many codes can be asked for, and how many wrong codes can be tried, from one connection, using the fingerprint of your internet address described above.',
           'When you sign in, we record the time. Your account shows only your own records: your contact details, your ACs (with their serial numbers), your AMC contracts with the visits used and left, your service requests with the visit times and the first name of the technician, the service reports of finished visits, and your bills and payments.',
-          'Service report photos are shown through private links that stop working after 10 minutes. Payment references are shown only by their last 4 characters. For a bill with an amount due, the account shows a UPI payment link for that amount; paying is done in your own UPI app.',
-          'From your account you can ask us to renew an AMC or to change your details. These requests go to our staff, who check them and make the change; nothing is changed or charged automatically.',
+          'Service report photos are shown through private links that stop working after 10 minutes. Payment references are shown only by their last 4 characters. For a bill with an amount due, the account shows a UPI payment link for that amount and our business UPI QR code, with the amount and bill number to enter. You pay in your own UPI app; we do not receive or store your UPI PIN or bank details through the website.',
+          'From your account you can ask us to renew an AMC or to change your details. Our staff check these requests and make the change; nothing is changed or charged automatically.',
         ],
       },
       {
         heading: 'Why we use it',
         paragraphs: [
-          'Only to handle your request: to call or message you, plan and carry out the visit, prepare quotes and invoices, and send you updates about that request.',
-          'If you tick the box for reminders and offers, we may also send service reminders and offers by WhatsApp or email. You can ask us to stop at any time.',
+          'To handle your request: to call or message you, plan and carry out the visit, prepare quotes and invoices, send you updates about that request, and keep the service and billing records the law requires.',
+          'If you tick the box for reminders and offers, we may also send service reminders and offers by WhatsApp or email. You can withdraw this at any time (see "Your choices and rights").',
           'We do not sell your details.',
         ],
       },
       {
         heading: 'Who can see it',
         paragraphs: [
-          'Our staff and the technician who visits you. If you ask about an AC sold by another seller, that seller receives the details needed to answer you.',
-          'Our service providers process the data only for us and under our instructions: Supabase (database and file storage), Render and Vercel (hosting our systems and this website), and Google (sending our emails). Some of these providers may store data outside India.',
+          'Our staff, and the technician who visits you. If you ask about an AC sold by another seller, that seller receives the details needed to answer you.',
+          'Our service providers process data only for us and under our instructions. Supabase stores our database and files in Mumbai, India. Render runs our business system and Vercel runs this website, both in the United States; your details pass through these services when the website and our staff use them. Google sends our emails.',
         ],
       },
       {
         heading: 'How long we keep it',
         paragraphs: [
-          'As long as needed to provide the service and for as long as tax and accounting law requires us to keep invoices and records.',
-          'Sign-in codes stop working after 10 minutes, and their fingerprints are deleted after 7 days. A website sign-in ends after 7 days without use, after 30 days at most, when you sign out, when your account is switched off, or when the email address we have on record for you changes; the record of an ended sign-in is deleted after 30 days.',
-          'Misuse-prevention records (the internet-address fingerprints) are kept only briefly.',
+          'As long as needed to provide the service, and invoices and billing records for the period GST and accounting law require (currently 6 years).',
+          'Sign-in codes stop working after 10 minutes, and their fingerprints are deleted after 7 days. A website sign-in ends after 7 days without use, after 30 days at most, when you sign out, when your account is switched off, or when the email address we have on record for you changes. The record of an ended sign-in is deleted after 30 days.',
+          'Internet-address fingerprints used to limit sign-in attempts are deleted within about 2 days. The fingerprint kept with a request you send is deleted after 30 days; the request itself is kept as described above.',
         ],
       },
       {
         heading: 'Stored on your device',
         paragraphs: [
-          'Your request list (what you added before sending) and your day/night choice are saved in your own browser so they are still there when you come back. They stay on your device and you can clear them in your browser settings.',
-          'If you sign in to your website account, one essential cookie (ess_account) keeps you signed in. It is needed for the account to work, cannot be read by scripts on the page, is not used for tracking, and is removed when you sign out.',
+          'Your request list (what you added before sending) and your day/night choice are saved in your own browser so they are still there when you come back. They stay on your device, and you can clear them in your browser settings.',
+          'If you sign in to your website account, one essential cookie (ess_account) keeps you signed in. It is needed for the account to work, cannot be read by scripts on the page, is sent only over secure connections, is not used for tracking, lasts at most 30 days, and is removed when you sign out.',
           'We do not use advertising or tracking cookies.',
         ],
       },
       {
         heading: 'How we protect it',
         paragraphs: [
-          'Your details are sent over encrypted connections and access inside our systems is limited by role. Sign-in codes and sign-in sessions are stored only as one-way fingerprints, never as the code or session itself. No method is completely secure, but we work to protect your data and will tell you and the authorities about a personal data breach as the law requires.',
+          'Your details are sent over encrypted connections, and access inside our systems is limited by role. Sign-in codes and sign-in sessions are stored only as one-way fingerprints. No method is completely secure, but we work to protect your data, and we will tell you and the authorities about a personal data breach as the law requires.',
         ],
       },
       {
-        heading: 'Backup copies (ESS-PYS Backups)',
+        heading: 'Your choices and rights',
         paragraphs: [
-          'To protect your records against technical failure, our internal tool ESS-PYS Backups makes a copy of our customer and service database (the records described above, plus the sign-in records of our own staff) once a night. Status: the tool is ready and tested, but it is switched on for our live records only after our final approval; until then it runs only with test data.',
-          'Each copy is encrypted on our side before it is uploaded, with a key that only we hold and keep offline. It is then stored in a private folder (ESS-PYS-Backups) in our business Google Drive. The files are not shared with anyone; Google stores them for us but receives only the encrypted files and cannot read them. A checksum (SHA-256) is kept with each copy so that we can prove it has not changed.',
-          'The tool connects to Google Drive with the narrowest permission Google offers (drive.file: it can only see and manage the files it creates itself, not anything else in the Drive). Its sign-in token and the database password are stored only as protected secrets of our automated systems and are never written into our code, logs or the backup files.',
-          'Copies are kept for 30 days and then deleted automatically; the newest good copy is always kept. A copy is used only to restore our records after a failure: we download it, check its checksum, decrypt it on our own computer and restore it into our database. We do not use backup copies for any other purpose.',
-        ],
-      },
-      {
-        heading: 'Your rights',
-        paragraphs: [
-          'Under the Digital Personal Data Protection Act, 2023 you can ask to see the personal data we hold about you, correct it, or have it erased, and you can withdraw your consent. To do so, or to raise a complaint, contact {grievanceName} at {grievanceEmail} or {grievancePhone}. If you are not satisfied with our answer, you can complain to the Data Protection Board of India.',
-          'You can also ask us to switch off your website account at any time.',
+          'You can ask us at any time to: tell you what personal data we hold about you; correct it or bring it up to date; erase it, unless the law requires us to keep it (for example invoices); stop sending you reminders and offers; or switch off your website account.',
+          'You can also withdraw your consent to us using your details. This does not affect what we did before. We may still keep records the law requires, and we may not be able to carry out a service without the details it needs.',
+          'To make any of these requests, or to raise a complaint, contact our grievance officer {grievanceName} at {grievanceEmail} or {grievancePhone}. Tell us your name and the mobile number or email we have for you, and what you would like us to do. We may ask you to confirm who you are before acting. We will reply within 30 days.',
+          'We give you these choices now. Where the Digital Personal Data Protection Act, 2023 and its Rules give you rights, you also have those rights from the date the relevant provisions apply, including the right to complain to the Data Protection Board of India.',
         ],
       },
       {
         heading: 'Children',
-        paragraphs: ['Our services are for adults. Please do not send us requests on behalf of anyone under 18 without their parent or guardian.'],
+        paragraphs: ['Our services are for adults. If you are under 18, please ask a parent or guardian to contact us for you.'],
       },
       {
         heading: 'Changes to this notice',
-        paragraphs: ['If we change how we use your data, we will update this notice and the date at the top. For important changes we will tell you by email or when you next use our website.'],
+        paragraphs: ['If we change how we use your data, we will update this notice and the date at the top. For important changes, we will tell you by email or when you next use our website.'],
       },
     ],
   },
@@ -190,7 +195,8 @@ export function legalBody(doc: LegalDoc, block: unknown, identity: BusinessIdent
   const fill = (t: string) => t.replace(/\{([a-zA-Z]+)\}/g, (m, k: string) => (values as Record<string, string>)[k] ?? m);
   return {
     title: source.title,
-    updatedOn: typeof source.updatedOn === 'string' && source.updatedOn ? source.updatedOn : DEFAULT_UPDATED,
+    // Same rule as privacyNoticeVersion(): the page date is always the version recorded with consent.
+    updatedOn: typeof source.updatedOn === 'string' && source.updatedOn ? source.updatedOn : LEGAL_DEFAULTS[doc].updatedOn,
     sections: source.sections.map((s) => ({ heading: fill(s.heading), paragraphs: s.paragraphs.map(fill) })),
   };
 }
