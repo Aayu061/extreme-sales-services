@@ -21,6 +21,8 @@ async function clientIpHash(): Promise<string | undefined> {
 export interface SignInState {
   step: 'email' | 'code';
   email: string;
+  /** When the code was asked for (ms), so the form can count down to "send a new code". */
+  sentAt?: number;
   error?: string;
   message?: string;
 }
@@ -45,7 +47,8 @@ export async function requestCode(_prev: SignInState, formData: FormData): Promi
   return {
     step: 'code',
     email,
-    message: `If ${email} has an account with us, we have emailed a 6-digit code. It works for 10 minutes.`,
+    sentAt: Date.now(),
+    message: `If ${email} has an account with us, we have emailed a 6-digit code. It works for 10 minutes. You can ask for up to 3 codes in 15 minutes.`,
   };
 }
 

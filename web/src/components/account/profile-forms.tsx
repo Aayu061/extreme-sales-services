@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { Field, Textarea } from '@/components/ui/field';
 import { buttonStyles } from '@/components/ui/button';
@@ -9,6 +9,11 @@ import { requestProfileChange, signOutAll, type PortalFormState } from '@/app/(s
 /** "Request a change": customers cannot edit their details; this sends a message to staff (5 a day at most). */
 export function ChangeRequestForm() {
   const [state, send, sending] = useActionState<PortalFormState, FormData>(requestProfileChange, { status: 'idle' });
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
+  // After a refused send, focus the box so screen readers read its error (aria-describedby) and the text is ready to fix.
+  useEffect(() => {
+    if (state.status === 'error') fieldRef.current?.focus();
+  }, [state]);
   if (state.status === 'done') {
     return (
       <div role="status" className="flex items-start gap-3 rounded-2xl bg-success/10 p-4 text-ink">
@@ -31,6 +36,7 @@ export function ChangeRequestForm() {
       <Field label="What should we change?" required hint="For example a new phone number or address. 5 to 1000 characters." error={state.error}>
         {({ id, describedBy, invalid }) => (
           <Textarea
+            ref={fieldRef}
             id={id}
             name="message"
             required

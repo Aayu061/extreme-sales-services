@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { Field, Textarea } from '@/components/ui/field';
 import { buttonStyles } from '@/components/ui/button';
@@ -9,6 +9,11 @@ import { renewAmc, type PortalFormState } from '@/app/(site)/account/actions';
 /** "Renew this AMC": sends a renewal request to staff (no online payment). Shows the reference when sent. */
 export function RenewForm({ contractId, contractNumber }: { contractId: string; contractNumber: string }) {
   const [state, send, sending] = useActionState<PortalFormState, FormData>(renewAmc, { status: 'idle' });
+  const noteRef = useRef<HTMLTextAreaElement>(null);
+  // After a refused send, focus the note so screen readers read the error (aria-describedby).
+  useEffect(() => {
+    if (state.status === 'error') noteRef.current?.focus();
+  }, [state]);
 
   if (state.status === 'done') {
     return (
@@ -35,7 +40,7 @@ export function RenewForm({ contractId, contractNumber }: { contractId: string; 
       <input type="hidden" name="contractId" value={contractId} />
       <Field label="Anything we should know? (optional)" hint="For example a change of plan or a good time to call." error={state.error}>
         {({ id, describedBy, invalid }) => (
-          <Textarea id={id} name="note" maxLength={500} defaultValue={state.value} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
+          <Textarea ref={noteRef} id={id} name="note" maxLength={500} defaultValue={state.value} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
         )}
       </Field>
       <div>
