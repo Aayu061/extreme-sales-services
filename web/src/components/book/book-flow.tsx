@@ -17,6 +17,7 @@ import { Confirmation } from './confirmation';
 import { StepDetails, EMPTY_DETAILS, type DetailsValue } from './step-details';
 import { StepItems } from './step-items';
 import { StepWhere, EMPTY_WHERE, type WhereValue } from './step-where';
+import { bookingPrefill } from '@/app/(site)/book/actions';
 
 type Step = 1 | 2 | 3;
 const STEP_NAMES = ['What you need', 'Where and when', 'Your details'] as const;
@@ -86,6 +87,26 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
   const [lineErrors, setLineErrors] = useState<Record<string, string>>({});
   const panel = useRef<HTMLDivElement>(null);
   const prefilled = useRef(false);
+  // "Book / complain for this AC" from the customer account passes the AC id (read once: the address bar is tidied).
+  const [acId] = useState(() => query.get('ac'));
+  const [signedInAs, setSignedInAs] = useState<string | null>(null);
+
+  // A signed-in customer: fill in their details (and that AC's address) where the form is still empty. Nothing
+  // happens for anyone else; the booking is linked to the account by the server, from the session cookie.
+  useEffect(() => {
+    let live = true;
+    bookingPrefill(acId)
+      .then((p) => {
+        if (!live || !p) return;
+        setDetails((d) => ({ ...d, name: d.name || p.name, phone: d.phone || p.phone, email: d.email || p.email }));
+        setWhere((w) => (w.line ? w : { ...w, line: p.addressLine, city: p.addressLine && p.city ? p.city : w.city }));
+        setSignedInAs(p.name || 'your account');
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [acId]);
 
   // "Book this" links: add the item once (if not already there), then tidy the address bar.
   useEffect(() => {
@@ -184,6 +205,12 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
 
   return (
     <div ref={panel} className="scroll-mt-28">
+      {signedInAs && (
+        <p role="status" className="mb-4 rounded-2xl bg-cyan-wash px-4 py-3 text-sm text-ink">
+          Signed in as <span className="font-semibold">{signedInAs}</span>: we filled in your details from your account, and this
+          request will be linked to it. Please check them before sending.
+        </p>
+      )}
       <ol className="mb-5 grid grid-cols-3 gap-2" aria-label="Steps">
         {STEP_NAMES.map((name, i) => {
           const n = (i + 1) as Step;

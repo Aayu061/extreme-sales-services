@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, UserRound, X } from 'lucide-react';
 import { ThemeSwitch } from '@/components/theme/theme-switch';
 import { BasketPill, EnquiryPill } from '@/components/basket/basket-pill';
 import { buttonStyles } from '@/components/ui/button';
@@ -17,8 +17,8 @@ const NAV = [
   { href: '/shop', label: 'Shop ACs' },
   { href: '/track', label: 'Track' },
 ];
-/** The phone menu also lists Contact (on desktop it sits in the footer). */
-const MENU = [...NAV, { href: '/contact', label: 'Contact' }];
+/** The phone menu also lists Contact (on desktop it sits in the footer) and the customer account. */
+const MENU = [...NAV, { href: '/contact', label: 'Contact' }, { href: '/account', label: 'My account' }];
 
 /**
  * Glass pill menu. On the home page it floats over the hero photo; on other pages it stays at
@@ -65,6 +65,19 @@ export function SiteHeader() {
           <BasketPill />
           <EnquiryPill />
           <ThemeSwitch />
+          {/* Customer sign-in (S11). Until PYS switches accounts on, /account says "coming soon". */}
+          <Link
+            href="/account"
+            aria-label="My account"
+            title="My account"
+            aria-current={active('/account') ? 'page' : undefined}
+            className={cn(
+              'neu-raised inline-flex size-11 items-center justify-center rounded-full text-ink',
+              active('/account') && 'shadow-[inset_0_0_0_1px_var(--glass-line)]',
+            )}
+          >
+            <UserRound aria-hidden="true" size={21} />
+          </Link>
           <Link href="/book" className={cn(buttonStyles({ size: 'sm' }), 'max-[760px]:hidden')}>
             Book a service
           </Link>

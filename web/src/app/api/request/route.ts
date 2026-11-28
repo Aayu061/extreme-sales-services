@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { accountToken } from '@/lib/account';
 import { hashClientIp } from '@/lib/client-ip';
 import { serverEnv } from '@/lib/env';
 import { PysError, pysRequest } from '@/lib/pys/client';
@@ -42,10 +43,16 @@ export async function POST(request: Request): Promise<Response> {
 
   const r = parsed.data;
   const body = toPysIntake(r, hashClientIp(request.headers, serverEnv().PYS_INTEGRATION_SECRET ?? ''));
+  // A signed-in customer's session goes along, so PYS links the request to their record. PYS resolves it itself; an
+  // ended session is simply treated as "not signed in". Nothing in the body names a customer.
+  const session = await accountToken();
   try {
     const created = await pysRequest<IntakeCreated>('POST', '/intakes', {
       body,
-      headers: { 'Idempotency-Key': `${r.ref.slice(0, 150)}:${createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0, 16)}` },
+      headers: {
+        'Idempotency-Key': `${r.ref.slice(0, 150)}:${createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0, 16)}`,
+        ...(session ? { 'X-PYS-Customer-Session': session } : {}),
+      },
       timeoutMs: 70_000,
       retries: 1,
     });

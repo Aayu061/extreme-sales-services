@@ -13,6 +13,10 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(search),
 }));
 
+// The signed-in customer's details (S11b): nobody is signed in unless a test says so.
+const { bookingPrefill } = vi.hoisted(() => ({ bookingPrefill: vi.fn() }));
+vi.mock('@/app/(site)/book/actions', () => ({ bookingPrefill }));
+
 const { BookFlow } = await import('@/components/book/book-flow');
 const fetchMock = vi.fn();
 
@@ -38,6 +42,7 @@ beforeEach(() => {
   search = '';
   replace.mockReset();
   fetchMock.mockReset();
+  bookingPrefill.mockReset().mockResolvedValue(null);
   vi.stubGlobal('fetch', fetchMock);
 });
 afterEach(() => {
@@ -193,6 +198,31 @@ describe('BookFlow note pre-fill from the customer account (S11b)', () => {
     flow();
     toDetails();
     expect(noteBox().value).toBe('Service for my LG Window AC.');
+  });
+
+  it('a signed-in customer: name, mobile, email and the AC address are filled in, with a note saying so', async () => {
+    bookingPrefill.mockResolvedValue({ name: 'Asha Rao', phone: '9876543210', email: 'asha@example.com', addressLine: '12 Sea View, Chembur', city: 'Mumbai' });
+    search = `service=SVC-DIAG&ac=ac1&note=${encodeURIComponent('Complaint about my Daikin. Problem:')}`;
+    await act(async () => {
+      flow();
+    });
+    expect(bookingPrefill).toHaveBeenCalledWith('ac1');
+    expect(screen.getByRole('status').textContent).toMatch(/Signed in as Asha Rao.*linked to it/);
+    click('Continue');
+    expect((screen.getByLabelText(/^Flat, building and street/) as HTMLInputElement).value).toBe('12 Sea View, Chembur');
+    click('Continue');
+    expect((screen.getByLabelText(/^Your name/) as HTMLInputElement).value).toBe('Asha Rao');
+    expect((screen.getByLabelText(/^Mobile number/) as HTMLInputElement).value).toBe('9876543210');
+  });
+
+  it('nothing is filled in for someone who is not signed in', async () => {
+    search = 'service=SVC-DRY';
+    await act(async () => {
+      flow();
+    });
+    expect(screen.queryByText(/Signed in as/)).toBeNull();
+    click('Continue');
+    expect((screen.getByLabelText(/^Flat, building and street/) as HTMLInputElement).value).toBe('');
   });
 
   it('sends the note as the request message and forgets it afterwards', async () => {

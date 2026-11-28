@@ -47,13 +47,18 @@ export const COMPLAINT_SERVICE_CODE = 'SVC-DIAG';
  * "Book a service for this AC": opens /book with a note naming the AC, so staff know which unit. The customer
  * picks the service on /book as usual.
  */
-export function bookForAcHref(ac: { label: string }, opts: { amcCovered?: boolean } = {}): string {
+export function bookForAcHref(ac: { label: string; id?: string }, opts: { amcCovered?: boolean } = {}): string {
   const note = cleanBookNote(`Service for my ${ac.label}.${opts.amcCovered ? ' This AC is under my AMC.' : ''}`);
-  return `/book?note=${enc(note)}`;
+  return `/book?note=${enc(note)}${acParam(ac)}`;
 }
 
 /** "Raise a complaint for this AC": a diagnosis visit plus a note naming the AC; the customer adds the problem. */
-export function complaintForAcHref(ac: { label: string }, opts: { amcCovered?: boolean } = {}): string {
+export function complaintForAcHref(ac: { label: string; id?: string }, opts: { amcCovered?: boolean } = {}): string {
   const note = cleanBookNote(`Complaint about my ${ac.label}.${opts.amcCovered ? ' This AC is under my AMC.' : ''} Problem: `);
-  return `/book?service=${enc(COMPLAINT_SERVICE_CODE)}&note=${enc(note)}`;
+  return `/book?service=${enc(COMPLAINT_SERVICE_CODE)}&note=${enc(note)}${acParam(ac)}`;
+}
+
+/** The AC's id lets /book fill in that AC's service address for a signed-in customer (PYS checks it is theirs). */
+function acParam(ac: { id?: string }): string {
+  return ac.id ? `&ac=${enc(ac.id)}` : '';
 }

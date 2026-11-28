@@ -47,6 +47,7 @@ export function SiteFooter({ identity }: { identity: BusinessIdentity }) {
         <nav aria-label="Footer" className="glass rounded-[20px] p-5">
           <p className={heading}>More</p>
           <ul className="space-y-1">
+            <li><Link href="/account" className={link}>My account</Link></li>
             <li><Link href="/track" className={link}>Track a request</Link></li>
             <li><Link href="/contact" className={link}>Contact us</Link></li>
             <li><Link href="/sell" className={link}>Sell on ESS</Link></li>
