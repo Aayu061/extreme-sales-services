@@ -43,7 +43,9 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
           'Website accounts are only for our active AMC and regular customers, and only when our staff switch one on for you. To sign in, you enter the email address we have on record for you and we email you a 6-digit code.',
           'Each code works only once and only for 10 minutes. We keep it only as a keyed one-way fingerprint (a hash), never the code itself, and the code is not kept in our records of the emails we send. After 10 wrong codes in 24 hours, sign-in to that account is locked for 24 hours.',
           'To stop anyone trying codes again and again, we also limit the number of tries from one connection. For this we use the one-way fingerprint of your internet address described above, never the address itself.',
-          'When you sign in, we record the time. Your account shows only your own records: your contact details, your ACs, your AMC contracts with the visits used and left, and your service requests with the visit times and the first name of the technician.',
+          'When you sign in, we record the time. Your account shows only your own records: your contact details, your ACs (with their serial numbers), your AMC contracts with the visits used and left, your service requests with the visit times and the first name of the technician, the service reports of finished visits, and your bills and payments.',
+          'Service report photos are shown through private links that stop working after 10 minutes. Payment references are shown only by their last 4 characters. For a bill with an amount due, the account shows a UPI payment link for that amount; paying is done in your own UPI app.',
+          'From your account you can ask us to renew an AMC or to change your details. These requests go to our staff, who check them and make the change; nothing is changed or charged automatically.',
         ],
       },
       {
@@ -65,7 +67,7 @@ export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
         heading: 'How long we keep it',
         paragraphs: [
           'As long as needed to provide the service and for as long as tax and accounting law requires us to keep invoices and records.',
-          'Sign-in codes stop working after 10 minutes. A website sign-in ends after 7 days without use, after 30 days at most, when you sign out, when your account is switched off, or when the email address we have on record for you changes.',
+          'Sign-in codes stop working after 10 minutes, and their fingerprints are deleted after 7 days. A website sign-in ends after 7 days without use, after 30 days at most, when you sign out, when your account is switched off, or when the email address we have on record for you changes; the record of an ended sign-in is deleted after 30 days.',
           'Misuse-prevention records (the internet-address fingerprints) are kept only briefly.',
         ],
       },
