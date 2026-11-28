@@ -58,6 +58,15 @@ describe('PYS client', () => {
     expect(new Set(nonces).size).toBe(2);
   });
 
+  it('does not retry "customer accounts are off" or a rate limit: they would answer the same, slower', async () => {
+    const { pysRequest } = await loadClient();
+    for (const [status, code] of [[503, 'PORTAL_OFF'], [429, 'RATE_LIMITED'], [429, 'RATE_LIMIT_EXCEEDED']] as const) {
+      const fetchImpl = vi.fn(async () => json(status, { success: false, error: { code, message: 'x' } }));
+      await expect(pysRequest('GET', '/portal/status', { fetchImpl })).rejects.toMatchObject({ status, code });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+    }
+  });
+
   it('never retries a 4xx, and passes PYS validation details through', async () => {
     const { pysRequest, PysError } = await loadClient();
     const fetchImpl = vi.fn(async () =>

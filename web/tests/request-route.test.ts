@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { pysRequest } = vi.hoisted(() => ({ pysRequest: vi.fn() }));
+const { pysRequest, accountToken } = vi.hoisted(() => ({ pysRequest: vi.fn(), accountToken: vi.fn() }));
 vi.mock('@/lib/pys/client', async (orig) => ({ ...(await orig<typeof import('@/lib/pys/client')>()), pysRequest }));
+// The customer's sign-in cookie (S11): none unless a test says so.
+vi.mock('@/lib/account', () => ({ accountToken }));
 
 const { PysError } = await import('@/lib/pys/client');
 const { POST } = await import('@/app/api/request/route');
@@ -21,9 +23,26 @@ const post = (body: unknown, headers: Record<string, string> = {}) =>
 
 beforeEach(() => {
   pysRequest.mockReset();
+  accountToken.mockReset().mockResolvedValue(null);
 });
 
 describe('POST /api/request', () => {
+  it('a signed-in customer: the session goes to PYS in its header (PYS links the request); never in the body', async () => {
+    const token = 't'.repeat(43);
+    accountToken.mockResolvedValue(token);
+    pysRequest.mockResolvedValue({ intakeNumber: 'WEB-2', trackingCode: 'ESS-CCCC-DDDD', status: 'PENDING_REVIEW' });
+    expect((await post(valid)).status).toBe(200);
+    const opts = pysRequest.mock.calls[0][2];
+    expect(opts.headers['X-PYS-Customer-Session']).toBe(token);
+    expect(JSON.stringify(opts.body)).not.toContain(token);
+  });
+
+  it('nobody signed in: no session header', async () => {
+    pysRequest.mockResolvedValue({ intakeNumber: 'WEB-3', trackingCode: 'ESS-EEEE-FFFF', status: 'PENDING_REVIEW' });
+    await post(valid);
+    expect(pysRequest.mock.calls[0][2].headers).not.toHaveProperty('X-PYS-Customer-Session');
+  });
+
   it('sends one request to PYS with the reference as the idempotency key', async () => {
     pysRequest.mockResolvedValue({ intakeNumber: 'WEB-1', trackingCode: 'ESS-AAAA-BBBB', status: 'PENDING_REVIEW' });
     const res = await post(valid, { 'x-forwarded-for': '1.2.3.4, 5.6.7.8' });

@@ -13,6 +13,10 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(search),
 }));
 
+// The signed-in customer's details (S11b): nobody is signed in unless a test says so.
+const { bookingPrefill } = vi.hoisted(() => ({ bookingPrefill: vi.fn() }));
+vi.mock('@/app/(site)/book/actions', () => ({ bookingPrefill }));
+
 const { BookFlow } = await import('@/components/book/book-flow');
 const fetchMock = vi.fn();
 
@@ -38,6 +42,7 @@ beforeEach(() => {
   search = '';
   replace.mockReset();
   fetchMock.mockReset();
+  bookingPrefill.mockReset().mockResolvedValue(null);
   vi.stubGlobal('fetch', fetchMock);
 });
 afterEach(() => {
@@ -154,5 +159,79 @@ describe('StepWhere', () => {
     const { StepWhere, EMPTY_WHERE } = await import('@/components/book/step-where');
     render(<StepWhere value={EMPTY_WHERE} onChange={() => {}} errors={{}} />);
     expect(screen.getAllByRole('radio').map((r) => r.textContent)).toEqual(['Morning (9–12)', 'Afternoon (12–3)', 'Evening (3–6:30)']);
+  });
+});
+
+describe('BookFlow note pre-fill from the customer account (S11b)', () => {
+  beforeEach(() => sessionStorage.clear());
+  const toDetails = () => {
+    click('Continue');
+    type(/^Flat, building and street/, '12 Sea View, Chembur');
+    click('Continue');
+  };
+  const noteBox = () => screen.getByLabelText(/^Anything we should know/) as HTMLTextAreaElement;
+
+  it('puts ?note= in the note box (plain text, still editable) alongside ?service=', () => {
+    search = `service=SVC-DIAG&note=${encodeURIComponent('Complaint about my Daikin 1.5 ton · Living room. Problem:')}`;
+    flow();
+    expect(saved().lines[0]).toMatchObject({ ref: 'SVC-DIAG' });
+    toDetails();
+    expect(noteBox().value).toBe('Complaint about my Daikin 1.5 ton · Living room. Problem:');
+    fireEvent.change(noteBox(), { target: { value: 'Water dripping' } });
+    expect(noteBox().value).toBe('Water dripping');
+  });
+
+  it('cleans the note: no control characters, at most 300 characters', () => {
+    search = `service=SVC-DIAG&note=${encodeURIComponent(`a\u0000<b>\n${'x'.repeat(400)}`)}`;
+    flow();
+    toDetails();
+    expect(noteBox().value.startsWith('a <b> x')).toBe(true);
+    expect(noteBox().value).toHaveLength(300);
+  });
+
+  it('keeps the note for this tab, so it survives going to add a service', () => {
+    search = `note=${encodeURIComponent('Service for my LG Window AC.')}`;
+    flow();
+    expect(sessionStorage.getItem('ess-book-note')).toBe('Service for my LG Window AC.');
+    cleanup();
+    search = 'service=SVC-DRY';
+    flow();
+    toDetails();
+    expect(noteBox().value).toBe('Service for my LG Window AC.');
+  });
+
+  it('a signed-in customer: name, mobile, email and the AC address are filled in, with a note saying so', async () => {
+    bookingPrefill.mockResolvedValue({ name: 'Asha Rao', phone: '9876543210', email: 'asha@example.com', addressLine: '12 Sea View, Chembur', city: 'Mumbai' });
+    search = `service=SVC-DIAG&ac=ac1&note=${encodeURIComponent('Complaint about my Daikin. Problem:')}`;
+    await act(async () => {
+      flow();
+    });
+    expect(bookingPrefill).toHaveBeenCalledWith('ac1');
+    expect(screen.getByRole('status').textContent).toMatch(/Signed in as Asha Rao.*linked to it/);
+    click('Continue');
+    expect((screen.getByLabelText(/^Flat, building and street/) as HTMLInputElement).value).toBe('12 Sea View, Chembur');
+    click('Continue');
+    expect((screen.getByLabelText(/^Your name/) as HTMLInputElement).value).toBe('Asha Rao');
+    expect((screen.getByLabelText(/^Mobile number/) as HTMLInputElement).value).toBe('9876543210');
+  });
+
+  it('nothing is filled in for someone who is not signed in', async () => {
+    search = 'service=SVC-DRY';
+    await act(async () => {
+      flow();
+    });
+    expect(screen.queryByText(/Signed in as/)).toBeNull();
+    click('Continue');
+    expect((screen.getByLabelText(/^Flat, building and street/) as HTMLInputElement).value).toBe('');
+  });
+
+  it('sends the note as the request message and forgets it afterwards', async () => {
+    search = `service=SVC-JET-WASH&note=${encodeURIComponent('Service for my LG Window AC.')}`;
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ trackingCode: 'ESS-LOCL-DEV3', intakeNumber: 'WEB-2' }), { status: 200 }));
+    flow();
+    await fillAndSend();
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).message).toBe('Service for my LG Window AC.');
+    expect(await screen.findByText('ESS-LOCL-DEV3')).toBeTruthy();
+    expect(sessionStorage.getItem('ess-book-note')).toBeNull();
   });
 });

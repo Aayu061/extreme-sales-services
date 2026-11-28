@@ -48,6 +48,16 @@ const nextConfig: NextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
+      {
+        // Customer account pages hold one person's data: never stored by the browser or any shared cache, so Back
+        // after signing out on a shared computer does not show the last page again.
+        source: '/account',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store, max-age=0' }],
+      },
+      {
+        source: '/account/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store, max-age=0' }],
+      },
     ];
   },
 };

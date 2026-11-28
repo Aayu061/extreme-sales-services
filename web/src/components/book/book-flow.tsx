@@ -10,12 +10,14 @@ import { priceLine } from '@/lib/basket-pricing';
 import type { NewLine } from '@/lib/basket';
 import { cn } from '@/lib/cn';
 import type { Catalog } from '@/lib/pys/types';
+import { cleanBookNote } from '@/lib/portal-links';
 import { todayIst } from '@/lib/request-schema';
 import { BasketSummary } from './basket-summary';
 import { Confirmation } from './confirmation';
 import { StepDetails, EMPTY_DETAILS, type DetailsValue } from './step-details';
 import { StepItems } from './step-items';
 import { StepWhere, EMPTY_WHERE, type WhereValue } from './step-where';
+import { bookingPrefill } from '@/app/(site)/book/actions';
 
 type Step = 1 | 2 | 3;
 const STEP_NAMES = ['What you need', 'Where and when', 'Your details'] as const;
@@ -33,6 +35,29 @@ function lineFromQuery(q: URLSearchParams, catalog: Pick<Catalog, 'services' | '
     return p ? { type: 'AMC', ref: p.code, name: p.name } : null;
   }
   return null;
+}
+
+/**
+ * "Book / complain for this AC" links from the customer account carry ?note= naming the AC. It goes in the note box
+ * (plain text the customer can still change) and is kept for this tab, so it survives going to /services to add one.
+ */
+const NOTE_KEY = 'ess-book-note';
+function rememberNote(note: string | null) {
+  try {
+    if (note) sessionStorage.setItem(NOTE_KEY, note);
+    else sessionStorage.removeItem(NOTE_KEY);
+  } catch {
+    // Storage blocked (private mode): the note still shows on this visit.
+  }
+}
+/** The note box is on step 3, so reading the tab's storage on the first render cannot change the first paint. */
+function savedNote(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    return cleanBookNote(sessionStorage.getItem(NOTE_KEY));
+  } catch {
+    return '';
+  }
 }
 
 function whereErrors(w: WhereValue): Record<string, string> {
@@ -57,17 +82,39 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
   const submit = useRequestSubmit();
   const [step, setStep] = useState<Step>(1);
   const [where, setWhere] = useState<WhereValue>(EMPTY_WHERE);
-  const [details, setDetails] = useState<DetailsValue>(EMPTY_DETAILS);
+  const [details, setDetails] = useState<DetailsValue>(() => ({ ...EMPTY_DETAILS, note: cleanBookNote(query.get('note')) || savedNote() }));
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
   const [lineErrors, setLineErrors] = useState<Record<string, string>>({});
   const panel = useRef<HTMLDivElement>(null);
   const prefilled = useRef(false);
+  // "Book / complain for this AC" from the customer account passes the AC id (read once: the address bar is tidied).
+  const [acId] = useState(() => query.get('ac'));
+  const [signedInAs, setSignedInAs] = useState<string | null>(null);
+
+  // A signed-in customer: fill in their details (and that AC's address) where the form is still empty. Nothing
+  // happens for anyone else; the booking is linked to the account by the server, from the session cookie.
+  useEffect(() => {
+    let live = true;
+    bookingPrefill(acId)
+      .then((p) => {
+        if (!live || !p) return;
+        setDetails((d) => ({ ...d, name: d.name || p.name, phone: d.phone || p.phone, email: d.email || p.email }));
+        setWhere((w) => (w.line ? w : { ...w, line: p.addressLine, city: p.addressLine && p.city ? p.city : w.city }));
+        setSignedInAs(p.name || 'your account');
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [acId]);
 
   // "Book this" links: add the item once (if not already there), then tidy the address bar.
   useEffect(() => {
     if (prefilled.current) return;
     prefilled.current = true;
     const q = new URLSearchParams(query.toString());
+    const note = cleanBookNote(q.get('note'));
+    if (note) rememberNote(note);
     if (!q.toString()) return;
     // Old AC links (?product=) belong to the enquiry page now.
     const product = q.get('product');
@@ -91,6 +138,7 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
   useEffect(() => {
     if (submit.state !== 'done') return;
     clear();
+    rememberNote(null);
     done.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
     done.current?.focus();
   }, [submit.state, clear]);
@@ -157,6 +205,12 @@ export function BookFlow({ catalog, phone }: { catalog: Pick<Catalog, 'services'
 
   return (
     <div ref={panel} className="scroll-mt-28">
+      {signedInAs && (
+        <p role="status" className="mb-4 rounded-2xl bg-cyan-wash px-4 py-3 text-sm text-ink">
+          Signed in as <span className="font-semibold">{signedInAs}</span>: we filled in your details from your account, and this
+          request will be linked to it. Please check them before sending.
+        </p>
+      )}
       <ol className="mb-5 grid grid-cols-3 gap-2" aria-label="Steps">
         {STEP_NAMES.map((name, i) => {
           const n = (i + 1) as Step;
