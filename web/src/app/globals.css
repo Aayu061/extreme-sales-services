@@ -425,3 +425,66 @@ p {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * S11b: printing (account reports and invoices, "Print / Save as PDF"). A4, light colours whatever the day/night
+ * switch says, and only the page's content: no menu, footer, floating buttons, banner photo, breadcrumb or tabs.
+ */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  :root,
+  :root[data-theme="dark"] {
+    --page: #ffffff;
+    --surface: #ffffff;
+    --ink: #111111;
+    --muted: #444444;
+    --line: #cccccc;
+    --cool: #1f4fa8;
+    --heat-text: #8a2f06;
+    --glass-fill: #ffffff;
+    --glass-strong: #ffffff;
+    --glass-line: #cccccc;
+    --glass-hi: transparent;
+    color-scheme: light;
+  }
+  body {
+    background: #ffffff;
+    color: #111111;
+    font-size: 11pt;
+  }
+  body > header,
+  body > footer,
+  #main ~ *,
+  .skip-link,
+  .page-banner,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+  .glass,
+  .glass-strong {
+    background: #ffffff !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border-color: #cccccc !important;
+  }
+  .banner-rise {
+    animation: none !important;
+  }
+  .page-banner + div {
+    margin-top: 0 !important;
+  }
+  .print-sheet section,
+  .print-sheet li,
+  .print-sheet tr {
+    break-inside: avoid;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
