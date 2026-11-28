@@ -24,6 +24,9 @@ import {
   tonsText,
   visitStateBadge,
   visitsLeftText,
+  warrantyVisitsText,
+  istToday,
+  amcCoversToday,
 } from '@/lib/portal-format';
 import { alertHref, bookForAcHref, cleanBookNote, complaintForAcHref, accountHref } from '@/lib/portal-links';
 
@@ -149,6 +152,25 @@ describe('numbers, dates and times', () => {
     expect(visitsLeftText({ totalVisits: null, visitsUsed: 2, visitsLeft: null })).toBe('2 used');
     expect(kgText(0.75)).toBe('0.75 kg');
     expect(kgText(0)).toBeNull();
+  });
+
+  it('warranty visits: only the total while PYS does not count used ones (never a made-up "0 used")', () => {
+    expect(warrantyVisitsText({ visitsTotal: 2, visitsUsed: null })).toBe('2 visits included');
+    expect(warrantyVisitsText({ visitsTotal: 1, visitsUsed: null })).toBe('1 visit included');
+    expect(warrantyVisitsText({ visitsTotal: 4, visitsUsed: 1 })).toBe('1 used, 3 left of 4');
+    expect(warrantyVisitsText({ visitsTotal: 2, visitsUsed: 5 })).toBe('5 used, 0 left of 2');
+    expect(warrantyVisitsText({ visitsTotal: null, visitsUsed: null })).toBeNull();
+    expect(warrantyVisitsText({ visitsTotal: 0, visitsUsed: 0 })).toBeNull();
+  });
+
+  it('today in India and AMC cover that also checks the end date', () => {
+    expect(istToday(new Date('2026-11-30T20:00:00Z'))).toBe('2026-12-01'); // 01:30 the next day in India
+    const today = '2026-12-01';
+    expect(amcCoversToday([{ status: 'ACTIVE', endDate: '2026-12-01' }], today)).toBe(true);
+    expect(amcCoversToday([{ status: 'active', endDate: '2027-01-01' }], today)).toBe(true);
+    expect(amcCoversToday([{ status: 'ACTIVE', endDate: '2026-11-30' }], today)).toBe(false); // ended, not yet marked
+    expect(amcCoversToday([{ status: 'EXPIRED', endDate: '2027-01-01' }], today)).toBe(false);
+    expect(amcCoversToday([], today)).toBe(false);
   });
 });
 

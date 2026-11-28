@@ -264,6 +264,29 @@ export function visitsLeftText(v: { totalVisits?: number | null; visitsUsed: num
   return `${v.visitsUsed} used`;
 }
 
+/**
+ * Warranty visits on an AC page. PYS does not count warranty visits used yet (it sends null), so then only the
+ * total is shown: "2 visits included" rather than a made-up "0 used".
+ */
+export function warrantyVisitsText(w: { visitsTotal: number | null; visitsUsed: number | null }): string | null {
+  if (typeof w.visitsTotal !== 'number' || w.visitsTotal <= 0) return null;
+  if (typeof w.visitsUsed !== 'number') return `${w.visitsTotal} visit${w.visitsTotal === 1 ? '' : 's'} included`;
+  return `${w.visitsUsed} used, ${Math.max(0, w.visitsTotal - w.visitsUsed)} left of ${w.visitsTotal}`;
+}
+
+/** Today in India as YYYY-MM-DD (the dates PYS sends are India dates). */
+export function istToday(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+}
+
+/**
+ * The AC is under a live AMC: an active (or ending soon) contract whose end date has not passed. The status alone is
+ * not enough, because PYS may not have marked an ended contract EXPIRED yet (PYS's own rule also checks the date).
+ */
+export function amcCoversToday(contracts: Array<{ status: string; endDate: string | null }>, today: string = istToday()): boolean {
+  return contracts.some((c) => ['ACTIVE', 'EXPIRING_SOON'].includes(c.status.toUpperCase()) && (!c.endDate || c.endDate >= today));
+}
+
 /** "1 AC" / "3 ACs". */
 export function acCountText(n: number): string {
   return `${n} AC${n === 1 ? '' : 's'}`;

@@ -199,13 +199,13 @@ export interface PortalReport {
 
 export interface PortalBilling {
   totals: { due: number; paidThisYear: number };
-  bills: Array<{ number: string; date: string; forLabel: string; total: number; paid: number; balance: number; status: BillStatus }>;
+  bills: Array<{ number: string; date: string | null; forLabel: string; total: number; paid: number; balance: number; status: BillStatus }>;
 }
 
 export interface PortalBill {
   bill: {
     number: string;
-    date: string;
+    date: string | null;
     forLabel: string;
     requestNumber: string | null;
     contractNumber: string | null;
@@ -217,7 +217,7 @@ export interface PortalBill {
     paid: number;
     balance: number;
     status: BillStatus;
-    payments: Array<{ date: string; method: string; amount: number; referenceLast4: string | null; kind: 'PAYMENT' | 'REVERSAL' }>;
+    payments: Array<{ date: string | null; method: string; amount: number; referenceLast4: string | null; kind: 'PAYMENT' | 'REVERSAL' }>;
     upiLink: string | null;
   };
   business: BusinessIdentity;

@@ -56,7 +56,12 @@ describe('portalGet (S11b): the customer comes only from the session cookie', ()
     pysRequest.mockRejectedValueOnce(new PysError(404, 'NOT_FOUND', 'x'));
     expect(await portalGet('/portal/acs/x', { detail: true })).toEqual({ kind: 'not-found' });
     pysRequest.mockRejectedValueOnce(new PysError(404, 'NOT_FOUND', 'x'));
-    expect(await portalGet('/portal/acs')).toEqual({ kind: 'off' });
+    expect(await portalGet('/portal/acs')).toEqual({ kind: 'off' }); // a PYS without the portal routes
+    // A portal route's own 404 on a list page is an error, not "coming soon"; on a detail page still "not found".
+    pysRequest.mockRejectedValueOnce(new PysError(404, 'NOT_FOUND', 'x', { portal: true }));
+    expect(await portalGet('/portal/acs')).toEqual({ kind: 'error' });
+    pysRequest.mockRejectedValueOnce(new PysError(404, 'NOT_FOUND', 'x', { portal: true }));
+    expect(await portalGet('/portal/acs/x', { detail: true })).toEqual({ kind: 'not-found' });
     pysRequest.mockRejectedValueOnce(new PysError(503, 'PYS_UNREACHABLE', 'x'));
     expect(await portalGet('/portal/acs')).toEqual({ kind: 'error' });
   });
@@ -89,6 +94,26 @@ describe('renewAmc', () => {
     const s = await renewAmc(idle, fd({ contractId: 'amc1', note: ' Please call after 6 ' }));
     expect(s).toEqual({ status: 'done', reference: 'WEB-123' });
     expect(pysRequest).toHaveBeenCalledWith('POST', '/portal/amc/amc1/renew', { headers: SESSION, body: { note: 'Please call after 6' } });
+  });
+
+  it('an already-open request says so instead of "sent"', async () => {
+    pysRequest.mockResolvedValue({ requested: true, reference: 'WEB-OLD', alreadyRequested: true });
+    expect(await renewAmc(idle, fd({ contractId: 'amc1' }))).toEqual({ status: 'done', reference: 'WEB-OLD', already: true });
+  });
+
+  it('not renewable (409) and refused input (400) get their own words, keeping the note', async () => {
+    pysRequest.mockRejectedValueOnce(new PysError(409, 'NOT_RENEWABLE', 'x'));
+    expect(await renewAmc(idle, fd({ contractId: 'amc1', note: 'mine' }))).toMatchObject({
+      status: 'error',
+      error: expect.stringMatching(/cannot be renewed online/),
+      value: 'mine',
+    });
+    pysRequest.mockRejectedValueOnce(new PysError(400, 'INVALID_INPUT', 'x'));
+    expect(await renewAmc(idle, fd({ contractId: 'amc1', note: 'mine' }))).toMatchObject({
+      status: 'error',
+      error: expect.stringMatching(/check the note/),
+      value: 'mine',
+    });
   });
 
   it('without a note sends an empty body', async () => {

@@ -81,6 +81,9 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
 export async function signOut(): Promise<void> {
   const token = await accountToken();
   if (token) {
+    // The cookie is removed even when PYS cannot be reached: this browser is signed out either way and the token is
+    // gone from it. The PYS session then ends on its own (7 days idle at most); "Sign out everywhere" on the profile
+    // page ends it at once and reports a failure.
     await pysRequest('POST', '/portal/sign-out', { headers: { 'X-PYS-Customer-Session': token } }).catch(() => undefined);
   }
   (await cookies()).delete(ACCOUNT_COOKIE);
@@ -94,6 +97,7 @@ export async function signOut(): Promise<void> {
 
 const SESSION_ENDED_TEXT = 'Your session has ended. Please sign in again.';
 const TRY_AGAIN_TEXT = 'We could not send this right now. Please try again in a minute, or call us.';
+const NOT_RENEWABLE_TEXT = 'This contract cannot be renewed online right now. Please call us and we will help you renew it.';
 
 /** Shown on an account page after PYS said the session has ended: removes the old cookie (only if PYS agrees). */
 export async function forgetEndedSession(): Promise<void> {
@@ -109,12 +113,12 @@ export async function forgetEndedSession(): Promise<void> {
 export interface PortalFormState {
   status: 'idle' | 'done' | 'error';
   reference?: string;
+  /** Renewal only: a request for this contract was already open, so nothing new was sent (its reference is shown). */
+  already?: boolean;
   error?: string;
   /** What the customer typed, kept when there is an error so they do not lose it. */
   value?: string;
 }
-
-
 
 /** "Renew this AMC": an AMC_RENEWAL request in the PYS approval inbox. No payment online; staff call to confirm. */
 export async function renewAmc(_prev: PortalFormState, formData: FormData): Promise<PortalFormState> {
@@ -125,15 +129,21 @@ export async function renewAmc(_prev: PortalFormState, formData: FormData): Prom
   const token = await accountToken();
   if (!token) return { status: 'error', error: SESSION_ENDED_TEXT, value: note };
   try {
-    const res = await pysRequest<{ requested: boolean; reference: string }>('POST', `/portal/amc/${encodeURIComponent(id)}/renew`, {
-      headers: { 'X-PYS-Customer-Session': token },
-      body: note ? { note } : {},
-    });
-    return { status: 'done', reference: res.reference };
+    const res = await pysRequest<{ requested: boolean; reference: string; alreadyRequested?: boolean }>(
+      'POST',
+      `/portal/amc/${encodeURIComponent(id)}/renew`,
+      { headers: { 'X-PYS-Customer-Session': token }, body: note ? { note } : {} }
+    );
+    return res.alreadyRequested === true
+      ? { status: 'done', reference: res.reference, already: true }
+      : { status: 'done', reference: res.reference };
   } catch (err) {
     if (err instanceof PysError && err.status === 503 && err.code === 'PORTAL_OFF') return { status: 'error', error: PORTAL_OFF_TEXT, value: note };
     if (err instanceof PysError && err.status === 401) return { status: 'error', error: SESSION_ENDED_TEXT, value: note };
     if (err instanceof PysError && err.status === 404) return { status: 'error', error: 'We could not find this contract on your account. Please call us.' };
+    // Trying again cannot help here (the contract is outside the renewal window or not renewable online).
+    if (err instanceof PysError && err.status === 409) return { status: 'error', error: NOT_RENEWABLE_TEXT, value: note };
+    if (err instanceof PysError && err.status === 400) return { status: 'error', error: 'Please check the note (plain text, at most 500 characters).', value: note };
     if (isRateLimited(err)) return { status: 'error', error: 'Too many requests. Please wait a while and try again, or call us.', value: note };
     return { status: 'error', error: TRY_AGAIN_TEXT, value: note };
   }
@@ -157,6 +167,9 @@ export async function requestProfileChange(_prev: PortalFormState, formData: For
     if (err instanceof PysError && err.status === 401) return { status: 'error', error: SESSION_ENDED_TEXT, value: message };
     if (isRateLimited(err)) {
       return { status: 'error', error: 'You have sent 5 change requests today. Please try again tomorrow, or call us.', value: message };
+    }
+    if (err instanceof PysError && err.status === 400) {
+      return { status: 'error', error: 'Please write between 5 and 1000 characters of plain text.', value: message };
     }
     return { status: 'error', error: TRY_AGAIN_TEXT, value: message };
   }

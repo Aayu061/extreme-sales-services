@@ -15,7 +15,8 @@ export function RenewForm({ contractId, contractNumber }: { contractId: string; 
       <div role="status" className="flex items-start gap-3 rounded-2xl bg-success/10 p-4 text-ink">
         <CheckCircle2 aria-hidden="true" size={22} className="mt-0.5 shrink-0 text-success" />
         <p>
-          <span className="block font-semibold">Renewal request sent.</span>
+          <span className="block font-semibold">{state.already ? 'You have already asked to renew this AMC.' : 'Renewal request sent.'}</span>
+          {state.already ? 'Your earlier request is still open. ' : null}
           We will call you to confirm the renewal of {contractNumber}
           {state.reference ? (
             <>

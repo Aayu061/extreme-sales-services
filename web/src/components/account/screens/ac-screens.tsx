@@ -18,6 +18,8 @@ import {
   technologyLabel,
   tonsText,
   acTypeLabel,
+  amcCoversToday,
+  warrantyVisitsText,
 } from '@/lib/portal-format';
 import { accountHref, bookForAcHref, complaintForAcHref } from '@/lib/portal-links';
 import type { PortalAcDetail, PortalAcs } from '@/lib/portal-types';
@@ -83,12 +85,9 @@ export async function AcDetailScreen({ id }: { id: string }) {
   if (r.kind !== 'ok') return <PortalFallback result={r} />;
   const { ac, amc, history, recommendations } = r.data;
   const badge = coverageBadge(ac.warranty.status);
-  const amcCovered = amc.some((c) => ['ACTIVE', 'EXPIRING_SOON'].includes(c.status.toUpperCase()));
+  const amcCovered = amcCoversToday(amc);
   const w = ac.warranty;
-  const warrantyVisits =
-    typeof w.visitsTotal === 'number' && w.visitsTotal > 0
-      ? `${w.visitsUsed ?? 0} used, ${Math.max(0, w.visitsTotal - (w.visitsUsed ?? 0))} left of ${w.visitsTotal}`
-      : null;
+  const warrantyVisits = warrantyVisitsText(w);
 
   return (
     <>

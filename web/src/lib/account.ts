@@ -88,15 +88,19 @@ const REF_RE = /^[A-Za-z0-9][A-Za-z0-9_./-]{0,79}$/;
 export function isPortalRef(ref: string | null | undefined): ref is string {
   return typeof ref === 'string' && REF_RE.test(ref) && !ref.includes('..');
 }
-/** "/portal/acs" + id, safely encoded (a bill number may hold a "/"). */
+/**
+ * "/portal/acs" + id, always encoded. PYS ids are UUIDs and its numbers are letters, digits, "-" and "_"
+ * (e.g. PAY-2026-0000ABCD); anything else simply gets PYS's 404.
+ */
 export function portalPath(base: string, ref: string, suffix = ''): string {
   return `${base}/${encodeURIComponent(ref)}${suffix}`;
 }
 
 /**
  * GET one S11b portal address for the signed-in customer. The customer is known to PYS only from the session cookie;
- * nothing from the browser picks whose data is read. `detail` pages turn PYS's 404 into "not found"; on list pages a
- * 404 means PYS does not have the portal routes yet, which reads as "coming soon" (as on /account in S11 v1).
+ * nothing from the browser picks whose data is read. A 404 from a portal route (details.portal) is "not found" on a
+ * detail page and an error on a list page (the customer's data is missing). Any other 404 means PYS does not have
+ * the portal routes yet, which reads as "coming soon" (as on /account in S11 v1).
  */
 export async function portalGet<T>(path: string, opts: { detail?: boolean } = {}): Promise<PortalResult<T>> {
   const token = await accountToken();
@@ -114,7 +118,11 @@ export async function portalGet<T>(path: string, opts: { detail?: boolean } = {}
   } catch (err) {
     if (err instanceof PysError && err.status === 503 && err.code === 'PORTAL_OFF') return { kind: 'off' };
     if (err instanceof PysError && err.status === 401) return { kind: 'signed-out', ended: true };
-    if (err instanceof PysError && err.status === 404) return opts.detail ? { kind: 'not-found' } : { kind: 'off' };
+    if (err instanceof PysError && err.status === 404) {
+      const fromPortal = (err.details as { portal?: unknown } | undefined)?.portal === true;
+      if (opts.detail) return { kind: 'not-found' };
+      return fromPortal ? { kind: 'error' } : { kind: 'off' };
+    }
     return { kind: 'error' };
   }
 }

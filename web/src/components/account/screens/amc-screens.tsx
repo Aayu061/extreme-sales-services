@@ -109,7 +109,7 @@ export async function AmcDetailScreen({ id }: { id: string }) {
             items={[
               ['Starts', formatDate(c.startDate)],
               ['Ends', formatDate(c.endDate)],
-              ['Visits', humanize(c.frequency) || null],
+              ['How often', humanize(c.frequency) || null],
               ['Amount', <span key="amt" className="tabular">{formatRupees(c.amount)}</span>],
             ]}
           />

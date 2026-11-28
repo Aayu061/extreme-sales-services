@@ -34,7 +34,7 @@ export interface PysRequestOptions {
   body?: unknown;
   headers?: Record<string, string>;
   timeoutMs?: number;
-  /** Extra attempts after the first (network errors and 5xx/408/429 only). */
+  /** Extra attempts after the first (network errors and 5xx/408 only; never PORTAL_OFF or 429). */
   retries?: number;
   fetchImpl?: typeof fetch;
 }
@@ -43,9 +43,15 @@ const DEFAULT_TIMEOUT_MS = 60_000;
 const RETRY_DELAY_MS = 2_000;
 const API_PREFIX = '/api/v1/ess';
 
-const retryable = (status: number) => status >= 500 || status === 408 || status === 429;
+/**
+ * Worth one more try: PYS waking up or a network hiccup (5xx, 408). Not 429: a rate limit lasts minutes to an hour,
+ * so a retry 2 s later only uses up more of it.
+ */
+const retryable = (status: number) => status >= 500 || status === 408;
 /** PYS answers 409 REQUEST_IN_PROGRESS while it is still storing the same idempotent write. */
 const inProgress = (e: PysError) => e.status === 409 && e.code === 'REQUEST_IN_PROGRESS';
+/** A deliberate 503 from a PYS that is awake (customer accounts switched off): the same answer every time. */
+const deliberate = (e: PysError) => e.status === 503 && e.code === 'PORTAL_OFF';
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function pysRequest<T>(method: Method, path: string, opts: PysRequestOptions = {}): Promise<T> {
@@ -94,10 +100,10 @@ export async function pysRequest<T>(method: Method, path: string, opts: PysReque
         json?.error?.message ?? `PYS answered ${res.status}`,
         json?.error?.details,
       );
-      if (!(retryable(res.status) || (canRetry && inProgress(err))) || attempt === attempts) throw err;
+      if (deliberate(err) || !(retryable(res.status) || (canRetry && inProgress(err))) || attempt === attempts) throw err;
       lastError = err;
     } catch (err) {
-      if (err instanceof PysError && !retryable(err.status) && !(canRetry && inProgress(err))) throw err;
+      if (err instanceof PysError && (deliberate(err) || (!retryable(err.status) && !(canRetry && inProgress(err))))) throw err;
       lastError = err;
       if (attempt === attempts) break;
     } finally {
