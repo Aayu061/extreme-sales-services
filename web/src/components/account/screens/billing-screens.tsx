@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Smartphone } from 'lucide-react';
@@ -64,6 +65,9 @@ export async function BillingScreen() {
     </>
   );
 }
+
+/** The company's UPI ID: the one in PYS's pay link (buildUpiPayLink) and on its QR in public/images/payments. */
+export const UPI_ID = '7977805245-1@okbizaxis';
 
 /** The same "upi://pay?…" link as the invoice email; nothing else is ever used as a payment link. */
 export function safeUpiLink(link: string | null | undefined): string | null {
@@ -227,8 +231,32 @@ export async function BillScreen({ number }: { number: string }) {
               <Smartphone aria-hidden="true" size={20} />
               Pay {formatRupees(b.balance)} by UPI
             </a>
-            {/* TODO(S11b release): show a QR code of this UPI link for paying from a computer. */}
-            <p className="mt-3 text-sm text-muted">On a computer? Open this page on your phone to pay. A QR code to scan is coming soon.</p>
+            <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start">
+              {/* The company's own Google Pay business QR (the same one PYS prints on invoices). It is a fixed code, so
+                  it does not carry the amount: the steps beside it say what to enter. */}
+              <Image
+                src="/images/payments/ess-upi-qr.jpg"
+                alt={`UPI QR code for Extreme Sales & Services, UPI ID ${UPI_ID}`}
+                width={720}
+                height={1024}
+                sizes="(min-width: 640px) 280px, 200px"
+                className="h-auto w-[200px] shrink-0 rounded-xl border border-line bg-white sm:w-[280px]"
+              />
+              <div className="text-sm">
+                <p className="font-semibold text-ink">On a computer? Scan this with any UPI app on your phone.</p>
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-muted">
+                  <li>
+                    Enter <span className="tabular font-semibold text-ink">{formatRupees(b.balance)}</span> as the amount.
+                  </li>
+                  <li>
+                    Write <span className="tabular font-semibold text-ink">{b.number}</span> in the note, so we can match your payment.
+                  </li>
+                </ol>
+                <p className="mt-2 text-muted">
+                  UPI ID: <span className="tabular font-semibold text-ink">{UPI_ID}</span>
+                </p>
+              </div>
+            </div>
             <p className="mt-3 text-sm">Our staff confirm each payment when it reaches us, so this bill may take a little while to show as paid.</p>
           </section>
         )}

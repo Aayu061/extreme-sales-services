@@ -44,7 +44,7 @@ import { AcDetailScreen, AcsScreen } from '@/components/account/screens/ac-scree
 import { AmcDetailScreen, AmcListScreen } from '@/components/account/screens/amc-screens';
 import { RequestDetailScreen, RequestsScreen, requestFilter } from '@/components/account/screens/request-screens';
 import { ReportScreen, photoAlt } from '@/components/account/screens/report-screen';
-import { BillScreen, BillingScreen, safeUpiLink } from '@/components/account/screens/billing-screens';
+import { BillScreen, BillingScreen, UPI_ID, safeUpiLink } from '@/components/account/screens/billing-screens';
 import { ProfileScreen } from '@/components/account/screens/profile-screen';
 import * as fx from './helpers/portal-fixtures';
 
@@ -413,6 +413,17 @@ describe('Billing', () => {
     const pay = screen.getByRole('link', { name: 'Pay ₹5,998.00 by UPI' });
     expect(pay.getAttribute('href')).toBe(fx.bill().bill.upiLink);
     expect(screen.getByText(/staff confirm each payment/)).toBeTruthy();
+    // The company's own UPI QR for paying from a computer, with the amount and bill number to enter.
+    const qr = screen.getByRole('img', { name: /UPI QR code for Extreme Sales & Services, UPI ID 7977805245-1@okbizaxis/ });
+    expect(qr.getAttribute('src')).toContain('ess-upi-qr.jpg');
+    const steps = screen.getByText(/as the amount/).closest('ol')!;
+    expect(steps.textContent).toContain('₹5,998.00');
+    expect(steps.textContent).toContain('INV/2026/9');
+    expect(screen.queryByText(/coming soon/)).toBeNull();
+  });
+
+  it('the UPI ID shown is the one PYS puts in its pay link (buildUpiPayLink) and on its QR', () => {
+    expect(UPI_ID).toBe('7977805245-1@okbizaxis');
   });
 
   it('no Pay by UPI when nothing is due, or the link is not a UPI link', async () => {

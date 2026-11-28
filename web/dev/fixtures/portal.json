@@ -390,7 +390,7 @@
     },
     "bills": [
       {
-        "number": "INV/2026/9",
+        "number": "PAY-2026-0000ABCD",
         "date": "2026-11-01",
         "forLabel": "AMC AMC-0001",
         "total": 7998,
@@ -411,7 +411,7 @@
   },
   "bill": {
     "bill": {
-      "number": "INV/2026/9",
+      "number": "PAY-2026-0000ABCD",
       "date": "2026-11-01",
       "forLabel": "AMC AMC-0001",
       "requestNumber": null,
@@ -445,7 +445,7 @@
           "kind": "REVERSAL"
         }
       ],
-      "upiLink": "upi://pay?pa=ess@okaxis&pn=Extreme%20Sales&am=5998.00&cu=INR&tn=INV%2F2026%2F9"
+      "upiLink": "upi://pay?pa=ess@okaxis&pn=Extreme%20Sales&am=5998.00&cu=INR&tn=PAY-2026-0000ABCD"
     },
     "business": {
       "legalName": "Extreme Sales & Services",
