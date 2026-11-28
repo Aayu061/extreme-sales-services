@@ -162,7 +162,7 @@ export function PortalFallback({ result }: { result: Exclude<PortalResult<unknow
 /** The shape of an account page while PYS answers. */
 export function AccountSkeleton() {
   return (
-    <div aria-busy="true">
+    <div aria-busy="true" role="status" aria-label="Loading your account">
       <div className="mb-6 flex gap-2">
         {Array.from({ length: 4 }, (_, i) => (
           <Skeleton key={i} className="h-11 w-28 rounded-full" />
@@ -174,7 +174,9 @@ export function AccountSkeleton() {
         <Skeleton className="h-36 rounded-3xl" />
         <Skeleton className="h-36 rounded-3xl" />
       </div>
-      <p className="mt-4 text-sm text-muted">Loading your account… this can take up to a minute if our system is waking up.</p>
+      <p className="mt-4 text-sm text-muted">Loading your account…</p>
+      {/* Shown only after a few seconds: most loads are quick, and only a sleeping system takes this long. */}
+      <p className="late-show mt-1 text-sm text-muted">This can take up to a minute if our system is waking up.</p>
     </div>
   );
 }

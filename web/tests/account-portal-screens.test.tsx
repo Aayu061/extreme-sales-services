@@ -349,7 +349,7 @@ describe('Service report', () => {
     expect(screen.getByText('11:00 am to 12:15 pm')).toBeTruthy();
     expect(screen.getByText('Jet service')).toBeTruthy();
     const before = screen.getByRole('img', { name: 'Before service photo, 4 Oct 2026' });
-    expect(before.getAttribute('loading')).toBe('lazy');
+    expect(before.getAttribute('loading')).toBe('eager'); // loaded at once, so Print / Save as PDF includes the photos
     expect(before.closest('a')!.getAttribute('href')).toMatch(/^https:\/\/abc\.supabase\.co\//);
     expect(before.closest('a')!.getAttribute('target')).toBe('_blank');
     expect(screen.getByRole('img', { name: 'After service photo, 4 Oct 2026' })).toBeTruthy();

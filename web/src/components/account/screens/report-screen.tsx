@@ -30,7 +30,7 @@ function PhotoGroup({ title, photos, kind, date }: { title: string; photos: Phot
               <a href={p.url} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-2xl border border-line">
                 {/* Signed 10-minute links to a private bucket: next/image cannot cache them, so a plain lazy image. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.url} alt={alt} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover" />
+                <img src={p.url} alt={alt} loading="eager" decoding="async" className="aspect-[4/3] w-full object-cover" />
                 <span className="no-print sr-only"> (opens the full photo in a new tab)</span>
               </a>
             </li>

@@ -488,3 +488,16 @@ p {
     text-decoration: none;
   }
 }
+
+/* Account loading: the "our system may be waking up" line only appears if loading takes a while (opacity only). */
+@keyframes late-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.late-show {
+  animation: late-show 0.2s linear 4s both;
+}
