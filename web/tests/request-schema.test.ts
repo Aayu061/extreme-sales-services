@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- reading parsed request bodies */
 import { describe, expect, it } from 'vitest';
 import { fieldErrors, normalizeIndianMobile, requestSchema, todayIst, toPysIntake } from '@/lib/request-schema';
+import { PRIVACY_NOTICE_VERSION } from '@/lib/notice-version';
 
 const base = {
   ref: 'web-test-0001',
@@ -118,7 +119,8 @@ describe('toPysIntake', () => {
     expect(body.externalReferenceId).toBe('web-test-0001');
     expect(body.items).toEqual([{ type: 'AMC', amcPlanCode: 'ORD-4', quantity: 1, ac: { type: 'SPLIT', tonnage: 1.5 } }]);
     expect(body.request).toEqual({ preferredDate: todayIst(), preferredSlot: 'MORNING' });
-    expect(body.consent).toEqual({ privacy: true, marketing: false, noticeVersion: '2026-11-19' });
+    // S12 / E1: was '2026-11-19' while the page said 27 Nov; now always the page's version (notice-version.ts).
+    expect(body.consent).toEqual({ privacy: true, marketing: false, noticeVersion: PRIVACY_NOTICE_VERSION });
     expect(body.meta).toEqual({ clientIpHash: 'a'.repeat(64), honeypot: '', elapsedMs: 12000 });
   });
 

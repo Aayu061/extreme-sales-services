@@ -9,7 +9,7 @@ import { PrintButton } from '@/components/account/print-button';
 import { isPortalRef, portalGet, portalPath } from '@/lib/account';
 import { billStatusBadge, formatDate, formatRupees, paymentMethodLabel } from '@/lib/portal-format';
 import { accountHref } from '@/lib/portal-links';
-import type { PortalBill, PortalBilling } from '@/lib/portal-types';
+import { billTaxRows, type PortalBill, type PortalBilling } from '@/lib/portal-types';
 
 const th = 'py-2 pr-4 text-left text-sm font-semibold text-muted';
 const thNum = 'py-2 text-right text-sm font-semibold text-muted';
@@ -144,21 +144,34 @@ export async function BillScreen({ number }: { number: string }) {
             </tr>
           </thead>
           <tbody className="tabular">
-            <tr className="border-b border-line">
-              <th scope="row" className="py-2 pr-4 text-left font-normal">
-                {b.forLabel} (taxable value)
-              </th>
-              <td className="py-2 text-right">{formatRupees(b.taxable)}</td>
-            </tr>
-            <tr className="border-b border-line">
-              <th scope="row" className="py-2 pr-4 text-left font-normal">
-                GST ({b.gstRate}%)
-              </th>
-              <td className="py-2 text-right">{formatRupees(b.gst)}</td>
-            </tr>
+            {b.tax.treatment === 'NONE' ? (
+              <tr className="border-b border-line">
+                <th scope="row" className="py-2 pr-4 text-left font-normal">
+                  {b.forLabel}
+                </th>
+                <td className="py-2 text-right">{formatRupees(b.total)}</td>
+              </tr>
+            ) : (
+              <>
+                <tr className="border-b border-line">
+                  <th scope="row" className="py-2 pr-4 text-left font-normal">
+                    {b.forLabel} (taxable value)
+                  </th>
+                  <td className="py-2 text-right">{formatRupees(b.tax.taxable)}</td>
+                </tr>
+                {billTaxRows(b.tax).map((r) => (
+                  <tr key={r.label} className="border-b border-line">
+                    <th scope="row" className="py-2 pr-4 text-left font-normal">
+                      {r.label}
+                    </th>
+                    <td className="py-2 text-right">{formatRupees(r.amount)}</td>
+                  </tr>
+                ))}
+              </>
+            )}
             <tr className="border-b border-line">
               <th scope="row" className="py-2 pr-4 text-left font-extrabold">
-                Total (incl. GST)
+                {b.tax.treatment === 'NONE' ? 'Total (no GST)' : 'Total (incl. GST)'}
               </th>
               <td className="py-2 text-right font-extrabold">{formatRupees(b.total)}</td>
             </tr>

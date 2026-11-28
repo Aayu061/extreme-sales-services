@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { pysRequest, accountToken } = vi.hoisted(() => ({ pysRequest: vi.fn(), accountToken: vi.fn() }));
+const { pysRequest, accountToken, getContentBlocks } = vi.hoisted(() => ({ pysRequest: vi.fn(), accountToken: vi.fn(), getContentBlocks: vi.fn() }));
 vi.mock('@/lib/pys/client', async (orig) => ({ ...(await orig<typeof import('@/lib/pys/client')>()), pysRequest }));
 // The customer's sign-in cookie (S11): none unless a test says so.
 vi.mock('@/lib/account', () => ({ accountToken }));
+// S12 / E1: the published privacy text (none unless a test says so).
+vi.mock('@/lib/data', () => ({ getContentBlocks }));
+const { PRIVACY_NOTICE_VERSION } = await import('@/lib/legal');
 
 const { PysError } = await import('@/lib/pys/client');
 const { POST } = await import('@/app/api/request/route');
@@ -24,6 +27,34 @@ const post = (body: unknown, headers: Record<string, string> = {}) =>
 beforeEach(() => {
   pysRequest.mockReset();
   accountToken.mockReset().mockResolvedValue(null);
+  getContentBlocks.mockReset().mockResolvedValue({});
+});
+
+describe('POST /api/request: consent records the privacy notice version the visitor was shown (S12 / E1)', () => {
+  const sentVersion = () => (pysRequest.mock.calls[0][2].body as { consent: { noticeVersion: string } }).consent.noticeVersion;
+  const ok = { intakeNumber: 'WEB-9', trackingCode: 'ESS-AAAA-9999', status: 'PENDING_REVIEW' };
+
+  it('no published text: the built-in version (the date the page shows)', async () => {
+    pysRequest.mockResolvedValue(ok);
+    await post(valid);
+    expect(sentVersion()).toBe(PRIVACY_NOTICE_VERSION);
+  });
+
+  it('a complete text published in ESS admin: its "Last updated" date', async () => {
+    getContentBlocks.mockResolvedValue({
+      'legal.privacy': { body: { title: 'Privacy notice', updatedOn: '2027-01-05', sections: [{ heading: 'Who we are', paragraphs: ['x'] }] } },
+    });
+    pysRequest.mockResolvedValue(ok);
+    await post(valid);
+    expect(sentVersion()).toBe('2027-01-05');
+  });
+
+  it('the published text cannot be read: the built-in version, and the request still goes through', async () => {
+    getContentBlocks.mockRejectedValue(new Error('PYS asleep'));
+    pysRequest.mockResolvedValue(ok);
+    expect((await post(valid)).status).toBe(200);
+    expect(sentVersion()).toBe(PRIVACY_NOTICE_VERSION);
+  });
 });
 
 describe('POST /api/request', () => {
