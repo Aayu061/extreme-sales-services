@@ -69,3 +69,10 @@ describe('legalBody', () => {
     expect(JSON.stringify(terms)).toMatch(/Keep your sign-in codes private/);
   });
 });
+
+describe('S12 / E4: the business address the website falls back to', () => {
+  it("is ESS's own address (New Panvel), never the old Govandi text", () => {
+    expect(FALLBACK_IDENTITY.address).toBe('204 Kokan Residency, 2nd floor, Vikas Wadi, Nr J P Bar, Devad, New Panvel, Maharashtra 410206, India');
+    expect(JSON.stringify(legalBody('privacy', null, FALLBACK_IDENTITY))).not.toMatch(/Govandi/i);
+  });
+});

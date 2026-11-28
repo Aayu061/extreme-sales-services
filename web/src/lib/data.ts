@@ -65,7 +65,7 @@ export const FALLBACK_IDENTITY: BusinessIdentity = {
   tradeName: 'Extreme Sales & Services',
   proprietorName: null,
   gstin: '27ANTPP9778J1ZO',
-  address: 'Chembur, Mumbai, Maharashtra',
+  address: '204 Kokan Residency, 2nd floor, Vikas Wadi, Nr J P Bar, Devad, New Panvel, Maharashtra 410206, India',
   phone: '+91 7977805245',
   whatsapp: '+91 7977805245',
   email: 'extremess0121@gmail.com',
