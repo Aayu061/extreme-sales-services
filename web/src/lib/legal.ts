@@ -1,4 +1,5 @@
 import type { BusinessIdentity } from '@/lib/pys/types';
+import { PRIVACY_NOTICE_VERSION } from '@/lib/notice-version';
 
 /**
  * Privacy notice and terms. The text published in ESS admin (content blocks legal.privacy /
@@ -16,6 +17,18 @@ export interface LegalBody {
 
 const DEFAULT_UPDATED = '2026-11-27';
 
+export { PRIVACY_NOTICE_VERSION };
+
+/**
+ * The version of the privacy notice a visitor is shown right now: the "Last updated" date of the text published
+ * in ESS admin when one is complete, else the built-in version. Recorded with each request's consent.
+ */
+export function privacyNoticeVersion(publishedBlock: unknown): string {
+  return isLegalBody(publishedBlock) && typeof publishedBlock.updatedOn === 'string' && publishedBlock.updatedOn
+    ? publishedBlock.updatedOn
+    : PRIVACY_NOTICE_VERSION;
+}
+
 /** The {placeholders} legal text may use; each is filled from the business details. */
 export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'warrantyDays', 'grievanceName', 'grievanceEmail', 'grievancePhone'] as const;
 
@@ -23,7 +36,7 @@ export const LEGAL_PLACEHOLDERS = ['legalName', 'email', 'phone', 'address', 'wa
 export const LEGAL_DEFAULTS: Readonly<Record<LegalDoc, LegalBody>> = {
   privacy: {
     title: 'Privacy notice',
-    updatedOn: DEFAULT_UPDATED,
+    updatedOn: PRIVACY_NOTICE_VERSION,
     sections: [
       {
         heading: 'Who we are',
@@ -190,7 +203,8 @@ export function legalBody(doc: LegalDoc, block: unknown, identity: BusinessIdent
   const fill = (t: string) => t.replace(/\{([a-zA-Z]+)\}/g, (m, k: string) => (values as Record<string, string>)[k] ?? m);
   return {
     title: source.title,
-    updatedOn: typeof source.updatedOn === 'string' && source.updatedOn ? source.updatedOn : DEFAULT_UPDATED,
+    // Same rule as privacyNoticeVersion(): the page date is always the version recorded with consent.
+    updatedOn: typeof source.updatedOn === 'string' && source.updatedOn ? source.updatedOn : LEGAL_DEFAULTS[doc].updatedOn,
     sections: source.sections.map((s) => ({ heading: fill(s.heading), paragraphs: s.paragraphs.map(fill) })),
   };
 }

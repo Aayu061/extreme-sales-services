@@ -1,6 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { legalBody } from '@/lib/legal';
+import { legalBody, privacyNoticeVersion, PRIVACY_NOTICE_VERSION } from '@/lib/legal';
 import { FALLBACK_IDENTITY } from '@/lib/data';
+import { NOTICE_VERSION } from '@/lib/request-schema';
+
+describe('S12 / E1: the privacy notice shown is the version recorded with consent', () => {
+  it('built-in text: the page date, the consent stamp and the notice version are one value', () => {
+    expect(NOTICE_VERSION).toBe(PRIVACY_NOTICE_VERSION);
+    expect(legalBody('privacy', null, FALLBACK_IDENTITY).updatedOn).toBe(PRIVACY_NOTICE_VERSION);
+    expect(privacyNoticeVersion(null)).toBe(PRIVACY_NOTICE_VERSION);
+  });
+
+  it('published admin text: the page date and the recorded version are its "Last updated" date', () => {
+    const block = { title: 'Privacy notice', updatedOn: '2027-02-01', sections: [{ heading: 'A', paragraphs: ['b'] }] };
+    expect(privacyNoticeVersion(block)).toBe('2027-02-01');
+    expect(legalBody('privacy', block, FALLBACK_IDENTITY).updatedOn).toBe(privacyNoticeVersion(block));
+  });
+
+  it('published text without a date (or incomplete text): both fall back to the built-in version', () => {
+    for (const block of [{ title: 'P', sections: [{ heading: 'A', paragraphs: ['b'] }] }, { title: 'P', sections: [] }, 'nonsense']) {
+      expect(legalBody('privacy', block, FALLBACK_IDENTITY).updatedOn).toBe(privacyNoticeVersion(block));
+      expect(privacyNoticeVersion(block)).toBe(PRIVACY_NOTICE_VERSION);
+    }
+  });
+});
 
 describe('legalBody', () => {
   it('uses the built-in text with the business details filled in when nothing is published', () => {

@@ -118,7 +118,8 @@ describe('toPysIntake', () => {
     expect(body.externalReferenceId).toBe('web-test-0001');
     expect(body.items).toEqual([{ type: 'AMC', amcPlanCode: 'ORD-4', quantity: 1, ac: { type: 'SPLIT', tonnage: 1.5 } }]);
     expect(body.request).toEqual({ preferredDate: todayIst(), preferredSlot: 'MORNING' });
-    expect(body.consent).toEqual({ privacy: true, marketing: false, noticeVersion: '2026-11-19' });
+    // S12 / E1: was '2026-11-19' while the page said 27 Nov; now the same value as the page (legal.ts).
+    expect(body.consent).toEqual({ privacy: true, marketing: false, noticeVersion: '2026-11-27' });
     expect(body.meta).toEqual({ clientIpHash: 'a'.repeat(64), honeypot: '', elapsedMs: 12000 });
   });
 

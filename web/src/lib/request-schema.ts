@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PRIVACY_NOTICE_VERSION } from '@/lib/notice-version';
 
 /**
  * Rules for every form that sends something to ESS (book, contact, sell). The browser checks
@@ -6,7 +7,8 @@ import { z } from 'zod';
  * match PYS's createIntakeSchema (server/src/validators/intake.validator.ts in the PYS repo).
  */
 
-export const NOTICE_VERSION = '2026-11-19';
+/** S12 / E1: the built-in privacy notice version (notice-version.ts). Requests record the version the visitor was shown. */
+export const NOTICE_VERSION = PRIVACY_NOTICE_VERSION;
 
 /** "+91 98765 43210", "098765-43210", "919876543210" → "9876543210"; anything else → null. */
 export function normalizeIndianMobile(v: string): string | null {
@@ -165,14 +167,14 @@ export function fieldErrors(issues: ReadonlyArray<{ path: ReadonlyArray<Property
 const REF_FIELD = { SERVICE: 'serviceCode', AMC: 'amcPlanCode', PRODUCT: 'productId' } as const;
 
 /** The body PYS expects on POST /api/v1/ess/intakes. */
-export function toPysIntake(r: SiteRequest, clientIpHash: string | undefined): Record<string, unknown> {
+export function toPysIntake(r: SiteRequest, clientIpHash: string | undefined, noticeVersion: string = NOTICE_VERSION): Record<string, unknown> {
   let message: string | undefined;
   const request: Record<string, unknown> = {};
   const body: Record<string, unknown> = {
     kind: r.kind,
     externalReferenceId: r.ref,
     contact: r.contact,
-    consent: { privacy: true, marketing: r.consent.marketing, noticeVersion: NOTICE_VERSION },
+    consent: { privacy: true, marketing: r.consent.marketing, noticeVersion },
     meta: { clientIpHash, honeypot: r.hp, elapsedMs: r.elapsedMs },
   };
   if (r.kind === 'BASKET') {
