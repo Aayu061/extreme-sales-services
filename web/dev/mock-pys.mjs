@@ -15,6 +15,7 @@
 import http from 'node:http';
 import { createHash, createHmac, randomBytes, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { portalRoute } from './mock-portal.mjs';
 
 const KEY_ID = 'essweb_localdev';
 const SECRET = 'local-dev-secret-not-for-production';
@@ -982,6 +983,7 @@ http
       const url = new URL(req.url, 'http://x');
       const path = url.pathname.replace('/api/v1/ess', '');
       if (path.startsWith('/admin/')) return adminRoute(req, res, path.slice('/admin'.length), url, body);
+      if (portalRoute(req, res, path, url, body, ok, fail)) return;
 
       if (req.method === 'GET' && path === '/catalog') return ok(res, publicCatalog());
       // The shop: shown products only (PYS is_published filter), in shop order.

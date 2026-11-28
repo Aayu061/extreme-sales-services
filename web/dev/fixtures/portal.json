@@ -1,0 +1,458 @@
+{
+  "overview": {
+    "customer": {
+      "name": "Asha Rao",
+      "companyName": null,
+      "email": "asha@example.com",
+      "phone": "+91 98765 43210",
+      "city": "Mumbai"
+    },
+    "nextVisit": {
+      "date": "2026-12-01",
+      "startTime": "11:00:00",
+      "technicianFirstName": "Ravi",
+      "requestNumber": "SR-2026-0042",
+      "ac": {
+        "id": "ac1",
+        "label": "Daikin 1.5 ton · Living room"
+      }
+    },
+    "amc": {
+      "id": "amc1",
+      "contractNumber": "AMC-0001",
+      "plan": "Comprehensive",
+      "endDate": "2026-12-20",
+      "totalVisits": 4,
+      "visitsUsed": 2,
+      "visitsLeft": 2
+    },
+    "billing": {
+      "amountDue": 7998,
+      "unpaidBills": 1
+    },
+    "openRequests": 1,
+    "alerts": [
+      {
+        "kind": "AMC_ENDING",
+        "text": "Your AMC AMC-0001 ends on 20 Dec 2026.",
+        "link": {
+          "kind": "amc",
+          "id": "amc1"
+        }
+      },
+      {
+        "kind": "RECOMMENDATION",
+        "text": "Gas top-up advised on Living room AC",
+        "link": {
+          "kind": "report",
+          "id": "RPT-7"
+        }
+      }
+    ]
+  },
+  "acs": {
+    "acs": [
+      {
+        "id": "ac1",
+        "label": "Daikin 1.5 ton · Living room",
+        "brand": "Daikin",
+        "model": "FTKF50",
+        "type": "SPLIT",
+        "tons": 1.5,
+        "room": "Living room",
+        "floor": "3",
+        "coverage": "AMC_COVERED",
+        "serialLast4": "1234",
+        "lastServiceDate": "2026-10-04",
+        "openRecommendations": 1
+      }
+    ]
+  },
+  "acDetail": {
+    "ac": {
+      "id": "ac1",
+      "label": "Daikin 1.5 ton · Living room",
+      "brand": "Daikin",
+      "model": "FTKF50",
+      "type": "SPLIT",
+      "tons": 1.5,
+      "technology": "INVERTER",
+      "starRating": "5",
+      "room": "Living room",
+      "floor": "3",
+      "installedOn": "2024-04-10",
+      "purchasedOn": null,
+      "serials": {
+        "indoor": "IDU-99887761234",
+        "outdoor": "ODU-55443322",
+        "unit": null
+      },
+      "condition": "GOOD",
+      "site": {
+        "name": "Home",
+        "address": "12 Sea View, Chembur"
+      },
+      "warranty": {
+        "status": "UNDER_WARRANTY",
+        "start": "2024-04-10",
+        "end": "2027-04-09",
+        "visitsTotal": 2,
+        "visitsUsed": 1
+      }
+    },
+    "amc": [
+      {
+        "id": "amc1",
+        "contractNumber": "AMC-0001",
+        "plan": "Comprehensive",
+        "status": "ACTIVE",
+        "endDate": "2026-12-20"
+      }
+    ],
+    "history": [
+      {
+        "reportNumber": "RPT-7",
+        "date": "2026-10-04",
+        "serviceType": "JET_SERVICE",
+        "visitKind": "AMC",
+        "faultReported": "Low cooling",
+        "findings": "Dirty coil, gas slightly low",
+        "workDone": "Jet wash, gas top-up",
+        "outcome": "RESOLVED",
+        "conditionAfter": "GOOD",
+        "refrigerantKg": 0.5,
+        "parts": [
+          {
+            "name": "Capacitor",
+            "quantity": 1
+          }
+        ],
+        "technicianFirstName": "Ravi",
+        "photoCount": 2
+      }
+    ],
+    "recommendations": [
+      {
+        "text": "Replace the remote batteries",
+        "date": "2026-10-04",
+        "reportNumber": "RPT-7"
+      }
+    ]
+  },
+  "amcList": {
+    "contracts": [
+      {
+        "id": "amc1",
+        "contractNumber": "AMC-0001",
+        "plan": "Comprehensive",
+        "status": "ACTIVE",
+        "startDate": "2026-01-01",
+        "endDate": "2026-12-20",
+        "totalVisits": 4,
+        "visitsUsed": 2,
+        "visitsLeft": 2,
+        "acCount": 2
+      },
+      {
+        "id": "amc0",
+        "contractNumber": "AMC-0000",
+        "plan": "Basic",
+        "status": "EXPIRED",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "totalVisits": 2,
+        "visitsUsed": 2,
+        "visitsLeft": 0,
+        "acCount": 1
+      }
+    ]
+  },
+  "amcDetail": {
+    "contract": {
+      "id": "amc1",
+      "contractNumber": "AMC-0001",
+      "plan": "Comprehensive",
+      "planCode": "COMP",
+      "status": "ACTIVE",
+      "startDate": "2026-01-01",
+      "endDate": "2026-12-20",
+      "frequency": "QUARTERLY",
+      "amount": 7998,
+      "includes": {
+        "gasCharging": true,
+        "spareParts": false,
+        "unlimitedComplaints": true
+      },
+      "coverageSummary": null,
+      "acs": [
+        {
+          "id": "ac1",
+          "label": "Daikin 1.5 ton · Living room"
+        }
+      ],
+      "visits": {
+        "total": 4,
+        "used": 2,
+        "left": 2,
+        "byType": [
+          {
+            "type": "DRY_SERVICE",
+            "total": 2,
+            "used": 1
+          },
+          {
+            "type": "JET_SERVICE",
+            "total": 2,
+            "used": 1
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "visitNumber": 1,
+          "date": "2026-03-10",
+          "month": null,
+          "state": "DONE",
+          "startTime": "10:00",
+          "technicianFirstName": "Ravi",
+          "serviceType": "DRY_SERVICE",
+          "reportNumber": "RPT-5"
+        },
+        {
+          "visitNumber": 3,
+          "date": "2026-12-01",
+          "month": null,
+          "state": "UPCOMING",
+          "startTime": "11:00:00",
+          "technicianFirstName": "Ravi",
+          "serviceType": "JET_SERVICE",
+          "reportNumber": null
+        },
+        {
+          "visitNumber": 4,
+          "date": null,
+          "month": "2027-02",
+          "state": "PLANNED",
+          "startTime": null,
+          "technicianFirstName": null,
+          "serviceType": "DRY_SERVICE",
+          "reportNumber": null
+        }
+      ],
+      "canRenew": true,
+      "renewalRequestedAt": null
+    }
+  },
+  "requests": {
+    "requests": [
+      {
+        "number": "SR-2026-0042",
+        "type": "BREAKDOWN",
+        "createdAt": "2026-11-20T06:00:00Z",
+        "status": {
+          "code": "SCHEDULED",
+          "label": "Visit booked",
+          "step": 3,
+          "tone": "progress"
+        },
+        "ac": {
+          "id": "ac1",
+          "label": "Daikin 1.5 ton · Living room"
+        },
+        "visit": {
+          "date": "2026-12-01",
+          "startTime": "11:00",
+          "technicianFirstName": "Ravi"
+        },
+        "hasReport": false,
+        "billNumber": null
+      }
+    ]
+  },
+  "requestDetail": {
+    "request": {
+      "number": "SR-2026-0040",
+      "type": "GENERAL_SERVICE",
+      "description": "Yearly service",
+      "createdAt": "2026-10-01T05:00:00Z",
+      "status": {
+        "code": "COMPLETED",
+        "label": "Completed",
+        "step": 6,
+        "tone": "success"
+      },
+      "ac": {
+        "id": "ac1",
+        "label": "Daikin 1.5 ton · Living room"
+      },
+      "timeline": [
+        {
+          "label": "Requested",
+          "at": "2026-10-01T05:00:00Z"
+        },
+        {
+          "label": "Technician assigned",
+          "at": "2026-10-02T05:00:00Z"
+        },
+        {
+          "label": "Completed",
+          "at": "2026-10-04T08:30:00Z"
+        }
+      ],
+      "visits": [
+        {
+          "date": "2026-10-04",
+          "startTime": "11:00",
+          "state": "COMPLETED",
+          "technicianFirstName": "Ravi"
+        }
+      ],
+      "reports": [
+        {
+          "reportNumber": "RPT-7",
+          "date": "2026-10-04"
+        }
+      ],
+      "bill": {
+        "number": "INV/2026/7",
+        "total": 1180,
+        "balance": 0,
+        "status": "PAID"
+      }
+    }
+  },
+  "report": {
+    "report": {
+      "number": "RPT-7",
+      "date": "2026-10-04",
+      "startTime": "11:00:00",
+      "endTime": "12:15:00",
+      "serviceType": "JET_SERVICE",
+      "visitKind": "AMC",
+      "requestNumber": "SR-2026-0040",
+      "contractNumber": "AMC-0001",
+      "technicianFirstName": "Ravi",
+      "outcome": "RESOLVED",
+      "workDescription": "Quarterly AMC service",
+      "observations": "Dirty coil",
+      "actionTaken": "Jet wash",
+      "recommendation": "Gas top-up advised",
+      "acs": [
+        {
+          "ac": {
+            "id": "ac1",
+            "label": "Daikin 1.5 ton · Living room"
+          },
+          "label": "Daikin 1.5 ton · Living room",
+          "faultReported": "Low cooling",
+          "findings": "Dirty coil",
+          "workDone": "Jet wash",
+          "outcome": "RESOLVED",
+          "conditionAfter": "GOOD",
+          "refrigerantKg": 0.5
+        }
+      ],
+      "parts": [
+        {
+          "name": "Capacitor",
+          "quantity": 1
+        }
+      ],
+      "photos": [
+        {
+          "kind": "BEFORE",
+          "url": "https://abc.supabase.co/storage/v1/object/sign/service-report-media/b1.jpg?token=x",
+          "expiresAt": "2026-11-27T10:10:00Z"
+        },
+        {
+          "kind": "AFTER",
+          "url": "https://abc.supabase.co/storage/v1/object/sign/service-report-media/a1.jpg?token=y",
+          "expiresAt": "2026-11-27T10:10:00Z"
+        }
+      ],
+      "site": {
+        "name": "Home",
+        "address": "12 Sea View, Chembur"
+      }
+    },
+    "business": {
+      "legalName": "Extreme Sales & Services",
+      "gstin": "27ABCDE1234F1Z5",
+      "address": "Shop 4, Chembur, Mumbai 400071",
+      "phone": "+91 79778 05245",
+      "email": "extremess0121@gmail.com"
+    }
+  },
+  "billing": {
+    "totals": {
+      "due": 7998,
+      "paidThisYear": 1180
+    },
+    "bills": [
+      {
+        "number": "INV/2026/9",
+        "date": "2026-11-01",
+        "forLabel": "AMC AMC-0001",
+        "total": 7998,
+        "paid": 0,
+        "balance": 7998,
+        "status": "DUE"
+      },
+      {
+        "number": "INV/2026/7",
+        "date": "2026-10-04",
+        "forLabel": "Service request SR-2026-0040",
+        "total": 1180,
+        "paid": 1180,
+        "balance": 0,
+        "status": "PAID"
+      }
+    ]
+  },
+  "bill": {
+    "bill": {
+      "number": "INV/2026/9",
+      "date": "2026-11-01",
+      "forLabel": "AMC AMC-0001",
+      "requestNumber": null,
+      "contractNumber": "AMC-0001",
+      "customer": {
+        "name": "Asha Rao",
+        "code": "C-0007",
+        "phone": "+91 98765 43210",
+        "address": "12 Sea View, Chembur"
+      },
+      "total": 7998,
+      "taxable": 6777.97,
+      "gstRate": 18,
+      "gst": 1220.03,
+      "paid": 2000,
+      "balance": 5998,
+      "status": "PART_PAID",
+      "payments": [
+        {
+          "date": "2026-11-02",
+          "method": "UPI",
+          "amount": 2500,
+          "referenceLast4": "4321",
+          "kind": "PAYMENT"
+        },
+        {
+          "date": "2026-11-03",
+          "method": "UPI",
+          "amount": -500,
+          "referenceLast4": "4321",
+          "kind": "REVERSAL"
+        }
+      ],
+      "upiLink": "upi://pay?pa=ess@okaxis&pn=Extreme%20Sales&am=5998.00&cu=INR&tn=INV%2F2026%2F9"
+    },
+    "business": {
+      "legalName": "Extreme Sales & Services",
+      "gstin": "27ABCDE1234F1Z5",
+      "address": "Shop 4, Chembur, Mumbai 400071",
+      "phone": "+91 79778 05245",
+      "email": "extremess0121@gmail.com"
+    }
+  }
+}
