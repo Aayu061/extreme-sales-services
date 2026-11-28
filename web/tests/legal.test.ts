@@ -80,8 +80,8 @@ describe('legalBody', () => {
 });
 
 describe('S12 / E4: the business address the website falls back to', () => {
-  it("is ESS's own address (New Panvel), never the old Govandi text", () => {
-    expect(FALLBACK_IDENTITY.address).toBe('204 Kokan Residency, 2nd floor, Vikas Wadi, Nr J P Bar, Devad, New Panvel, Maharashtra 410206, India');
-    expect(JSON.stringify(legalBody('privacy', null, FALLBACK_IDENTITY))).not.toMatch(/Govandi/i);
+  it('is the main office (Govandi shop), the same address the live website shows (owner, 28 Nov 2026)', () => {
+    expect(FALLBACK_IDENTITY.address).toBe('Shop No. 1, Extreme Sales & Services, near Ashok Nagar Bus Stop, Samrat Ashok Nagar, Govandi, Mumbai, Maharashtra 400043');
+    expect(JSON.stringify(legalBody('privacy', null, FALLBACK_IDENTITY))).toContain('Shop No. 1, Extreme Sales & Services, near Ashok Nagar Bus Stop');
   });
 });
