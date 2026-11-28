@@ -202,6 +202,32 @@ export interface PortalBilling {
   bills: Array<{ number: string; date: string | null; forLabel: string; total: number; paid: number; balance: number; status: BillStatus }>;
 }
 
+/**
+ * NONE: no GST, show no tax lines. INTRA: CGST + SGST at half the rate each. INTER: IGST.
+ * legacy: a bill made before GST was stored; PYS shows it as 18% included, within the state.
+ */
+export interface BillTax {
+  treatment: 'INCLUSIVE' | 'EXCLUSIVE' | 'NONE';
+  ratePercent: number;
+  supplyType: 'INTRA' | 'INTER' | null;
+  taxable: number;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  legacy: boolean;
+}
+
+/** The invoice's tax rows (label, amount), in order. Empty for a bill without GST. */
+export function billTaxRows(tax: BillTax): Array<{ label: string; amount: number }> {
+  if (tax.treatment === 'NONE') return [];
+  if (tax.supplyType === 'INTER') return [{ label: `IGST (${tax.ratePercent}%)`, amount: tax.igst }];
+  const half = tax.ratePercent / 2;
+  return [
+    { label: `CGST (${half}%)`, amount: tax.cgst },
+    { label: `SGST (${half}%)`, amount: tax.sgst },
+  ];
+}
+
 export interface PortalBill {
   bill: {
     number: string;
@@ -211,9 +237,8 @@ export interface PortalBill {
     contractNumber: string | null;
     customer: { name: string; code: string | null; phone: string | null; address: string | null };
     total: number;
-    taxable: number;
-    gstRate: number;
-    gst: number;
+    /** S11c: the GST stored on the bill when it was made; never changes (see the contract). */
+    tax: BillTax;
     paid: number;
     balance: number;
     status: BillStatus;

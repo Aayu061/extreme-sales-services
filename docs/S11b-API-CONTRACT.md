@@ -160,13 +160,21 @@ part costs. Only `SUBMITTED` / `VERIFIED` reports.
 ```ts
 { bill: { number: string; date: string | null; forLabel: string; requestNumber: string | null; contractNumber: string | null;
           customer: { name: string; code: string | null; phone: string | null; address: string | null };
-          total: number; taxable: number; gstRate: 18; gst: number; paid: number; balance: number; status: 'PAID' | 'PART_PAID' | 'DUE';
+          total: number;
+          tax: { treatment: 'INCLUSIVE' | 'EXCLUSIVE' | 'NONE'; ratePercent: number; supplyType: 'INTRA' | 'INTER' | null;
+                 taxable: number; cgst: number; sgst: number; igst: number; legacy: boolean };
+          paid: number; balance: number; status: 'PAID' | 'PART_PAID' | 'DUE';
           payments: Array<{ date: string | null; method: string; amount: number; referenceLast4: string | null; kind: 'PAYMENT' | 'REVERSAL' }>;
           upiLink: string | null };   // only when balance > 0; same format as buildPaymentInvoiceTemplate
   business: { legalName: string; gstin: string | null; address: string | null; phone: string | null; email: string | null } }
 ```
-- `taxable = round(total / 1.18, 2)`, `gst = total - taxable` (totals are taken to include 18% GST, as in the invoice
-  email; PYS does not store a GST split per bill). **Open owner question:** confirm this holds for AMC and part-paid bills.
+- **S11c (configurable GST):** `tax` is the GST stored on the bill when it was created (PYS `payments` tax columns,
+  migration `20261129000000_bill_gst.sql`). It never changes after that: part-payments, setting changes or a customer
+  moving do not touch it. `taxable + cgst + sgst + igst = total`.
+  - `treatment: NONE`: no GST on this bill. Show **no** tax lines (ratePercent 0, supplyType null, taxable = total).
+  - `supplyType: INTRA`: CGST and SGST at half the rate each. `INTER`: IGST at the full rate.
+  - `legacy: true`: a bill made before S11c, with no stored GST. Shown as 18% included, within the state (what
+    the invoice email always said). ESS may show it the same way as any other bill.
 - Reversed transactions are shown as `REVERSAL` with a negative amount.
 
 ## POST /profile/change-request   body `{ message: string (5..1000) }`
