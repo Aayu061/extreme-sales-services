@@ -393,6 +393,34 @@ describe('Billing', () => {
     expect(screen.getByText('No bills yet')).toBeTruthy();
   });
 
+  it('invoice (S11c): another state shows IGST only', async () => {
+    pys({
+      '/portal/billing/INV%2F2026%2F9': fx.bill({
+        total: 1280,
+        tax: { treatment: 'EXCLUSIVE', ratePercent: 28, supplyType: 'INTER', taxable: 1000, cgst: 0, sgst: 0, igst: 280, legacy: false },
+      }),
+    });
+    await show(BillScreen({ number: 'INV/2026/9' }));
+    const amounts = screen.getByRole('table', { name: 'Invoice amounts' });
+    expect(within(amounts).getByRole('rowheader', { name: 'IGST (28%)' })).toBeTruthy();
+    expect(within(amounts).getByText('₹280.00')).toBeTruthy();
+    expect(within(amounts).queryByRole('rowheader', { name: /CGST|SGST/ })).toBeNull();
+    expect(within(amounts).getByRole('rowheader', { name: 'Total (incl. GST)' })).toBeTruthy();
+  });
+
+  it('invoice (S11c): a bill without GST shows no tax lines at all', async () => {
+    pys({
+      '/portal/billing/INV%2F2026%2F9': fx.bill({
+        total: 750,
+        tax: { treatment: 'NONE', ratePercent: 0, supplyType: null, taxable: 750, cgst: 0, sgst: 0, igst: 0, legacy: false },
+      }),
+    });
+    await show(BillScreen({ number: 'INV/2026/9' }));
+    const amounts = screen.getByRole('table', { name: 'Invoice amounts' });
+    expect(within(amounts).queryByText(/CGST|SGST|IGST|taxable value/)).toBeNull();
+    expect(within(amounts).getByRole('rowheader', { name: 'Total (no GST)' })).toBeTruthy();
+  });
+
   it('invoice: business, customer, GST breakdown, masked payment refs, balance, Print and Pay by UPI', async () => {
     pys({ '/portal/billing/INV%2F2026%2F9': fx.bill() });
     await show(BillScreen({ number: 'INV/2026/9' }));
@@ -400,9 +428,12 @@ describe('Billing', () => {
     expect(screen.getByText('GSTIN: 27ABCDE1234F1Z5')).toBeTruthy();
     expect(screen.getByText('Customer code: C-0007')).toBeTruthy();
     const amounts = screen.getByRole('table', { name: 'Invoice amounts' });
-    expect(within(amounts).getByRole('rowheader', { name: 'GST (18%)' })).toBeTruthy();
+    expect(within(amounts).getByRole('rowheader', { name: 'CGST (9%)' })).toBeTruthy();
+    expect(within(amounts).getByRole('rowheader', { name: 'SGST (9%)' })).toBeTruthy();
+    expect(within(amounts).queryByRole('rowheader', { name: /IGST/ })).toBeNull();
     expect(within(amounts).getByText('₹6,777.97')).toBeTruthy();
-    expect(within(amounts).getByText('₹1,220.03')).toBeTruthy();
+    expect(within(amounts).getByText('₹610.02')).toBeTruthy();
+    expect(within(amounts).getByText('₹610.01')).toBeTruthy();
     expect(within(amounts).getByText('₹5,998.00')).toBeTruthy();
     const pays = screen.getByRole('table', { name: 'Payments received for this invoice' });
     expect(within(pays).getAllByText('••••4321')).toHaveLength(2);
