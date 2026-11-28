@@ -5,4 +5,4 @@
  * Kept in its own small file because the request forms (browser code) import it, and the legal text should not be
  * bundled into them.
  */
-export const PRIVACY_NOTICE_VERSION = '2026-11-27';
+export const PRIVACY_NOTICE_VERSION = '2026-11-28';

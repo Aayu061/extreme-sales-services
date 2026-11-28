@@ -54,16 +54,25 @@ describe('legalBody', () => {
     expect(body.sections[0].paragraphs[0]).toBe('Contact extremess0121@gmail.com.');
   });
 
-  it('describes customer website accounts (S11) and keeps the backup section', () => {
+  it('is the client-approved v3 (28 Nov 2026): accounts, choices and rights, and no backup section while backups are off', () => {
     const privacy = legalBody('privacy', null, FALLBACK_IDENTITY);
     const headings = privacy.sections.map((x) => x.heading);
     expect(headings).toContain('Your website account');
-    expect(headings).toContain('Backup copies (ESS-PYS Backups)');
-    expect(privacy.updatedOn).toBe('2026-11-27');
+    expect(headings).toContain('Your choices and rights');
+    expect(headings.some((h) => /backup/i.test(h))).toBe(false); // S04 is not running for live records
+    expect(privacy.updatedOn).toBe('2026-11-28');
     const all = JSON.stringify(privacy);
-    for (const fact of ['6-digit code', '10 minutes', 'keyed one-way fingerprint', 'locked for 24 hours', 'ess_account', '7 days without use', '30 days at most', 'visits used and left', 'first name of the technician', 'switch off your website account']) {
+    for (const fact of [
+      '6-digit code', '10 minutes', 'stops working after 5 wrong tries', 'keyed one-way fingerprint', 'locked for 24 hours',
+      'ess_account', 'sent only over secure connections', 'lasts at most 30 days', '7 days without use', '30 days at most',
+      'visits used and left', 'first name of the technician', 'switch off your website account',
+      // v3 additions checked against the code (S12-PRIVACY-NOTICE-v3-DRAFT.md, section C)
+      'UPI QR code', 'last 4 characters', 'deleted within about 2 days', 'deleted after 30 days', 'Mumbai, India',
+      'United States', 'currently 6 years', 'reply within 30 days', 'withdraw your consent', 'parent or guardian',
+    ]) {
       expect(all).toContain(fact);
     }
+    expect(all).not.toMatch(/\[\[|kept only briefly/); // no open blanks, no old inaccurate claim
     const terms = legalBody('terms', null, FALLBACK_IDENTITY);
     expect(terms.sections.map((x) => x.heading)).toContain('Your account');
     expect(JSON.stringify(terms)).toMatch(/Keep your sign-in codes private/);
