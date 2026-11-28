@@ -72,3 +72,49 @@ export async function getAccountState(): Promise<AccountState> {
     throw err;
   }
 }
+
+/** S11b: what an account page gets from PYS, already sorted into the states the page shows. */
+export type PortalResult<T> =
+  | { kind: 'ok'; data: T }
+  /** No sign-in cookie, or PYS says the session has ended (`ended`), so the page shows the sign-in form. */
+  | { kind: 'signed-out'; ended: boolean }
+  | { kind: 'off' }
+  /** The id or number does not belong to this customer (or does not exist; PYS answers the same). */
+  | { kind: 'not-found' }
+  | { kind: 'error' };
+
+/** Ids, request / report / bill numbers as they appear in a page address. Anything else never reaches PYS. */
+const REF_RE = /^[A-Za-z0-9][A-Za-z0-9_./-]{0,79}$/;
+export function isPortalRef(ref: string | null | undefined): ref is string {
+  return typeof ref === 'string' && REF_RE.test(ref) && !ref.includes('..');
+}
+/** "/portal/acs" + id, safely encoded (a bill number may hold a "/"). */
+export function portalPath(base: string, ref: string, suffix = ''): string {
+  return `${base}/${encodeURIComponent(ref)}${suffix}`;
+}
+
+/**
+ * GET one S11b portal address for the signed-in customer. The customer is known to PYS only from the session cookie;
+ * nothing from the browser picks whose data is read. `detail` pages turn PYS's 404 into "not found"; on list pages a
+ * 404 means PYS does not have the portal routes yet, which reads as "coming soon" (as on /account in S11 v1).
+ */
+export async function portalGet<T>(path: string, opts: { detail?: boolean } = {}): Promise<PortalResult<T>> {
+  const token = await accountToken();
+  if (!token) {
+    try {
+      await pysRequest('GET', '/portal/status');
+      return { kind: 'signed-out', ended: false };
+    } catch (err) {
+      return isPortalOff(err) ? { kind: 'off' } : { kind: 'error' };
+    }
+  }
+  try {
+    const data = await pysRequest<T>('GET', path, { headers: { 'X-PYS-Customer-Session': token } });
+    return { kind: 'ok', data };
+  } catch (err) {
+    if (err instanceof PysError && err.status === 503 && err.code === 'PORTAL_OFF') return { kind: 'off' };
+    if (err instanceof PysError && err.status === 401) return { kind: 'signed-out', ended: true };
+    if (err instanceof PysError && err.status === 404) return opts.detail ? { kind: 'not-found' } : { kind: 'off' };
+    return { kind: 'error' };
+  }
+}
